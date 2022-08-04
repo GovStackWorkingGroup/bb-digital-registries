@@ -1,0 +1,25 @@
+version: '3.7'
+
+services:
+  someApp:
+    image: someOrg/someApp
+    restart: always
+    ports:
+      - '127.0.0.1:5678:5678'
+    environment:
+      - SOME_ENV=som_evalue
+      - NODE_ENV=production
+      - WEBHOOK_URL=https://127.0.0.1:5678/
+      - GENERIC_TIMEZONE=${GENERIC_TIMEZONE}
+    volumes:
+      - ${SOMEAPP_DATA_FOLDER}:/home/node/.someApp
+      - ${SOMEAPP_LOCAL_FILES}:/files
+
+  caddy:
+    build: .
+    restart: unless-stopped
+    ports:
+      - '80:80'
+      - '443:443'
+    volumes:
+      - ${CADDY_DATA_FOLDER}:/data

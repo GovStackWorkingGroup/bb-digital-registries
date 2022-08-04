@@ -1,0 +1,33 @@
+name: Specifications Problem Report
+description: Report a problem or "bug" in the specifications
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thank you for taking the time to submit your feedback on the GovStack specifications. Below, you will find a few questions to help you give us the information needed to handle your feedback.
+  - type: checkboxes
+    id: opening-questions
+    attributes:
+      label: Opening questions
+      description: These opening questions will help ensure you have not missed any things to check before reporting a problem in the specifications
+      options:
+        - label: I have checked the [current list of issues](../issues) and confirm this problem has not already been reported
+          required: true
+        - label: I agree to follow the [GovStack Code of Conduct](https://govstack.global/coc)
+          required: true
+  - type: input
+    id: location
+    attributes:
+      label: Location (url) of the problem
+      description: Please enter the url of the published page containing the problem.
+      placeholder: example - https://docs.govstack.global/contribution
+    validations:
+      required: true
+  - type: textarea
+    id: what-problem
+    attributes:
+      label: What is the problem you see?
+      description: What do you consider to be incorrect and why is is incorrect? Can you also suggest some alternative text?
+    validations:
+      required: true
