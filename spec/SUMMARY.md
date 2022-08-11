@@ -1,7 +1,6 @@
 # Table of contents
 
-* [\<name of building block>](README.md)
-* [1 Version History](1-version-history.md)
+* [Digital Registries](README.md)
 * [2 Description](2-description.md)
 * [3 Terminology](3-terminology.md)
 * [4 Key Digital Functionalities](4-key-digital-functionalities.md)
@@ -10,6 +9,6 @@
 * [7 Data Structures](7-data-structures.md)
 * [8 Service APIs](8-service-apis.md)
 * [9 Workflows](9-workflows.md)
-* [10 Other Resources](10-other-resources.md)
-* [11 Key Decision Log](11-key-decision-log.md)
-* [12 Future Considerations](12-future-considerations.md)
+* [Appendix 1 - Database Read Schema Response Example](appendix-1-database-read-schema-response-example.md)
+* [Appendix 2 - Example Schema With Foreign Keys](appendix-2-example-schema-with-foreign-keys.md)
+
