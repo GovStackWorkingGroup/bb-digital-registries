@@ -17,6 +17,9 @@ Functional tests:
 3. test API endpoints for DB schema and data.
 4. test UI functionality, CRUD a registry database schema and updates to the registry DB. 
 5. test UI functionality, CRUD data of the registry DB. 
-6. test multiple registries in one instance (multi-tenant).
+6. test multiple registries in one instance (multi-tenant). Ensure that system enables to create multiple registry databases in one system.
 7. test user rights management.   
 8. test log system.  
+9. test swagger page. 
+10. test schema import and export.
+11. test data import and export.
