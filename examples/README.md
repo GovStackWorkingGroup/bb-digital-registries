@@ -1,4 +1,4 @@
-# Software applications that fulfill the behaviours specified by this building block specifications
+# Software applications that fulfill the behaviours specified by this building block
 
 List of products:
 # 1. Generic Database Builder 
