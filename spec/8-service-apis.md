@@ -14,7 +14,7 @@ Example 2: ​/api/v1/database/modify
 
 Each registry contains a unique set of data and the BB enables an Analyst to change the data storage structure/schema on the fly. In this following example API descriptions are generated for one example dataset for the Postpartum Infant Care Program registry, where Caretaker and infant child is registered and registration ID is issued.
 
-![Example registry database logical data model. ](<.gitbook/assets/Logical datamodel MCTS (1).JPG>)
+![Example registry database logical data model.](<.gitbook/assets/Logical datamodel MCTS (1).JPG>)
 
 ![Example registry database Json schema.](<.gitbook/assets/image4 (1) (1) (1).png>)
 
@@ -26,10 +26,10 @@ Description: Creates a new record in the registry database.
 
 Request endpoint: POST /data/{code}/{version}/create
 
-Example API: [see in github](https://github.com/ingmarvali/BuildingBlockAPI/blob/main/DigitalRegistriesBB/GovStack\_Digital\_registries\_BB\_Data\_API\_template-1.1.0.json).
+Example API: see in [Github](../api/GovStack\_Digital\_registries\_BB\_Data\_API\_template-1.3.0.json).
 
-{% swagger src="https://raw.githubusercontent.com/ingmarvali/BuildingBlockAPI/main/DigitalRegistriesBB/GovStack_Digital_registries_BB_Data_API_template-1.1.0.json" path="undefined" method="undefined" %}
-[https://raw.githubusercontent.com/ingmarvali/BuildingBlockAPI/main/DigitalRegistriesBB/GovStack_Digital_registries_BB_Data_API_template-1.1.0.json](https://raw.githubusercontent.com/ingmarvali/BuildingBlockAPI/main/DigitalRegistriesBB/GovStack_Digital_registries_BB_Data_API_template-1.1.0.json)
+{% swagger src="https://raw.githubusercontent.com/GovStackWorkingGroup/bb-digital-registries/main/api/GovStack_Digital_registries_BB_Data_API_template-1.3.0.json" path="/data/<registryname>/<versionnumber>/create" method="post" %}
+[https://raw.githubusercontent.com/GovStackWorkingGroup/bb-digital-registries/main/api/GovStack_Digital_registries_BB_Data_API_template-1.3.0.json](https://raw.githubusercontent.com/GovStackWorkingGroup/bb-digital-registries/main/api/GovStack_Digital_registries_BB_Data_API_template-1.3.0.json)
 {% endswagger %}
 
 ## 8.2 DATA UPDATE
@@ -38,10 +38,10 @@ Description: Updates one existing record in the registry database.
 
 Request endpoint: PUT /data/{code}/{version}/update
 
-Example API: [see in github](https://github.com/ingmarvali/BuildingBlockAPI/blob/main/DigitalRegistriesBB/GovStack\_Digital\_registries\_BB\_Data\_API\_template-1.1.0.json).
+Example API: see in [Github](../api/GovStack\_Digital\_registries\_BB\_Data\_API\_template-1.3.0.json).
 
-{% swagger src="https://raw.githubusercontent.com/ingmarvali/BuildingBlockAPI/main/DigitalRegistriesBB/GovStack_Digital_registries_BB_Data_API_template-1.1.0.json" path="undefined" method="undefined" %}
-[https://raw.githubusercontent.com/ingmarvali/BuildingBlockAPI/main/DigitalRegistriesBB/GovStack_Digital_registries_BB_Data_API_template-1.1.0.json](https://raw.githubusercontent.com/ingmarvali/BuildingBlockAPI/main/DigitalRegistriesBB/GovStack_Digital_registries_BB_Data_API_template-1.1.0.json)
+{% swagger src="https://raw.githubusercontent.com/GovStackWorkingGroup/bb-digital-registries/main/api/GovStack_Digital_registries_BB_Data_API_template-1.3.0.json" path="/data/<registryname>/<versionnumber>/update" method="put" %}
+[https://raw.githubusercontent.com/GovStackWorkingGroup/bb-digital-registries/main/api/GovStack_Digital_registries_BB_Data_API_template-1.3.0.json](https://raw.githubusercontent.com/GovStackWorkingGroup/bb-digital-registries/main/api/GovStack_Digital_registries_BB_Data_API_template-1.3.0.json)
 {% endswagger %}
 
 ## 8.3 DATA UPDATE-OR-CREATE
@@ -50,7 +50,11 @@ Description: API updates existing record if matching with input parameters is su
 
 Request endpoint: POST /data/{code}/{version}/update-or-create
 
-Example API: [see in github](https://github.com/ingmarvali/BuildingBlockAPI/blob/main/DigitalRegistriesBB/GovStack\_Digital\_registries\_BB\_Data\_API\_template-1.1.0.json).
+Example API: see in [Github](../api/GovStack\_Digital\_registries\_BB\_Data\_API\_template-1.3.0.json).
+
+{% swagger src="https://raw.githubusercontent.com/GovStackWorkingGroup/bb-digital-registries/main/api/GovStack_Digital_registries_BB_Data_API_template-1.3.0.json" path="/data/<registryname>/<versionnumber>/update-or-create" method="post" %}
+[https://raw.githubusercontent.com/GovStackWorkingGroup/bb-digital-registries/main/api/GovStack_Digital_registries_BB_Data_API_template-1.3.0.json](https://raw.githubusercontent.com/GovStackWorkingGroup/bb-digital-registries/main/api/GovStack_Digital_registries_BB_Data_API_template-1.3.0.json)
+{% endswagger %}
 
 ## 8.4 DATA UPDATE-ENTRIES
 
@@ -58,7 +62,11 @@ Description: Updates multiple records in the registry database that match the in
 
 Request endpoint: PUT /data/{code}/{version}/update-entries
 
-Example API: [see in github](https://github.com/ingmarvali/BuildingBlockAPI/blob/main/DigitalRegistriesBB/GovStack\_Digital\_registries\_BB\_Data\_API\_template-1.1.0.json).
+Example API: see in [Github](../api/GovStack\_Digital\_registries\_BB\_Data\_API\_template-1.3.0.json).
+
+{% swagger src="https://raw.githubusercontent.com/GovStackWorkingGroup/bb-digital-registries/main/api/GovStack_Digital_registries_BB_Data_API_template-1.3.0.json" path="/data/<registryname>/<versionnumber>/update-entries" method="put" %}
+[https://raw.githubusercontent.com/GovStackWorkingGroup/bb-digital-registries/main/api/GovStack_Digital_registries_BB_Data_API_template-1.3.0.json](https://raw.githubusercontent.com/GovStackWorkingGroup/bb-digital-registries/main/api/GovStack_Digital_registries_BB_Data_API_template-1.3.0.json)
+{% endswagger %}
 
 ## 8.5 DATA LIST (Search)
 
@@ -66,7 +74,11 @@ Description: Searches (Regex supported) and returns multiple records as an array
 
 Request endpoint: GET /data/{code}/{version}
 
-Example API: [see in github](https://github.com/ingmarvali/BuildingBlockAPI/blob/main/DigitalRegistriesBB/GovStack\_Digital\_registries\_BB\_Data\_API\_template-1.1.0.json).
+Example API: see in [Github](../api/GovStack\_Digital\_registries\_BB\_Data\_API\_template-1.3.0.json).
+
+{% swagger src="https://raw.githubusercontent.com/GovStackWorkingGroup/bb-digital-registries/main/api/GovStack_Digital_registries_BB_Data_API_template-1.3.0.json" path="/data/<registryname>/<versionnumber>" method="get" %}
+[https://raw.githubusercontent.com/GovStackWorkingGroup/bb-digital-registries/main/api/GovStack_Digital_registries_BB_Data_API_template-1.3.0.json](https://raw.githubusercontent.com/GovStackWorkingGroup/bb-digital-registries/main/api/GovStack_Digital_registries_BB_Data_API_template-1.3.0.json)
+{% endswagger %}
 
 ## 8.6 DATA READ
 
@@ -74,7 +86,11 @@ Description: Searches and returns one record.
 
 Request endpoint: POST /data/{code}/{version}/read
 
-Example API: [see in github](https://github.com/ingmarvali/BuildingBlockAPI/blob/main/DigitalRegistriesBB/GovStack\_Digital\_registries\_BB\_Data\_API\_template-1.1.0.json).
+Example API: see in [Github](../api/GovStack\_Digital\_registries\_BB\_Data\_API\_template-1.3.0.json).
+
+{% swagger src="https://raw.githubusercontent.com/GovStackWorkingGroup/bb-digital-registries/main/api/GovStack_Digital_registries_BB_Data_API_template-1.3.0.json" path="/data/<registryname>/<versionnumber>/read" method="post" %}
+[https://raw.githubusercontent.com/GovStackWorkingGroup/bb-digital-registries/main/api/GovStack_Digital_registries_BB_Data_API_template-1.3.0.json](https://raw.githubusercontent.com/GovStackWorkingGroup/bb-digital-registries/main/api/GovStack_Digital_registries_BB_Data_API_template-1.3.0.json)
+{% endswagger %}
 
 ## 8.7 DATA READ-VALUE
 
@@ -82,7 +98,11 @@ Description: Searches and returns one record’s one field value.
 
 Request endpoint: GET /data/{code}/{version}/{ID}/read-value/{field}.{ext}
 
-Example API: [see in github](https://github.com/ingmarvali/BuildingBlockAPI/blob/main/DigitalRegistriesBB/GovStack\_Digital\_registries\_BB\_Data\_API\_template-1.1.0.json).
+Example API: see in [Github](../api/GovStack\_Digital\_registries\_BB\_Data\_API\_template-1.3.0.json).
+
+{% swagger src="https://raw.githubusercontent.com/GovStackWorkingGroup/bb-digital-registries/main/api/GovStack_Digital_registries_BB_Data_API_template-1.3.0.json" path="/data/<registryname>/<versionnumber>/{uuid}/read-value/{field}.{ext}" method="get" %}
+[https://raw.githubusercontent.com/GovStackWorkingGroup/bb-digital-registries/main/api/GovStack_Digital_registries_BB_Data_API_template-1.3.0.json](https://raw.githubusercontent.com/GovStackWorkingGroup/bb-digital-registries/main/api/GovStack_Digital_registries_BB_Data_API_template-1.3.0.json)
+{% endswagger %}
 
 ## 8.8 DATA EXISTS
 
@@ -90,7 +110,11 @@ Description: Searches records based on input parameters and returns boolean answ
 
 Request endpoint: POST /data/{code}/{version}/exists
 
-Example API: [see in github](https://github.com/ingmarvali/BuildingBlockAPI/blob/main/DigitalRegistriesBB/GovStack\_Digital\_registries\_BB\_Data\_API\_template-1.1.0.json).
+Example API: see in [Github](../api/GovStack\_Digital\_registries\_BB\_Data\_API\_template-1.3.0.json).
+
+{% swagger src="https://raw.githubusercontent.com/GovStackWorkingGroup/bb-digital-registries/main/api/GovStack_Digital_registries_BB_Data_API_template-1.3.0.json" path="/data/<registryname>/<versionnumber>/exists" method="post" %}
+[https://raw.githubusercontent.com/GovStackWorkingGroup/bb-digital-registries/main/api/GovStack_Digital_registries_BB_Data_API_template-1.3.0.json](https://raw.githubusercontent.com/GovStackWorkingGroup/bb-digital-registries/main/api/GovStack_Digital_registries_BB_Data_API_template-1.3.0.json)
+{% endswagger %}
 
 ## 8.9 DATA DELETE
 
@@ -98,7 +122,11 @@ Description: Delete record.
 
 Request endpoint: DELETE /data/{code}/{version}/{ID}/delete
 
-Example API: [see in github](https://github.com/ingmarvali/BuildingBlockAPI/blob/main/DigitalRegistriesBB/GovStack\_Digital\_registries\_BB\_Data\_API\_template-1.1.0.json).
+Example API: see in [Github](../api/GovStack\_Digital\_registries\_BB\_Data\_API\_template-1.3.0.json).
+
+{% swagger src="https://raw.githubusercontent.com/GovStackWorkingGroup/bb-digital-registries/main/api/GovStack_Digital_registries_BB_Data_API_template-1.3.0.json" path="/data/<registryname>/<versionnumber>/{ID}/delete" method="delete" %}
+[https://raw.githubusercontent.com/GovStackWorkingGroup/bb-digital-registries/main/api/GovStack_Digital_registries_BB_Data_API_template-1.3.0.json](https://raw.githubusercontent.com/GovStackWorkingGroup/bb-digital-registries/main/api/GovStack_Digital_registries_BB_Data_API_template-1.3.0.json)
+{% endswagger %}
 
 ## 8.10 DATA My personal data usage
 
@@ -106,7 +134,13 @@ Description: The purpose of this API is to make personal data protection better 
 
 Request endpoint: GET /data/MyPersonalDataUsage/{version}
 
-Example API: [see in github](https://github.com/ingmarvali/BuildingBlockAPI/blob/main/DigitalRegistriesBB/GovStack\_Digital\_registries\_BB\_Data\_API\_template-1.1.0.json).
+Example API: see in [Github](../api/GovStack\_Digital\_registries\_BB\_Data\_API\_template-1.3.0.json).
+
+{% swagger src="https://raw.githubusercontent.com/GovStackWorkingGroup/bb-digital-registries/main/api/GovStack_Digital_registries_BB_Data_API_template-1.3.0.json" path="/data/MyPersonalDataUsage/1.0" method="get" %}
+[https://raw.githubusercontent.com/GovStackWorkingGroup/bb-digital-registries/main/api/GovStack_Digital_registries_BB_Data_API_template-1.3.0.json](https://raw.githubusercontent.com/GovStackWorkingGroup/bb-digital-registries/main/api/GovStack_Digital_registries_BB_Data_API_template-1.3.0.json)
+{% endswagger %}
+
+
 
 **Database Schema APIs are following:**
 
@@ -116,7 +150,7 @@ Description: API reads existing registry database schema.
 
 Request endpoint: GET /api/V1/database/{id}
 
-Example API: [see in github](https://github.com/ingmarvali/BuildingBlockAPI/blob/main/DigitalRegistriesBB/GovStack\_Digital\_registries\_BB\_Database\_API\_template-1.1.0.json).
+Example API: see in [Github](../api/GovStack\_Digital\_registries\_BB\_Database\_API\_template-1.3.0.json).
 
 ## 8.12 DATABASE SCHEMA MODIFY
 
@@ -124,7 +158,11 @@ Description: API creates a new registry database schema or updates existing sche
 
 Request endpoint: POST /api/V1/database/modify
 
-Example API: [see in github](https://github.com/ingmarvali/BuildingBlockAPI/blob/main/DigitalRegistriesBB/GovStack\_Digital\_registries\_BB\_Database\_API\_template-1.1.0.json).
+Example API: see in [Github](../api/GovStack\_Digital\_registries\_BB\_Database\_API\_template-1.3.0.json).
+
+{% swagger src="https://raw.githubusercontent.com/GovStackWorkingGroup/bb-digital-registries/main/api/GovStack_Digital_registries_BB_Database_API_template-1.3.0.json" path="/database/modify" method="post" %}
+[https://raw.githubusercontent.com/GovStackWorkingGroup/bb-digital-registries/main/api/GovStack_Digital_registries_BB_Database_API_template-1.3.0.json](https://raw.githubusercontent.com/GovStackWorkingGroup/bb-digital-registries/main/api/GovStack_Digital_registries_BB_Database_API_template-1.3.0.json)
+{% endswagger %}
 
 ## 8.13 DATABASE SCHEMA DELETE
 
@@ -132,15 +170,21 @@ Description: API deletes registry database.
 
 Request endpoint: DELETE /api/v1/database/{id}
 
-Example API: [see in github](https://github.com/ingmarvali/BuildingBlockAPI/blob/main/DigitalRegistriesBB/GovStack\_Digital\_registries\_BB\_Database\_API\_template-1.1.0.json).
+Example API: see in [Github](../api/GovStack\_Digital\_registries\_BB\_Database\_API\_template-1.3.0.json).
+
+{% swagger src="https://raw.githubusercontent.com/GovStackWorkingGroup/bb-digital-registries/main/api/GovStack_Digital_registries_BB_Database_API_template-1.3.0.json" path="/database/{id}" method="delete" %}
+[https://raw.githubusercontent.com/GovStackWorkingGroup/bb-digital-registries/main/api/GovStack_Digital_registries_BB_Database_API_template-1.3.0.json](https://raw.githubusercontent.com/GovStackWorkingGroup/bb-digital-registries/main/api/GovStack_Digital_registries_BB_Database_API_template-1.3.0.json)
+{% endswagger %}
 
 ## 8.14 DATABASES LIST
 
 Description: API gets all databases and schema versions as a list array.\
 Request endpoint: GET /api/v1/databases\
-Example API: [see in github](https://github.com/ingmarvali/BuildingBlockAPI/blob/main/DigitalRegistriesBB/GovStack\_Digital\_registries\_BB\_Database\_API\_template-1.1.0.json).\
-\
-**Standards/Protocols:**
+Example API: see in [Github](../api/GovStack\_Digital\_registries\_BB\_Database\_API\_template-1.3.0.json).
+
+{% swagger src="https://raw.githubusercontent.com/GovStackWorkingGroup/bb-digital-registries/main/api/GovStack_Digital_registries_BB_Database_API_template-1.3.0.json" path="/databases" method="get" %}
+[https://raw.githubusercontent.com/GovStackWorkingGroup/bb-digital-registries/main/api/GovStack_Digital_registries_BB_Database_API_template-1.3.0.json](https://raw.githubusercontent.com/GovStackWorkingGroup/bb-digital-registries/main/api/GovStack_Digital_registries_BB_Database_API_template-1.3.0.json)
+{% endswagger %}
 
 The API is built using representational state transfer (REST) software architectural style ([https://restfulapi.net/](https://restfulapi.net)) and described in Open API 3 standard\
 ([https://swagger.io/specification/](https://swagger.io/specification/)) using YAML (a human-readable data-serialization language - [http://yaml.org/](http://yaml.org)). Request and response body is in JSON (lightweight data-interchange format - [https://www.json.org/json-en.html](https://www.json.org/json-en.html)).
