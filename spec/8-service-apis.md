@@ -186,5 +186,15 @@ Example API: see in [Github](../api/GovStack\_Digital\_registries\_BB\_Database\
 [https://raw.githubusercontent.com/GovStackWorkingGroup/bb-digital-registries/main/api/GovStack_Digital_registries_BB_Database_API_template-1.3.0.json](https://raw.githubusercontent.com/GovStackWorkingGroup/bb-digital-registries/main/api/GovStack_Digital_registries_BB_Database_API_template-1.3.0.json)
 {% endswagger %}
 
+## 8.15 DATA CREATE-ENTRIES
+
+**Description: Creates multiple records in the registry database.**
+
+Request endpoint: PUT /data/{code}/{version}/create-entries
+
+Example API: see in [Github](../api/GovStack\_Digital\_registries\_BB\_Data\_API\_template-1.3.0.json).
+
+
+
 The API is built using representational state transfer (REST) software architectural style ([https://restfulapi.net/](https://restfulapi.net)) and described in Open API 3 standard\
 ([https://swagger.io/specification/](https://swagger.io/specification/)) using YAML (a human-readable data-serialization language - [http://yaml.org/](http://yaml.org)). Request and response body is in JSON (lightweight data-interchange format - [https://www.json.org/json-en.html](https://www.json.org/json-en.html)).
