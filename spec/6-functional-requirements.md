@@ -16,7 +16,7 @@ As an Administrator/Analyst I want to use a web user interface to create a regis
 
 **Preconditions**:
 
-1. User is authenticated.
+1. User is authenticated;
 2. User is authorized as an admin;
 3. The user interface is a web interface;
 4. User has internet;
