@@ -2,7 +2,6 @@
 Feature: Create new record in registry
   Request endpoint: POST /data/{code}/{version}/create
   see https://govstack.gitbook.io/specification/v/version-0.9.0/building-blocks/digital-registries/8-service-apis#docs-internal-guid-f400fe68-7fff-bffb-3d00-0b067c81eb40
-
   A Registration BB application makes a request to the Digital Registries BB API to create a new record
   # TODO: merge create_mcts_record.feature into this feature and remove one file
 
@@ -11,10 +10,9 @@ Feature: Create new record in registry
 
   Scenario: Successfully create new record
     Send form data to Registration CREATE API of MCTS DB.
-    Given "Sona" has entered all required data in the Registration e-service registration form
-    When "Sona" pushes a button "Send application"
-    Then the MCC system makes a request to Registration BB MCTS DB CREATE API
-    And fills the form data field with response information <MCTS ID>
+    When I make a CREATE request with a valid payload
+    Then I receive a HTTP 200 response with the response information <MCTS ID>
+    And I can make a READ request for <MCTS ID> to retrieve this record
 
   Scenario: Trying to create record that already exists
     TODO: do we verify some kind of "duplicate" definition? (e.g. a citizen ID that should be unique across records)
