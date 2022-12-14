@@ -1,27 +1,20 @@
-Feature: Searches records based on input parameters and returns boolean answer.
-  Request endpoint: POST /data/{code}/{version}/exist
+Feature: API endopont allowing users to check if a record already exists in the Digital Registries database.
+  Request endpoint: POST /data/{registryname}/{versionnumber}/exists
 
   Background:
-    Given database with the valid schema has been set up
+    Given The user wants to check if a record with the first name "John Helmut" already exists in the Digital Registries database
 
-  Scenario: Receive "true" when record exist
-    When I make a POST request with a valid payload and ID <id>
-    Then I receive a HTTP 200 response with the response <status>
+  Scenario: The user receives a message that the record already exists in the Digital Registries database
+    When The user triggers an action to check if the record already exists in the database
+    And The request with a valid payload is sent
+    Then The user receives a success message with information that the record already exists in the database
 
-    Examples:
-    | id    | status |
-    | MCTS1 | true   |
-    | MCTS2 | true   |
+  Scenario: The user receives the message that the record does not exists in the Digital Registries database
+    When The user triggers an action to check if the record already exist in the database
+    And The request with a valid payload is sent
+    Then The user receives a success message with information that the record does not exist in the database
 
-  Scenario: Receive "false" when record not exist
-    When I make a POST request with a valid payload and ID <id>
-    Then I receive a HTTP 200 response with the response <status>
-
-    Examples:
-    | id    | status |
-    | MCTS3 | false  |
-    | MCTS4 | false  |
-
-  Scenario: Failure get boolean answer when Information-Mediator-Client is not provide
-    When I make a POST request with a invalid payload
-    Then I receive a HTTP 400 response
+  Scenario: The user is not able to check if the record exists in the Digital Registries database
+    When The user triggers an action to check if the record already exists in the database
+    And The request with an invalid payload is sent
+    Then The user receives an error message

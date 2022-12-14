@@ -1,14 +1,15 @@
-Feature: API endpoint that allows user to get database information with schema.
+Feature: API endpoint allowing users to get the Digital Registries database information with schema versions.
   Request endpoint: GET /database/{id}/
 
   Background:
-    Given database with the valid schema has been set up
+    Given The user wants to retrieve the Digital Registries database information with schema versions
 
-  Scenario: Successfully get database information with schema
-    When I make a GET request with a valid payload
-    Then I receive a HTTP 200 response
-    And I receive a schema as an object
+  Scenario: The user successfully receives one Digital Registries database information with schema versions
+    When The user triggers an action to display one database schema versions
+    And The request with a valid payload is sent
+    Then The user received one database information with schema versions
 
-  Scenario: Failure get database information with schema
-    When I make a GET request with a invalid payload
-    Then I receive a HTTP 400 response
+  Scenario: The user is not able to receive any Digital Registries database information with schema versions
+    When The user triggers an action to display one database schema versions
+    And The request with an invalid payload is sent
+    Then The user received an error message

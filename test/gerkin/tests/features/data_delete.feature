@@ -1,19 +1,17 @@
-Feature: Remove record from the database.
-  Request endpoint: DELETE /data/{code}/{version}/delete
+Feature: API endpoint allowing users to remove a record from the Digital Registries database.
+  Request endpoint: DELETE /data/{registryname}/{versionnumber}/{id}/delete
 
   Background:
-    Given database with the valid schema has been set up
+    Given The user wants to remove a record which exist in the Digital Registries database
 
-  Scenario: Successfully delete existing record
-    When I make a DELETE request with a valid payload ID <ID>
-    Then I receive a HTTP 204 response
+  Scenario: The user successfully removes a record from the Digital Registries schema
+    When The user triggers an action to delete a database schema
+    And The request with a valid payload is sent
+    Then The user receives a success message
 
-  Scenario: Failure when delete existing record
-    When I make a DELETE request with a invalid payload
-    Then I receive a HTTP 400 response
+  Scenario: The user is not able to delete the Digital Registries schema
+    When The user triggers an action to delete a database schema
+    And The request with an invalid payload is sent
+    Then The user receivess an error message
 
-    Examples:
-    | ID    |
-    | MCTS1 |
-    | MCTS2 |
     

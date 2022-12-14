@@ -1,18 +1,20 @@
-Feature: Searches and returns multiple records as an array-list.
-  Request endpoint: GET /data/{code}/{version}/
+Feature: API endopoint allowing users to search multiple records in the Digital Registries database.
+  Request endpoint: GET /data/{registryname}/{versionnumber}/
 
   Background:
-    Given database with the valid schema has been set up
+    Given The user wants to search for "John Helmut" in the Digital Registries database
 
-  Scenario: Successfully get multiple records as an array-list
-    When I make a GET request with a valid Description Information-Mediator-Client
-    Then I receive a HTTP 200 response
-    And I received the records as an array-list
+  Scenario: The user receives a list with all records including "John Helmut" in the Digital Registries database
+    When The user triggers an action to search "John Helmut" in the database
+    And The request with a valid payload is sent
+    Then The user receives a list with all records which including "John Helmut"
 
-  Scenario: Successfully get all records with name "John"
-    When I make a GET request with a valid Description Information-Mediator-Client and search "John"
-    Then I received the records which includes "John" as an array-list
+  Scenario: The user receives an empty list from the Digital Registries database
+    When The user triggers an action to search "John Helmut" in the database
+    And The request with a valid payload is sent
+    Then The user receives an empty list because there is no record including "John Helmut" in the database
 
-  Scenario: Failure get records when Information-Mediator-Client is not provide
-    When When I make a GET request without Description Information-Mediator-Client
-    Then I receive a HTTP 400 response
+  Scenario: The user is not able to search for the records in the Digital Registries database
+    When The user triggers an action to search "John Helmut" in the database
+    And The request with an invalid payload is sent
+    Then The user receives an error message

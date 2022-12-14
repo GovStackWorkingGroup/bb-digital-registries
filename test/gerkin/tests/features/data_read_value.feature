@@ -1,15 +1,16 @@
-Feature: Searches and returns one record’s one field value.
-  Request endpoint: GET /data/{code}/{version}/{uuid}/read-value/{field}.{ext}
+Feature: API endpoint allowing users to search for one record's field value in the Digital Registries database.
+  Request endpoint: GET /data/{registryname}/{versionnumber}/{uuid}/read-value/{field}.{ext}
 
   Background:
-    Given database with the valid schema has been set up
+    Given The user wants to search for the first name of the user with uuid "123" in the Digital Registries database
 
-  Scenario: Successfully get one field value from one record
-    When I make a GET request with a valid payload which contains all required fields
-    Then I receive a HTTP 200 response
-    And I received the records as an object
 
-  Scenario: Failure get one field value from one record because required datas are not provided
-    When When I make a GET request with a invalid payload
-    Then I receive a HTTP 400 response
-    
+  Scenario: The user receives the first name of searches user from the Digital Registries database
+    When The user triggers an action to receive the first name of searches user from the database
+    And The request with a valid payload is sent
+    Then The user receives a first name of the searches user
+
+  Scenario: The user is not able to receive first name of the user from the Digital Registries database
+    When The user triggers an action to receive a first name of searches user from the database
+    And The request with an invalid payload is sent
+    Then The user receives an error message

@@ -1,14 +1,22 @@
-Feature: API updates existing record if matching with input parameters is successful. If record is not found the API will create a new record.
-  Request endpoint: POST /data/{code}/{version}/update-or-create
+Feature: API endpoint allowing users to create a new record if it not exists in the Digital Registries database or update records if already exists.
+  Request endpoint: POST /data/{registryname}/{versionnumber}/update-or-create
 
   Background:
-    Given database with the valid schema has been set up
+    Given The user wants to create a new record or update an existing one if already exists in the Digital Registries database
 
-  Scenario: Successfully update two existing records
-    When I make a PUT request with a valid payload which contains all required fields
-    Then I receive a HTTP 200 response
+  Scenario: The user successfully create new record in the Digital Registries database
+    When The user triggers an action to creates a new record in the database
+    And The request with a valid payload is sent
+    Then The record does not exist in the database
+    And The user receives a success message
 
-  Scenario: Failure when update two existing record with wrong data
-    When I make a PUT request with a invalid payload
-    Then I receive a HTTP 400 response
-    
+  Scenario: The user successfully updates the already existing record in the Digital Registries database
+    When The user triggers an action to create a new record in the database
+    And The request with a valid payload is sent
+    Then The record already exists in the database
+    And The user receives a success message
+
+  Scenario: The user is not able to create/update a record in the Digital Registries database
+    When The user triggers an action to create a new record in the database
+    And The request with an invalid payload is sent
+    Then The user receives an error message

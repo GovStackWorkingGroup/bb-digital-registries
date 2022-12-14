@@ -1,28 +1,15 @@
-Feature: Searches and returns one record.
-  Request endpoint: POST /data/{code}/{version}/read
+Feature: API endpoint allowing users to search for one record in the Digital Registries database.
+  Request endpoint: POST /data/{registryname}/{versionnumber}/read
 
   Background:
-    Given database with the valid schema has been set up
+    Given The user wants to search for one record in the Digital Registries database
 
-  Scenario: Receive one existing record from the database
-    When I make a POST request with a valid payload and ID <ID>
-    Then I receive a HTTP 200 response
-    And I receive one records as an object
+  Scenario: The user receives one searches record from the Digital Registries database
+    When The user triggers an action to search record in the database
+    And The request with a valid payload is sent
+    Then The user receives a searches record
 
-    Examples:
-    | ID    |
-    | MCTS1 |
-    | MCTS2 |
-
-  Scenario: Not receive record from the database if record not exist
-    When I make a POST request with a valid payload and ID <ID>
-    Then I receive no record
-
-    Examples:
-    | ID    |
-    | MCTS3 |
-    | MCTS4 |
-
-  Scenario: Failure get records when Information-Mediator-Client is not provide
-    When When I make a GET request without Description Information-Mediator-Client
-    Then I receive a HTTP 400 response
+  Scenario: The user is not able to receive one searches record from the Digital Registries database
+    When The user triggers an action to search a record in the database
+    And The request with an invalid payload is sent
+    Then The user receives an error message

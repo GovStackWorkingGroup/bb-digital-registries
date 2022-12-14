@@ -1,13 +1,15 @@
-Feature: Updates multiple records in the registry database that match the input query.
-  Request endpoint: PUT /data/{code}/{version}/update-entries
+Feature: API endpoint allowing users to update multiple records in the Digital Registries database.
+  Request endpoint: PUT /data/{registryname}/{versionnumber}/update-entries
 
   Background:
-    Given database with the valid schema has been set up
+    Given The user wants to update multiple records in the Digital Registries database
 
-  Scenario: Successfully update two existing records
-    When I make a PUT request with a valid payload which contains all required fields
-    Then I receive a HTTP 200 response
+  Scenario: The user successfully updates two existing records in the Digital Registries database
+    When The user triggers an action to update two records in the database
+    And The request with a valid payload is sent
+    Then The user receives a success message
 
-  Scenario: Failure when update two existing record with wrong data
-    When I make a PUT request with a invalid payload
-    Then I receive a HTTP 400 response
+  Scenario: The user is not able to update two records in the Digital Registries database
+    When The user triggers an action to update two records in the database
+    And The request with an invalid payload is sent
+    Then The user receives an error message

@@ -1,15 +1,21 @@
-Feature: Allows a user to see who has read their personal data..
-  Request endpoint: GET /data/MyPersonalDataUsage/{version}/
+Feature: API endopoint allowing users to check who had read their personal data in the Digital Registries database.
+  Request endpoint: GET /data/MyPersonalDataUsage/1.0/
 
   Background:
-    Given database with the valid schema has been set up
+    Given The user wants to check who had read his personal data in the Digital Registries database
 
-  Scenario: Successfully get a list with all users which read my personal data
-    When I make a GET request with a valid payload which contains all required fields
-    Then I receive a HTTP 200 response
-    And I received the records as an object
+  Scenario: The user receives a list with all records that had read his personal data in the Digital Registries database
+    When The user triggers an action to receive records from the database
+    And The request with a valid payload is sent
+    Then The user receives a list with all records
 
-  Scenario: Failure get a list with all users which read my personal because required datas are not provided
-    When When I make a GET request with a invalid payload
-    Then I receive a HTTP 400 response
+  Scenario: The user receives an empty list of records that had read his personal data from the Digital Registries database
+    When The user triggers an action to receive records from the database
+    And The request with a valid payload is sent
+    Then The user receives an empty list because there is no record because no one read his personal data in the database
+
+  Scenario: The user is not able to receive data from the Digital Registries database
+    When The user triggers an action to receive records from the database
+    And The request with an invalid payload is sent
+    Then The user received an error message
     

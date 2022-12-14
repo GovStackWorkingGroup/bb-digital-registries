@@ -1,13 +1,15 @@
-Feature: Updates one existing record in the registry database.
-  Request endpoint: PUT /data/{code}/{version}/update
+Feature: API endpoint allowing users to update a new record in the Digital Registries database.
+  Request endpoint: PUT /data/{registryname}/{versionnumber}/update
 
   Background:
-    Given database with the valid schema has been set up
+    Given The user wants to update a record in the Digital Registries database
 
-  Scenario: Successfully update one existing record
-    When I make a PUT request with a valid payload
-    Then I receive a HTTP 200 response
+  Scenario: The user successfully updates the record in the Digital Registries database
+    When The user triggers an action to update a record in the database
+    And The request with a valid payload is sent
+    Then The user receives a success message
 
-  Scenario: Failure when update one existing record with wrong data
-    When I make a PUT request with a invalid payload
-    Then I receive a HTTP 400 response
+  Scenario: The user is not able to update a record in the Digital Registries database
+    When The user triggers an action to update a new record in the database
+    And The request with an invalid payload is sent
+    Then The user receives an error message

@@ -1,23 +1,25 @@
-Feature: API endpoint that allows user to create or modify database schema.
+Feature: API endpoint allowing users to create or modify the Digital Registries database schema.
   Request endpoint: POST /database/modify/
 
   Background:
-    Given database with the valid schema has been set up
+    Given The user wants to create or modify Digital Registries database schema
 
-  Scenario: Successfully create database schema
-    When I make a POST request with a valid payload
-    Then I receive a HTTP 200 response
-    And I receive a schema as an object
+  Scenario: The user successfully create the Digital Registries database schema
+    When The user triggers an action to create a database schema
+    And The request with a valid payload is sent
+    Then The user receives a successs message
 
-  Scenario: Successfully modify database schema
-    When I make a POST request with a valid payload
-    Then I receive a HTTP 200 response
-    And I receive a schema as an object
+  Scenario: The user successfully modify the Digital Registries database schema
+    When The user triggers an action to modify already exists database schema
+    And The request with a valid payload is sent
+    Then The user receives a successs message
 
-  Scenario: Failure when create database schema
-    When I make a GET request with a invalid payload
-    Then I receive a HTTP 400 response
+  Scenario: The user is not able to create the Digital Registries database schema
+    When The user triggers an action to create a database schema
+    And The request with an invalid payload is sent
+    Then The user receives an error message
 
-  Scenario: Failure when modify database schema
-    When I make a GET request with a invalid payload
-    Then I receive a HTTP 400 response
+  Scenario: The user is not able to modify the Digital Registries database schema
+    When The user triggers an action to modify already existing database schema
+    And The request with an invalid payload is sent
+    Then The user receives an error message
