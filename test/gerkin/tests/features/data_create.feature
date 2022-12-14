@@ -1,26 +1,36 @@
 @data
-Feature: Create new record in registry
-  Request endpoint: POST /data/{code}/{version}/create
-  see https://govstack.gitbook.io/specification/v/version-0.9.0/building-blocks/digital-registries/8-service-apis#docs-internal-guid-f400fe68-7fff-bffb-3d00-0b067c81eb40
-  A Registration BB application makes a request to the Digital Registries BB API to create a new record
-  # TODO: merge create_mcts_record.feature into this feature and remove one file
+Feature: API endpoint allowing users to create a new record in the Digital Registries database.
+  Request endpoint: POST /data/{registryname}/{versionnumber}/create
 
   Background:
-    Given database with the valid schema has been set up
+    Given The user wants to create a new record in the Digital Registries database
 
-  Scenario: Successfully create new record
-    Send form data to Registration CREATE API of MCTS DB.
-    When I make a CREATE request with a valid payload
-    Then I receive a HTTP 200 response with the response information <MCTS ID>
-    And I can make a READ request for <MCTS ID> to retrieve this record
+  Scenario: The user successfully creates the record in the Digital Registries database
+    And The record does not exist in the database 
+    When The user triggers an action to create a new record in the database
+    And The request with a valid payload is sent
+    And The requested record does not exist in the database
+    Then The record has been created
+    And The user receives a success message
 
-  Scenario: Trying to create record that already exists
-    TODO: do we verify some kind of "duplicate" definition? (e.g. a citizen ID that should be unique across records)
-    Given I have made a successful CREATE request for a new record with <unique-record-id> before
-    When I make a CREATE request identical to the earlier one, with the same <unique-record-id>
-    Then ???
+  Scenario: The user is not able to create a record that already exists in the Digital Registries database
+    And The record already exists in the database 
+    When The user triggers an action to create a new record in the database
+    And The request with a valid payload is sent
+    And The requested record does exist in the database
+    Then The record has not been created
+    And The user receives an error message
 
-  Scenario: Trying to create new record in non-existing database
-    Given database <id> does not exist
-    When I make a CREATE request to /data/<id>/3.0/create
-    Then I receive a HTTP 400 response (TODO: what is the exact response here? seems missing from the OpenAPI spec so far)
+  Scenario: The user is not able to create a record in the database which not exist
+    And The database does not exists
+    When The user triggers an action to create a new record in the database
+    And The request with a valid payload is sent
+    And The database does not exists
+    Then The record has not been created
+    And The user receives an error message
+
+  Scenario: The user is not able to create a record in the Digital Registries database
+    And The record exists in the database 
+    When The user triggers an action to update a new record in the database
+    And The request with an invalid payload is sent
+    Then The user receives an error message
