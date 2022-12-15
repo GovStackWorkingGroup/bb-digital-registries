@@ -5,28 +5,24 @@ Feature: API endpoint allowing users to create or modify the Digital Registries 
     Given The user wants to create or modify the Digital Registries database schema
 
   Scenario: The user successfully creates the Digital Registries database schema
-    And The database schema does not exist in the database
+    Given The requested database schema does not exist in the database
     When The user triggers an action to create a database schema
     And The request with a valid payload is sent
-    And The record does not exist in the database
-    Then The new record is successfully created in the database
-    And The user receives a success message
+    Then Operation finishes successfully
 
   Scenario: The user successfully modifies the Digital Registries database schema
-    And The database schema exists in the database
+    Given The requested database schema exists in the database
     When The user triggers an action to create a database schema
     And The request with a valid payload is sent
-    And The record does exist in the database
-    Then The record is successfully updated in the database
-    And The user receives a success message
+    Then Operation finishes successfully
 
-  Scenario: The user is not able to create the Digital Registries database schema
-    And The database schema does not exist in the database
+  Scenario: The user is not able to modify the Digital Registries database schema because it doesn't exist
+    Given The requested database schema does not exist in the database
     When The user triggers an action to create a database schema
-    And The request with an invalid payload is sent
-    Then The user receives an error message
+    And The request with a valid payload is sent
+    Then Operation results in an error
 
   Scenario: The user is not able to modify the Digital Registries database schema
     When The user triggers an action to modify the already existing database schema
     And The request with an invalid payload is sent
-    Then The user receives an error message
+    Then Operation results in an error

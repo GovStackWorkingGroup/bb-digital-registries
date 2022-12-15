@@ -12,4 +12,4 @@ Feature: API endpoint allowing users to get information about Digital Registries
   Scenario: The user is not able to receive information about Digital Registries databases
     When The user triggers an action to display information about Digital Registries databases
     And The request with an invalid payload is sent
-    Then The user received an error message
+    Then Operation results in an error
