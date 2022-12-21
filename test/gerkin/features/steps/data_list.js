@@ -1,97 +1,92 @@
-const { spec, expect, stores } = require('pactum');
-const { When, Then, Given, After } = require('@cucumber/cucumber');
+const pactum = require('pactum');
+const { When, Then, Given, After, Before } = require('@cucumber/cucumber');
 
-const firstSearchedName = 'John';
-const secondSearchedName = 'Adrien';
+let searchedName;
+let specDataList = pactum.spec();
+
 const baseUrl = 'http://localhost:3333/data/registry1/version1';
 const header = {
   key: 'Information-Mediator-Client',
   value: 'INSTANCE/CLASS/MEMBER/SUBSYSTEM',
 };
 
-// scenario 1
-Given('The user wants to search for "John Helmut" in the database', () => {
-  return firstSearchedName;
+Before(() => {
+  specDataList = pactum.spec();
+});
+
+// Scenario: The user receives a list with all records including "John" in the Digital Registries database
+Given('The user wants to search for "John" in the database', () => {
+  return (searchedName = 'John');
 });
 
 Given('The searched value exists in several records in the database', () => {
   return 'Searched value does exist in the database';
 });
 
-When(
-  'The user triggers an action to search "John Helmut" in the database',
-  async () => {
-    await spec()
-      .get(`${baseUrl}1?filter=FirstName&search=${firstSearchedName}`)
-      .withHeaders(`${header.key}`, `${header.value}`)
-      .expectStatus(200);
-  }
-);
-
-When('The request with a valid payload is sent', () => {
-  return true;
+When('The user triggers an action to search "John" in the database', () => {
+  specDataList
+    .get(`${baseUrl}?filter=FirstName&search=${searchedName}`)
+    .withHeaders(`${header.key}`, `${header.value}`);
 });
 
 Then(
-  'The user receives a list with all records including "John Helmut"',
-  async () => {
-    await spec()
-      .get(`${baseUrl}?filter=FirstName&search=${firstSearchedName}`)
-      .withHeaders(`${header.key}`, `${header.value}`)
-      .expectStatus(200)
-      .expectJsonLike({
-        results: [
-          {
-            FirstName: 'John',
-          },
-        ],
-      });
+  'The user receives a list with all records including {string}',
+  async string => {
+    await specDataList.toss();
+    specDataList.response().should.have.status(200);
+    specDataList.response().should.have.jsonLike({
+      results: [
+        {
+          FirstName: string,
+        },
+      ],
+    });
   }
 );
 
-// scenario 2
+// Scenario: The user receives an empty list from the Digital Registries database
 Given('The user wants to search for "Adrien" in the database', () => {
-  return secondSearchedName;
+  return (searchedName = 'Adrien');
 });
 
 Given('The searched value does not exist in any record in the database', () => {
   return 'Searched value does not exist in the database';
 });
 
-When(
-  'The user triggers an action to search "Adrien" in the database',
-  async () => {
-    await spec()
-      .get(`${baseUrl}?filter=FirstName&search=${secondSearchedName}`)
-      .withHeaders(`${header.key}`, `${header.value}`)
-      .expectStatus(200);
-  }
-);
+When('The user triggers an action to search "Adrien" in the database', () => {
+  specDataList
+    .get(`${baseUrl}?filter=FirstName&search=${searchedName}`)
+    .withHeaders(`${header.key}`, `${header.value}`);
+});
 
 Then(
   'The user receives an empty list because there is no record including "Adrien" in the database',
   async () => {
-    await spec()
-      .get(`${baseUrl}?filter=FirstName&search=${secondSearchedName}`)
-      .withHeaders(`${header.key}`, `${header.value}`)
-      .expectStatus(200)
-      .expectJsonLike({
-        results: [],
-      });
+    await specDataList.toss();
+    specDataList.response().should.have.status(200);
+    specDataList.response().should.have.jsonLike({
+      results: [],
+    });
   }
 );
 
-// scenario 3
-When('The request with an invalid payload is sent', async () => {
-  await spec()
-    .get(`${baseUrl}?filter=FirstName&search=${firstSearchedName}`)
-    .expectStatus(400);
+// Scenario: The user is not able to search for the records in the Digital Registries database because on an invalid request
+Given('The user wants to search for "Anna" in the database', () => {
+  return (searchedName = 'Anna');
 });
 
-Then('Operation results in an error', () => {
-  return 'Error';
+When(
+  'The user triggers an action to search "Anna" in the database and sent an invalid request',
+  () => {
+    specDataList.get(`${baseUrl}?filter=FirstName&search=${searchedName}`);
+  }
+);
+
+Then('Operation results in an error', async () => {
+  await specDataList.toss();
+  specDataList.response().should.have.status(400);
 });
 
-After(scenario => {
-  console.log(scenario.result.status);
+After(() => {
+  specDataList.end();
 });

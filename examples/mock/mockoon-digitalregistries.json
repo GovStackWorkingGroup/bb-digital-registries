@@ -134,6 +134,45 @@
       "endpoint": "data/:registryname/:versionname",
       "responses": [
         {
+          "uuid": "b8e1aca2-95f7-4677-abe8-caee59953cc3",
+          "body": "{\n  \"count\": 0,\n  \"next\": null,\n  \"previous\": null,\n  \"results\": []\n}",
+          "latency": 0,
+          "statusCode": 200,
+          "label": "Returns an empty array. - Filter by regex",
+          "headers": [],
+          "bodyType": "INLINE",
+          "filePath": "",
+          "databucketID": "",
+          "sendFileAsBody": false,
+          "rules": [
+            {
+              "target": "header",
+              "modifier": "Information-Mediator-Client",
+              "value": "[a-zA-Z0-9_]+\\/[a-zA-Z0-9_]+\\/[a-zA-Z0-9_]+\\/[a-zA-Z0-9_]+",
+              "invert": false,
+              "operator": "regex"
+            },
+            {
+              "target": "query",
+              "modifier": "search",
+              "value": "Adrien",
+              "invert": false,
+              "operator": "equals"
+            },
+            {
+              "target": "query",
+              "modifier": "filter",
+              "value": "FirstName",
+              "invert": false,
+              "operator": "equals"
+            }
+          ],
+          "rulesOperator": "AND",
+          "disableTemplating": false,
+          "fallbackTo404": false,
+          "default": false
+        },
+        {
           "uuid": "5452e9b2-5e9c-4a44-b75e-c3554b8826bc",
           "body": "{\n  \"count\": 5,\n  \"next\": \"1\",\n  \"previous\": null,\n  \"results\":  [\n    {{# repeat 5 }}\n      {\n        \"id\": \"{{ faker 'datatype.uuid' }}\",\n        \"FirstName\": \"{{queryParam 'search'}}\",\n        \"LastName\": \"{{faker 'name.lastName'}}\",\n        \"BirthCertificateID\": \"RR-{{faker 'random.numeric' 10 }}\"\n      }\n    {{/ repeat }}\n  ]\n}",
           "latency": 0,
@@ -576,6 +615,45 @@
       "endpoint": "data/:registryname/:versionname/read",
       "responses": [
         {
+          "uuid": "b7239697-d182-486e-aafc-75bde27857b7",
+          "body": "{\n  \"content\": {\n    \"ID\": \"c473a46c-dd2d-42f5-aca3-f318d478d736\",\n    \"FirstName\": \"{{bodyRaw 'query.content.FirstName'}}\",\n    \"LastName\": \"Wintheiser\",\n    \"BirthCertificateID\": \"RR-4419523937\"\n  }\n}",
+          "latency": 0,
+          "statusCode": 200,
+          "label": "Searches records with one params for existing entry ",
+          "headers": [],
+          "bodyType": "INLINE",
+          "filePath": "",
+          "databucketID": "",
+          "sendFileAsBody": false,
+          "rules": [
+            {
+              "target": "header",
+              "modifier": "Information-Mediator-Client",
+              "value": "[a-zA-Z0-9_]+\\/[a-zA-Z0-9_]+\\/[a-zA-Z0-9_]+\\/[a-zA-Z0-9_]+",
+              "invert": false,
+              "operator": "regex"
+            },
+            {
+              "target": "body",
+              "modifier": "query.content",
+              "value": "",
+              "invert": true,
+              "operator": "null"
+            },
+            {
+              "target": "body",
+              "modifier": "query.content.FirstName",
+              "value": "John Benz",
+              "invert": false,
+              "operator": "equals"
+            }
+          ],
+          "rulesOperator": "AND",
+          "disableTemplating": false,
+          "fallbackTo404": false,
+          "default": false
+        },
+        {
           "uuid": "fdb35f8a-4c63-4bf0-8fcc-5d2e08f3d5e5",
           "body": "{\n  \"content\": {\n    \"ID\": \"{{bodyRaw 'query.content.ID'}}\",\n    \"FirstName\": \"{{bodyRaw 'query.content.FirstName'}}\",\n    \"LastName\": \"{{bodyRaw 'query.content.LastName'}}\",\n    \"BirthCertificateID\": \"{{bodyRaw 'query.content.BirthCertificateID'}}\"\n  }\n}",
           "latency": 0,
@@ -612,7 +690,7 @@
           "rulesOperator": "AND",
           "disableTemplating": false,
           "fallbackTo404": false,
-          "default": true
+          "default": false
         },
         {
           "uuid": "750c11f7-297d-4093-813b-9e4e4cfdfc1e",
@@ -643,7 +721,7 @@
             {
               "target": "body",
               "modifier": "query.content.FirstName",
-              "value": "John Helmut",
+              "value": "David Belt",
               "invert": true,
               "operator": "equals"
             }
@@ -651,7 +729,7 @@
           "rulesOperator": "AND",
           "disableTemplating": false,
           "fallbackTo404": false,
-          "default": false
+          "default": true
         },
         {
           "uuid": "bec306e5-b256-4842-9809-6e157bb81cbe",
