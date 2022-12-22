@@ -1,0 +1,14 @@
+{
+    "name": "mockoon-setup",
+    "scripts": {
+      "organize": "node api_organizer.js"
+    },
+    "devDependencies": {
+      "jest-cli": "^22.4.2",
+      "js-yaml": "4.1.0",
+      "fs": "0.0.1-security",
+      "path": "0.12.7",
+      "yaml": "2.1.3"
+    }
+}
+  
