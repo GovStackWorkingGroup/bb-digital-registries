@@ -72,7 +72,7 @@ function loadApiYAMLs() {
         extendObjectProperty(assembly.components, nextYAML.components, 'parameters');
         extendObjectProperty(assembly.components, nextYAML.components, 'securitySchemes');
       } else {
-        console.warn("Found non YAML file in api directory. It'll not used in API definiion. [%s]", file);
+        console.warn("Found non YAML file in api directory. It'll not used in API definition. [%s]", file);
       }
     });
     saveApiDefinition(assembly);
