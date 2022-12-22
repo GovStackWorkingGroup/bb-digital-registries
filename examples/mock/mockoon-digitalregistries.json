@@ -1,5 +1,5 @@
 {
-  "uuid": "26827aa0-9094-4f0a-be6b-9cf6762680b9",
+  "uuid": "a79a7b17-f1c7-42ce-93aa-dd08ac38af3f",
   "lastMigration": 24,
   "name": "DigitalRegistries",
   "endpointPrefix": "",
@@ -8,13 +8,13 @@
   "hostname": "0.0.0.0",
   "routes": [
     {
-      "uuid": "efe3d4be-5b7f-4b10-8ce4-25d3bae82f42",
+      "uuid": "9117f9cc-e23b-447a-bf26-186f944daf82",
       "documentation": "Allows a user to see who has read their personal data.",
       "method": "get",
       "endpoint": "data/MyPersonalDataUsage/1.0",
       "responses": [
         {
-          "uuid": "fc6c9cde-beb6-46de-9289-3e651770363c",
+          "uuid": "af65df73-2417-459e-8156-725979689d70",
           "body": "[\n  {\n    \"ID\": \"1234567\",\n    \"ReaderID\": \"{{queryParam 'userID'}}\",\n    \"ReaderInitials\": \"JD\",\n    \"ReaderInstitutionID\": \"EE70049837\",\n    \"ReaderInstitutionName\": \"East Hospital\",\n    \"ReaderApplicationName\": \"East Hospital healthcare back office\",\n    \"SearchDateTime\": \"2017-07-21T17:32:28Z\",\n    \"Refrences\": [\n      {\n        \"ReferenceID\": \"{{queryParam 'DatabaseID'}}\"\n      }\n    ]\n  }\n]",
           "latency": 0,
           "statusCode": 200,
@@ -53,7 +53,7 @@
           "default": true
         },
         {
-          "uuid": "6fbe0633-8014-4207-b22e-3fa1f180f13e",
+          "uuid": "ae60cc46-d24e-49c4-a01f-5142edc4274d",
           "body": "\"userID or DatabaseID not provided.\"",
           "latency": 0,
           "statusCode": 400,
@@ -92,7 +92,7 @@
           "default": false
         },
         {
-          "uuid": "0098dc7d-0515-4d45-af53-ee3f7b078d01",
+          "uuid": "9d9bde34-2396-4bb0-a262-d9db32627d0d",
           "body": "\"userID or DatabaseID not found\"",
           "latency": 0,
           "statusCode": 404,
@@ -128,13 +128,91 @@
       "responseMode": null
     },
     {
-      "uuid": "95157d57-d146-4d3b-ae8c-666550a21139",
+      "uuid": "e60d8cd6-c4d4-499a-b2fd-dc021f31e196",
       "documentation": "Searches (Regex supported) and returns multiple records as an array-list.",
       "method": "get",
       "endpoint": "data/:registryname/:versionname",
       "responses": [
         {
-          "uuid": "14d5e633-c157-4917-9002-e1651c359e33",
+          "uuid": "b8e1aca2-95f7-4677-abe8-caee59953cc3",
+          "body": "{\n  \"count\": 0,\n  \"next\": null,\n  \"previous\": null,\n  \"results\": []\n}",
+          "latency": 0,
+          "statusCode": 200,
+          "label": "Returns an empty array. - Filter by regex",
+          "headers": [],
+          "bodyType": "INLINE",
+          "filePath": "",
+          "databucketID": "",
+          "sendFileAsBody": false,
+          "rules": [
+            {
+              "target": "header",
+              "modifier": "Information-Mediator-Client",
+              "value": "[a-zA-Z0-9_]+\\/[a-zA-Z0-9_]+\\/[a-zA-Z0-9_]+\\/[a-zA-Z0-9_]+",
+              "invert": false,
+              "operator": "regex"
+            },
+            {
+              "target": "query",
+              "modifier": "search",
+              "value": "Adrien",
+              "invert": false,
+              "operator": "equals"
+            },
+            {
+              "target": "query",
+              "modifier": "filter",
+              "value": "FirstName",
+              "invert": false,
+              "operator": "equals"
+            }
+          ],
+          "rulesOperator": "AND",
+          "disableTemplating": false,
+          "fallbackTo404": false,
+          "default": false
+        },
+        {
+          "uuid": "5452e9b2-5e9c-4a44-b75e-c3554b8826bc",
+          "body": "{\n  \"count\": 5,\n  \"next\": \"1\",\n  \"previous\": null,\n  \"results\":  [\n    {{# repeat 5 }}\n      {\n        \"id\": \"{{ faker 'datatype.uuid' }}\",\n        \"FirstName\": \"{{queryParam 'search'}}\",\n        \"LastName\": \"{{faker 'name.lastName'}}\",\n        \"BirthCertificateID\": \"RR-{{faker 'random.numeric' 10 }}\"\n      }\n    {{/ repeat }}\n  ]\n}",
+          "latency": 0,
+          "statusCode": 200,
+          "label": "Returns multiple records as an array-list. - Filter by regex",
+          "headers": [],
+          "bodyType": "INLINE",
+          "filePath": "",
+          "databucketID": "",
+          "sendFileAsBody": false,
+          "rules": [
+            {
+              "target": "header",
+              "modifier": "Information-Mediator-Client",
+              "value": "[a-zA-Z0-9_]+\\/[a-zA-Z0-9_]+\\/[a-zA-Z0-9_]+\\/[a-zA-Z0-9_]+",
+              "invert": false,
+              "operator": "regex"
+            },
+            {
+              "target": "query",
+              "modifier": "search",
+              "value": "john",
+              "invert": true,
+              "operator": "null"
+            },
+            {
+              "target": "query",
+              "modifier": "filter",
+              "value": "FirstName",
+              "invert": false,
+              "operator": "equals"
+            }
+          ],
+          "rulesOperator": "AND",
+          "disableTemplating": false,
+          "fallbackTo404": false,
+          "default": false
+        },
+        {
+          "uuid": "558cf138-169a-4da3-aef7-60ef71b1f29f",
           "body": "{\n  \"count\": 10,\n  \"next\": \"1\",\n  \"previous\": null,\n  \"results\":  [\n    {{# repeat 10 }}\n      {\n        \"id\": \"{{ faker 'datatype.uuid' }}\",\n        \"FirstName\": \"{{faker 'name.firstName'}}\",\n        \"LastName\": \"{{faker 'name.lastName'}}\",\n        \"BirthCertificateID\": \"RR-{{faker 'random.numeric' 10 }}\"\n      }\n    {{/ repeat }}\n  ]\n}",
           "latency": 0,
           "statusCode": 200,
@@ -159,46 +237,7 @@
           "default": true
         },
         {
-          "uuid": "d42d1dc7-cc2f-4647-836a-d9cc479c55ce",
-          "body": "{\n  \"count\": 5,\n  \"next\": \"1\",\n  \"previous\": null,\n  \"results\":  [\n    {{# repeat 5 }}\n      {\n        \"id\": \"{{ faker 'datatype.uuid' }}\",\n        \"FirstName\": \"John Helmut\",\n        \"LastName\": \"{{faker 'name.lastName'}}\",\n        \"BirthCertificateID\": \"RR-{{faker 'random.numeric' 10 }}\"\n      }\n    {{/ repeat }}\n  ]\n}",
-          "latency": 0,
-          "statusCode": 200,
-          "label": "Returns multiple records as an array-list. - Filter by regex",
-          "headers": [],
-          "bodyType": "INLINE",
-          "filePath": "",
-          "databucketID": "",
-          "sendFileAsBody": false,
-          "rules": [
-            {
-              "target": "header",
-              "modifier": "Information-Mediator-Client",
-              "value": "[a-zA-Z0-9_]+\\/[a-zA-Z0-9_]+\\/[a-zA-Z0-9_]+\\/[a-zA-Z0-9_]+",
-              "invert": false,
-              "operator": "regex"
-            },
-            {
-              "target": "query",
-              "modifier": "search",
-              "value": "john",
-              "invert": false,
-              "operator": "equals"
-            },
-            {
-              "target": "query",
-              "modifier": "filter",
-              "value": "FirstName",
-              "invert": false,
-              "operator": "equals"
-            }
-          ],
-          "rulesOperator": "AND",
-          "disableTemplating": false,
-          "fallbackTo404": false,
-          "default": false
-        },
-        {
-          "uuid": "78fd46b3-89fc-4ee0-9ad3-b3a00d2c2c73",
+          "uuid": "1901b0df-c7a3-4185-8951-f97022f42653",
           "body": "{\n  \"count\": 5,\n  \"next\": \"1\",\n  \"previous\": null,\n  \"results\":  [\n    {{# repeat 5 }}\n      {\n        \"id\": \"{{ faker 'datatype.uuid' }}\",\n        \"FirstName\": \"John\",\n        \"LastName\": \"{{faker 'name.lastName'}}\",\n        \"BirthCertificateID\": \"RR-{{faker 'random.numeric' 10 }}\"\n      }\n    {{/ repeat }}\n  ]\n}",
           "latency": 0,
           "statusCode": 200,
@@ -258,7 +297,7 @@
           "default": false
         },
         {
-          "uuid": "6849fe6c-4731-4b62-9def-f16db900f8e5",
+          "uuid": "186bdd10-f1a9-4dd3-9016-4fbe1ae1cd9a",
           "body": "{\n  \"Invalid format of Information-Mediator-Client, should match INSTANCE/CLASS/MEMBER/SUBSYSTEM\"\n}",
           "latency": 0,
           "statusCode": 400,
@@ -283,7 +322,7 @@
           "default": false
         },
         {
-          "uuid": "2edd01a6-fa0b-455c-9c59-f48f85d7f6c8",
+          "uuid": "d857c770-774d-4050-96ad-e15fcb879479",
           "body": "{\"Information-Mediator-Client required\"}",
           "latency": 0,
           "statusCode": 400,
@@ -312,13 +351,13 @@
       "responseMode": null
     },
     {
-      "uuid": "1d46ed91-a9ba-4f46-aa8b-626f7c4d1532",
+      "uuid": "429efa1e-6926-44d7-997d-8a17cd2ec520",
       "documentation": "Creates a new record in the registry database.",
       "method": "post",
       "endpoint": "data/:registryname/:versionname/create",
       "responses": [
         {
-          "uuid": "21ff3e7f-da22-4347-9992-9bdd7dd6b525",
+          "uuid": "7919071c-dcbe-459a-9a87-8e44583833db",
           "body": "{\n  \"content\": {\n    \"ID\": \"{{bodyRaw 'write.content.ID'}}\",\n    \"FirstName\": \"{{bodyRaw 'write.content.FirstName'}}\",\n    \"LastName\": \"{{bodyRaw 'write.content.LastName'}}\",\n    \"BirthCertificateID\": \"{{bodyRaw 'write.content.BirthCertificateID'}}\"\n  }\n}",
           "latency": 0,
           "statusCode": 200,
@@ -350,7 +389,7 @@
           "default": true
         },
         {
-          "uuid": "9b662c83-56f7-4c97-939c-69ae9bee8f90",
+          "uuid": "210c58c0-a928-4d77-b316-679230360cf3",
           "body": "{\n  \"Invalid payload, write.content not provided\"\n}",
           "latency": 0,
           "statusCode": 400,
@@ -382,7 +421,7 @@
           "default": false
         },
         {
-          "uuid": "79a9f102-c967-4a9e-8316-b67a5da9d4b1",
+          "uuid": "773538a1-5f46-4a42-b931-a110f445c1c4",
           "body": "{\n  \"Invalid payload, write.content not provided\"\n}",
           "latency": 0,
           "statusCode": 400,
@@ -418,13 +457,13 @@
       "responseMode": null
     },
     {
-      "uuid": "92570999-57cb-420f-acd5-25d9fc30e7e2",
+      "uuid": "4c9bd964-ea0f-41de-b06e-6425f29aee01",
       "documentation": "Searches records based on input parameters and returns boolean answer (true/false).",
       "method": "post",
       "endpoint": "data/:registryname/:versionname/exists",
       "responses": [
         {
-          "uuid": "87f5d71a-aeb5-4f32-bcfd-11a26bff1aeb",
+          "uuid": "d89a16d0-7059-42bb-8608-23de618cfcb7",
           "body": "{\n  \"answer\": {\n    \"status\": true,\n    \"message\": \"Object found from database\"\n  }\n}",
           "latency": 0,
           "statusCode": 200,
@@ -463,7 +502,7 @@
           "default": true
         },
         {
-          "uuid": "19f64261-ce57-42f9-8379-0eb0eb78184e",
+          "uuid": "7b3d9b31-bc29-4d0a-ad56-09b17e213151",
           "body": "{\n  \"answer\": {\n    \"status\": false,\n    \"message\": \"Object not found from database\"\n  }\n}",
           "latency": 0,
           "statusCode": 200,
@@ -502,7 +541,7 @@
           "default": false
         },
         {
-          "uuid": "8fd170d8-e5c1-4720-a107-36166c421b78",
+          "uuid": "22459751-7025-4ef7-b659-bf5d2a77f0a1",
           "body": "{\n  \"Invalid payload, query.content not provided\"\n}",
           "latency": 0,
           "statusCode": 400,
@@ -534,7 +573,7 @@
           "default": false
         },
         {
-          "uuid": "06443f14-ed52-415c-b493-9b43dae25cf4",
+          "uuid": "3863d23a-43e2-40f9-a968-bd1e8be7540d",
           "body": "{\n  \"Invalid payload, query.content not provided\"\n}",
           "latency": 0,
           "statusCode": 400,
@@ -570,13 +609,52 @@
       "responseMode": null
     },
     {
-      "uuid": "a389b1e4-b982-4f4c-8361-82c77f1fe519",
+      "uuid": "d302ad25-f6c3-4cfe-bb8c-c0d2c6cd6e72",
       "documentation": "Searches and returns one record.",
       "method": "post",
       "endpoint": "data/:registryname/:versionname/read",
       "responses": [
         {
-          "uuid": "7cdbe51e-27f7-49ef-b590-edec16c75edd",
+          "uuid": "b7239697-d182-486e-aafc-75bde27857b7",
+          "body": "{\n  \"content\": {\n    \"ID\": \"c473a46c-dd2d-42f5-aca3-f318d478d736\",\n    \"FirstName\": \"{{bodyRaw 'query.content.FirstName'}}\",\n    \"LastName\": \"Wintheiser\",\n    \"BirthCertificateID\": \"RR-4419523937\"\n  }\n}",
+          "latency": 0,
+          "statusCode": 200,
+          "label": "Searches records with one params for existing entry ",
+          "headers": [],
+          "bodyType": "INLINE",
+          "filePath": "",
+          "databucketID": "",
+          "sendFileAsBody": false,
+          "rules": [
+            {
+              "target": "header",
+              "modifier": "Information-Mediator-Client",
+              "value": "[a-zA-Z0-9_]+\\/[a-zA-Z0-9_]+\\/[a-zA-Z0-9_]+\\/[a-zA-Z0-9_]+",
+              "invert": false,
+              "operator": "regex"
+            },
+            {
+              "target": "body",
+              "modifier": "query.content",
+              "value": "",
+              "invert": true,
+              "operator": "null"
+            },
+            {
+              "target": "body",
+              "modifier": "query.content.FirstName",
+              "value": "John Benz",
+              "invert": false,
+              "operator": "equals"
+            }
+          ],
+          "rulesOperator": "AND",
+          "disableTemplating": false,
+          "fallbackTo404": false,
+          "default": false
+        },
+        {
+          "uuid": "fdb35f8a-4c63-4bf0-8fcc-5d2e08f3d5e5",
           "body": "{\n  \"content\": {\n    \"ID\": \"{{bodyRaw 'query.content.ID'}}\",\n    \"FirstName\": \"{{bodyRaw 'query.content.FirstName'}}\",\n    \"LastName\": \"{{bodyRaw 'query.content.LastName'}}\",\n    \"BirthCertificateID\": \"{{bodyRaw 'query.content.BirthCertificateID'}}\"\n  }\n}",
           "latency": 0,
           "statusCode": 200,
@@ -612,10 +690,10 @@
           "rulesOperator": "AND",
           "disableTemplating": false,
           "fallbackTo404": false,
-          "default": true
+          "default": false
         },
         {
-          "uuid": "7b110e93-a767-4474-87f1-9975c4293055",
+          "uuid": "750c11f7-297d-4093-813b-9e4e4cfdfc1e",
           "body": "{\n  \"Not found.\"\n}",
           "latency": 0,
           "statusCode": 404,
@@ -643,7 +721,7 @@
             {
               "target": "body",
               "modifier": "query.content.FirstName",
-              "value": "John Helmut",
+              "value": "David Belt",
               "invert": true,
               "operator": "equals"
             }
@@ -651,10 +729,10 @@
           "rulesOperator": "AND",
           "disableTemplating": false,
           "fallbackTo404": false,
-          "default": false
+          "default": true
         },
         {
-          "uuid": "74a56f78-92ce-47c1-890b-774a5fa81ef7",
+          "uuid": "bec306e5-b256-4842-9809-6e157bb81cbe",
           "body": "{\n  \"Invalid payload, query.content not provided\"\n}",
           "latency": 0,
           "statusCode": 400,
@@ -686,7 +764,7 @@
           "default": false
         },
         {
-          "uuid": "990cef4b-52d1-4007-b274-0e4fe153d4c1",
+          "uuid": "a4acb398-41a2-4fac-9e68-3fdf79a6e8d4",
           "body": "{\n  \"Invalid payload, query.content not provided\"\n}",
           "latency": 0,
           "statusCode": 400,
@@ -722,13 +800,13 @@
       "responseMode": null
     },
     {
-      "uuid": "da92a12a-f699-4d13-a839-5efc116b9888",
+      "uuid": "f4e32199-7547-4f1c-a26e-f7f05858df60",
       "documentation": "Updates one existing record in the registry database.",
       "method": "put",
       "endpoint": "data/:registryname/:versionname/update",
       "responses": [
         {
-          "uuid": "e71a9805-0ed3-49a5-8298-e09eeed8f36b",
+          "uuid": "d96dc4ea-e98b-4fbf-a460-8dc2327c98b9",
           "body": "",
           "latency": 0,
           "statusCode": 200,
@@ -781,7 +859,7 @@
           "default": true
         },
         {
-          "uuid": "410cf357-fbc1-4c27-8395-f33a601d33b5",
+          "uuid": "eff236bb-eb54-42c7-9166-7f1d09ffcf12",
           "body": "{\n  \"Record matching query not found.\"\n}",
           "latency": 0,
           "statusCode": 404,
@@ -834,7 +912,7 @@
           "default": false
         },
         {
-          "uuid": "0298ba79-16d1-4e60-9dc7-609e07380fa6",
+          "uuid": "22a95fee-566d-420c-8844-726968eabdd3",
           "body": "{\n  \"Query not provided.\"\n}",
           "latency": 0,
           "statusCode": 400,
@@ -866,7 +944,7 @@
           "default": false
         },
         {
-          "uuid": "3102a7b9-563a-454a-a7a4-3e245a2be301",
+          "uuid": "91e2d050-2a7e-4a98-90a3-cbb33ad1f07b",
           "body": "{\n  \"Query not provided.\"\n}",
           "latency": 0,
           "statusCode": 400,
@@ -902,13 +980,13 @@
       "responseMode": null
     },
     {
-      "uuid": "c403947f-b940-4729-98b7-db5a31526557",
+      "uuid": "cc6141fc-6082-4519-b1e1-9a7601a3817b",
       "documentation": "Updates multiple records in the registry database that match the input query.",
       "method": "put",
       "endpoint": "data/:registryname/:versionname/update-entries",
       "responses": [
         {
-          "uuid": "b3e10204-767a-4429-8eda-e19bcca13fc7",
+          "uuid": "8a7ae3d7-c45c-4717-94cd-3f9cde06f388",
           "body": "",
           "latency": 0,
           "statusCode": 200,
@@ -961,7 +1039,7 @@
           "default": true
         },
         {
-          "uuid": "aeb77d6f-3069-4ead-a23b-3c8f105fc85b",
+          "uuid": "25875558-1ce3-4db0-9700-5c9a470aa4c6",
           "body": "{\n  \"Record matching query not found.\"\n}",
           "latency": 0,
           "statusCode": 404,
@@ -1014,7 +1092,7 @@
           "default": false
         },
         {
-          "uuid": "b75eb394-53e2-4550-813c-2a839a43c6c0",
+          "uuid": "de95d1a8-85ec-4515-af4c-d416891e430d",
           "body": "{\n  \"Query not provided.\"\n}",
           "latency": 0,
           "statusCode": 400,
@@ -1046,7 +1124,7 @@
           "default": false
         },
         {
-          "uuid": "24cd2cbd-4c4e-4e6a-ab79-1d1fa3b7cc55",
+          "uuid": "d83ba844-b3d9-4fdc-9e2c-f1fc60efdabd",
           "body": "{\n  \"Query not provided.\"\n}",
           "latency": 0,
           "statusCode": 400,
@@ -1082,13 +1160,13 @@
       "responseMode": null
     },
     {
-      "uuid": "326d9c6d-1c07-4ef2-a51b-ca60dd45c2fe",
+      "uuid": "2d835466-f4ac-4f5a-bd1c-b7d67f4ab615",
       "documentation": "API updates existing record if matching with input parameters is successful. If record is not found the API will create a new record.",
       "method": "post",
       "endpoint": "data/:registryname/:versionname/update-or-create",
       "responses": [
         {
-          "uuid": "e9a23cca-7c5e-4ca6-a11b-361af7ccece8",
+          "uuid": "b2045883-ac22-49cf-954e-f0722afb5323",
           "body": "{\n  \"content\": {\n    \"ID\": \"{{bodyRaw 'write.content.ID'}}\",\n    \"FirstName\": \"{{bodyRaw 'write.content.FirstName'}}\",\n    \"LastName\": \"{{bodyRaw 'write.content.LastName'}}\",\n    \"BirthCertificateID\": \"{{bodyRaw 'write.content.BirthCertificateID'}}\"\n  }\n}",
           "latency": 0,
           "statusCode": 200,
@@ -1141,7 +1219,7 @@
           "default": true
         },
         {
-          "uuid": "d9cae204-3f66-4a2d-9ac4-c4c9b48fcabd",
+          "uuid": "ba8a0781-65c0-46af-a716-5652e06edc3d",
           "body": "{\n  \"content\": {\n    \"ID\": \"{{bodyRaw 'write.content.ID'}}\",\n    \"FirstName\": \"{{bodyRaw 'write.content.FirstName'}}\",\n    \"LastName\": \"{{bodyRaw 'write.content.LastName'}}\",\n    \"BirthCertificateID\": \"{{bodyRaw 'write.content.BirthCertificateID'}}\"\n  }\n}",
           "latency": 0,
           "statusCode": 200,
@@ -1194,7 +1272,7 @@
           "default": false
         },
         {
-          "uuid": "70cb22ab-3974-46aa-bbcf-c042cf1f1ebf",
+          "uuid": "13093f83-4e0e-4331-9a06-261262014c8b",
           "body": "{\n  \"Record matching query not found.\"\n}",
           "latency": 0,
           "statusCode": 404,
@@ -1247,7 +1325,7 @@
           "default": false
         },
         {
-          "uuid": "0fea1d55-f417-468f-82ed-d045e3733672",
+          "uuid": "3e3a30b0-bbd5-41f5-92f6-217713557a4d",
           "body": "{\n  \"Query not provided.\"\n}",
           "latency": 0,
           "statusCode": 400,
@@ -1279,7 +1357,7 @@
           "default": false
         },
         {
-          "uuid": "5f16b721-221d-4b9f-9e46-fa9e6bd1c4f6",
+          "uuid": "1427bf02-7822-4115-8ec6-1f533d938c37",
           "body": "{\n  \"Query not provided.\"\n}",
           "latency": 0,
           "statusCode": 400,
@@ -1315,13 +1393,13 @@
       "responseMode": null
     },
     {
-      "uuid": "82475806-7749-4678-95ee-f08eaab30075",
+      "uuid": "ecffa065-a196-46ef-94bc-92094253a46e",
       "documentation": "Delete record.",
       "method": "delete",
       "endpoint": "data/:registryname/:versionname/:ID/delete",
       "responses": [
         {
-          "uuid": "25b405aa-200e-4a4a-8acf-50f6bae0a6a7",
+          "uuid": "23aecb69-312e-4abc-8bc0-1d4c1d8f6d33",
           "body": "",
           "latency": 0,
           "statusCode": 204,
@@ -1353,7 +1431,7 @@
           "default": true
         },
         {
-          "uuid": "9cc2fd57-455a-4550-b52c-79575cc28a08",
+          "uuid": "c421fe9a-38fe-4ad7-b245-6eef2bdeabe1",
           "body": "",
           "latency": 0,
           "statusCode": 400,
@@ -1389,13 +1467,13 @@
       "responseMode": null
     },
     {
-      "uuid": "43d1cf09-ab79-4aee-9432-562f221a8b12",
+      "uuid": "8d90e854-eca4-4f41-b1da-a61826c10997",
       "documentation": "Searches and returns one record’s one field value.",
       "method": "get",
       "endpoint": "data/:registryname/:versionname/:uuid/read-value/:field.:ext",
       "responses": [
         {
-          "uuid": "7714e3f8-609d-46be-8ccc-59957547c527",
+          "uuid": "1118011c-8273-4c2f-9f3c-6cf424f855e4",
           "body": "\"John Helmut\"",
           "latency": 0,
           "statusCode": 200,
@@ -1441,7 +1519,7 @@
           "default": true
         },
         {
-          "uuid": "d44ef995-25d0-4fc2-948b-02a34a48d2a2",
+          "uuid": "da7554db-9609-4ead-a900-e9a2b69b03ad",
           "body": "\"Invalid uuid format. Expected uuid4, validated against `[a-f0-9]{8}-?[a-f0-9]{4}-?4[a-f0-9]{3}-?[89ab][a-f0-9]{3}-?[a-f0-9]{12}` regex\"",
           "latency": 0,
           "statusCode": 400,
@@ -1473,7 +1551,7 @@
           "default": false
         },
         {
-          "uuid": "a4735649-3d38-41a3-9512-2acea37790c9",
+          "uuid": "cc838aed-381f-4dff-8591-bb494c2ee50d",
           "body": "\"Invalid `field` URL param format (expected matching regex [a-zA-Z]+), provided: {{urlParam 'field'}}\"",
           "latency": 0,
           "statusCode": 400,
@@ -1512,7 +1590,7 @@
           "default": false
         },
         {
-          "uuid": "e2cd30e4-2cee-4590-912d-4048044c7fac",
+          "uuid": "9830d04a-ffb9-41d3-8cbf-a49b37a6185c",
           "body": "\"Invalid `ext` URL param format (expected matching regex [a-zA-Z]+), provided: {{urlParam 'ext'}}\"",
           "latency": 0,
           "statusCode": 400,
@@ -1562,13 +1640,13 @@
       "responseMode": null
     },
     {
-      "uuid": "d38592d2-1ab7-44bc-a969-8316535172d2",
+      "uuid": "f4f2dd3c-888e-4e7a-873b-b3c2cb9a2246",
       "documentation": "API endpoint that allows user to get database information with schema",
       "method": "get",
       "endpoint": "database/:id",
       "responses": [
         {
-          "uuid": "3fadb5c0-6984-491f-961b-3d7034e45efc",
+          "uuid": "8b4b5cf8-a879-4d4e-b9ad-ddbd95a43f90",
           "body": "{\n  \"id\": {{queryParamRaw 'id'}},\n  \"version\": \"2.7\",\n  \"name\": \"MCTS\",\n  \"description\": \"Database holding information about MCTS objects\",\n  \"institution\": \"Ministry of Social Affairs\",\n  \"number_format\": \"{code}{indexNoByCode}\",\n  \"schema\": {\n    \"type\": \"object\",\n    \"properties\": {\n      \"ID\": {\n        \"type\": \"string\",\n        \"triggers\": [\n          {\n            \"conditions\": [\n              {\n                \"logic\": \"==\",\n                \"value\": \"\",\n                \"gate\": \"&&\"\n              }\n            ],\n            \"actions\": [\n              {\n                \"type\": \"set-value\",\n                \"value\": \"MCTS{indexNoByCode}\",\n                \"field_id\": 1\n              }\n            ]\n          }\n        ],\n        \"primaryKey\": true,\n        \"readOnly\": true,\n        \"description\": \"Registration ID\",\n        \"example\": \"MCTS31\",\n        \"id\": 1\n      },\n      \"Child\": {\n        \"type\": \"string\",\n        \"properties\": {\n          \"ID\": {\n            \"type\": \"string\",\n            \"description\": \"Child ID\",\n            \"example\": \"ID2\",\n            \"id\": 13\n          }\n        }\n      }\n    },\n    \"incrementIndex\": 20,\n    \"required\": [\n      \"ID\"\n    ]\n  },\n  \"schema_tags\": [\n    {\n      \"name\": \"\",\n      \"path\": \"/Child/Citizenship\",\n      \"is_fulltext\": true\n    }\n  ],\n  \"schema_flags\": [\n    {\n      \"name\": \"mandatory\",\n      \"path\": \"/ID\"\n    }\n  ],\n  \"fields_uniques\": [\n    [\n      \"\"\n    ]\n  ],\n  \"is_draft\": {{faker 'datatype.boolean'}},\n  \"is_disabled\": {{faker 'datatype.boolean'}},\n  \"is_archived\": {{faker 'datatype.boolean'}},\n  \"modified_at\": \"2021-10-03T08:35:01.775915Z\",\n  \"by_user_name\": \"ingmar.dev\",\n  \"by_user_auth_id\": 1,\n  \"by_on_behalf_of_user_auth_id\": {{faker 'datatype.number'}},\n  \"by_on_behalf_of_user_name\": \"\",\n  \"generic_services\": [\n    {\n      \"service_id\": 1,\n      \"name\": \"data-create\",\n      \"is_visible\": true,\n      \"used_count\": {{faker 'datatype.number'}}\n    }\n  ],\n  \"data_index_increment\": {{faker 'datatype.number'}},\n  \"has_logo\": {{faker 'datatype.boolean'}}\n}",
           "latency": 0,
           "statusCode": 200,
@@ -1605,7 +1683,7 @@
           "default": true
         },
         {
-          "uuid": "9d04d925-ee51-44bb-8704-9fdd6ead70b2",
+          "uuid": "0a74ff82-d966-4ab8-bb68-c0bc070b75cf",
           "body": "\"Query Param id not provided.\"",
           "latency": 0,
           "statusCode": 400,
@@ -1641,13 +1719,13 @@
       "responseMode": null
     },
     {
-      "uuid": "b944052b-2627-4527-9109-d120888fb946",
+      "uuid": "73a21e7f-cab7-461a-91ae-0206f3c7fb8f",
       "documentation": "API endpoint that allows user to get information about all databases",
       "method": "get",
       "endpoint": "databases",
       "responses": [
         {
-          "uuid": "ba5e908b-a99b-4ae9-9f4c-8e629655ac66",
+          "uuid": "eb0263ec-5c73-44c4-960a-23d613ac481d",
           "body": "{\n  \"id\": 85,\n  \"name\": \"Mother and Child\",\n  \"code\": \"MCTS\",\n  \"databases\": [\n    {\n      \"id\": 353,\n      \"version\": \"2.7\",\n      \"name\": \"MCTS\",\n      \"description\": \"Database holding information about MCTS objects\",\n      \"institution\": \"Ministry of Social Affairs\",\n      \"number_format\": \"{code}{indexNoByCode}\",\n      \"schema\": {\n        \"type\": \"object\",\n        \"properties\": {\n          \"ID\": {\n            \"type\": \"string\",\n            \"triggers\": [\n              {\n                \"conditions\": [\n                  {\n                    \"logic\": \"==\",\n                    \"value\": \"\",\n                    \"gate\": \"&&\"\n                  }\n                ],\n                \"actions\": [\n                  {\n                    \"type\": \"set-value\",\n                    \"value\": \"MCTS{indexNoByCode}\",\n                    \"field_id\": 1\n                  }\n                ]\n              }\n            ],\n            \"primaryKey\": true,\n            \"readOnly\": true,\n            \"description\": \"Registration ID\",\n            \"example\": \"MCTS31\",\n            \"id\": 1\n          },\n          \"Child\": {\n            \"type\": \"string\",\n            \"properties\": {\n              \"ID\": {\n                \"type\": \"string\",\n                \"description\": \"Child ID\",\n                \"example\": \"ID2\",\n                \"id\": 13\n              }\n            }\n          }\n        },\n        \"incrementIndex\": 20,\n        \"required\": [\n          \"ID\"\n        ]\n      },\n      \"schema_tags\": [\n        {\n          \"name\": \"\",\n          \"path\": \"/Child/Citizenship\",\n          \"is_fulltext\": true\n        }\n      ],\n      \"schema_flags\": [\n        {\n          \"name\": \"mandatory\",\n          \"path\": \"/ID\"\n        }\n      ],\n      \"fields_uniques\": [\n        [\n          \"\"\n        ]\n      ],\n      \"is_draft\": {{faker 'datatype.boolean'}},\n      \"is_disabled\": {{faker 'datatype.boolean'}},\n      \"is_archived\": {{faker 'datatype.boolean'}},\n      \"modified_at\": \"2021-10-03T08:35:01.775915Z\",\n      \"by_user_name\": \"ingmar.dev\",\n      \"by_user_auth_id\": 1,\n      \"by_on_behalf_of_user_auth_id\": {{faker 'datatype.number'}},\n      \"by_on_behalf_of_user_name\": \"\",\n      \"generic_services\": [\n        {\n          \"service_id\": 1,\n          \"name\": \"data-create\",\n          \"is_visible\": true,\n          \"used_count\": {{faker 'datatype.number'}}\n        }\n      ],\n      \"data_index_increment\": {{faker 'datatype.number'}},\n      \"has_logo\": {{faker 'datatype.boolean'}}\n    }\n  ],\n  \"group_id\": 10,\n  \"order\": 76,\n  \"data_index_increment\": 3\n}",
           "latency": 0,
           "statusCode": 200,
@@ -1677,7 +1755,7 @@
           "default": true
         },
         {
-          "uuid": "05ff618d-99c2-48db-9e3e-5554a211eae3",
+          "uuid": "dc939c44-739c-4299-a804-5d89d7d1cbdb",
           "body": "\"Query Param id not provided.\"",
           "latency": 0,
           "statusCode": 400,
@@ -1713,13 +1791,13 @@
       "responseMode": null
     },
     {
-      "uuid": "03760bcc-ce91-4c78-a463-0b18885cf208",
+      "uuid": "d02ecd5c-360f-4de6-a172-109a352f8191",
       "documentation": "API endpoint that allows user to delete database schema",
       "method": "delete",
       "endpoint": "database/:id",
       "responses": [
         {
-          "uuid": "b5acca6f-21c1-4363-807e-f712c9d089bf",
+          "uuid": "c97231c3-1b4d-4729-97cc-9c2b3ba89398",
           "body": "\"Success\"",
           "latency": 0,
           "statusCode": 200,
@@ -1756,7 +1834,7 @@
           "default": true
         },
         {
-          "uuid": "cb17918a-cf0d-4974-bd1f-5c644eb88da9",
+          "uuid": "956e2d0f-3f4f-43f1-8563-ab1a723e4c13",
           "body": "\"Failure\"",
           "latency": 0,
           "statusCode": 400,
@@ -1797,13 +1875,13 @@
       "responseMode": null
     },
     {
-      "uuid": "ddcea13a-2ebf-4aeb-bf17-6cab532139ac",
+      "uuid": "5b0282d8-3099-4852-808e-deb0dea6be71",
       "documentation": "API endpoint that allows user to create or modify database schema",
       "method": "post",
       "endpoint": "database/modify",
       "responses": [
         {
-          "uuid": "abdabb7c-4859-416c-8161-ab72e231b93f",
+          "uuid": "83f9b890-7ad4-4b57-a81e-735578e80cad",
           "body": "{\n  \"type\": \"object\",\n  \"properties\": {\n    \"ID\": {\n      \"type\": \"string\",\n      \"triggers\": [\n        {\n          \"conditions\": [\n            {\n              \"logic\": \"==\",\n              \"value\": \"\",\n              \"gate\": \"&&\"\n            }\n          ],\n          \"actions\": [\n            {\n              \"type\": \"set-value\",\n              \"value\": \"MCTS{indexNoByCode}\",\n              \"field_id\": 1\n            }\n          ]\n        }\n      ],\n      \"primaryKey\": true,\n      \"readOnly\": true,\n      \"description\": \"Registration ID\",\n      \"example\": \"MCTS31\",\n      \"id\": 1\n    },\n    \"Child\": {\n      \"type\": \"string\",\n      \"properties\": {\n        \"ID\": {\n          \"type\": \"string\",\n          \"description\": \"Child ID\",\n          \"example\": \"ID2\",\n          \"id\": 13\n        }\n      }\n    }\n  },\n  \"incrementIndex\": 20,\n  \"required\": [\n    \"ID\"\n  ]\n}",
           "latency": 0,
           "statusCode": 200,
@@ -1854,7 +1932,7 @@
           "default": true
         },
         {
-          "uuid": "afb216ba-3452-40d8-bf4d-a7c7c7bdea82",
+          "uuid": "147e5971-ff62-4f76-8596-2a8af2d5c42c",
           "body": "\"At least `group_name`, `catalog_name`, `code` and `schema` fields are required in request payload\"",
           "latency": 0,
           "statusCode": 200,
