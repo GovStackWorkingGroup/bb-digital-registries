@@ -1,1 +1,1 @@
-BB_NAME=digital-registry-bb docker-compose up app --build
+BB_NAME=digital-registry-bb docker-compose up --build
