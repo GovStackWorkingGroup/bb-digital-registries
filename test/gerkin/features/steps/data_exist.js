@@ -1,14 +1,11 @@
 const pactum = require('pactum');
 const { Given, When, Then, Before, After } = require('@cucumber/cucumber');
+const { header } = require('./helpers/helpers');
 
 let searchedRecord;
 let specDataExist = pactum.spec();
 
 const baseUrl = 'http://localhost:3333/data/registry1/version1/exists';
-const header = {
-  key: 'Information-Mediator-Client',
-  value: 'INSTANCE/CLASS/MEMBER/SUBSYSTEM',
-};
 
 Before(() => {
   specDataExist = pactum.spec();

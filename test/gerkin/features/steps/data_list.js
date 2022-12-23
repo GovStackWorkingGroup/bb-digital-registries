@@ -1,14 +1,11 @@
 const pactum = require('pactum');
 const { When, Then, Given, After, Before } = require('@cucumber/cucumber');
+const { header } = require('./helpers/helpers');
 
 let searchedName;
 let specDataList = pactum.spec();
 
 const baseUrl = 'http://localhost:3333/data/registry1/version1';
-const header = {
-  key: 'Information-Mediator-Client',
-  value: 'INSTANCE/CLASS/MEMBER/SUBSYSTEM',
-};
 
 Before(() => {
   specDataList = pactum.spec();
