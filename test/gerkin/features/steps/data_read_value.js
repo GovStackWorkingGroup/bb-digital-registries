@@ -1,5 +1,5 @@
 const pactum = require('pactum');
-const { When, Then, Given, After, Before } = require('@cucumber/cucumber');
+const { Given, When, Then, Before, After } = require('@cucumber/cucumber');
 
 let searchedRecord;
 let specDataReadValue = pactum.spec();
@@ -23,8 +23,8 @@ Given(
   }
 );
 
-Given("The record's first name is fullfill", () => {
-  return "The searched record's first name is fullfill";
+Given(`The record's first name is fullfill`, () => {
+  return `The searched record's first name is fullfill`;
 });
 
 When(
@@ -50,13 +50,13 @@ Given(
   }
 );
 
-Given("The record's first name is empty", () => {
-  return "The searched record's first name is empty";
+Given(`The record's first name is empty`, () => {
+  return `The searched record's first name is empty`;
 });
 
 When(
-  'When The user triggers an action to receive the first name of searched user with UUID 3dcad39a-9abb-{float}-954d-c62958d44ec9 from the database',
-  float => {
+  'The user triggers an action to receive the first name of searched user with UUID 3dcad39a-9abb-{int}-954d-c62958d44ec9 from the database',
+  int => {
     specDataReadValue
       .get(`${baseUrl(searchedRecord)}`)
       .withHeaders(`${header.key}`, `${header.value}`);

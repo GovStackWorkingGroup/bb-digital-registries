@@ -1,5 +1,5 @@
 const pactum = require('pactum');
-const { When, Then, Given, After, Before } = require('@cucumber/cucumber');
+const { Given, When, Then, Before, After } = require('@cucumber/cucumber');
 
 let searchedRecord;
 let specDataRead = pactum.spec();
@@ -108,7 +108,7 @@ When('The user triggers an action to search a record in the database', () => {
   });
 });
 
-Then('Operation results for {string} in an error', async string => {
+Then('Operation results for {string} is an error', async string => {
   await specDataRead.toss();
   specDataRead.response().should.have.status(400);
 });

@@ -1,5 +1,5 @@
 const pactum = require('pactum');
-const { When, Then, Given, After, Before } = require('@cucumber/cucumber');
+const { Given, When, Then, Before, After } = require('@cucumber/cucumber');
 
 let searchedRecord;
 let specDataExist = pactum.spec();
