@@ -177,7 +177,7 @@
           "body": "{\n  \"count\": 5,\n  \"next\": \"1\",\n  \"previous\": null,\n  \"results\":  [\n    {{# repeat 5 }}\n      {\n        \"id\": \"{{ faker 'datatype.uuid' }}\",\n        \"FirstName\": \"{{queryParam 'search'}}\",\n        \"LastName\": \"{{faker 'name.lastName'}}\",\n        \"BirthCertificateID\": \"RR-{{faker 'random.numeric' 10 }}\"\n      }\n    {{/ repeat }}\n  ]\n}",
           "latency": 0,
           "statusCode": 200,
-          "label": "Returns multiple records as an array-list. - Filter by regex",
+          "label": "Returns multiple records as an array-list. - No filter ",
           "headers": [],
           "bodyType": "INLINE",
           "filePath": "",
@@ -209,7 +209,7 @@
           "rulesOperator": "AND",
           "disableTemplating": false,
           "fallbackTo404": false,
-          "default": false
+          "default": true
         },
         {
           "uuid": "558cf138-169a-4da3-aef7-60ef71b1f29f",
