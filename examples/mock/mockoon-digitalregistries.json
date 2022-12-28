@@ -397,9 +397,9 @@
         },
         {
           "uuid": "72529bfb-0fd1-4fc3-97fc-270f630da71e",
-          "body": "\"Invalid payload, registry name not exist\"\n",
+          "body": "{\n  \"Invalid payload, registry name not exist\"\n}\n",
           "latency": 0,
-          "statusCode": 400,
+          "statusCode": 404,
           "label": "Creates a new record in the registry database whick not exist",
           "headers": [],
           "bodyType": "INLINE",
@@ -853,7 +853,7 @@
       "responses": [
         {
           "uuid": "d96dc4ea-e98b-4fbf-a460-8dc2327c98b9",
-          "body": "",
+          "body": "{\n  \"content\": {\n    \"ID\": \"{{bodyRaw 'write.content.ID'}}\",\n    \"FirstName\": \"{{bodyRaw 'write.content.FirstName'}}\",\n    \"LastName\": \"{{bodyRaw 'write.content.LastName'}}\",\n    \"BirthCertificateID\": \"{{bodyRaw 'write.content.BirthCertificateID'}}\"\n  }\n}",
           "latency": 0,
           "statusCode": 200,
           "label": "Update existing entry",
