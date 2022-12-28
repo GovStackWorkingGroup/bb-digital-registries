@@ -16,4 +16,4 @@ Feature: API endpoint allowing users to search for one record in the Digital Reg
   Scenario: The user is not able to receive one searched record from the Digital Registries database because of an invalid request
     Given The user wants to search for one record "Ali Benz" in the Digital Registries database
     When The user triggers an action to search a record in the database
-    Then Operation results for "/data/registryname/versionnumber/read" in an error
+    Then Operation results for "/data/registryname/versionnumber/read" is an error

@@ -1,14 +1,11 @@
 const pactum = require('pactum');
-const { When, Then, Given, After, Before } = require('@cucumber/cucumber');
+const { Given, When, Then, Before, After } = require('@cucumber/cucumber');
+const { header, localhost } = require('./helpers/helpers');
 
 let searchedRecord;
 let specDataRead = pactum.spec();
 
-const baseUrl = 'http://localhost:3333/data/registry1/version1/read';
-const header = {
-  key: 'Information-Mediator-Client',
-  value: 'INSTANCE/CLASS/MEMBER/SUBSYSTEM',
-};
+const baseUrl = `${localhost}data/registry1/version1/read`;
 
 Before(() => {
   specDataRead = pactum.spec();
@@ -108,7 +105,7 @@ When('The user triggers an action to search a record in the database', () => {
   });
 });
 
-Then('Operation results for {string} in an error', async string => {
+Then('Operation results for {string} is an error', async string => {
   await specDataRead.toss();
   specDataRead.response().should.have.status(400);
 });
