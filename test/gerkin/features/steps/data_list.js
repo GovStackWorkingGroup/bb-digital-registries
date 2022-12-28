@@ -1,11 +1,11 @@
 const pactum = require('pactum');
 const { When, Then, Given, After, Before } = require('@cucumber/cucumber');
-const { header } = require('./helpers/helpers');
+const { header, localhost } = require('./helpers/helpers');
 
 let searchedName;
 let specDataList = pactum.spec();
 
-const baseUrl = 'http://localhost:3333/data/registry1/version1';
+const baseUrl = `${localhost}data/registry1/version1`;
 
 Before(() => {
   specDataList = pactum.spec();

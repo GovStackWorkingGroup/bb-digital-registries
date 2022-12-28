@@ -1,15 +1,18 @@
 const pactum = require('pactum');
 const { Given, When, Then, Before, After } = require('@cucumber/cucumber');
-const { header } = require('./helpers/helpers');
+const { header, localhost } = require('./helpers/helpers');
 
 let searchedRecord;
+let searchedFieldParameter;
+let searchedFieldExt;
 let specDataReadValue = pactum.spec();
 
-const baseUrl = uuid =>
-  `http://localhost:3333/data/registry1/version1/${uuid}/read-value/User.FirstName`;
+const baseUrl = (uuid, field, ext) =>
+  `${localhost}data/registry1/version1/${uuid}/read-value/${field}.${ext}`;
 
 Before(() => {
   specDataReadValue = pactum.spec();
+  return (searchedFieldParameter = 'User'), (searchedFieldExt = 'FirstName');
 });
 
 // Scenario: The user receives the first name of searched user from the Digital Registries database
@@ -28,7 +31,9 @@ When(
   'The user triggers an action to receive the first name of searched user with UUID 2dcad39a-9abb-4552-954d-c62958d44ec5 from the database',
   () => {
     specDataReadValue
-      .get(`${baseUrl(searchedRecord)}`)
+      .get(
+        `${baseUrl(searchedRecord, searchedFieldParameter, searchedFieldExt)}`
+      )
       .withHeaders(`${header.key}`, `${header.value}`);
   }
 );
@@ -55,7 +60,9 @@ When(
   'The user triggers an action to receive the first name of searched user with UUID 3dcad39a-9abb-{int}-954d-c62958d44ec9 from the database',
   int => {
     specDataReadValue
-      .get(`${baseUrl(searchedRecord)}`)
+      .get(
+        `${baseUrl(searchedRecord, searchedFieldParameter, searchedFieldExt)}`
+      )
       .withHeaders(`${header.key}`, `${header.value}`);
   }
 );
@@ -80,7 +87,9 @@ Given(
 When(
   'The user triggers an action to receive the first name of searched user from the database',
   () => {
-    specDataReadValue.get(`${baseUrl(searchedRecord)}`);
+    specDataReadValue.get(
+      `${baseUrl(searchedRecord, searchedFieldParameter, searchedFieldExt)}`
+    );
   }
 );
 
