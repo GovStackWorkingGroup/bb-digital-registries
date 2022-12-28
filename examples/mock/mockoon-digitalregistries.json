@@ -381,12 +381,58 @@
               "value": "",
               "invert": true,
               "operator": "null"
+            },
+            {
+              "target": "params",
+              "modifier": "registryname",
+              "value": "registry1",
+              "invert": false,
+              "operator": "equals"
             }
           ],
           "rulesOperator": "AND",
           "disableTemplating": false,
           "fallbackTo404": false,
           "default": true
+        },
+        {
+          "uuid": "72529bfb-0fd1-4fc3-97fc-270f630da71e",
+          "body": "\"Invalid payload, registry name not exist\"\n",
+          "latency": 0,
+          "statusCode": 400,
+          "label": "Creates a new record in the registry database whick not exist",
+          "headers": [],
+          "bodyType": "INLINE",
+          "filePath": "",
+          "databucketID": "",
+          "sendFileAsBody": false,
+          "rules": [
+            {
+              "target": "header",
+              "modifier": "Information-Mediator-Client",
+              "value": "[a-zA-Z0-9_]+\\/[a-zA-Z0-9_]+\\/[a-zA-Z0-9_]+\\/[a-zA-Z0-9_]+",
+              "invert": false,
+              "operator": "regex"
+            },
+            {
+              "target": "body",
+              "modifier": "write.content",
+              "value": "",
+              "invert": true,
+              "operator": "null"
+            },
+            {
+              "target": "params",
+              "modifier": "registryname",
+              "value": "registry2",
+              "invert": false,
+              "operator": "equals"
+            }
+          ],
+          "rulesOperator": "AND",
+          "disableTemplating": false,
+          "fallbackTo404": false,
+          "default": false
         },
         {
           "uuid": "210c58c0-a928-4d77-b316-679230360cf3",
