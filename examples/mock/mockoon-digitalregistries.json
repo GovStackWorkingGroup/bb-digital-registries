@@ -1060,7 +1060,7 @@
             {
               "target": "body",
               "modifier": "query.content.FirstName",
-              "value": "John Helmut",
+              "value": "Alfie",
               "invert": false,
               "operator": "equals"
             },
@@ -1113,7 +1113,7 @@
             {
               "target": "body",
               "modifier": "query.content.FirstName",
-              "value": "John Helmut",
+              "value": "Alfie",
               "invert": true,
               "operator": "equals"
             },
