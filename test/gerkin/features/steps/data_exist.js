@@ -3,7 +3,7 @@ const { Given, When, Then, Before, After } = require('@cucumber/cucumber');
 const { header, localhost } = require('./helpers/helpers');
 
 let searchedRecord;
-let specDataExist = pactum.spec();
+let specDataExist;
 
 const baseUrl = `${localhost}data/registry1/version1/exists`;
 

@@ -5,7 +5,7 @@ const { header, localhost } = require('./helpers/helpers');
 let searchedRecord;
 let searchedFieldParameter;
 let searchedFieldExt;
-let specDataReadValue = pactum.spec();
+let specDataReadValue;
 
 const baseUrl = (uuid, field, ext) =>
   `${localhost}data/registry1/version1/${uuid}/read-value/${field}.${ext}`;
