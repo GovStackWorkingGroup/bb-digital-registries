@@ -381,12 +381,58 @@
               "value": "",
               "invert": true,
               "operator": "null"
+            },
+            {
+              "target": "params",
+              "modifier": "registryname",
+              "value": "registry1",
+              "invert": false,
+              "operator": "equals"
             }
           ],
           "rulesOperator": "AND",
           "disableTemplating": false,
           "fallbackTo404": false,
           "default": true
+        },
+        {
+          "uuid": "72529bfb-0fd1-4fc3-97fc-270f630da71e",
+          "body": "{\n  \"Invalid payload, registry name does not exist\"\n}\n",
+          "latency": 0,
+          "statusCode": 404,
+          "label": "Creates a new record in the registry database.",
+          "headers": [],
+          "bodyType": "INLINE",
+          "filePath": "",
+          "databucketID": "",
+          "sendFileAsBody": false,
+          "rules": [
+            {
+              "target": "header",
+              "modifier": "Information-Mediator-Client",
+              "value": "[a-zA-Z0-9_]+\\/[a-zA-Z0-9_]+\\/[a-zA-Z0-9_]+\\/[a-zA-Z0-9_]+",
+              "invert": false,
+              "operator": "regex"
+            },
+            {
+              "target": "body",
+              "modifier": "write.content",
+              "value": "",
+              "invert": true,
+              "operator": "null"
+            },
+            {
+              "target": "params",
+              "modifier": "registryname",
+              "value": "registry2",
+              "invert": false,
+              "operator": "equals"
+            }
+          ],
+          "rulesOperator": "AND",
+          "disableTemplating": false,
+          "fallbackTo404": false,
+          "default": false
         },
         {
           "uuid": "210c58c0-a928-4d77-b316-679230360cf3",
@@ -807,7 +853,7 @@
       "responses": [
         {
           "uuid": "d96dc4ea-e98b-4fbf-a460-8dc2327c98b9",
-          "body": "",
+          "body": "{\n  \"content\": {\n    \"ID\": \"{{bodyRaw 'write.content.ID'}}\",\n    \"FirstName\": \"{{bodyRaw 'write.content.FirstName'}}\",\n    \"LastName\": \"{{bodyRaw 'write.content.LastName'}}\",\n    \"BirthCertificateID\": \"{{bodyRaw 'write.content.BirthCertificateID'}}\"\n  }\n}",
           "latency": 0,
           "statusCode": 200,
           "label": "Update existing entry",
@@ -1194,7 +1240,14 @@
             {
               "target": "body",
               "modifier": "query.content.FirstName",
-              "value": "John Helmut",
+              "value": "Johny",
+              "invert": false,
+              "operator": "equals"
+            },
+            {
+              "target": "body",
+              "modifier": "query.content.LastName",
+              "value": "Small",
               "invert": false,
               "operator": "equals"
             },
@@ -1208,6 +1261,13 @@
             {
               "target": "body",
               "modifier": "write.content.FirstName",
+              "value": "",
+              "invert": true,
+              "operator": "null"
+            },
+            {
+              "target": "body",
+              "modifier": "write.content.LastName",
               "value": "",
               "invert": true,
               "operator": "null"
@@ -1247,7 +1307,14 @@
             {
               "target": "body",
               "modifier": "query.content.FirstName",
-              "value": "John Helmut",
+              "value": "Johny",
+              "invert": true,
+              "operator": "equals"
+            },
+            {
+              "target": "body",
+              "modifier": "query.content.LastName",
+              "value": "Small",
               "invert": true,
               "operator": "equals"
             },
@@ -1264,56 +1331,10 @@
               "value": "",
               "invert": true,
               "operator": "null"
-            }
-          ],
-          "rulesOperator": "AND",
-          "disableTemplating": false,
-          "fallbackTo404": false,
-          "default": false
-        },
-        {
-          "uuid": "13093f83-4e0e-4331-9a06-261262014c8b",
-          "body": "{\n  \"Record matching query not found.\"\n}",
-          "latency": 0,
-          "statusCode": 404,
-          "label": "Update non-existing entry",
-          "headers": [],
-          "bodyType": "INLINE",
-          "filePath": "",
-          "databucketID": "",
-          "sendFileAsBody": false,
-          "rules": [
-            {
-              "target": "header",
-              "modifier": "Information-Mediator-Client",
-              "value": "[a-zA-Z0-9_]+\\/[a-zA-Z0-9_]+\\/[a-zA-Z0-9_]+\\/[a-zA-Z0-9_]+",
-              "invert": false,
-              "operator": "regex"
             },
             {
               "target": "body",
-              "modifier": "query.content",
-              "value": "",
-              "invert": true,
-              "operator": "null"
-            },
-            {
-              "target": "body",
-              "modifier": "query.content.FirstName",
-              "value": "John Helmut",
-              "invert": true,
-              "operator": "equals"
-            },
-            {
-              "target": "body",
-              "modifier": "write.content",
-              "value": "",
-              "invert": true,
-              "operator": "null"
-            },
-            {
-              "target": "body",
-              "modifier": "write.content.FirstName",
+              "modifier": "write.content.LastName",
               "value": "",
               "invert": true,
               "operator": "null"
@@ -1757,7 +1778,7 @@
       "responses": [
         {
           "uuid": "8b4b5cf8-a879-4d4e-b9ad-ddbd95a43f90",
-          "body": "{\n  \"id\": {{queryParamRaw 'id'}},\n  \"version\": \"2.7\",\n  \"name\": \"MCTS\",\n  \"description\": \"Database holding information about MCTS objects\",\n  \"institution\": \"Ministry of Social Affairs\",\n  \"number_format\": \"{code}{indexNoByCode}\",\n  \"schema\": {\n    \"type\": \"object\",\n    \"properties\": {\n      \"ID\": {\n        \"type\": \"string\",\n        \"triggers\": [\n          {\n            \"conditions\": [\n              {\n                \"logic\": \"==\",\n                \"value\": \"\",\n                \"gate\": \"&&\"\n              }\n            ],\n            \"actions\": [\n              {\n                \"type\": \"set-value\",\n                \"value\": \"MCTS{indexNoByCode}\",\n                \"field_id\": 1\n              }\n            ]\n          }\n        ],\n        \"primaryKey\": true,\n        \"readOnly\": true,\n        \"description\": \"Registration ID\",\n        \"example\": \"MCTS31\",\n        \"id\": 1\n      },\n      \"Child\": {\n        \"type\": \"string\",\n        \"properties\": {\n          \"ID\": {\n            \"type\": \"string\",\n            \"description\": \"Child ID\",\n            \"example\": \"ID2\",\n            \"id\": 13\n          }\n        }\n      }\n    },\n    \"incrementIndex\": 20,\n    \"required\": [\n      \"ID\"\n    ]\n  },\n  \"schema_tags\": [\n    {\n      \"name\": \"\",\n      \"path\": \"/Child/Citizenship\",\n      \"is_fulltext\": true\n    }\n  ],\n  \"schema_flags\": [\n    {\n      \"name\": \"mandatory\",\n      \"path\": \"/ID\"\n    }\n  ],\n  \"fields_uniques\": [\n    [\n      \"\"\n    ]\n  ],\n  \"is_draft\": {{faker 'datatype.boolean'}},\n  \"is_disabled\": {{faker 'datatype.boolean'}},\n  \"is_archived\": {{faker 'datatype.boolean'}},\n  \"modified_at\": \"2021-10-03T08:35:01.775915Z\",\n  \"by_user_name\": \"ingmar.dev\",\n  \"by_user_auth_id\": 1,\n  \"by_on_behalf_of_user_auth_id\": {{faker 'datatype.number'}},\n  \"by_on_behalf_of_user_name\": \"\",\n  \"generic_services\": [\n    {\n      \"service_id\": 1,\n      \"name\": \"data-create\",\n      \"is_visible\": true,\n      \"used_count\": {{faker 'datatype.number'}}\n    }\n  ],\n  \"data_index_increment\": {{faker 'datatype.number'}},\n  \"has_logo\": {{faker 'datatype.boolean'}}\n}",
+          "body": "{\n  \"id\": {{routeParams 'id'}},\n  \"version\": \"2.7\",\n  \"name\": \"MCTS\",\n  \"description\": \"Database holding information about MCTS objects\",\n  \"institution\": \"Ministry of Social Affairs\",\n  \"number_format\": \"{code}{indexNoByCode}\",\n  \"schema\": {\n    \"type\": \"object\",\n    \"properties\": {\n      \"ID\": {\n        \"type\": \"string\",\n        \"triggers\": [\n          {\n            \"conditions\": [\n              {\n                \"logic\": \"==\",\n                \"value\": \"\",\n                \"gate\": \"&&\"\n              }\n            ],\n            \"actions\": [\n              {\n                \"type\": \"set-value\",\n                \"value\": \"MCTS{indexNoByCode}\",\n                \"field_id\": 1\n              }\n            ]\n          }\n        ],\n        \"primaryKey\": true,\n        \"readOnly\": true,\n        \"description\": \"Registration ID\",\n        \"example\": \"MCTS31\",\n        \"id\": 1\n      },\n      \"Child\": {\n        \"type\": \"string\",\n        \"properties\": {\n          \"ID\": {\n            \"type\": \"string\",\n            \"description\": \"Child ID\",\n            \"example\": \"ID2\",\n            \"id\": 13\n          }\n        }\n      }\n    },\n    \"incrementIndex\": 20,\n    \"required\": [\n      \"ID\"\n    ]\n  },\n  \"schema_tags\": [\n    {\n      \"name\": \"\",\n      \"path\": \"/Child/Citizenship\",\n      \"is_fulltext\": true\n    }\n  ],\n  \"schema_flags\": [\n    {\n      \"name\": \"mandatory\",\n      \"path\": \"/ID\"\n    }\n  ],\n  \"fields_uniques\": [\n    [\n      \"\"\n    ]\n  ],\n  \"is_draft\": {{faker 'datatype.boolean'}},\n  \"is_disabled\": {{faker 'datatype.boolean'}},\n  \"is_archived\": {{faker 'datatype.boolean'}},\n  \"modified_at\": \"2021-10-03T08:35:01.775915Z\",\n  \"by_user_name\": \"ingmar.dev\",\n  \"by_user_auth_id\": 1,\n  \"by_on_behalf_of_user_auth_id\": {{faker 'datatype.number'}},\n  \"by_on_behalf_of_user_name\": \"\",\n  \"generic_services\": [\n    {\n      \"service_id\": 1,\n      \"name\": \"data-create\",\n      \"is_visible\": true,\n      \"used_count\": {{faker 'datatype.number'}}\n    }\n  ],\n  \"data_index_increment\": {{faker 'datatype.number'}},\n  \"has_logo\": {{faker 'datatype.boolean'}}\n}",
           "latency": 0,
           "statusCode": 200,
           "label": "Existing database.",
@@ -1782,15 +1803,52 @@
             {
               "target": "params",
               "modifier": "id",
-              "value": "",
-              "invert": true,
-              "operator": "null"
+              "value": "1",
+              "invert": false,
+              "operator": "equals"
             }
           ],
           "rulesOperator": "AND",
           "disableTemplating": false,
           "fallbackTo404": false,
           "default": true
+        },
+        {
+          "uuid": "57d51e13-031f-45ba-9d1d-a27ca862f874",
+          "body": "",
+          "latency": 0,
+          "statusCode": 400,
+          "label": "Existing database. (copy)",
+          "headers": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "bodyType": "INLINE",
+          "filePath": "",
+          "databucketID": "",
+          "sendFileAsBody": false,
+          "rules": [
+            {
+              "target": "header",
+              "modifier": "Information-Mediator-Client",
+              "value": "[a-zA-Z0-9_]+\\/[a-zA-Z0-9_]+\\/[a-zA-Z0-9_]+\\/[a-zA-Z0-9_]+",
+              "invert": false,
+              "operator": "regex"
+            },
+            {
+              "target": "params",
+              "modifier": "id",
+              "value": "222",
+              "invert": false,
+              "operator": "equals"
+            }
+          ],
+          "rulesOperator": "AND",
+          "disableTemplating": false,
+          "fallbackTo404": false,
+          "default": false
         },
         {
           "uuid": "0a74ff82-d966-4ab8-bb68-c0bc070b75cf",
@@ -1812,7 +1870,7 @@
               "operator": "regex"
             },
             {
-              "target": "query",
+              "target": "params",
               "modifier": "id",
               "value": "",
               "invert": false,
@@ -1840,12 +1898,7 @@
           "latency": 0,
           "statusCode": 200,
           "label": "Existing database.",
-          "headers": [
-            {
-              "key": "Content-Type",
-              "value": "application/json"
-            }
-          ],
+          "headers": [],
           "bodyType": "INLINE",
           "filePath": "",
           "databucketID": "",
@@ -1854,9 +1907,9 @@
             {
               "target": "header",
               "modifier": "Information-Mediator-Client",
-              "value": "[a-zA-Z0-9_]+\\/[a-zA-Z0-9_]+\\/[a-zA-Z0-9_]+\\/[a-zA-Z0-9_]+",
-              "invert": false,
-              "operator": "regex"
+              "value": "",
+              "invert": true,
+              "operator": "null"
             }
           ],
           "rulesOperator": "AND",
@@ -1880,13 +1933,6 @@
               "target": "header",
               "modifier": "Information-Mediator-Client",
               "value": "[a-zA-Z0-9_]+\\/[a-zA-Z0-9_]+\\/[a-zA-Z0-9_]+\\/[a-zA-Z0-9_]+",
-              "invert": false,
-              "operator": "regex"
-            },
-            {
-              "target": "query",
-              "modifier": "id",
-              "value": "",
               "invert": false,
               "operator": "null"
             }
