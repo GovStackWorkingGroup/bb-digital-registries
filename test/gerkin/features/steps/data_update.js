@@ -115,7 +115,7 @@ Then('Operation results to update "Anna Smith" is an error', async () => {
     .should.have.body('{\n  "Record matching query not found."\n}');
 });
 
-// Scenario: The user is not able to update a record in the Digital Registries database
+// Scenario: The user is not able to update a record in the Digital Registries database because of an invalid request
 Given(
   'The user wants to update a record in the Digital Registries database',
   () => {

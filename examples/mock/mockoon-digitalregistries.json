@@ -397,10 +397,10 @@
         },
         {
           "uuid": "72529bfb-0fd1-4fc3-97fc-270f630da71e",
-          "body": "{\n  \"Invalid payload, registry name not exist\"\n}\n",
+          "body": "{\n  \"Invalid payload, registry name does not exist\"\n}\n",
           "latency": 0,
           "statusCode": 404,
-          "label": "Creates a new record in the registry database whick not exist",
+          "label": "Creates a new record in the registry database.",
           "headers": [],
           "bodyType": "INLINE",
           "filePath": "",

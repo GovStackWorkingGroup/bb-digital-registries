@@ -12,7 +12,7 @@ Before(() => {
   specDataCreate = pactum.spec();
 });
 
-// Scenario: The user successfully creates the record "John Smith" in the Digital Registries database
+// Scenario: The user successfully creates record "John Smith" in the Digital Registries database
 Given(
   'The user wants to create a new record "John Smith" in the Digital Registries database',
   () => {
@@ -90,17 +90,19 @@ Then('Operation results in an error for create "Anna Stock"', async () => {
   specDataCreate.response().should.have.status(404);
   specDataCreate
     .response()
-    .should.have.body('{\n  "Invalid payload, registry name not exist"\n}\n');
+    .should.have.body(
+      '{\n  "Invalid payload, registry name does not exist"\n}\n'
+    );
 });
 
-// Scenario: The user is not able to create a record in the Digital Registries database
+// Scenario: The user is not able to create a record in the Digital Registries database because of an invalid request
 Given(
-  'The user wants to create a new record "Emma Watson" in the Digital Registries database',
+  'The user wants to create a new record "Emma Wolf" in the Digital Registries database',
   () => {
     const newUserVariables = {
       ID: 'EE378627342345',
       FirstName: 'Emma',
-      LastName: 'Watson',
+      LastName: 'Wolf',
       BirthCertificateID: 'RR-1234567999',
     };
 
@@ -109,7 +111,7 @@ Given(
 );
 
 When(
-  'The user triggers an action to create a new record "Emma Watson" in the database',
+  'The user triggers an action to create a new record "Emma Wolf" in the database',
   () => {
     specDataCreate
       .post(`${baseUrl('registry1')}`)
@@ -118,7 +120,7 @@ When(
   }
 );
 
-Then('Operation results in an error for create "Emma Watson"', async () => {
+Then('Operation results in an error for create "Emma Wolf"', async () => {
   await specDataCreate.toss();
   specDataCreate.response().should.have.status(400);
   specDataCreate

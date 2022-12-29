@@ -13,7 +13,7 @@ Feature: API endpoint allowing users to update a new record in the Digital Regis
     When The user triggers an action to update the record "Anna Smith" in the database
     Then Operation results to update "Anna Smith" is an error
 
-  Scenario: The user is not able to update a record in the Digital Registries database
+  Scenario: The user is not able to update a record in the Digital Registries database because of an invalid request
     Given The user wants to update a record in the Digital Registries database
     When The user triggers an action to update a new record in the database
     Then Operation results to update a record is an error
