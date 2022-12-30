@@ -1446,9 +1446,9 @@
       "responses": [
         {
           "uuid": "23aecb69-312e-4abc-8bc0-1d4c1d8f6d33",
-          "body": "",
+          "body": "{\n  \"Success\"\n}",
           "latency": 0,
-          "statusCode": 204,
+          "statusCode": 200,
           "label": "Delete existing record based on ID",
           "headers": [],
           "bodyType": "INLINE",
@@ -1469,6 +1469,13 @@
               "value": "",
               "invert": true,
               "operator": "null"
+            },
+            {
+              "target": "params",
+              "modifier": "ID",
+              "value": "ID1234",
+              "invert": false,
+              "operator": "equals"
             }
           ],
           "rulesOperator": "AND",
@@ -1478,10 +1485,10 @@
         },
         {
           "uuid": "c421fe9a-38fe-4ad7-b245-6eef2bdeabe1",
-          "body": "",
+          "body": "{\n  \"Provided id does not exist in the database\"\n}",
           "latency": 0,
-          "statusCode": 400,
-          "label": "Delete recird - invalid id",
+          "statusCode": 404,
+          "label": "Delete record - id not exist",
           "headers": [],
           "bodyType": "INLINE",
           "filePath": "",
@@ -1499,7 +1506,7 @@
               "target": "params",
               "modifier": "ID",
               "value": "",
-              "invert": false,
+              "invert": true,
               "operator": "null"
             }
           ],
