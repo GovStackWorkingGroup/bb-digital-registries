@@ -1552,7 +1552,7 @@
           "body": "{\n  \"Provided id does not exist in the database\"\n}",
           "latency": 0,
           "statusCode": 404,
-          "label": "Delete record - id not exist",
+          "label": "Delete record - ID does not exist",
           "headers": [],
           "bodyType": "INLINE",
           "filePath": "",

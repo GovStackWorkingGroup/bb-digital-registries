@@ -8,6 +8,13 @@ let specDataMyPersonalDataUsage;
 
 const baseUrl = `${localhost}data/MyPersonalDataUsage/1.0`;
 
+const correctUrlRequest = (userID, databaseID) =>
+  specDataMyPersonalDataUsage
+    .get(`${baseUrl}`)
+    .withHeaders(`${header.key}`, `${header.value}`)
+    .withQueryParams('userID', userID)
+    .withQueryParams('DatabaseID', databaseID);
+
 Before(() => {
   specDataMyPersonalDataUsage = pactum.spec();
   databaseID = 'MCTS';
@@ -32,9 +39,7 @@ Given(
 When(
   'The user with id=282392302 triggers an action to receive a list of users who read his personal data',
   () => {
-    specDataMyPersonalDataUsage
-      .get(`${baseUrl}?userID=${userID}&DatabaseID=${databaseID}`)
-      .withHeaders(`${header.key}`, `${header.value}`);
+    correctUrlRequest(userID, databaseID);
   }
 );
 
@@ -78,9 +83,7 @@ Given(
 When(
   'The user with id=748382347 triggers an action to receive a list od users who read his personal data',
   () => {
-    specDataMyPersonalDataUsage
-      .get(`${baseUrl}?userID=${userID}&DatabaseID=${databaseID}`)
-      .withHeaders(`${header.key}`, `${header.value}`);
+    correctUrlRequest(userID, databaseID);
   }
 );
 
@@ -105,9 +108,10 @@ Given(
 When(
   'The user with id=3782347 triggers an action to receive a list od users who read his personal data',
   () => {
-    specDataMyPersonalDataUsage.get(
-      `${baseUrl}?userID=${userID}&DatabaseID=${databaseID}`
-    );
+    specDataMyPersonalDataUsage
+      .get(`${baseUrl}`)
+      .withQueryParams('userID', userID)
+      .withQueryParams('DatabaseID', databaseID);
   }
 );
 
