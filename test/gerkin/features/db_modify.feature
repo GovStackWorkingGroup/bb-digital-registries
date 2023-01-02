@@ -7,22 +7,13 @@ Feature: API endpoint allowing users to create or modify the Digital Registries 
   Scenario: The user successfully creates the Digital Registries database schema
     Given The requested database schema does not exist in the database
     When The user triggers an action to create a database schema
-    And The request with a valid payload is sent
-    Then Operation finishes successfully
+    Then Operation to create new database schema finishes successfully
 
   Scenario: The user successfully modifies the Digital Registries database schema
     Given The requested database schema exists in the database
-    When The user triggers an action to create a database schema
-    And The request with a valid payload is sent
-    Then Operation finishes successfully
+    When The user triggers an action to modify a database schema
+    Then Operation to modify a database schema finishes successfully
 
-  Scenario: The user is not able to modify the Digital Registries database schema because it doesn't exist
-    Given The requested database schema does not exist in the database
-    When The user triggers an action to create a database schema
-    And The request with a valid payload is sent
-    Then Operation results in an error
-
-  Scenario: The user is not able to modify the Digital Registries database schema
+  Scenario: The user is not able to modify the Digital Registries database schema because of an invalid request
     When The user triggers an action to modify the already existing database schema
-    And The request with an invalid payload is sent
-    Then Operation results in an error
+    Then Operation results to modify a database schema is an error
