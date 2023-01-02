@@ -5,7 +5,7 @@
     "test": "cucumber-js"
   },
   "devDependencies": {
-    "@cucumber/cucumber": "^8.9.1",
+    "@cucumber/cucumber": "^8.10.0",
     "pactum": "^3.3.2"
   }
 }
