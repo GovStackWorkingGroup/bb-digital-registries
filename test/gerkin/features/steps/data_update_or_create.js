@@ -31,7 +31,7 @@ Given('The requested record "Jon Snake" does not exist in the database', () => {
 });
 
 When(
-  'The user triggers an action to create record "Jon Snake" in the database',
+  'The user triggers an action to create or update record "Jon Snake" in the database',
   () => {
     specDataUpdateOrCreate
       .post(`${baseUrl}`)
@@ -78,7 +78,7 @@ Given(
 );
 
 When(
-  'The user triggers an action to update record "Johny Small" in the database',
+  'The user triggers an action to create or update record "Johny Small" in the database',
   () => {
     specDataUpdateOrCreate
       .post(`${baseUrl}`)
@@ -133,8 +133,8 @@ When(
 );
 
 Then(
-  'Operation results to create\\/update record {string} in an error',
-  async string => {
+  `The result of an operation to create\\/update record 'Ali Smith' returns an error`,
+  async () => {
     await specDataUpdateOrCreate.toss();
     specDataUpdateOrCreate.response().should.have.status(400);
     specDataUpdateOrCreate

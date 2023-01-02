@@ -95,7 +95,7 @@ When(
 );
 
 Then(
-  'Operation results to update records  with first name "Jerry" is an error',
+  `The result of an operation to update records with the first name 'Jerry' returns an error`,
   async () => {
     await specDataUpdateEntries.toss();
     specDataUpdateEntries.response().should.have.status(404);
@@ -135,13 +135,57 @@ When(
 );
 
 Then(
-  'Operation results to update record with name "Jasmine" is an error',
+  `The result of an operation to update records with the first name "Jasmine" returns an error`,
   async () => {
     await specDataUpdateEntries.toss();
     specDataUpdateEntries.response().should.have.status(400);
     specDataUpdateEntries
       .response()
       .should.have.body('{\n  "Query not provided."\n}');
+  }
+);
+// Scenario: The user is not able to update two records in the Digital Registries database because of a missing users data
+Given(
+  `The user wants to update multiple records with name "Joanna" in the Digital Registries database`,
+  () => {
+    userVariables = {
+      ID: 'EE378623348834',
+      FirstName: 'Joanna',
+      LastName: 'Moon',
+      BirthCertificateID: null,
+    };
+
+    return userVariables;
+  }
+);
+
+When(
+  `The user triggers an action to update records with name "Joanna" in the database`,
+  () => {
+    specDataUpdateEntries
+      .put(`${baseUrl}`)
+      .withHeaders(`${header.key}`, `${header.value}`)
+      .withBody({
+        query: {
+          content: userVariables,
+        },
+        write: {
+          content: userVariables,
+        },
+      });
+  }
+);
+
+Then(
+  `The result of an operation to update records with the first name "Joanna" returns an error`,
+  async () => {
+    await specDataUpdateEntries.toss();
+    specDataUpdateEntries.response().should.have.status(400);
+    specDataUpdateEntries
+      .response()
+      .should.have.bodyContains(
+        'Invalid payload, query.content.FirstName, query.content.ID, query.content.LastName or query.content.BirthCertificateID not provided'
+      );
   }
 );
 
