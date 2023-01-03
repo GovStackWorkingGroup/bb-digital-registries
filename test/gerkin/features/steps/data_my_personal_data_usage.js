@@ -10,7 +10,7 @@ const baseUrl = `${localhost}data/MyPersonalDataUsage/1.0`;
 
 const correctUrlRequest = (userID, databaseID) =>
   specDataMyPersonalDataUsage
-    .get(`${baseUrl}`)
+    .get(baseUrl)
     .withHeaders(`${header.key}`, `${header.value}`)
     .withQueryParams('userID', userID)
     .withQueryParams('DatabaseID', databaseID);
@@ -109,7 +109,7 @@ When(
   'The user with id=3782347 triggers an action to receive a list od users who read his personal data',
   () => {
     specDataMyPersonalDataUsage
-      .get(`${baseUrl}`)
+      .get(baseUrl)
       .withQueryParams('userID', userID)
       .withQueryParams('DatabaseID', databaseID);
   }

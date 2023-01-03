@@ -1530,16 +1530,16 @@
             {
               "target": "params",
               "modifier": "ID",
-              "value": "",
-              "invert": true,
-              "operator": "null"
+              "value": "id231Q",
+              "invert": false,
+              "operator": "equals"
             },
             {
               "target": "params",
               "modifier": "ID",
-              "value": "ID1234",
+              "value": "[a-zA-Z]{2}\\d{3}[a-zA-Z0-9]{1}",
               "invert": false,
-              "operator": "equals"
+              "operator": "regex"
             }
           ],
           "rulesOperator": "AND",
@@ -1574,7 +1574,7 @@
               "operator": "null"
             }
           ],
-          "rulesOperator": "AND",
+          "rulesOperator": "OR",
           "disableTemplating": false,
           "fallbackTo404": false,
           "default": false
