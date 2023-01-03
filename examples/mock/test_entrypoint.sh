@@ -1,1 +1,1 @@
-docker-compose up app --build
+docker-compose up app
