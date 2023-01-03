@@ -5,7 +5,7 @@ const { header, localhost } = require('./helpers/helpers');
 let databaseSchemaId;
 let specDatabaseDelete;
 
-const baseUrl = id => `${localhost}database/${id}`;
+const baseUrl = `${localhost}database/{id}`;
 
 Before(() => {
   specDatabaseDelete = pactum.spec();
@@ -28,8 +28,9 @@ When(
   'The user triggers an action to delete the database schema with id=12345',
   () => {
     specDatabaseDelete
-      .delete(baseUrl(databaseSchemaId))
-      .withHeaders(`${header.key}`, `${header.value}`);
+      .delete(baseUrl)
+      .withHeaders(`${header.key}`, `${header.value}`)
+      .withPathParams('id', databaseSchemaId);
   }
 );
 
@@ -56,8 +57,9 @@ When(
   'The user triggers an action to delete the database schema with id=12',
   () => {
     specDatabaseDelete
-      .delete(baseUrl(databaseSchemaId))
-      .withHeaders(`${header.key}`, `${header.value}`);
+      .delete(baseUrl)
+      .withHeaders(`${header.key}`, `${header.value}`)
+      .withPathParams('id', databaseSchemaId);
   }
 );
 
