@@ -34,7 +34,7 @@ When(
   'The user triggers an action to create or update record "Jon Snake" in the database',
   () => {
     specDataUpdateOrCreate
-      .post(`${baseUrl}`)
+      .post(baseUrl)
       .withHeaders(`${header.key}`, `${header.value}`)
       .withBody({
         query: {
@@ -81,7 +81,7 @@ When(
   'The user triggers an action to create or update record "Johny Small" in the database',
   () => {
     specDataUpdateOrCreate
-      .post(`${baseUrl}`)
+      .post(baseUrl)
       .withHeaders(`${header.key}`, `${header.value}`)
       .withBody({
         query: {
@@ -122,7 +122,7 @@ When(
   'The user triggers an action to create record "Ali Smith" in the database',
   () => {
     specDataUpdateOrCreate
-      .post(`${baseUrl}`)
+      .post(baseUrl)
       .withHeaders(`${header.key}`, `${header.value}`)
       .withBody({
         query: {

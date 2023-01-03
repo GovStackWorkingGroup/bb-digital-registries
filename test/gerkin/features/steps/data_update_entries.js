@@ -34,7 +34,7 @@ When(
   'The user triggers an action to update records with first name "Alfie" in the database',
   () => {
     specDataUpdateEntries
-      .put(`${baseUrl}`)
+      .put(baseUrl)
       .withHeaders(`${header.key}`, `${header.value}`)
       .withBody({
         query: {
@@ -81,7 +81,7 @@ When(
   'The user triggers an action to update records with first name "Jerry" in the database',
   () => {
     specDataUpdateEntries
-      .put(`${baseUrl}`)
+      .put(baseUrl)
       .withHeaders(`${header.key}`, `${header.value}`)
       .withBody({
         query: {
@@ -124,7 +124,7 @@ When(
   'The user triggers an action to update records with name "Jasmine" in the database',
   () => {
     specDataUpdateEntries
-      .put(`${baseUrl}`)
+      .put(baseUrl)
       .withHeaders(`${header.key}`, `${header.value}`)
       .withBody({
         query: {
@@ -163,7 +163,7 @@ When(
   `The user triggers an action to update records with name "Joanna" in the database`,
   () => {
     specDataUpdateEntries
-      .put(`${baseUrl}`)
+      .put(baseUrl)
       .withHeaders(`${header.key}`, `${header.value}`)
       .withBody({
         query: {
