@@ -2,7 +2,7 @@ const pactum = require('pactum');
 const { Given, When, Then, Before, After } = require('@cucumber/cucumber');
 const { header, localhost } = require('./helpers/helpers');
 
-let specDatabaseRead;
+let specDatabaseList;
 
 const baseUrl = `${localhost}databases`;
 const exampleResponseValue = {
@@ -107,7 +107,7 @@ const exampleResponseValue = {
 }
 
 Before(() => {
-  specDatabaseRead = pactum.spec();
+  specDatabaseList = pactum.spec();
 });
 
 // Background: The user wants to display information about all Digital Registries databases
@@ -120,48 +120,48 @@ Given(
 // Scenario: The user receives information about Digital Registries databases
 When(
   'The user triggers an action with a valid payload to display information about Digital Registries databases', () => {
-    specDatabaseRead
+    specDatabaseList
       .get(baseUrl)
       .withHeaders(`${header.key}`, `${header.value}`);
 });
 
 Then('The user received a list of Digital Registries databases', async () => {
-  await specDatabaseRead.toss();
-  specDatabaseRead.response().should.have.status(200);
-  specDatabaseRead.response().should.have.jsonLike(exampleResponseValue);
+  await specDatabaseList.toss();
+  specDatabaseList.response().should.have.status(200);
+  specDatabaseList.response().should.have.jsonLike(exampleResponseValue);
 });
 
 // Scenario: The user is not able to receive information for Digital Registries databases because of empty value in the header
 When(
   'The user triggers an action with an invalid payload to display information about Digital Registries databases',
   () => {
-    specDatabaseRead
+    specDatabaseList
       .get(baseUrl)
       .withHeaders(`${header.key}`, '');
   }
 );
 
-Then('The operation of receiving information about the databases of Digital Registers results with an error of the invalid header', async () => {
-  await specDatabaseRead.toss();
-  specDatabaseRead.response().should.have.status(400);
-  specDatabaseRead.response().should.have.body('{"Invalid format of Information-Mediator-Client, should match INSTANCE/CLASS/MEMBER/SUBSYSTEM"}');
+Then('The result of an operation to receive information about the databases of Digital Registers returns an error', async () => {
+  await specDatabaseList.toss();
+  specDatabaseList.response().should.have.status(400);
+  specDatabaseList.response().should.have.body('{"Invalid format of Information-Mediator-Client, should match INSTANCE/CLASS/MEMBER/SUBSYSTEM"}');
 });
 
 
 // Scenario: The user is not able to receive information for Digital Registries databases because of not including header
 When(
   'The user triggers an action without a payload to display information about Digital Registries databases', () => {
-    specDatabaseRead
+    specDatabaseList
     .get(baseUrl);
   }
 );
   
 Then('The operation of receiving information about the databases of Digital Registries results with an error', async () => {
-  await specDatabaseRead.toss();
-  specDatabaseRead.response().should.have.status(400);
-  specDatabaseRead.response().should.have.body('{"Information-Mediator-Client required"}');
+  await specDatabaseList.toss();
+  specDatabaseList.response().should.have.status(400);
+  specDatabaseList.response().should.have.body('{"Information-Mediator-Client required"}');
 });
 
 After(() => {
-  specDatabaseRead.end();
+  specDatabaseList.end();
 });

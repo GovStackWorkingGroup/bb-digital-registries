@@ -133,7 +133,7 @@ When(
   }
 );
 
-Then('The operation of receiving any Digital Registries database information with schema versions results with an error of the invalid route param', async () => {
+Then('The result of an operation to receive any Digital Registries database information with schema versions returns an invalid route param error', async () => {
   await specDatabaseRead.toss();
   specDatabaseRead.response().should.have.status(400);
   specDatabaseRead.response().should.have.body('{"Invalid route param id"}');
@@ -149,7 +149,7 @@ When(
   }
 );
   
-Then('The operation of receiving any Digital Registries database information with schema versions results with an error of the invalid header', async () => {
+Then('The result of an operation to receive any Digital Registries database information with schema versions returns an error', async () => {
   await specDatabaseRead.toss();
   specDatabaseRead.response().should.have.status(400);
   specDatabaseRead.response().should.have.body('{"Invalid format of Information-Mediator-Client, should match INSTANCE/CLASS/MEMBER/SUBSYSTEM"}');

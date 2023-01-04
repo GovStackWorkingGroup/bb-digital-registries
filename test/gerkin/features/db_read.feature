@@ -10,11 +10,11 @@ Feature: API endpoint allowing users to get the Digital Registries database info
 
   Scenario: The user is not able to receive any Digital Registries database information with schema versions bacause of not providing route param
     When The user triggers an action without a route param to display one database schema versions
-    Then The operation of receiving any Digital Registries database information with schema versions results with an error of the invalid route param
+    Then The result of an operation to receive any Digital Registries database information with schema versions returns an invalid route param error
 
   Scenario: The user is not able to receive any Digital Registries database information with schema versions because of empty value in the header
     When The user triggers an action with an invalid payload to display one database schema versions
-    Then The operation of receiving any Digital Registries database information with schema versions results with an error of the invalid header
+    Then The result of an operation to receive any Digital Registries database information with schema versions returns an error
 
   Scenario: The user is not able to receive any Digital Registries database information with schema versions because of not including header
     When The user triggers an action without a payload to display one database schema versions

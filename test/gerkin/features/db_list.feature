@@ -10,7 +10,7 @@ Feature: API endpoint allowing users to get information about Digital Registries
 
     Scenario: The user is not able to receive information for Digital Registries databases because of empty value in the header
       When The user triggers an action with an invalid payload to display information about Digital Registries databases
-      Then The operation of receiving information about the databases of Digital Registers results with an error of the invalid header
+      Then The result of an operation to receive information about the databases of Digital Registers returns an error
 
     Scenario: The user is not able to receive information for Digital Registries databases because of not including header
       When The user triggers an action without a payload to display information about Digital Registries databases

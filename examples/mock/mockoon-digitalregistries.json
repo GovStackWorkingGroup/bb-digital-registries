@@ -2071,48 +2071,11 @@
           "default": true
         },
         {
-          "uuid": "57d51e13-031f-45ba-9d1d-a27ca862f874",
-          "body": "",
-          "latency": 0,
-          "statusCode": 400,
-          "label": "Existing database. (copy)",
-          "headers": [
-            {
-              "key": "Content-Type",
-              "value": "application/json"
-            }
-          ],
-          "bodyType": "INLINE",
-          "filePath": "",
-          "databucketID": "",
-          "sendFileAsBody": false,
-          "rules": [
-            {
-              "target": "header",
-              "modifier": "Information-Mediator-Client",
-              "value": "[a-zA-Z0-9_]+\\/[a-zA-Z0-9_]+\\/[a-zA-Z0-9_]+\\/[a-zA-Z0-9_]+",
-              "invert": false,
-              "operator": "regex"
-            },
-            {
-              "target": "params",
-              "modifier": "id",
-              "value": "222",
-              "invert": false,
-              "operator": "equals"
-            }
-          ],
-          "rulesOperator": "AND",
-          "disableTemplating": false,
-          "fallbackTo404": false,
-          "default": false
-        },
-        {
           "uuid": "0a74ff82-d966-4ab8-bb68-c0bc070b75cf",
           "body": "{\"Invalid route param id\"}",
           "latency": 0,
           "statusCode": 400,
-          "label": "Route param id wrong provided",
+          "label": "Invalid route param id",
           "headers": [],
           "bodyType": "INLINE",
           "filePath": "",
@@ -2189,6 +2152,13 @@
               "value": "[a-zA-Z0-9_]+\\/[a-zA-Z0-9_]+\\/[a-zA-Z0-9_]+\\/[a-zA-Z0-9_]+",
               "invert": true,
               "operator": "regex"
+            },
+            {
+              "target": "header",
+              "modifier": "Information-Mediator-Client",
+              "value": "",
+              "invert": true,
+              "operator": "null"
             }
           ],
           "rulesOperator": "OR",
@@ -2223,6 +2193,13 @@
           "databucketID": "",
           "sendFileAsBody": false,
           "rules": [
+            {
+              "target": "header",
+              "modifier": "Information-Mediator-Client",
+              "value": "[a-zA-Z0-9_]+\\/[a-zA-Z0-9_]+\\/[a-zA-Z0-9_]+\\/[a-zA-Z0-9_]+",
+              "invert": false,
+              "operator": "regex"
+            },
             {
               "target": "header",
               "modifier": "Information-Mediator-Client",
@@ -2279,9 +2256,16 @@
               "value": "[a-zA-Z0-9_]+\\/[a-zA-Z0-9_]+\\/[a-zA-Z0-9_]+\\/[a-zA-Z0-9_]+",
               "invert": true,
               "operator": "regex"
+            },
+            {
+              "target": "header",
+              "modifier": "Information-Mediator-Client",
+              "value": "",
+              "invert": true,
+              "operator": "null"
             }
           ],
-          "rulesOperator": "OR",
+          "rulesOperator": "AND",
           "disableTemplating": false,
           "fallbackTo404": false,
           "default": false
