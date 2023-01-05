@@ -2229,6 +2229,13 @@
             {
               "target": "params",
               "modifier": "id",
+              "value": "12345",
+              "invert": false,
+              "operator": "equals"
+            },
+            {
+              "target": "params",
+              "modifier": "id",
               "value": "",
               "invert": true,
               "operator": "null"
@@ -2237,7 +2244,7 @@
           "rulesOperator": "AND",
           "disableTemplating": false,
           "fallbackTo404": false,
-          "default": true
+          "default": false
         },
         {
           "uuid": "956e2d0f-3f4f-43f1-8563-ab1a723e4c13",
@@ -2264,7 +2271,7 @@
               "operator": "regex"
             },
             {
-              "target": "query",
+              "target": "params",
               "modifier": "id",
               "value": "",
               "invert": false,
@@ -2274,7 +2281,7 @@
           "rulesOperator": "AND",
           "disableTemplating": false,
           "fallbackTo404": false,
-          "default": false
+          "default": true
         }
       ],
       "enabled": true,
@@ -2341,7 +2348,7 @@
           "uuid": "147e5971-ff62-4f76-8596-2a8af2d5c42c",
           "body": "\"At least `group_name`, `catalog_name`, `code` and `schema` fields are required in request payload\"",
           "latency": 0,
-          "statusCode": 200,
+          "statusCode": 400,
           "label": "No required data in body ",
           "headers": [
             {
