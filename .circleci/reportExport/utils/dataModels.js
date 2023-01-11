@@ -1,7 +1,6 @@
 /* eslint-disable max-classes-per-file */
 class TestCaseStep {
   constructor(start, finish, result, text, type) {
-    // TODO: Take definition from hook if possible
     this.start = start;
     this.finish = finish;
     this.result = result;

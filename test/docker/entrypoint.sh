@@ -48,7 +48,7 @@ waitForAPI() {
 
     if [ $notAvailable -eq 1 ]
     then
-      echo "Gherin tests will not be executed as API is not available."
+      echo "Gherkin tests will not be executed as API is not available."
       exit 1
     fi
     echo "API Available."
