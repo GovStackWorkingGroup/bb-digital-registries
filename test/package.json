@@ -1,11 +1,11 @@
 {
-  "dependencies": {
-    "@cucumber/cucumber": "8.9.1",
-    "cucumber-json-report-formatter": "^0.1.4",
-    "dotenv": "^16.0.3",
-    "mongodb": "^4.13.0",
-    "mongoose": "^6.8.2",
-    "pactum": "^3.3.2",
-    "wdio-cucumberjs-json-reporter": "^1.0.0"
+  "name": "bb-digital-registries-tests",
+  "version": "0.1.0",
+  "scripts": {
+    "test": "cucumber-js"
+  },
+  "devDependencies": {
+    "@cucumber/cucumber": "8.10.0",
+    "pactum": "3.3.2"
   }
 }
