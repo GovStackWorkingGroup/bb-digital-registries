@@ -1,1 +1,0 @@
-BB_NAME=digital-registry-bb docker-compose up --build
