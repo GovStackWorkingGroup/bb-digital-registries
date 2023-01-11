@@ -43,8 +43,8 @@ Launch the mock server from examples/mock folder. The instruction is located in
 
 ### Cucumber tests
 
-To install project's dependencies, navigate to folder test/gerkin and execute
-the following command:
+To install project's dependencies, navigate to folder 'test' and execute the
+following command:
 
 ```
 yarn install
