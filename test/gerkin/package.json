@@ -1,6 +1,0 @@
-{
-  "devDependencies": {
-    "@cucumber/cucumber": "^8.9.1",
-    "pactum": "^3.3.2"
-  }
-}
