@@ -1,1 +1,0 @@
-echo "EXPORTED TO MONGO"

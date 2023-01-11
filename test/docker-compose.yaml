@@ -6,40 +6,13 @@ networks:
 
 
 services:
-  healthcheck:
-    image: gherkin-test-execution
-    network_mode: "host"
-    build:
-      context: .
-      dockerfile: ./docker/Dockerfile
-    tty: true
-    healthcheck:
-      test: ["CMD", "sh", "docker/example-healthcheck.sh"]
-      interval: 1s
-      timeout: 1s
-      retries: 5
-      start_period: 1s
-
-  # Local test execution does not export values to external storrage
-  gherkin-test-local:
+  # Local test execution waits for API to be available and create test harnes report
+  gherkin-test-report:
     image: gherkin-test-execution
     build:
       context: .
       dockerfile: ./docker/Dockerfile
     command: run_tests
-    environment:
-      - RESULT_NAME=${RESULT_NAME:-example_result}
-    volumes:
-      - ./tests_result/:/app/results
-    network_mode: "host"
-
-  # Local test execution does not export values to external storrage
-  gherkin-test-export:
-    image: gherkin-test-execution
-    build:
-      context: .
-      dockerfile: ./docker/Dockerfile
-    command: export_results
     environment:
       - RESULT_NAME=${RESULT_NAME:-example_result}
       - EXPORT_RESULTS=${EXPORT_SCRIPT:-docker/export_to_mongo.sh}

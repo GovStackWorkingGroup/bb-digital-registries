@@ -58,13 +58,8 @@ waitForAPI() {
 
 case "$1" in
   "run_tests" )
-    npx cucumber-js --format message > results/${RESULT_NAME}.message
-  ;;
-  "export_results" )
     waitForAPI
     npx cucumber-js --format message > results/${RESULT_NAME}.message
-    eval $EXPORT_SCRIPT
-    
   ;;
   * )
     show_help
