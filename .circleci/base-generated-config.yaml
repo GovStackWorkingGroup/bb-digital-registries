@@ -41,7 +41,7 @@ jobs:
 workflows:
   test_everything:
     jobs:
-      # This part os replaced programatically by test executions for all example applications 
+      # This part is replaced programatically by test executions for all example applications 
       - test-example:
           name: 'example-application-name'
           path-info: 'Path to example application directory with test_entrypoint.sh'
