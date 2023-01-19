@@ -10,9 +10,9 @@ class TestCaseStep {
 }
 
 class TestCase {
-  constructor(source, gherhinDocument, steps, start, finish, name) {
+  constructor(source, gherkinDocument, steps, start, finish, name) {
     this.source = source;
-    this.gherhinDocument = gherhinDocument;
+    this.gherkinDocument = gherkinDocument;
     this.steps = steps;
     this.start = start;
     this.finish = finish;

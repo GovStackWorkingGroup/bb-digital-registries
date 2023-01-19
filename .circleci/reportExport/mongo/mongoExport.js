@@ -15,7 +15,7 @@ async function loadDatabaseConnection() {
   };
 
   const undefinedFields = Object.keys(connectionDetails)
-    .filter((item) => connectionDetails[item] === undefined);
+    .filter(!connectionDetails[item]);
 
   if (undefinedFields.length > 0) {
     throw new Error(`Some of mandatory environmental variables are missing [${undefinedFields}]`);

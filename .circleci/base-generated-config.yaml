@@ -8,7 +8,7 @@ jobs:
       path:
         type: string
     machine:
-      image: ubuntu-2004:current
+      image: ubuntu-2022:current
       docker_layer_caching: true
     environment:
       BUILDING_BLOCK: digital-registries
@@ -17,16 +17,19 @@ jobs:
     steps:
       - checkout
       - run:
-          name: Execute tests
+          name: Setup - Example application << parameters.example-app-name >> 
           command: |
             # Execute application test_entrypoint.sh in background. 
-            chmod u+x <<parameters.path >> test_entrypoint.sh &
-            cd <<parameters.path >> 
-            ./test_entrypoint.sh &
-            
+            chmod u+x << parameters.path >> test_entrypoint.sh
+            cd << parameters.path >> 
+            ./test_entrypoint.sh &        
+      - checkout 
+      - run: 
+          name: Execute tests << parameters.example-app-name >> 
+          command: |
             # Execute gherkin tests for given application 
-            cd ./../../test/
-            EXAMPLE_APPLICATION_ABSOLUTE_PATH=<<parameters.path >> docker-compose up --build gherkin-test-report
+            cd ./test/
+            EXAMPLE_APPLICATION_ABSOLUTE_PATH=<< parameters.path >> docker-compose up --build gherkin-test-report
       - checkout 
       - run:
           name: Export test results 

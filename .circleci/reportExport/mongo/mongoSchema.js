@@ -57,7 +57,7 @@ module.exports = {
         type: 'String',
       },
     },
-    gherhinDocument: {
+    gherkinDocument: {
       feature: {
         tags: {
           type: 'Array',

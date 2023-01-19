@@ -4,7 +4,7 @@
   "description": "Export results of test harness to external storage",
   "main": "index.js",
   "author": "GovStack",
-  "license": "MIT",
+  "license": "Apache License 2.0",
   "scripts": {
     "export-mongo": "node ./mongo/mongoExport"
   },

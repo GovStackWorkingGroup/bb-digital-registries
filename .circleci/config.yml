@@ -24,7 +24,7 @@ jobs:
           root: workspace
           paths:
             - generated.yml
-  setup:
+  execute-tests:
     executor: continuation/default
     steps:
       - attach_workspace:
