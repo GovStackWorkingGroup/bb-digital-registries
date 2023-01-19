@@ -37,6 +37,6 @@ workflows:
   test_everything:
     jobs:
       - create-config
-      - setup:
+      - execute-tests:
           requires:
             - create-config
