@@ -6,6 +6,18 @@ let userVariables = {};
 let specDataUpdateEntries;
 
 const baseUrl = `${localhost}data/registry1/version1/update-entries`;
+const validRequestFunction = () =>
+  specDataUpdateEntries
+    .put(baseUrl)
+    .withHeaders(`${header.key}`, `${header.value}`)
+    .withBody({
+      query: {
+        content: userVariables,
+      },
+      write: {
+        content: userVariables,
+      },
+    });
 
 Before(() => {
   specDataUpdateEntries = pactum.spec();
@@ -13,89 +25,41 @@ Before(() => {
 
 // Scenario: The user successfully updates two existing records in the Digital Registries database
 Given(
-  'The user wants to update multiple records with first name "Alfie" in the Digital Registries database',
-  () => {
-    userVariables = {
+  'The user wants to update multiple records in the Digital Registries database and those records exist',
+  () =>
+    (userVariables = {
       ID: 'EE378627348834',
       FirstName: 'Alfie',
       LastName: 'Grande',
       BirthCertificateID: 'RR-1234567889',
-    };
-
-    return userVariables;
-  }
+    })
 );
 
-Given('The records with first name "Alfie" exist in the database', () => {
-  return 'The records with first name "Alfie" exist in the database';
+When('The user triggers an action to update records in the database', () => {
+  validRequestFunction();
 });
 
-When(
-  'The user triggers an action to update records with first name "Alfie" in the database',
-  () => {
-    specDataUpdateEntries
-      .put(baseUrl)
-      .withHeaders(`${header.key}`, `${header.value}`)
-      .withBody({
-        query: {
-          content: userVariables,
-        },
-        write: {
-          content: userVariables,
-        },
-      });
-  }
-);
+Then('Operation to update records finishes successfully', async () => {
+  await specDataUpdateEntries.toss();
+  specDataUpdateEntries.response().should.have.status(200);
+});
 
-Then(
-  'Operation to update records with first name "Alfie" finishes successfully',
-  async () => {
-    await specDataUpdateEntries.toss();
-    specDataUpdateEntries.response().should.have.status(200);
-  }
-);
-
-// Scenario: The user is not able to update two records which do not exist in the Digital Registries database
+// Scenario: The user is not able to update two records that do not exist in the Digital Registries database
 Given(
-  'The user wants to update multiple records with first name "Jerry" in the Digital Registries database',
-  () => {
-    userVariables = {
+  'The user wants to update multiple records in the Digital Registries database and those records do not exist',
+  () =>
+    (userVariables = {
       ID: 'EE378627348834',
       FirstName: 'Jerry',
       LastName: 'Blake',
       BirthCertificateID: 'RR-1234567889',
-    };
-
-    return userVariables;
-  }
+    })
 );
 
-Given(
-  'The records with first name "Jerry" do not exist in the database',
-  () => {
-    return 'The records with first name "Jerry" do not exist in the database';
-  }
-);
-
-When(
-  'The user triggers an action to update records with first name "Jerry" in the database',
-  () => {
-    specDataUpdateEntries
-      .put(baseUrl)
-      .withHeaders(`${header.key}`, `${header.value}`)
-      .withBody({
-        query: {
-          content: userVariables,
-        },
-        write: {
-          content: userVariables,
-        },
-      });
-  }
-);
+// "When" is already written in line 38-40
 
 Then(
-  `The result of an operation to update records with the first name 'Jerry' returns an error`,
+  `The result of an operation to update records returns an error`,
   async () => {
     await specDataUpdateEntries.toss();
     specDataUpdateEntries.response().should.have.status(404);
@@ -107,21 +71,18 @@ Then(
 
 // Scenario: The user is not able to update two records in the Digital Registries database because of an invalid request
 Given(
-  'The user wants to update multiple records with name "Jasmine" in the Digital Registries database',
-  () => {
-    userVariables = {
+  'The user wants to update multiple records in the Digital Registries database',
+  () =>
+    (userVariables = {
       ID: 'EE378627348834',
       FirstName: 'Jasmine',
       LastName: 'Sun',
-      BirthCertificateID: 'RR-1234567889',
-    };
-
-    return userVariables;
-  }
+      BirthCertificateID: null,
+    })
 );
 
 When(
-  'The user triggers an action to update records with name "Jasmine" in the database',
+  'The user triggers an action to update records in the database with an invalid request',
   () => {
     specDataUpdateEntries
       .put(baseUrl)
@@ -135,7 +96,7 @@ When(
 );
 
 Then(
-  `The result of an operation to update records with the first name "Jasmine" returns an error`,
+  `The result of an operation to update records returns an error because of the invalid request`,
   async () => {
     await specDataUpdateEntries.toss();
     specDataUpdateEntries.response().should.have.status(400);
@@ -144,40 +105,18 @@ Then(
       .should.have.body('{\n  "Query not provided."\n}');
   }
 );
-// Scenario: The user is not able to update two records in the Digital Registries database because of a missing users data
-Given(
-  `The user wants to update multiple records with name "Joanna" in the Digital Registries database`,
-  () => {
-    userVariables = {
-      ID: 'EE378623348834',
-      FirstName: 'Joanna',
-      LastName: 'Moon',
-      BirthCertificateID: null,
-    };
-
-    return userVariables;
-  }
-);
+// Scenario: The user is not able to update two records in the Digital Registries database because of missing users data
+// "Given" is already written in line 73-82
 
 When(
-  `The user triggers an action to update records with name "Joanna" in the database`,
+  `The user triggers an action to update records in the database with missing users data`,
   () => {
-    specDataUpdateEntries
-      .put(baseUrl)
-      .withHeaders(`${header.key}`, `${header.value}`)
-      .withBody({
-        query: {
-          content: userVariables,
-        },
-        write: {
-          content: userVariables,
-        },
-      });
+    validRequestFunction();
   }
 );
 
 Then(
-  `The result of an operation to update records with the first name "Joanna" returns an error`,
+  `The result of an operation to update records returns an error because of missing users data`,
   async () => {
     await specDataUpdateEntries.toss();
     specDataUpdateEntries.response().should.have.status(400);

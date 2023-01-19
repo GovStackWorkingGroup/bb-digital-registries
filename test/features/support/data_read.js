@@ -13,31 +13,22 @@ Before(() => {
 
 // Scenario: The user receives one searched record from the Digital Registries database
 Given(
-  'The user wants to search for one record "John Benz" in the Digital Registries database',
-  () => {
-    return (searchedRecord = 'John Benz');
-  }
+  'The user wants to search for one record in the Digital Registries database and the searched record exists in the database',
+  () => (searchedRecord = 'John Benz')
 );
 
-Given('The searched record exists in the database', () => {
-  return 'The searched record exists in the database';
-});
-
-When(
-  'The user triggers an action to search record "John Benz" in the database',
-  () => {
-    specDataRead
-      .post(`${baseUrl}`)
-      .withHeaders(`${header.key}`, `${header.value}`)
-      .withBody({
-        query: {
-          content: {
-            FirstName: searchedRecord,
-          },
+When('The user triggers an action to search record in the database', () => {
+  specDataRead
+    .post(`${baseUrl}`)
+    .withHeaders(`${header.key}`, `${header.value}`)
+    .withBody({
+      query: {
+        content: {
+          FirstName: searchedRecord,
         },
-      });
-  }
-);
+      },
+    });
+});
 
 Then('The user receives a searched record', async () => {
   await specDataRead.toss();
@@ -52,33 +43,13 @@ Then('The user receives a searched record', async () => {
   });
 });
 
-//   Scenario: The user does not receive searched record from the Digital Registries database
+// Scenario: The user does not receive searched record from the Digital Registries database
 Given(
-  'The user wants to search for one record "David Belt" in the Digital Registries database',
-  () => {
-    return (searchedRecord = 'David Belt');
-  }
+  'The user wants to search for one record in the Digital Registries database and the searched record does not exist in the database',
+  () => (searchedRecord = 'David Belt')
 );
 
-Given('The searched record does not exist in the database', () => {
-  return 'The searched record does not exist in the database';
-});
-
-When(
-  'The user triggers an action to search record "David Belt" in the database',
-  () => {
-    specDataRead
-      .post(`${baseUrl}`)
-      .withHeaders(`${header.key}`, `${header.value}`)
-      .withBody({
-        query: {
-          content: {
-            FirstName: searchedRecord,
-          },
-        },
-      });
-  }
-);
+// "When" is already written in line 20-31
 
 Then(
   'The user receives a message that there is no searched record in the database',
@@ -88,27 +59,32 @@ Then(
   }
 );
 
-//   Scenario: The user is not able to receive one searched record from the Digital Registries database because of an invalid request
+// Scenario: The user is not able to receive one searched record from the Digital Registries database because of an invalid request
 Given(
-  'The user wants to search for one record "Ali Benz" in the Digital Registries database',
+  'The user wants to search for one record in the Digital Registries database',
+  () => (searchedRecord = 'Ali Benz')
+);
+
+When(
+  'The user triggers an action to search a record in the database with an invalid request',
   () => {
-    return (searchedRecord = 'Ali Benz');
+    specDataRead.post(`${baseUrl}`).withBody({
+      query: {
+        content: {
+          FirstName: searchedRecord,
+        },
+      },
+    });
   }
 );
-When('The user triggers an action to search a record in the database', () => {
-  specDataRead.post(`${baseUrl}`).withBody({
-    query: {
-      content: {
-        FirstName: searchedRecord,
-      },
-    },
-  });
-});
 
-Then('Operation results for {string} is an error', async string => {
-  await specDataRead.toss();
-  specDataRead.response().should.have.status(400);
-});
+Then(
+  'Operation results for receiving one searched record is an error',
+  async () => {
+    await specDataRead.toss();
+    specDataRead.response().should.have.status(400);
+  }
+);
 
 After(() => {
   specDataRead.end();

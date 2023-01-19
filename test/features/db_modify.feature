@@ -7,7 +7,7 @@ Feature: API endpoint allowing users to create or modify the Digital Registries 
   Scenario: The user successfully creates the Digital Registries database schema
     Given The requested database schema does not exist in the database
     When The user triggers an action to create a database schema
-    Then Operation to create new database schema finishes successfully
+    Then Operation to create a new database schema finishes successfully
 
   Scenario: The user successfully modifies the Digital Registries database schema
     Given The requested database schema exists in the database

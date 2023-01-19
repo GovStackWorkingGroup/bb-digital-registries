@@ -13,29 +13,19 @@ Before(() => {
 
 // Scenario: The user successfully deletes the Digital Registries schema
 Given(
-  'User wants to delete the Digital Registries schema with id=12345',
-  () => {
-    databaseSchemaId = '12345';
-    return databaseSchemaId;
-  }
+  'User wants to delete the Digital Registries schema and database schema exists',
+  () => (databaseSchemaId = '12345')
 );
 
-Given('The requested database schema exists', () => {
-  return 'The requested database schema exists';
+When('The user triggers an action to delete the database schema', () => {
+  specDatabaseDelete
+    .delete(baseUrl)
+    .withHeaders(`${header.key}`, `${header.value}`)
+    .withPathParams('id', databaseSchemaId);
 });
 
-When(
-  'The user triggers an action to delete the database schema with id=12345',
-  () => {
-    specDatabaseDelete
-      .delete(baseUrl)
-      .withHeaders(`${header.key}`, `${header.value}`)
-      .withPathParams('id', databaseSchemaId);
-  }
-);
-
 Then(
-  'Operation to a delete database schema finishes successfully',
+  'Operation to delete the database schema finishes successfully',
   async () => {
     await specDatabaseDelete.toss();
     specDatabaseDelete.response().should.have.status(200);
@@ -43,28 +33,16 @@ Then(
   }
 );
 
-// Scenario: The user is not able to delete the Digital Registries schema because schema does not exist
-Given('User wants to delete the Digital Registries schema with id=12', () => {
-  databaseSchemaId = '12';
-  return databaseSchemaId;
-});
-
-Given('The requested database schema does not exists', () => {
-  return 'The requested database schema does not exists';
-});
-
-When(
-  'The user triggers an action to delete the database schema with id=12',
-  () => {
-    specDatabaseDelete
-      .delete(baseUrl)
-      .withHeaders(`${header.key}`, `${header.value}`)
-      .withPathParams('id', databaseSchemaId);
-  }
+// Scenario: The user is not able to delete the Digital Registries schema because the schema does not exist
+Given(
+  'User wants to delete the Digital Registries schema and the database schema does not exist',
+  () => (databaseSchemaId = '12')
 );
 
+// "When" is already written in line 20-25
+
 Then(
-  'Operation to delete a database schema finishes successfully',
+  'Operation to delete a database schema returns an error because the schema does not exist',
   async () => {
     await specDatabaseDelete.toss();
     specDatabaseDelete.response().should.have.status(400);

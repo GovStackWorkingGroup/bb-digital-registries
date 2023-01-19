@@ -13,21 +13,12 @@ Before(() => {
 
 // Scenario: The user receives a message that the record exists in the Digital Registries database
 Given(
-  `The user wants to check if a record with the first name "John Helmut" exists in the Digital Registries database`,
-  () => {
-    return (searchedRecord = 'John Helmut');
-  }
-);
-
-Given(
-  `The record with the first name "John Helmut" is available in the database`,
-  () => {
-    return `The record with the first name "John Helmut" is available in the database`;
-  }
+  `The user wants to check if a record exists in the Digital Registries database`,
+  () => (searchedRecord = 'John Helmut')
 );
 
 When(
-  'The user triggers an action to check if the record with the first name "John Helmut" already exists in the database',
+  'The user triggers an action to check if a record exists in the database',
   () => {
     specDataExist
       .post(`${baseUrl}`)
@@ -42,13 +33,16 @@ When(
   }
 );
 
-Then('Operation finishes for {string} successfully', async string => {
-  await specDataExist.toss();
-  specDataExist.response().should.have.status(200);
-});
+Then(
+  'Operation to receive a message that a record exists in the database finishes successfully',
+  async () => {
+    await specDataExist.toss();
+    specDataExist.response().should.have.status(200);
+  }
+);
 
 Then(
-  'The user receives an information that the record exists in the database',
+  'The user receives information that a record exists in the database',
   () => {
     specDataExist.response().should.have.jsonLike({
       answer: {
@@ -61,42 +55,16 @@ Then(
 
 // Scenario: The user receives the message that the record does not exist in the Digital Registries database
 Given(
-  `The user wants to check if a record with the first name "Adrien" exists in the Digital Registries database`,
-  () => {
-    return (searchedRecord = 'Adrien');
-  }
+  `The user wants to check if the record exists in the Digital Registries database`,
+  () => (searchedRecord = 'Adrien')
 );
 
-Given(
-  `The record with the first name "Adrien" is not available in the database`,
-  () => {
-    return `The record with the first name "Adrien" is not available in the database`;
-  }
-);
+// "When" is already written in line 20-34
 
-When(
-  `The user triggers an action to check if the record with the first name "Adrien" exists in the database`,
-  () => {
-    specDataExist
-      .post(`${baseUrl}`)
-      .withHeaders(`${header.key}`, `${header.value}`)
-      .withBody({
-        query: {
-          content: {
-            FirstName: searchedRecord,
-          },
-        },
-      });
-  }
-);
-
-Then('Operation for {string} finishes successfully', async string => {
-  await specDataExist.toss();
-  specDataExist.response().should.have.status(200);
-});
+// "Then" is already written in line 36-42
 
 Then(
-  'The user receives an information that the record does not exist in the database',
+  'The user receives information that the record does not exist in the database',
   () => {
     specDataExist.response().should.have.jsonLike({
       answer: {
@@ -108,15 +76,10 @@ Then(
 );
 
 // Scenario: The user is not able to check if the record exists in the Digital Registries database because of an invalid request
-Given(
-  `The user wants to check if a record with the first name "Anna" exists in the Digital Registries database`,
-  () => {
-    return (searchedRecord = 'Anna');
-  }
-);
+// Given already written in line 15-18
 
 When(
-  'The user triggers an action to check if the record with the first name "Anna" exists in the database',
+  'The user triggers an action to check if the record exists in the database with an invalid request',
   () => {
     specDataExist.post(`${baseUrl}`).withBody({
       query: {
@@ -128,13 +91,10 @@ When(
   }
 );
 
-Then(
-  'Operation results for \\/data\\/registryname\\/versionnumber\\/exists is an error',
-  async () => {
-    await specDataExist.toss();
-    return specDataExist.response().should.have.status(400);
-  }
-);
+Then('Operation returns an error because of an invalid request', async () => {
+  await specDataExist.toss();
+  return specDataExist.response().should.have.status(400);
+});
 
 After(() => {
   specDataExist.end();

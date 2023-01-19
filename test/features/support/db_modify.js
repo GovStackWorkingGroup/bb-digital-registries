@@ -126,7 +126,7 @@ When('The user triggers an action to create a database schema', () => {
 });
 
 Then(
-  'Operation to create new database schema finishes successfully',
+  'Operation to create a new database schema finishes successfully',
   async () => {
     await specDatabaseModify.toss();
     specDatabaseModify.response().should.have.status(200);
