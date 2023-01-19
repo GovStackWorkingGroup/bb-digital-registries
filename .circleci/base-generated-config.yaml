@@ -8,7 +8,7 @@ jobs:
       path:
         type: string
     machine:
-      image: ubuntu-2022:current
+      image: ubuntu-2004:current
       docker_layer_caching: true
     environment:
       BUILDING_BLOCK: digital-registries
