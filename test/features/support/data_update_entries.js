@@ -82,7 +82,7 @@ Given(
 );
 
 When(
-  'The user triggers an action to update records in the database with an invalid request',
+  'The user triggers an action with an invalid request to update records in the database',
   () => {
     specDataUpdateEntries
       .put(baseUrl)

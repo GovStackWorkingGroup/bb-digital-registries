@@ -98,7 +98,7 @@ When(
 );
 
 Then(
-  'Operation results to update a record is an error because of an invalid request',
+  'The result of the operation to update a record returns an error due to an invalid request',
   async () => {
     await specDataUpdate.toss();
     specDataUpdate.response().should.have.status(400);

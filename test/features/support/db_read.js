@@ -141,7 +141,7 @@ Then(
   }
 );
 
-// Scenario: The user is not able to receive any Digital Registries database information with the schema version because of an empty value in the header
+// The user is not able to receive database information from Digital Registries with the schema version because there is no header included
 When(
   'The user triggers an action with an invalid payload to display one database schema version',
   () => {

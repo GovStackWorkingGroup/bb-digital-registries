@@ -13,7 +13,7 @@ Feature: API endpoint allowing users to update multiple records in the Digital R
 
   Scenario: The user is not able to update two records in the Digital Registries database because of an invalid request
     Given The user wants to update multiple records in the Digital Registries database
-    When The user triggers an action to update records in the database with an invalid request
+    When The user triggers an action with an invalid request to update records in the database
     Then The result of an operation to update records returns an error because of the invalid request
 
   Scenario: The user is not able to update two records in the Digital Registries database because of missing users data

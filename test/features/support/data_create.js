@@ -108,7 +108,7 @@ When(
 );
 
 Then(
-  'The operation result is an error for creating because of an invalid request',
+  'The result of the operation is an error due to an invalid request',
   async () => {
     await specDataCreate.toss();
     specDataCreate.response().should.have.status(400);

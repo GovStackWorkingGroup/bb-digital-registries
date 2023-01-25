@@ -1,4 +1,4 @@
-Feature: API endpoint allowing users to delete Digital registry schema.
+Feature: API endpoint allowing users to delete Digital Registries schema.
   Request endpoint: DELETE /database/{id}/
 
   Scenario: The user successfully deletes the Digital Registries schema

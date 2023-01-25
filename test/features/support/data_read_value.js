@@ -63,7 +63,7 @@ Given(
 );
 
 When(
-  'The user triggers an action to receive the first name of searched user from the database with an invalid request',
+  'The user triggers an action with an invalid request to receive the first name of searched user from the Digital Registries database',
   () => {
     specDataReadValue.get(
       `${baseUrl(searchedRecord, searchedFieldParameter, searchedFieldExt)}`

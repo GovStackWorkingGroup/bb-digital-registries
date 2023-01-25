@@ -14,4 +14,4 @@ Feature: API endpoint allowing users to update a new record in the Digital Regis
   Scenario: The user is not able to update a record in the Digital Registries database because of an invalid request
     Given The user wants to update a record in the Digital Registries database and a record exists
     When The user triggers an action to update a new record in the database with an invalid request
-    Then Operation results to update a record is an error because of an invalid request
+    Then The result of the operation to update a record returns an error due to an invalid request

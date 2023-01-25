@@ -79,7 +79,7 @@ Then(
 // Given already written in line 15-18
 
 When(
-  'The user triggers an action to check if the record exists in the database with an invalid request',
+  'The user triggers an action with an invalid request to check if the record exists in the database',
   () => {
     specDataExist.post(`${baseUrl}`).withBody({
       query: {

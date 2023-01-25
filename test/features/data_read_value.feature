@@ -13,5 +13,5 @@ Feature: API endpoint allowing users to search for one record's field value in t
 
   Scenario: The user is not able to receive the first name of the user from the Digital Registries database because of an invalid request
     Given The user wants to search for the first name of the user in the Digital Registries database
-    When The user triggers an action to receive the first name of searched user from the database with an invalid request
+    When The user triggers an action with an invalid request to receive the first name of searched user from the Digital Registries database
     Then Operation results for receive the first name of the user is an error

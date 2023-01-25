@@ -17,18 +17,21 @@ Given(
   () => (searchedRecord = 'John Benz')
 );
 
-When('The user triggers an action to search record in the database', () => {
-  specDataRead
-    .post(`${baseUrl}`)
-    .withHeaders(`${header.key}`, `${header.value}`)
-    .withBody({
-      query: {
-        content: {
-          FirstName: searchedRecord,
+When(
+  'The user triggers an action to search for a record in the database',
+  () => {
+    specDataRead
+      .post(`${baseUrl}`)
+      .withHeaders(`${header.key}`, `${header.value}`)
+      .withBody({
+        query: {
+          content: {
+            FirstName: searchedRecord,
+          },
         },
-      },
-    });
-});
+      });
+  }
+);
 
 Then('The user receives a searched record', async () => {
   await specDataRead.toss();
@@ -66,7 +69,7 @@ Given(
 );
 
 When(
-  'The user triggers an action to search a record in the database with an invalid request',
+  'The user triggers an action with an invalid request to search for a record in the Digital Registries database',
   () => {
     specDataRead.post(`${baseUrl}`).withBody({
       query: {

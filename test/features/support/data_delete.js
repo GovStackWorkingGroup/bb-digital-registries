@@ -44,7 +44,7 @@ Given(
 );
 
 When(
-  'The user triggers an action to delete the database the record which does not exist',
+  'The user triggers an action to delete the database the record that does not exist',
   () => validRequestFunction()
 );
 
