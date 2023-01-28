@@ -14,11 +14,10 @@ services:
       dockerfile: ./docker/Dockerfile
     command: run_tests
     environment:
-      - RESULT_NAME=${RESULT_NAME:-example_result}
-      - EXPORT_RESULTS=${EXPORT_SCRIPT:-docker/export_to_mongo.sh}
+      - RESULT_NAME=${RESULT_NAME:-example_result.message}
       - API_URL=${API_URL:-localhost:3333/healthcheck}
     volumes:
-      - ./tests_result/:/app/results
+      - ./result/:/app/results
     network_mode: "host"
 
 volumes:

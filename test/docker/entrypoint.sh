@@ -1,5 +1,5 @@
 #!/bin/sh
-RESULTS_FILE=results/${RESULT_NAME}.message
+RESULTS_FILE=results/${RESULT_NAME}
 EXPORT_SCRIPT="${EXPORT_SCRIPT_PAT:-docker/export_to_mongo.sh}"
 API_HEALTHCHECK_RETRIES=60
 API_HEALTHCHECK_INTERVAL=2
@@ -59,7 +59,7 @@ waitForAPI() {
 case "$1" in
   "run_tests" )
     waitForAPI
-    npx cucumber-js --format message > results/${RESULT_NAME}.message
+    npx cucumber-js --format message > ${RESULTS_FILE}
   ;;
   * )
     show_help
