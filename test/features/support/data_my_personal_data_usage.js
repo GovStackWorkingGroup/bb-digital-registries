@@ -20,20 +20,20 @@ Before(() => {
   databaseID = 'MCTS';
 });
 
-// Scenario: The user receives a list with all records that had read his personal data in the Digital Registries database
+// Scenario: The user gets a list of all records that have read their personal data in the Digital Registries database
 Given(
-  'The user wants to check who had read his personal data in the Digital Registries database and there is a list of users who did it',
+  'The user wants to check who has read his personal data in the Digital Registries database and there is a list of users who have done so',
   () => (userID = '282392302')
 );
 
 When(
-  'The user triggers an action to receive a list of users who read his personal data',
+  'The user sends a valid request and receives a list of users who have read his personal data',
   () => {
     correctUrlRequest(userID, databaseID);
   }
 );
 
-Then('The user receives a list with all records', async () => {
+Then('The user receives a list of all records', async () => {
   await specDataMyPersonalDataUsage.toss();
   specDataMyPersonalDataUsage.response().should.have.status(200);
   specDataMyPersonalDataUsage.response().should.have.jsonLike([
@@ -54,16 +54,16 @@ Then('The user receives a list with all records', async () => {
   ]);
 });
 
-// Scenario: The user receives an empty list of records that had read his personal data from the Digital Registries database
+// Scenario: The user receives an empty list of records that have read his personal data from the Digital Registries database
 Given(
-  'The user wants to check who had read his personal data in the Digital Registries database and there is an empty list of users who did it',
+  'The user wants to check who has read his personal data from Digital Registries database and there is an empty list of users who have done so',
   () => (userID = '748382347')
 );
 
 // "When" is already written in line 29-32
 
 Then(
-  'The user receives an empty list because there are no records in the database about other users who read his personal data',
+  'The user receives an empty list because there are no records in the database about other users who have read his personal data',
   async () => {
     await specDataMyPersonalDataUsage.toss();
     specDataMyPersonalDataUsage.response().should.have.status(200);
@@ -71,14 +71,14 @@ Then(
   }
 );
 
-// Scenario: The user is not able to receive data from the Digital Registries database because of an invalid request
+// Scenario: The user is unable to obtain data from the Digital Registries database due to an invalid request
 Given(
-  'The user wants to check who had read his personal data in the Digital Registries database',
+  'The user wants to check who has read his personal data in the Digital Registries database',
   () => (userID = '3782347')
 );
 
 When(
-  'The user triggers an action to receive a list of users who read his personal data with an invalid request',
+  'The user sends an invalid request and receives a list of users who have read his personal data',
   () => {
     specDataMyPersonalDataUsage
       .get(baseUrl)
@@ -87,7 +87,7 @@ When(
   }
 );
 
-Then('Operation to receive a list of results is an error', async () => {
+Then('The operation to get a list of results is an error', async () => {
   await specDataMyPersonalDataUsage.toss();
   specDataMyPersonalDataUsage.response().should.have.status(400);
   specDataMyPersonalDataUsage

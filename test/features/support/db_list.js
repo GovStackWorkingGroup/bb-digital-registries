@@ -104,40 +104,38 @@ Before(() => {
   specDatabaseList = pactum.spec();
 });
 
-// Background: The user wants to display information about all Digital Registries databases
+// Background: User wants to view information about all Digital Registries databases
 Given(
-  'The user wants to display information about all Digital Registries databases',
-  () => {
-    return 'The user wants to display information about all Digital Registries databases';
-  }
+  'User wants to view information about all Digital Registries databases',
+  () => 'User wants to view information about all Digital Registries databases'
 );
 
 // Scenario: The user receives information about Digital Registries databases
 When(
-  'The user triggers an action with a valid payload to display information about Digital Registries databases',
-  () => {
+  'The user sends a valid request to view information about Digital Registries databases',
+  () =>
     specDatabaseList
       .get(baseUrl)
-      .withHeaders(`${header.key}`, `${header.value}`);
-  }
-);
-
-Then('The user received a list of Digital Registries databases', async () => {
-  await specDatabaseList.toss();
-  specDatabaseList.response().should.have.status(200);
-  specDatabaseList.response().should.have.jsonLike(exampleResponseValue);
-});
-
-// Scenario: The user is not able to receive information for Digital Registries databases because of an empty value in the header
-When(
-  'The user triggers an action with an invalid payload to display information about Digital Registries databases',
-  () => {
-    specDatabaseList.get(baseUrl).withHeaders(`${header.key}`, '');
-  }
+      .withHeaders(`${header.key}`, `${header.value}`)
 );
 
 Then(
-  'The result of an operation to receive information about the databases of Digital Registers returns an error',
+  'The user has received a list of Digital Registries databases',
+  async () => {
+    await specDatabaseList.toss();
+    specDatabaseList.response().should.have.status(200);
+    specDatabaseList.response().should.have.jsonLike(exampleResponseValue);
+  }
+);
+
+// Scenario: The user is unable to obtain information about Digital Registries databases because the header is empty
+When(
+  'The user sends an invalid request to view information about Digital Registries databases',
+  () => specDatabaseList.get(baseUrl).withHeaders(`${header.key}`, '')
+);
+
+Then(
+  'The result of an operation to receive information about the Digital Registers databases returns an error',
   async () => {
     await specDatabaseList.toss();
     specDatabaseList.response().should.have.status(400);
@@ -149,16 +147,14 @@ Then(
   }
 );
 
-// Scenario: The user is not able to receive information for Digital Registries databases because of not include header
+// Scenario: The user is unable to receive information about Digital Registries databases because the header is not included
 When(
-  'The user triggers an action without a payload to display information about Digital Registries databases',
-  () => {
-    specDatabaseList.get(baseUrl);
-  }
+  'The user sends a request without payload to view information about Digital Registries databases',
+  () => specDatabaseList.get(baseUrl)
 );
 
 Then(
-  'The operation result of receiving information about the databases of Digital Registries is an error',
+  'The result of receiving information about databases of Digital Registries is an error',
   async () => {
     await specDatabaseList.toss();
     specDatabaseList.response().should.have.status(400);

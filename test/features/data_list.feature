@@ -1,17 +1,17 @@
-Feature: API endpoint allowing users to search multiple records in the Digital Registries database.
+Feature: API endpoint that allows users to search multiple records in Digital Registries database.
   Request endpoint: GET /data/{registryname}/{versionnumber}/
 
-  Scenario: The user receives a list with all searched records in the Digital Registries database
-    Given The user wants to search for a specific value and the searched value exists in several records in the database
-    When The user triggers an action to search in the database
-    Then The user receives a list with all records including searched value
+  Scenario: The user gets a list of all searched records in the Digital Registries database
+    Given The user wants to search for a specific value and the searched value exists in multiple records in the database
+    When The user sends a valid request to search the database
+    Then The user receives a list of all records that contain the searched value
 
   Scenario: The user receives an empty list from the Digital Registries database
     Given The user wants to search for a specific value and the searched value does not exist in any record in the database
-    When The user triggers an action to search in the database
-    Then The user receives an empty list because there is no record including the searched value in the database
+    When The user sends a valid request to search the database
+    Then The user receives an empty list because there is no record in the database that contains the searched value
 
-  Scenario: The user is not able to search for the records in the Digital Registries database because of an invalid request
-    Given The user wants to search for a specific value and the searched value exists in several records in the database
-    When The user triggers an action to search in the database and send an invalid request
-    Then Operation results in an error because of an invalid request
+  Scenario: The user cannot search for the records in the Digital Registries database due to an invalid query
+    Given The user wants to search for a specific value and the searched value exists in multiple records in the database
+    When The user sends an invalid request to search the database
+    Then The operation results in an error due to an invalid query

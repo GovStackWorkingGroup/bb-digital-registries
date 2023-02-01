@@ -13,7 +13,7 @@ Before(() => {
 
 // Scenario: The user successfully creates a new record in the Digital Registries database
 Given(
-  'The user wants to create a new record or update an existing one if already exists in the Digital Registries database',
+  'The user wants to create a new record or update an existing record if it already exists in the Digital Registries database',
   () =>
     (userVariables = {
       ID: 'EE378627348834',
@@ -29,8 +29,8 @@ Given(
 );
 
 When(
-  'The user triggers an action to create or update a record in the database',
-  () => {
+  'The user sends a valid request to create or update a record in the database',
+  () =>
     specDataUpdateOrCreate
       .post(baseUrl)
       .withHeaders(`${header.key}`, `${header.value}`)
@@ -41,19 +41,21 @@ When(
         write: {
           content: userVariables,
         },
-      });
+      })
+);
+
+Then(
+  'The process of creating the new record has been successfully completed',
+  async () => {
+    await specDataUpdateOrCreate.toss();
+    specDataUpdateOrCreate.response().should.have.status(200);
+    specDataUpdateOrCreate.response().should.have.jsonLike({
+      content: userVariables,
+    });
   }
 );
 
-Then('Operation to create the new record finishes successfully', async () => {
-  await specDataUpdateOrCreate.toss();
-  specDataUpdateOrCreate.response().should.have.status(200);
-  specDataUpdateOrCreate.response().should.have.jsonLike({
-    content: userVariables,
-  });
-});
-
-// Scenario: The user successfully updates the already existing record in the Digital Registries database
+// Scenario: The user successfully updates an existing record in the Digital Registries database
 Given(
   'The user wants to update an existing record in the Digital Registries database',
   () =>
@@ -72,20 +74,23 @@ Given(
 
 // "When" is already written in line 31-46
 
-Then('Operation to update the record finishes successfully', async () => {
-  await specDataUpdateOrCreate.toss();
-  specDataUpdateOrCreate.response().should.have.status(200);
-  specDataUpdateOrCreate.response().should.have.jsonLike({
-    content: userVariables,
-  });
-});
+Then(
+  'The process of updating the record has been successfully completed',
+  async () => {
+    await specDataUpdateOrCreate.toss();
+    specDataUpdateOrCreate.response().should.have.status(200);
+    specDataUpdateOrCreate.response().should.have.jsonLike({
+      content: userVariables,
+    });
+  }
+);
 
-// Scenario: The user is not able to create/update a record in the Digital Registries database because of an invalid request
+// Scenario: The user is unable to create/update a record in the Digital Registries database because the request is invalid
 // "Given" already writtennin the line 15-24
 
 When(
-  'The user triggers an action to create or update a record in the database with an invalid request',
-  () => {
+  'The user sends an invalid request to create or update a record in the database',
+  () =>
     specDataUpdateOrCreate
       .post(baseUrl)
       .withHeaders(`${header.key}`, `${header.value}`)
@@ -93,12 +98,11 @@ When(
         query: {
           content: userVariables,
         },
-      });
-  }
+      })
 );
 
 Then(
-  `The result of an operation to create\\/update the record returns an error because of an invalid request`,
+  `The result of an operation to create\\/update the record returns an error because the request is invalid`,
   async () => {
     await specDataUpdateOrCreate.toss();
     specDataUpdateOrCreate.response().should.have.status(400);

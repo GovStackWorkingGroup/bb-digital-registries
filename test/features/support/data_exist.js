@@ -18,8 +18,8 @@ Given(
 );
 
 When(
-  'The user triggers an action to check if a record exists in the database',
-  () => {
+  'The user sends a valid request to check if a record exists in the database',
+  () =>
     specDataExist
       .post(`${baseUrl}`)
       .withHeaders(`${header.key}`, `${header.value}`)
@@ -29,12 +29,11 @@ When(
             FirstName: searchedRecord,
           },
         },
-      });
-  }
+      })
 );
 
 Then(
-  'Operation to receive a message that a record exists in the database finishes successfully',
+  'The process of receiving a message that a record exists in the database completes successfully',
   async () => {
     await specDataExist.toss();
     specDataExist.response().should.have.status(200);
@@ -42,15 +41,14 @@ Then(
 );
 
 Then(
-  'The user receives information that a record exists in the database',
-  () => {
+  'The user receives the information that a record exists in the database',
+  () =>
     specDataExist.response().should.have.jsonLike({
       answer: {
         status: true,
         message: 'Object found from database',
       },
-    });
-  }
+    })
 );
 
 // Scenario: The user receives the message that the record does not exist in the Digital Registries database
@@ -64,36 +62,34 @@ Given(
 // "Then" is already written in line 36-42
 
 Then(
-  'The user receives information that the record does not exist in the database',
-  () => {
+  'The user receives the information that the record does not exist in the database',
+  () =>
     specDataExist.response().should.have.jsonLike({
       answer: {
         status: false,
         message: 'Object not found from database',
       },
-    });
-  }
+    })
 );
 
-// Scenario: The user is not able to check if the record exists in the Digital Registries database because of an invalid request
+// Scenario: The user is unable to verify that the record exists in the Digital Registries database due to an invalid request
 // Given already written in line 15-18
 
 When(
-  'The user triggers an action with an invalid request to check if the record exists in the database',
-  () => {
+  'The user sends an invalid request to check if the record exists in the database',
+  () =>
     specDataExist.post(`${baseUrl}`).withBody({
       query: {
         content: {
           FirstName: searchedRecord,
         },
       },
-    });
-  }
+    })
 );
 
-Then('Operation returns an error because of an invalid request', async () => {
+Then('The operation returns an error due to an invalid request', async () => {
   await specDataExist.toss();
-  return specDataExist.response().should.have.status(400);
+  specDataExist.response().should.have.status(400);
 });
 
 After(() => {

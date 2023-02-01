@@ -31,21 +31,23 @@ Given(
   })
 );
 
-When('The user triggers an action to update the record in the database', () => {
-  specDataUpdate
-    .put(`${baseUrl}`)
-    .withHeaders(`${header.key}`, `${header.value}`)
-    .withBody({
-      query: {
-        content: userActualVariables,
-      },
-      write: {
-        content: userUpdateVariables,
-      },
-    });
-});
+When(
+  'The user sends a valid request to update the record in the database',
+  () =>
+    specDataUpdate
+      .put(`${baseUrl}`)
+      .withHeaders(`${header.key}`, `${header.value}`)
+      .withBody({
+        query: {
+          content: userActualVariables,
+        },
+        write: {
+          content: userUpdateVariables,
+        },
+      })
+);
 
-Then('Operation to update a record finishes successfully', async () => {
+Then('The operation to update a record is completed successfully', async () => {
   await specDataUpdate.toss();
   specDataUpdate.response().should.have.status(200);
   specDataUpdate.response().should.have.jsonLike({
@@ -53,7 +55,7 @@ Then('Operation to update a record finishes successfully', async () => {
   });
 });
 
-// Scenario: The user is not able to update the record, because the record does not exist in the Digital Registries database
+// Scenario: The user cannot update the record because the record does not exist in the Digital Registries database
 Given(
   'The user wants to update the record in the Digital Registries database and the record does not exist',
   () =>
@@ -75,7 +77,7 @@ Given(
 // "When" is already written in line 34-46
 
 Then(
-  'Operation results to update the record is an error because the record does not exist in the database',
+  'The result of the operation to update the record is an error because the record does not exist in the database',
   async () => {
     await specDataUpdate.toss();
     specDataUpdate.response().should.have.status(404);
@@ -89,12 +91,11 @@ Then(
 // "Given" is already written in line 16-32
 
 When(
-  'The user triggers an action to update a new record in the database with an invalid request',
-  () => {
+  'The user sends an invalid request to update a new record in the database',
+  () =>
     specDataUpdate
       .put(`${baseUrl}`)
-      .withHeaders(`${header.key}`, `${header.value}`);
-  }
+      .withHeaders(`${header.key}`, `${header.value}`)
 );
 
 Then(

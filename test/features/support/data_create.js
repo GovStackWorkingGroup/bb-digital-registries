@@ -25,7 +25,7 @@ Given(
 );
 
 When(
-  'The user triggers an action to create a new record in the database',
+  'The user sends a valid request to create a new record in the database',
   () => {
     specDataCreate
       .post(`${baseUrl('registry1')}`)
@@ -38,7 +38,7 @@ When(
   }
 );
 
-Then('Operation to create a new record finishes successfully', async () => {
+Then('The process to create a new record completes successfully', async () => {
   await specDataCreate.toss();
   specDataCreate.response().should.have.status(200);
   specDataCreate.response().should.have.jsonLike({
@@ -46,9 +46,9 @@ Then('Operation to create a new record finishes successfully', async () => {
   });
 });
 
-// Scenario: The user is not able to create a record in the database which not exist
+// Scenario: The user is unable to create a record in the database that does not exist
 Given(
-  'The user wants to create a new record in the Digital Registries database which does not exist',
+  'The user wants to create a new record in the Digital Registries database that does not exist',
   () =>
     (newUserVariables = {
       ID: 'EE378627342345',
@@ -59,7 +59,7 @@ Given(
 );
 
 When(
-  'The user triggers an action to create a new record in the database which not exist',
+  'The user sends a valid request to create a new record in the database that does not exist',
   () => {
     specDataCreate
       .post(`${baseUrl('registry2')}`)
@@ -73,7 +73,7 @@ When(
 );
 
 Then(
-  'The operation result is an error because the database does not exist',
+  'The result of the operation is an error because the database does not exist',
   async () => {
     await specDataCreate.toss();
     specDataCreate.response().should.have.status(404);
@@ -85,20 +85,11 @@ Then(
   }
 );
 
-// Scenario: The user is not able to create a record in the Digital Registries database because of an invalid request
-Given(
-  'The user wants to create a new record in the Digital Registries database with an invalid request',
-  () =>
-    (newUserVariables = {
-      ID: 'EE378627342345',
-      FirstName: 'Emma',
-      LastName: 'Wolf',
-      BirthCertificateID: 'RR-1234567999',
-    })
-);
+// Scenario: The user is unable to create a record in the Digital Registries database because of an invalid request
+// "Given" already written in line 16-25
 
 When(
-  'The user triggers an action to create a new record in the database with an invalid request',
+  'The user sends an invalid request to create a new record in the database',
   () => {
     specDataCreate
       .post(`${baseUrl('registry1')}`)

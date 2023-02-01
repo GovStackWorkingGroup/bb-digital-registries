@@ -94,27 +94,23 @@ Before(() => {
   specDatabaseRead = pactum.spec();
 });
 
-// Background: The user wants to receive the Digital Registries database information with schema version
+// Background: User wants to get the database information of Digital Registries with schema version
 Given(
-  'The user wants to receive the Digital Registries database information with schema version',
-  () => {
-    return 'The user wants to retrieve the Digital Registries database information with schema version';
-  }
+  'User wants to get the database information of Digital Registries with schema version',
+  () =>
+    'User wants to get the database information of Digital Registries with schema version'
 );
 
-// Scenario: The user successfully receives one Digital Registries database information with schema version
-When(
-  'The user triggers an action with a valid payload to display one database schema version',
-  () => {
-    specDatabaseRead
-      .get(baseUrl)
-      .withHeaders(`${header.key}`, `${header.value}`)
-      .withPathParams('id', 353);
-  }
+// Scenario: User successfully obtains Digital Registries database information with schema version
+When('The user sends a valid request to view a database schema version', () =>
+  specDatabaseRead
+    .get(baseUrl)
+    .withHeaders(`${header.key}`, `${header.value}`)
+    .withPathParams('id', 353)
 );
 
 Then(
-  'The user received one database information with the schema version',
+  'The user has received a database information with schema version',
   async () => {
     await specDatabaseRead.toss();
     specDatabaseRead.response().should.have.status(200);
@@ -122,18 +118,17 @@ Then(
   }
 );
 
-// Scenario: The user is not able to receive any Digital Registries database information with schema version because of not providing route param
+// Scenario: The user cannot get database information from Digital Registries with the schema version because he did not specify a route parameter
 When(
-  'The user triggers an action without a route param to display one database schema version',
-  () => {
+  'The user sends an invalid request without routing parameters to view a database schema version',
+  () =>
     specDatabaseRead
       .get(baseUrl)
-      .withHeaders(`${header.key}`, `${header.value}`);
-  }
+      .withHeaders(`${header.key}`, `${header.value}`)
 );
 
 Then(
-  'The result of an operation to receive any Digital Registries database information with schema version returns an invalid route param error',
+  'The result of an operation to receive database information from Digital Registries with schema version returns an invalid route param error',
   async () => {
     await specDatabaseRead.toss();
     specDatabaseRead.response().should.have.status(400);
@@ -141,16 +136,14 @@ Then(
   }
 );
 
-// The user is not able to receive database information from Digital Registries with the schema version because there is no header included
+// Scenario: The user is unable to receive database information from Digital Registries with schema version because no header is included
 When(
-  'The user triggers an action with an invalid payload to display one database schema version',
-  () => {
-    specDatabaseRead.get(baseUrl).withHeaders(`${header.key}`, '');
-  }
+  'The user sends an invalid request to view a database schema version',
+  () => specDatabaseRead.get(baseUrl).withHeaders(`${header.key}`, '')
 );
 
 Then(
-  'The result of an operation to receive any Digital Registries database information with schema version returns an error',
+  'The result of an operation to receive database information from Digital Registries with the schema version returns an error',
   async () => {
     await specDatabaseRead.toss();
     specDatabaseRead.response().should.have.status(400);
@@ -162,16 +155,14 @@ Then(
   }
 );
 
-// Scenario: The user is not able to receive any Digital Registries database information with the schema version because of not include a header
+// Scenario: The user cannot receive Digital Registries database information with the schema version because there is no header included
 When(
-  'The user triggers an action without a payload to display one database schema version',
-  () => {
-    specDatabaseRead.get(baseUrl);
-  }
+  'The user sends an invalid request with no payload to view a database schema version',
+  () => specDatabaseRead.get(baseUrl)
 );
 
 Then(
-  'The operation result of receiving any Digital Registries database information with schema version is an error',
+  'The result of receiving Digital Registries database information with the schema version is an error',
   async () => {
     await specDatabaseRead.toss();
     specDatabaseRead.response().should.have.status(400);

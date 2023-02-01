@@ -11,21 +11,21 @@ Before(() => {
   specDatabaseDelete = pactum.spec();
 });
 
-// Scenario: The user successfully deletes the Digital Registries schema
+// Scenario: User successfully deletes the Digital Registries schema
 Given(
-  'User wants to delete the Digital Registries schema and database schema exists',
+  'The user wants to delete the Digital Registries schema and the database schema exists',
   () => (databaseSchemaId = '12345')
 );
 
-When('The user triggers an action to delete the database schema', () => {
+When('The user sends a valid request to delete the database schema', () =>
   specDatabaseDelete
     .delete(baseUrl)
     .withHeaders(`${header.key}`, `${header.value}`)
-    .withPathParams('id', databaseSchemaId);
-});
+    .withPathParams('id', databaseSchemaId)
+);
 
 Then(
-  'Operation to delete the database schema finishes successfully',
+  'The operation to delete the database schema completes successfully',
   async () => {
     await specDatabaseDelete.toss();
     specDatabaseDelete.response().should.have.status(200);
@@ -33,16 +33,16 @@ Then(
   }
 );
 
-// Scenario: The user is not able to delete the Digital Registries schema because the schema does not exist
+// The user cannot delete the schema from Digital Registries because the schema does not exist
 Given(
-  'User wants to delete the Digital Registries schema and the database schema does not exist',
+  'The user wants to delete the Digital Registries schema and the database schema does not exist',
   () => (databaseSchemaId = '12')
 );
 
 // "When" is already written in line 20-25
 
 Then(
-  'Operation to delete a database schema returns an error because the schema does not exist',
+  'The operation to delete a database schema returns an error because the schema does not exist',
   async () => {
     await specDatabaseDelete.toss();
     specDatabaseDelete.response().should.have.status(400);

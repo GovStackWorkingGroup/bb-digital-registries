@@ -23,9 +23,9 @@ Before(() => {
   specDataUpdateEntries = pactum.spec();
 });
 
-// Scenario: The user successfully updates two existing records in the Digital Registries database
+// Scenario: User successfully updates two existing records in the Digital Registries database
 Given(
-  'The user wants to update multiple records in the Digital Registries database and those records exist',
+  'The user wants to update multiple records in the Digital Registries database and these records already exist',
   () =>
     (userVariables = {
       ID: 'EE378627348834',
@@ -35,18 +35,18 @@ Given(
     })
 );
 
-When('The user triggers an action to update records in the database', () => {
-  validRequestFunction();
-});
+When('The user sends a valid request to update records in the database', () =>
+  validRequestFunction()
+);
 
-Then('Operation to update records finishes successfully', async () => {
+Then('The record update process completes successfully', async () => {
   await specDataUpdateEntries.toss();
   specDataUpdateEntries.response().should.have.status(200);
 });
 
-// Scenario: The user is not able to update two records that do not exist in the Digital Registries database
+// Scenario: The user is unable to update two records that do not exist in the Digital Registries database
 Given(
-  'The user wants to update multiple records in the Digital Registries database and those records do not exist',
+  'The user wants to update multiple records in the Digital Registries database and these records do not exist',
   () =>
     (userVariables = {
       ID: 'EE378627348834',
@@ -69,7 +69,7 @@ Then(
   }
 );
 
-// Scenario: The user is not able to update two records in the Digital Registries database because of an invalid request
+// Scenario: The user is unable to update two records in the Digital Registries database due to an invalid request
 Given(
   'The user wants to update multiple records in the Digital Registries database',
   () =>
@@ -82,8 +82,8 @@ Given(
 );
 
 When(
-  'The user triggers an action with an invalid request to update records in the database',
-  () => {
+  'The user sends an invalid request to update records in the database',
+  () =>
     specDataUpdateEntries
       .put(baseUrl)
       .withHeaders(`${header.key}`, `${header.value}`)
@@ -91,12 +91,11 @@ When(
         query: {
           content: userVariables,
         },
-      });
-  }
+      })
 );
 
 Then(
-  `The result of an operation to update records returns an error because of the invalid request`,
+  `The result of an operation to update records returns an error because the request is invalid`,
   async () => {
     await specDataUpdateEntries.toss();
     specDataUpdateEntries.response().should.have.status(400);
@@ -105,14 +104,13 @@ Then(
       .should.have.body('{\n  "Query not provided."\n}');
   }
 );
-// Scenario: The user is not able to update two records in the Digital Registries database because of missing users data
+
+// Scenario: The user is unable to update two records in the Digital Registries database because the user data is missing
 // "Given" is already written in line 73-82
 
 When(
-  `The user triggers an action to update records in the database with missing users data`,
-  () => {
-    validRequestFunction();
-  }
+  `The user sends an invalid request with missing user data to update records in the database`,
+  () => validRequestFunction()
 );
 
 Then(

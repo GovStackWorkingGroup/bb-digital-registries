@@ -16,21 +16,20 @@ Before(() => {
   searchedFieldExt = 'FirstName';
 });
 
-// Scenario: The user receives the first name of searched user from the Digital Registries database
+// Scenario: The user gets the first name of the searched user from the Digital Registries database
 Given(
-  "The user wants to search for the first name of the user in the Digital Registries database and the record's first name is fulfilled",
+  "The user wants to search for the user's first name of the user in the Digital Registries database and the first name of the record is matched",
   () => (searchedRecord = '2dcad39a-9abb-4552-954d-c62958d44ec5')
 );
 
 When(
-  'The user triggers an action to receive the first name of searched user from the database',
-  () => {
+  'The user sends a valid request to obtain the first name of the searched user from the database',
+  () =>
     specDataReadValue
       .get(
         `${baseUrl(searchedRecord, searchedFieldParameter, searchedFieldExt)}`
       )
-      .withHeaders(`${header.key}`, `${header.value}`);
-  }
+      .withHeaders(`${header.key}`, `${header.value}`)
 );
 
 Then('The user receives the first name of the searched user', async () => {
@@ -39,9 +38,9 @@ Then('The user receives the first name of the searched user', async () => {
   specDataReadValue.response().should.have.jsonLike('John Helmut');
 });
 
-// Scenario: The user does not receive the first name of searched user from the Digital Registries database
+// Scenario: The user does not obtain the first name of the searched user from the Digital Registries database
 Given(
-  "The user wants to search for the first name of the user in the Digital Registries database and the record's first name is empty",
+  'The user wants to search for the first name of the user in the Digital Registries database and the first name of the record is empty',
   () => (searchedRecord = '3dcad39a-9abb-4552-954d-c62958d44ec9')
 );
 
@@ -56,23 +55,22 @@ Then(
   }
 );
 
-// // Scenario: The user is not able to receive the first name of the user from the Digital Registries database because of an invalid request
+// Scenario: The user is unable to obtain the user's first name from the Digital Registries database because the request is invalid
 Given(
-  'The user wants to search for the first name of the user in the Digital Registries database',
+  "The user wants to search for the user's first name in the Digital Registries database",
   () => (searchedRecord = '3dcad39a-9abb-4552-954d-c62958d44e')
 );
 
 When(
-  'The user triggers an action with an invalid request to receive the first name of searched user from the Digital Registries database',
-  () => {
+  'The user sends an invalid request to get the first name of the searched user from the Digital Registries database',
+  () =>
     specDataReadValue.get(
       `${baseUrl(searchedRecord, searchedFieldParameter, searchedFieldExt)}`
-    );
-  }
+    )
 );
 
 Then(
-  'Operation results for receive the first name of the user is an error',
+  "The result of the operation to receive the user's first name is an error",
   async () => {
     await specDataReadValue.toss();
     specDataReadValue.response().should.have.status(400);
