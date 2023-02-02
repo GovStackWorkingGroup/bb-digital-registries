@@ -60,7 +60,7 @@ Then(
   'The user receives an empty list because there is no record including "Adrien" in the database',
   async () => {
     await specDataList.toss();
-    specDataList.response().should.have.status(210);
+    specDataList.response().should.have.status(200);
     specDataList.response().should.have.jsonLike({
       results: [],
     });
