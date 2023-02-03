@@ -15,9 +15,3 @@ Feature: API endpoint that allows users to search for the field value of a recor
     Given The user wants to search for the user's first name in the Digital Registries database
     When The user sends an invalid request to get the first name of the searched user from the Digital Registries database
     Then The result of the operation to receive the user's first name is an error
-
-
-Scenario:. The user is unable to obtain the user's first name from the Digital Registries database because the request is invalid. 
-Given. The user wants to search for the user's first name in the Digital Registries database. 
-When. The user sends an invalid request to get the first name of the searched user from the Digital Registries database. 
-Then. The result of the operation to receive the user's first name is an error.
