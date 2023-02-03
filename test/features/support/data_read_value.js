@@ -12,30 +12,24 @@ const baseUrl = (uuid, field, ext) =>
 
 Before(() => {
   specDataReadValue = pactum.spec();
-  return (searchedFieldParameter = 'User'), (searchedFieldExt = 'FirstName');
+  searchedFieldParameter = 'User';
+  searchedFieldExt = 'FirstName';
 });
 
-// Scenario: The user receives the first name of searched user from the Digital Registries database
+// Scenario: The user gets the first name of the searched user from the Digital Registries database
 Given(
-  'The user wants to search for the first name of the user with UUID 2dcad39a-9abb-4552-954d-c62958d44ec5 in the Digital Registries database',
-  () => {
-    return (searchedRecord = '2dcad39a-9abb-4552-954d-c62958d44ec5');
-  }
+  "The user wants to search for the user's first name of the user in the Digital Registries database and the first name of the record is matched",
+  () => (searchedRecord = '2dcad39a-9abb-4552-954d-c62958d44ec5')
 );
 
-Given(`The record's first name is fullfill`, () => {
-  return `The searched record's first name is fullfill`;
-});
-
 When(
-  'The user triggers an action to receive the first name of searched user with UUID 2dcad39a-9abb-4552-954d-c62958d44ec5 from the database',
-  () => {
+  'The user sends a valid request to obtain the first name of the searched user from the database',
+  () =>
     specDataReadValue
       .get(
         `${baseUrl(searchedRecord, searchedFieldParameter, searchedFieldExt)}`
       )
-      .withHeaders(`${header.key}`, `${header.value}`);
-  }
+      .withHeaders(`${header.key}`, `${header.value}`)
 );
 
 Then('The user receives the first name of the searched user', async () => {
@@ -44,28 +38,13 @@ Then('The user receives the first name of the searched user', async () => {
   specDataReadValue.response().should.have.jsonLike('John Helmut');
 });
 
-// Scenario: The user does not receive the first name of searched user from the Digital Registries database
+// Scenario: The user does not obtain the first name of the searched user from the Digital Registries database
 Given(
-  'The user wants to search for the first name of the user with UUID 3dcad39a-9abb-4552-954d-c62958d44ec9 in the Digital Registries database',
-  () => {
-    return (searchedRecord = '3dcad39a-9abb-4552-954d-c62958d44ec9');
-  }
+  'The user wants to search for the first name of the user in the Digital Registries database and the first name of the record is empty',
+  () => (searchedRecord = '3dcad39a-9abb-4552-954d-c62958d44ec9')
 );
 
-Given(`The record's first name is empty`, () => {
-  return `The searched record's first name is empty`;
-});
-
-When(
-  'The user triggers an action to receive the first name of searched user with UUID 3dcad39a-9abb-{int}-954d-c62958d44ec9 from the database',
-  int => {
-    specDataReadValue
-      .get(
-        `${baseUrl(searchedRecord, searchedFieldParameter, searchedFieldExt)}`
-      )
-      .withHeaders(`${header.key}`, `${header.value}`);
-  }
-);
+// "When" is already written in line 25-34
 
 Then(
   'The user receives a message that the first name of the searched user is empty',
@@ -76,25 +55,22 @@ Then(
   }
 );
 
-// Scenario: The user is not able to receive the first name of the user from the Digital Registries database because of an invalid request
+// Scenario: The user is unable to obtain the user's first name from the Digital Registries database because the request is invalid
 Given(
-  'The user wants to search for the first name of the user with UUID  in the Digital Registries database',
-  () => {
-    return (searchedRecord = '3dcad39a-9abb-4552-954d-c62958d44e');
-  }
+  "The user wants to search for the user's first name in the Digital Registries database",
+  () => (searchedRecord = '3dcad39a-9abb-4552-954d-c62958d44e')
 );
 
 When(
-  'The user triggers an action to receive the first name of searched user from the database',
-  () => {
+  'The user sends an invalid request to get the first name of the searched user from the Digital Registries database',
+  () =>
     specDataReadValue.get(
       `${baseUrl(searchedRecord, searchedFieldParameter, searchedFieldExt)}`
-    );
-  }
+    )
 );
 
 Then(
-  'Operation results for \\/data\\/registryname\\/versionnumber\\/uuid\\/read-value\\/field.ext is an error',
+  "The result of the operation to receive the user's first name is an error",
   async () => {
     await specDataReadValue.toss();
     specDataReadValue.response().should.have.status(400);

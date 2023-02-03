@@ -1,14 +1,13 @@
-Feature: API endpoint allowing users to remove a record from the Digital Registries database.
+Feature: API endpoint that allows users to remove an entry from the Digital Registries database.
   Request endpoint: DELETE /data/{registryname}/{versionnumber}/{id}/delete
 
-  Scenario: The user successfully removes a record from the Digital Registries database
-    Given The user wants to remove record with id=id231Q from the Digital Registries database
-    And The record with id=id231Q does exist in the database
-    When The user triggers an action to delete the database record with with id=id231Q
-    Then Operation to delete record with with id=id231Q finishes successfully
+  Scenario: The user successfully deletes a record from the Digital Registries database
+    Given The user wants to remove the record from the Digital Registries database
+    And The record exists in the database
+    When The user sends a valid request to delete the database record
+    Then The process to delete the record completes successfully
 
-  Scenario: The user is not able to remove a record from the Digital Registries database because the record does not exist
-    Given The user wants to remove record with id=ID001 from the Digital Registries database
-    And The record with id=ID001 does not exist in the database
-    When The user triggers an action to delete the database record with id=ID001
-    Then Operation results to delete record with id=ID001 is an error
+  Scenario: The user cannot remove a record from the Digital Registries database because it does not exist
+    Given The user wants to remove the record that does not exist from the Digital Registries database
+    When The user sends a valid request to delete the non-existent record from the database
+    Then The result of the operation to delete the record is an error because the record does not exist

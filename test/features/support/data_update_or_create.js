@@ -11,28 +11,26 @@ Before(() => {
   specDataUpdateOrCreate = pactum.spec();
 });
 
-// Scenario: The user successfully creates new record in the Digital Registries database
+// Scenario: The user successfully creates a new record in the Digital Registries database
 Given(
-  'The user wants to create a new record "Jon Snake" or update an existing one if already exists in the Digital Registries database',
-  () => {
-    userVariables = {
+  'The user wants to create a new record or update an existing record if it already exists in the Digital Registries database',
+  () =>
+    (userVariables = {
       ID: 'EE378627348834',
       FirstName: 'Jon',
       LastName: 'Snake',
       BirthCertificateID: 'RR-1234567889',
-    };
-
-    return userVariables;
-  }
+    })
 );
 
-Given('The requested record "Jon Snake" does not exist in the database', () => {
-  return 'The requested record "Jon Snake" does not exist in the database';
-});
+Given(
+  'The requested record does not exist in the database',
+  () => 'The requested record "Jon Snake" does not exist in the database'
+);
 
 When(
-  'The user triggers an action to create or update record "Jon Snake" in the database',
-  () => {
+  'The user sends a valid request to create or update a record in the database',
+  () =>
     specDataUpdateOrCreate
       .post(baseUrl)
       .withHeaders(`${header.key}`, `${header.value}`)
@@ -43,59 +41,11 @@ When(
         write: {
           content: userVariables,
         },
-      });
-  }
-);
-
-Then('Operation to create "Jon Snake" finishes successfully', async () => {
-  await specDataUpdateOrCreate.toss();
-  specDataUpdateOrCreate.response().should.have.status(200);
-  specDataUpdateOrCreate.response().should.have.jsonLike({
-    content: userVariables,
-  });
-});
-
-// Scenario: The user successfully updates the already existing record in the Digital Registries database
-Given(
-  'The user wants to create a new record "Johny Small" or update an existing one if already exists in the Digital Registries database',
-  () => {
-    userVariables = {
-      ID: 'EE378627348834',
-      FirstName: 'Johny',
-      LastName: 'Small',
-      BirthCertificateID: 'RR-1234567889',
-    };
-
-    return userVariables;
-  }
-);
-
-Given(
-  'The requested record "Johny Small" already exists in the database',
-  () => {
-    return 'The requested record "Johny Small" already exists in the database';
-  }
-);
-
-When(
-  'The user triggers an action to create or update record "Johny Small" in the database',
-  () => {
-    specDataUpdateOrCreate
-      .post(baseUrl)
-      .withHeaders(`${header.key}`, `${header.value}`)
-      .withBody({
-        query: {
-          content: userVariables,
-        },
-        write: {
-          content: userVariables,
-        },
-      });
-  }
+      })
 );
 
 Then(
-  'Operation to update record "Johny Small" finishes successfully',
+  'The process of creating the new record has been successfully completed',
   async () => {
     await specDataUpdateOrCreate.toss();
     specDataUpdateOrCreate.response().should.have.status(200);
@@ -105,22 +55,42 @@ Then(
   }
 );
 
-// Scenario: The user is not able to create/update a record in the Digital Registries database because of an invalid request
+// Scenario: The user successfully updates an existing record in the Digital Registries database
 Given(
-  'Given The user wants to create record "Ali Smith" or update an existing one if already exists in the Digital Registries database',
-  () => {
-    userVariables = {
+  'The user wants to update an existing record in the Digital Registries database',
+  () =>
+    (userVariables = {
       ID: 'EE378627348834',
-      FirstName: 'Ali',
-      LastName: 'Smith',
+      FirstName: 'Johny',
+      LastName: 'Small',
       BirthCertificateID: 'RR-1234567889',
-    };
+    })
+);
+
+Given(
+  'The requested record already exists in the database',
+  () => 'The requested record "Johny Small" already exists in the database'
+);
+
+// "When" is already written in line 31-46
+
+Then(
+  'The process of updating the record has been successfully completed',
+  async () => {
+    await specDataUpdateOrCreate.toss();
+    specDataUpdateOrCreate.response().should.have.status(200);
+    specDataUpdateOrCreate.response().should.have.jsonLike({
+      content: userVariables,
+    });
   }
 );
 
+// Scenario: The user is unable to create/update a record in the Digital Registries database because the request is invalid
+// "Given" already writtennin the line 15-24
+
 When(
-  'The user triggers an action to create record "Ali Smith" in the database',
-  () => {
+  'The user sends an invalid request to create or update a record in the database',
+  () =>
     specDataUpdateOrCreate
       .post(baseUrl)
       .withHeaders(`${header.key}`, `${header.value}`)
@@ -128,12 +98,11 @@ When(
         query: {
           content: userVariables,
         },
-      });
-  }
+      })
 );
 
 Then(
-  `The result of an operation to create\\/update record 'Ali Smith' returns an error`,
+  `The result of an operation to create\\/update the record returns an error because the request is invalid`,
   async () => {
     await specDataUpdateOrCreate.toss();
     specDataUpdateOrCreate.response().should.have.status(400);

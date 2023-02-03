@@ -11,30 +11,27 @@ Before(() => {
   specDataList = pactum.spec();
 });
 
-// Scenario: The user receives a list with all records including "John" in the Digital Registries database
-Given('The user wants to search for "John" in the database', () => {
-  return (searchedName = 'John');
-});
+// Scenario: The user gets a list of all searched records in the Digital Registries database
+Given(
+  'The user wants to search for a specific value and the searched value exists in multiple records in the database',
+  () => (searchedName = 'John')
+);
 
-Given('The searched value exists in several records in the database', () => {
-  return 'Searched value does exist in the database';
-});
-
-When('The user triggers an action to search "John" in the database', () => {
+When('The user sends a valid request to search the database', () =>
   specDataList
     .get(`${baseUrl}?filter=FirstName&search=${searchedName}`)
-    .withHeaders(`${header.key}`, `${header.value}`);
-});
+    .withHeaders(`${header.key}`, `${header.value}`)
+);
 
 Then(
-  'The user receives a list with all records including {string}',
-  async string => {
+  'The user receives a list of all records that contain the searched value',
+  async () => {
     await specDataList.toss();
     specDataList.response().should.have.status(200);
     specDataList.response().should.have.jsonLike({
       results: [
         {
-          FirstName: string,
+          FirstName: searchedName,
         },
       ],
     });
@@ -42,22 +39,15 @@ Then(
 );
 
 // Scenario: The user receives an empty list from the Digital Registries database
-Given('The user wants to search for "Adrien" in the database', () => {
-  return (searchedName = 'Adrien');
-});
+Given(
+  'The user wants to search for a specific value and the searched value does not exist in any record in the database',
+  () => (searchedName = 'Adrien')
+);
 
-Given('The searched value does not exist in any record in the database', () => {
-  return 'Searched value does not exist in the database';
-});
-
-When('The user triggers an action to search "Adrien" in the database', () => {
-  specDataList
-    .get(`${baseUrl}?filter=FirstName&search=${searchedName}`)
-    .withHeaders(`${header.key}`, `${header.value}`);
-});
+// "When" is already written in line 20-24
 
 Then(
-  'The user receives an empty list because there is no record including "Adrien" in the database',
+  'The user receives an empty list because there is no record in the database that contains the searched value',
   async () => {
     await specDataList.toss();
     specDataList.response().should.have.status(200);
@@ -67,19 +57,14 @@ Then(
   }
 );
 
-// Scenario: The user is not able to search for the records in the Digital Registries database because on an invalid request
-Given('The user wants to search for "Anna" in the database', () => {
-  return (searchedName = 'Anna');
-});
+// Scenario: The user is not able to search for the records in the Digital Registries database because of an invalid request
+// "Given" is already written in line 15-18
 
-When(
-  'The user triggers an action to search "Anna" in the database and sent an invalid request',
-  () => {
-    specDataList.get(`${baseUrl}?filter=FirstName&search=${searchedName}`);
-  }
+When('The user sends an invalid request to search the database', () =>
+  specDataList.get(`${baseUrl}?filter=FirstName&search=${searchedName}`)
 );
 
-Then('Operation results in an error', async () => {
+Then('The operation results in an error due to an invalid query', async () => {
   await specDataList.toss();
   specDataList.response().should.have.status(400);
 });

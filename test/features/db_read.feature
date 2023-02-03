@@ -1,21 +1,21 @@
-Feature: API endpoint allowing users to get the Digital Registries database information with schema versions.
+Feature: API endpoint that allows users to retrieve Digital Registries database information with schema versions.
   Request endpoint: GET /database/{id}/
 
   Background:
-    Given The user wants to retrieve the Digital Registries database information with schema versions
+    Given User wants to get the database information of Digital Registries with schema version
 
-  Scenario: The user successfully receives one Digital Registries database information with schema versions
-    When The user triggers an action with a valid payload to display one database schema versions
-    Then The user received one database information with schema versions
+  Scenario: User successfully obtains Digital Registries database information with schema version
+    When The user sends a valid request to view a database schema version
+    Then The user has received a database information with schema version
 
-  Scenario: The user is not able to receive any Digital Registries database information with schema versions bacause of not providing route param
-    When The user triggers an action without a route param to display one database schema versions
-    Then The result of an operation to receive any Digital Registries database information with schema versions returns an invalid route param error
+  Scenario: The user cannot get database information from Digital Registries with the schema version because he did not specify a route parameter
+    When The user sends an invalid request without routing parameters to view a database schema version
+    Then The result of an operation to receive database information from Digital Registries with schema version returns an invalid route param error
 
-  Scenario: The user is not able to receive any Digital Registries database information with schema versions because of empty value in the header
-    When The user triggers an action with an invalid payload to display one database schema versions
-    Then The result of an operation to receive any Digital Registries database information with schema versions returns an error
+  Scenario: The user is unable to receive database information from Digital Registries with schema version because no header is included
+    When The user sends an invalid request to view a database schema version
+    Then The result of an operation to receive database information from Digital Registries with the schema version returns an error
 
-  Scenario: The user is not able to receive any Digital Registries database information with schema versions because of not including header
-    When The user triggers an action without a payload to display one database schema versions
-    Then The operation of receiving any Digital Registries database information with schema versions results with an error
+  Scenario: The user cannot receive Digital Registries database information with the schema version because there is no header included
+    When The user sends an invalid request with no payload to view a database schema version
+    Then The result of receiving Digital Registries database information with the schema version is an error

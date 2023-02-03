@@ -6,66 +6,50 @@ let dataID;
 let specDataDelete;
 
 const baseUrl = `${localhost}data/registry1/version1/{id}/delete`;
+const validRequestFunction = () =>
+  specDataDelete
+    .delete(baseUrl)
+    .withHeaders(`${header.key}`, `${header.value}`)
+    .withPathParams('id', dataID);
 
 Before(() => {
   specDataDelete = pactum.spec();
 });
 
-// Scenario: The user successfully removes a record from the Digital Registries database
+// The user successfully deletes a record from the Digital Registries database
 Given(
-  'The user wants to remove record with id=id231Q from the Digital Registries database',
-  () => {
-    dataID = 'id231Q';
-    return dataID;
-  }
+  'The user wants to remove the record from the Digital Registries database',
+  () => (dataID = 'id231Q')
 );
-Given('The record with id=id231Q does exist in the database', () => {
-  return 'The record with id=id231Q does exist in the database';
+
+Given(
+  'The record exists in the database',
+  () => 'The record exists in the database'
+);
+
+When('The user sends a valid request to delete the database record', () =>
+  validRequestFunction()
+);
+
+Then('The process to delete the record completes successfully', async () => {
+  await specDataDelete.toss();
+  specDataDelete.response().should.have.status(200);
+  specDataDelete.response().should.have.body('{\n  "Success"\n}');
 });
 
+// Scenario: The user cannot remove a record from the Digital Registries database because it does not exist
+Given(
+  'The user wants to remove the record that does not exist from the Digital Registries database',
+  () => (dataID = 'ID001')
+);
+
 When(
-  'The user triggers an action to delete the database record with with id=id231Q',
-  () => {
-    specDataDelete
-      .delete(baseUrl)
-      .withHeaders(`${header.key}`, `${header.value}`)
-      .withPathParams('id', dataID);
-  }
+  'The user sends a valid request to delete the non-existent record from the database',
+  () => validRequestFunction()
 );
 
 Then(
-  'Operation to delete record with with id=id231Q finishes successfully',
-  async () => {
-    await specDataDelete.toss();
-    specDataDelete.response().should.have.status(200);
-    specDataDelete.response().should.have.body('{\n  "Success"\n}');
-  }
-);
-
-// Scenario: The user is not able to remove a record from the Digital Registries database because the record does not exist
-Given(
-  'The user wants to remove record with id=ID001 from the Digital Registries database',
-  () => {
-    dataID = 'ID001';
-  }
-);
-
-Given('The record with id=ID001 does not exist in the database', () => {
-  return 'The record with id=ID001 does not exist in the database';
-});
-
-When(
-  'The user triggers an action to delete the database record with id=ID001',
-  () => {
-    specDataDelete
-      .delete(baseUrl)
-      .withHeaders(`${header.key}`, `${header.value}`)
-      .withPathParams('id', dataID);
-  }
-);
-
-Then(
-  'Operation results to delete record with id=ID001 is an error',
+  'The result of the operation to delete the record is an error because the record does not exist',
   async () => {
     await specDataDelete.toss();
     specDataDelete.response().should.have.status(404);

@@ -57,9 +57,9 @@ Before(() => {
 
 // Background
 Given(
-  'The user wants to create or modify the Digital Registries database schema',
-  () => {
-    databaseSchemaVariables = {
+  'User wants to create or modify the Digital Registries database schema',
+  () =>
+    (databaseSchemaVariables = {
       group_name: 'Test',
       catalog_name: 'Mother and Child',
       code: 'MCR',
@@ -107,10 +107,7 @@ Given(
         incrementIndex: 30,
         required: ['ID'],
       },
-    };
-
-    return databaseSchemaVariables;
-  }
+    })
 );
 
 // Scenario: The user successfully creates the Digital Registries database schema
@@ -118,15 +115,15 @@ Given('The requested database schema does not exist in the database', () => {
   return 'The requested database schema does not exist in the database';
 });
 
-When('The user triggers an action to create a database schema', () => {
+When('The user sends a valid request to create a database schema', () =>
   specDatabaseModify
     .post(baseUrl)
     .withHeaders(`${header.key}`, `${header.value}`)
-    .withBody(databaseSchemaVariables);
-});
+    .withBody(databaseSchemaVariables)
+);
 
 Then(
-  'Operation to create new database schema finishes successfully',
+  'The operation to create a new database schema completes successfully',
   async () => {
     await specDatabaseModify.toss();
     specDatabaseModify.response().should.have.status(200);
@@ -135,19 +132,20 @@ Then(
 );
 
 // Scenario: The user successfully modifies the Digital Registries database schema
-Given('The requested database schema exists in the database', () => {
-  return 'The requested database schema exists in the database';
-});
+Given(
+  'The requested database schema exists in the database',
+  () => 'The requested database schema exists in the database'
+);
 
-When('The user triggers an action to modify a database schema', () => {
+When('The user sends a valid request to modify a database schema', () =>
   specDatabaseModify
     .post(baseUrl)
     .withHeaders(`${header.key}`, `${header.value}`)
-    .withBody(databaseSchemaVariables);
-});
+    .withBody(databaseSchemaVariables)
+);
 
 Then(
-  'Operation to modify a database schema finishes successfully',
+  'The operation to change a database schema completes successfully',
   async () => {
     await specDatabaseModify.toss();
     specDatabaseModify.response().should.have.status(200);
@@ -155,26 +153,28 @@ Then(
   }
 );
 
-// Scenario: The user is not able to modify the Digital Registries database schema because of an invalid request
+// Scenario: The user is unable to modify the Digital Registries database schema because of an invalid request
 When(
-  'The user triggers an action to modify the already existing database schema',
-  () => {
+  'The user sends a valid request to modify the already existing database schema',
+  () =>
     specDatabaseModify
       .post(baseUrl)
       .withHeaders(`${header.key}`, `${header.value}`)
-      .withBody(databaseSchemaVariables.schema);
-  }
+      .withBody(databaseSchemaVariables.schema)
 );
 
-Then('Operation results to modify a database schema is an error', async () => {
-  await specDatabaseModify.toss();
-  specDatabaseModify.response().should.have.status(400);
-  specDatabaseModify
-    .response()
-    .should.have.body(
-      'At least `group_name`, `catalog_name`, `code` and `schema` fields are required in request payload'
-    );
-});
+Then(
+  'The result of the operation to change a database schema is an error',
+  async () => {
+    await specDatabaseModify.toss();
+    specDatabaseModify.response().should.have.status(400);
+    specDatabaseModify
+      .response()
+      .should.have.body(
+        'At least `group_name`, `catalog_name`, `code` and `schema` fields are required in request payload'
+      );
+  }
+);
 
 After(() => {
   specDatabaseModify.end();

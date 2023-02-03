@@ -1,19 +1,18 @@
 @data
-Feature: API endpoint allowing users to create a new record in the Digital Registries database.
+Feature: API endpoint that allows users to create a new record in the Digital Registries database.
   Request endpoint: POST /data/{registryname}/{versionnumber}/create
 
-  Scenario: The user successfully creates record "John Smith" in the Digital Registries database
-    Given The user wants to create a new record "John Smith" in the Digital Registries database
-    When The user triggers an action to create a new record "John Smith" in the database
-    Then Operation finishes successfully for create user "John Smith"
+  Scenario: The user successfully creates a record in the Digital Registries database
+    Given The user wants to create a new record in the Digital Registries database
+    When The user sends a valid request to create a new record in the database
+    Then The process to create a new record completes successfully
 
-  Scenario: The user is not able to create a record in the database which not exist
-    Given The user wants to create a new record "Anna Stock" in the Digital Registries database
-    Given The database does not exist
-    When The user triggers an action to create a new record "Anna Stock" in the database
-    Then Operation results in an error for create "Anna Stock"
+  Scenario: The user is unable to create a record in a database that does not exist
+    Given The user wants to create a new record in the Digital Registries database that does not exist
+    When The user sends a valid request to create a new record in a database that does not exist
+    Then The result of the operation is an error because a database does not exist
 
-  Scenario: The user is not able to create a record in the Digital Registries database because of an invalid request
-    Given The user wants to create a new record "Emma Wolf" in the Digital Registries database
-    When The user triggers an action to create a new record "Emma Wolf" in the database
-    Then Operation results in an error for create "Emma Wolf"
+  Scenario: The user is unable to create a record in the Digital Registries database because of an invalid request
+    Given The user wants to create a new record in the Digital Registries database
+    When The user sends an invalid request to create a new record in the database
+    Then The result of the operation is an error due to an invalid request
