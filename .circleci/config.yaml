@@ -1,0 +1,18 @@
+version: 2.1
+setup: true
+
+orbs:
+  test-harness: govstack-working-group/testutils@1.0.0
+
+workflows:
+  test_everything:
+    jobs:
+      - test-harness/create-config:
+          post-steps: # Persist to workspace has to be defined in main workflow
+            - persist_to_workspace:
+                root: workspace
+                paths:
+                  - generated.yml
+      - test-harness/execute-tests:
+          requires:
+            - test-harness/create-config
