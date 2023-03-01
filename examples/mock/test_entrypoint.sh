@@ -1,2 +1,2 @@
 #!/bin/bash 
-docker-compose up test-app
+docker-compose up -d test-app --build
