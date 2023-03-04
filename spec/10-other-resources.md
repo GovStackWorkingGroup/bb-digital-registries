@@ -1,17 +1,18 @@
+---
+description: >-
+  This section contains links to any external documents that may be relevant,
+  such as standards documents or other descriptions of this building block that
+  may be useful
+---
+
 # 10 Other Resources
 
-* API descriptions in Github\
-  [https://github.com/ingmarvali/BuildingBlockAPI/blob/main/RegistrationBB/GovStack\_Registration\_BB\_API\_template-1.1.0-resolved.json](https://github.com/ingmarvali/BuildingBlockAPI/blob/main/RegistrationBB/GovStack\_Registration\_BB\_API\_template-1.1.0-resolved.json)
-* [Security Requirements](../security-requirements/)
-* [Architecture Requirements](../../architecture-and-nonfunctional-requirements/)
-* [Information Mediator requirements](../information-mediation/)
-* Logical process blueprint:\
-  [https://docs.google.com/document/d/1DRjpuyINjf6YVBRrEh9Q6VdB0zVzq1aqGQOukpktWZ8/edit#heading=h.z0zf4zjfif4c](https://docs.google.com/document/d/1DRjpuyINjf6YVBRrEh9Q6VdB0zVzq1aqGQOukpktWZ8/edit#heading=h.z0zf4zjfif4c)
-* Infrastructure capabilities\
-  This depends on the amount of users, but optimal estimated hardware requirements are:
-  * 8 Core CPU
-  * 32GB RAM
-  * 500GB SSD/HDD
-  * 1000Mbit Network connectivity with dedicated publicly routable IPv4 address
+## 10.1 Key Decision Log
 
-System should be able to run either on VirtualMachine or on a dedicated server.
+A historical log of key decisions regarding this Building Block can be found here:&#x20;
+
+[https://govstack-global.atlassian.net/l/cp/1MktW1U2](https://govstack-global.atlassian.net/l/cp/1MktW1U2)
+
+## 10.2 Future Considerations
+
+A list of topics that may be relevant to future versions of this Building Block are documented here:  [https://govstack-global.atlassian.net/l/cp/8wzvfmqR](https://govstack-global.atlassian.net/l/cp/8wzvfmqR)
