@@ -9,6 +9,3 @@
 * [7 Data Structures](7-data-structures.md)
 * [8 Service APIs](8-service-apis.md)
 * [9 Workflows](9-workflows.md)
-* [Appendix 1 - Database Read Schema Response Example](appendix-1-database-read-schema-response-example.md)
-* [Appendix 2 - Example Schema With Foreign Keys](appendix-2-example-schema-with-foreign-keys.md)
-
