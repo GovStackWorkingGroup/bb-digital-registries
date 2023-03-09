@@ -28,8 +28,10 @@ Request endpoint: POST /data/{code}/{version}/create
 
 Example API: see in [Github](../api/GovStack\_Digital\_registries\_BB\_Data\_API\_template-1.3.0.json).
 
-{% swagger src="https://raw.githubusercontent.com/GovStackWorkingGroup/bb-digital-registries/main/api/GovStack_Digital_registries_BB_Data_API_template-1.3.0.json" path="/data/<registryname>/<versionnumber>/create" method="post" %}
-[https://raw.githubusercontent.com/GovStackWorkingGroup/bb-digital-registries/main/api/GovStack_Digital_registries_BB_Data_API_template-1.3.0.json](https://raw.githubusercontent.com/GovStackWorkingGroup/bb-digital-registries/main/api/GovStack_Digital_registries_BB_Data_API_template-1.3.0.json)
+
+
+{% swagger src="https://raw.githubusercontent.com/GovStackWorkingGroup/bb-digital-registries/main/api/GovStack_Digital_registries_BB_Data_API_template-1.3.0.yaml" path="/data/{registryname}/{versionnumber}" method="get" %}
+[https://raw.githubusercontent.com/GovStackWorkingGroup/bb-digital-registries/main/api/GovStack_Digital_registries_BB_Data_API_template-1.3.0.yaml](https://raw.githubusercontent.com/GovStackWorkingGroup/bb-digital-registries/main/api/GovStack_Digital_registries_BB_Data_API_template-1.3.0.yaml)
 {% endswagger %}
 
 ## 8.2 DATA UPDATE
@@ -55,6 +57,8 @@ Example API: see in [Github](../api/GovStack\_Digital\_registries\_BB\_Data\_API
 {% swagger src="https://raw.githubusercontent.com/GovStackWorkingGroup/bb-digital-registries/main/api/GovStack_Digital_registries_BB_Data_API_template-1.3.0.json" path="/data/<registryname>/<versionnumber>/update-or-create" method="post" %}
 [https://raw.githubusercontent.com/GovStackWorkingGroup/bb-digital-registries/main/api/GovStack_Digital_registries_BB_Data_API_template-1.3.0.json](https://raw.githubusercontent.com/GovStackWorkingGroup/bb-digital-registries/main/api/GovStack_Digital_registries_BB_Data_API_template-1.3.0.json)
 {% endswagger %}
+
+
 
 ## 8.4 DATA UPDATE-ENTRIES
 
