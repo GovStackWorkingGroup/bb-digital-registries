@@ -14,10 +14,10 @@ The resource model shows the relationship between data objects that are used by 
 
 **Resource Model**:
 
-![Illustration 3- Resource model. ](<.gitbook/assets/GDB datamodel(1) (1).JPG>)
+![Illustration 3- Resource model.  (old)](<.gitbook/assets/GDB datamodel(1) (1).JPG>)
 
 ```mermaid
-erDrDiagram
+erDiagram
     DATABASE||--o{ DATA: has
     DATABASE {
         string id
