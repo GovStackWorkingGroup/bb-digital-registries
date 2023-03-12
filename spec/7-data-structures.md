@@ -16,6 +16,9 @@ The resource model shows the relationship between data objects that are used by 
 
 ![Illustration 3- Resource model. See editable image here.](<.gitbook/assets/GDB datamodel(1) (1).JPG>)
 
+```mermaid
+```
+
 ## 7.3 Data Elements <a href="#docs-internal-guid-f4ace18b-7fff-ada5-ebbb-3aaf5e08cb17" id="docs-internal-guid-f4ace18b-7fff-ada5-ebbb-3aaf5e08cb17"></a>
 
 The Data Elements provide detail for the Resource Model defined above. This section will list the core/required fields for each resource. Note that the Data Elements can be extended for a particular use case, but they must always contain, at the minimum, the fields defined here.
