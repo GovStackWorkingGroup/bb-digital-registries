@@ -35,7 +35,7 @@ erDiagram
     AUDIT-LOG {
         string old-value
         float new-value    }
-    DATABASE ||--o{ SCHEMA: has
+    DATABASE ||--|{ SCHEMA: has
     SCHEMA {
         string id
         string path    }
