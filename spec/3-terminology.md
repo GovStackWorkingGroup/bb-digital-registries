@@ -1,31 +1,31 @@
 # 3 Terminology
 
 **Registry**\
-A paper-based or electronic database (centralized or decentralized, i.e. blockchain) where <mark style="color:blue;">claims</mark> are stored and can be consulted.
+A paper-based or electronic database (centralized or decentralized, i.e. blockchain) where claims are stored and can be consulted.
 
 **Registration**\
-Process through which an entity gets <mark style="color:blue;">claims</mark> recorded in a <mark style="color:blue;">registry</mark>.
+Process through which an entity gets claims recorded in a registry.
 
 **Entity**\
 A thing with distinct and independent existence, such as a person, organization, or device.
 
 **Claim**\
-An attribute <mark style="color:blue;">asserted</mark> by an <mark style="color:blue;">entity</mark>, about itself or another entity.
+An attribute asserted by an entity, about itself or another entity.
 
 **Asserter**\
-An <mark style="color:blue;">entity</mark> that asserts a <mark style="color:blue;">claim</mark>.
+An entity that asserts a claim.
 
 **Registrar**\
-An <mark style="color:blue;">entity</mark> that is authorized to register, in a <mark style="color:blue;">registry</mark>, <mark style="color:blue;">claims</mark> submitted by an <mark style="color:blue;">applicant</mark>.
+An entity that is authorized to register, in a registry, claims submitted by an applicant.
 
 **Applicant**\
-Entity that requests the <mark style="color:blue;">registration</mark> of <mark style="color:blue;">claims</mark> in a registry.
+Entity that requests the registration of claims in a registry.
 
 **Operator**\
-A <mark style="color:blue;">registrar</mark> or a staff of a registrar who is processing the request of an <mark style="color:blue;">applicant</mark>.
+A registrar or a staff of a registrar who is processing the request of an applicant.
 
 **Administrator/Analyst**\
-A <mark style="color:blue;">registrar</mark> or a staff of a registrar who is building a new <mark style="color:blue;">registry</mark>.
+A registrar or a staff of a registrar who is building a new registry.&#x20;
 
 **Rules engine**&#x20;
 
@@ -33,8 +33,8 @@ A tool transforming business rules relating to a registry, defined by a human an
 
 **Automation**&#x20;
 
-A database level data movement.&#x20;
+A database-level data movement.&#x20;
 
 **Trigger**&#x20;
 
-A record level automation.
+A record-level automation.

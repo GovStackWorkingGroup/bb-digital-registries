@@ -1,3 +1,3 @@
-# 9  Workflows
+# 9 Workflows
 
-This BB does not have internal workflows.
+This Building Block does not have internal workflows.

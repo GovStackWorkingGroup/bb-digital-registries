@@ -1,28 +1,28 @@
 # 5 Cross-Cutting Requirements
 
-The Cross-cutting requirements described in this section are an extension of the cross-cutting requirements defined in the Architecture [specification ](https://govstack.gitbook.io/specification/building-blocks/architecture-and-nonfunctional-requirements)and Security [requirements](https://govstack.gitbook.io/specification/building-blocks/security-requirements). This section highlights cross-functional requirements for Digital Registries BB and in addition describes any deviation to the Architecture BB cross-cutting requirements.
+The Cross-cutting requirements described in this section are an extension of the cross-cutting requirements defined in the [Architecture specification](https://govstack.gitbook.io/specification/architecture-and-nonfunctional-requirements) and [Security requirements](https://govstack.gitbook.io/specification/security-requirements). This section highlights cross-functional requirements for the Digital Registries Building Block and in addition, describes any deviation to the Architecture Building Block cross-cutting requirements.
 
 The following requirements should be optional:
 
 **Citizen-Centric (2.1 in Architecture Blueprint)**
 
-* Right to be forgotten: everything must be deletable. - not a good practice for gov. registries.
+* Right to be forgotten: everything must be deletable. - not a good practice for government registries.
 
 **Open (2.2 in Architecture Blueprint )**
 
-* Cloud native (Docker and Kubernetes). - **must have also on-site installation option**.
+* Cloud-native (Docker and Kubernetes). - must have also an on-site installation option.
 
 **Robust ( 2.7 in Architecture Blueprint)**
 
 * Operates in low-resource environments:
-  * Occasional power - **not possible, should be optional. This can be solved with UPS and generator that keeps the systems running without interruptions**.
-  * Low-reliability connectivity - **Client-server systems are not reliable in this situation**.
+  * Occasional power - not possible, should be optional. This can be solved with UPS and a generator that keeps the systems running without interruptions.
+  * Low-reliability connectivity - Client-server systems are not reliable in this situation.
 
 **Databases MUST not include business logic (3.21 in Architecture Blueprint)**
 
 * This means no triggers/stored procedures shall be used. - some stored procedures may be needed FOR database record ID generation.
 
-The following requirement should be added to other BB cross cutting requirements:
+The following requirement should be added to other Building Blocks cross cutting requirements:
 
 **Privacy and protection of user data**
 
