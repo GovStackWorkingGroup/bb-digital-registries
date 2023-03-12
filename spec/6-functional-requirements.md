@@ -1,8 +1,17 @@
 # 6 Functional Requirements
 
-These requirements should be sufficient to deliver all functionality that is listed in the Key Digital Functionalities section. These functional requirements do not define specific APIs - they provide a list of information about functionality that must be implemented within the Building Block.
+Requirements in this chapter are sufficient to deliver all functionality that is listed in the Key Digital Functionalities section. In this chapter's the main focus is on the following core functionality: \
 
-## 6.1 User Story 1 - Registry Schema User Interface <a href="#docs-internal-guid-51953ef5-7fff-4062-e282-1719dbc98029" id="docs-internal-guid-51953ef5-7fff-4062-e282-1719dbc98029"></a>
+
+1\. Create registry database in User Interface&#x20;
+
+2. Process registry data in User Interface
+3. Process data in API
+4. Create registry database in API
+
+
+
+## 6.1 User Story 1 - Create registry database in UI  <a href="#docs-internal-guid-51953ef5-7fff-4062-e282-1719dbc98029" id="docs-internal-guid-51953ef5-7fff-4062-e282-1719dbc98029"></a>
 
 As an Administrator/Analyst I want to use a web user interface to create a register database (example registry use case - social security program), so that I can configure and launch the registry database instantly to be used by internet users and client systems (e.g. Registration Building Block, Information Mediator Building Block) via web interface and API.
 
@@ -67,7 +76,7 @@ As an Administrator/Analyst I want to use a web user interface to create a regis
 | **DRS-35** | <p>Analyst has the capabilities to automate data exchange between databases internally and externally via API.</p><ul><li>Automation is triggered automatically after a pre-configured time interval as a loop (finishes when all corresponding records have been processed). </li><li>Automation processes one record at a time. </li><li>Automation has configurable conditions (business rules in Rules Engine). E.g. IF field A = 123 then true. Conditions can be grouped with AND and OR operators.</li><li><p>Automation is configured by mapping (input, output) registry data fields to: </p><ul><li>another database in the same instance. </li><li>API in an external database.</li></ul><p>Mapping involves: </p></li><li>query part (input) </li><li>answer part (output) </li></ul><p>Mapping can be done from many to one and one to many. Mapping may have a transformation option to convert data to another format. E.g. est->EST;<br>Expected outcome: Automation can be activated automatically when certain conditions are true and the system sends data to another database or to an external API.</p>                                                                                                                                                                                                                                                                                                                                                                                                                                                                          | Required                             |
 | **DRS-36** | <p>Analyst may have capabilities to use database schema templates so that the registry creation is faster. </p><ul><li>Schema templates can be shared in the same instance (internal marketplace). </li><li>Schema templates can be shared in a marketplace. </li><li>Schema templates can be imported and exported.</li></ul>                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         | Optional                             |
 
-## 6.2 User Story 2 - CRUD Data in User Interface <a href="#docs-internal-guid-31701a28-7fff-8c98-6f59-06d5eed22cd9" id="docs-internal-guid-31701a28-7fff-8c98-6f59-06d5eed22cd9"></a>
+## 6.2 User Story 2 - Process registry data in User Interface <a href="#docs-internal-guid-31701a28-7fff-8c98-6f59-06d5eed22cd9" id="docs-internal-guid-31701a28-7fff-8c98-6f59-06d5eed22cd9"></a>
 
 As an Administrator/Analyst, I want to process (Create, Read, Update, Delete) registry data so that I do not have to know the query language.
 
@@ -104,7 +113,7 @@ As an Administrator/Analyst, I want to process (Create, Read, Update, Delete) re
 | DRS-22 | <p>Statistical queries.</p><p>The system should have the ability to:</p><ol><li><p>Produce standard statistical reports</p><ol><li><p>System must show statistics of all registered items in the registry, with various criteria for filtering. For example:</p><ul><li>Details of registered people</li><li>Details of registered services</li><li>Time series: Change in registration of people/services over time</li><li>Details of change to data elements (audit logs)</li></ul></li><li>Generate customizable reports based on the fields registered in the registry.</li></ol></li><li><p>Allow the analyst/user to analyze data collected in the system in various ways:</p><ol><li>(Option) Develop functionality to allow custom dashboards for analysts to analyze data within databases.</li><li>Provide APIs for extracting data from databases to analyze in external data analytics systems (e.g. Tableau).</li></ol></li></ol> | Required                                       |
 | DRS-33 | <p>Users can share data with other users.</p><p>Share data with other users via e-mail, or via a unique and secure URL. Sharing must be at a record level and field level.</p><p>Data sharing can be turned off in the authorization module.</p><p>Data can be shared with anonymous users. The data shared with anonymous users is Open Data.</p>                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              | Optional                                       |
 
-## 6.3 User Story 3 - CRUD Data APIs
+## 6.3 User Story 3 - Process data in API
 
 As an Applicant, I want to process CRUD (Create, Read, Update, Delete) data in the registry database.
 
@@ -146,7 +155,7 @@ As an Applicant, I want to process CRUD (Create, Read, Update, Delete) data in t
 | DRS-26 | <p>Statistical queries via API.</p><ul><li><p>System should make data accessible through the API:</p><ul><li>Registration Data</li><li>Program Data</li></ul></li><li><p>API should allow querying data with multiple parameters:</p><ul><li>Date, time ranges</li><li>Registered Program</li></ul></li><li>Only authorized data should be available through the API.</li></ul>                                                                                                                        | Optional                                 |
 | DRS-27 | <p>Using viewing event logs- every data owner has the right to see who has looked at their personal data.</p><ul><li>Data owner is a physical person whose personal data is stored in the registry.</li><li>Data owner has the right to access data reading/processing event logs of the personal data they own. Personal data in a registry is marked accordingly (PersonalData) by the analyst.</li><li>PersonalData logs are visible via API or via User Interface (PersonalData report).</li></ul> | <p>Required</p><p><br></p><p>UC3</p>     |
 
-## 6.4 User Story 4- Registry Schema API <a href="#docs-internal-guid-49b62261-7fff-0ca4-5ac9-2267b594ffc6" id="docs-internal-guid-49b62261-7fff-0ca4-5ac9-2267b594ffc6"></a>
+## 6.4 User Story 4- Create registry database in API <a href="#docs-internal-guid-49b62261-7fff-0ca4-5ac9-2267b594ffc6" id="docs-internal-guid-49b62261-7fff-0ca4-5ac9-2267b594ffc6"></a>
 
 As an IT developer, I want to Create/update/delete registry database schema via API services.
 
