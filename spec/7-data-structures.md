@@ -2,11 +2,11 @@
 
 ## 7.1 Standards/Protocols <a href="#docs-internal-guid-1e590c21-7fff-9d6f-674a-fa9e678943e1" id="docs-internal-guid-1e590c21-7fff-9d6f-674a-fa9e678943e1"></a>
 
-The following standards are applicable to data structures in the Registration Building Block:
+The following standards are applicable to data structures in the Digital Registries Building Block:
 
 1. All dates should follow [ISO 8601](http://en.wikipedia.org/wiki/ISO\_8601).
 2. RFC 7159 - The JavaScript Object Notation (JSON).
-3. Open -API Version 3.1.0.
+3. Open -API Version 3.0.0, 3.0.1, 3.1.0.
 
 ## 7.2 Resource Model
 
@@ -14,9 +14,32 @@ The resource model shows the relationship between data objects that are used by 
 
 **Resource Model**:
 
-![Illustration 3- Resource model. See editable image here.](<.gitbook/assets/GDB datamodel(1) (1).JPG>)
+![Illustration 3- Resource model. ](<.gitbook/assets/GDB datamodel(1) (1).JPG>)
 
 ```mermaid
+erDrDiagram
+    DATABASE||--o{ DATA: has
+    DATABASE {
+        string id
+        string name
+        string schema
+        string logo-image
+        string version   }
+    DATA ||--|{ AUDIT-LOG: creates
+    DATA {
+        string id
+        string registry-number
+        string field-type
+        string value
+    }
+    AUDIT-LOG {
+        string old-value
+        float new-value    }
+    DATABASE ||--o{ SCHEMA: has
+    SCHEMA {
+        string id
+        string path    }
+    SCHEMA ||--|{ DATA: contains
 ```
 
 ## 7.3 Data Elements <a href="#docs-internal-guid-f4ace18b-7fff-ada5-ebbb-3aaf5e08cb17" id="docs-internal-guid-f4ace18b-7fff-ada5-ebbb-3aaf5e08cb17"></a>
