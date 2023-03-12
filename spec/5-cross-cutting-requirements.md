@@ -15,7 +15,7 @@ The following requirements should be optional:
 **Robust ( 2.7 in Architecture Blueprint)**
 
 * Operates in low-resource environments:
-  * Occasional power - not possible, should be optional. This can be solved with UPS and a generator that keeps the systems running without interruptions.
+  * Occasional power - not possible, should be optional. This can be solved with back up power resources (UPS) and a generator that keeps the systems running without interruptions.
   * Low-reliability connectivity - Client-server systems are not reliable in this situation.
 
 **Databases MUST not include business logic (3.21 in Architecture Blueprint)**
