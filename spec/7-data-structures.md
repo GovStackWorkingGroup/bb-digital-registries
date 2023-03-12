@@ -4,9 +4,7 @@
 
 The following standards are applicable to data structures in the Digital Registries Building Block:
 
-1. All dates should follow [ISO 8601](http://en.wikipedia.org/wiki/ISO\_8601).
-2. [RFC 7159](https://www.rfc-editor.org/rfc/rfc7159) - The JavaScript Object Notation (JSON).
-3. Open -API Version [3.0.0, 3.0.1, 3.1.0.](https://www.openapis.org/)
+1. Open -API Version [3.0.0, 3.0.1, 3.1.0.](https://www.openapis.org/)
 
 ## 7.2 Resource Model
 
