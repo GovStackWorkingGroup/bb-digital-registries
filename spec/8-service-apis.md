@@ -156,6 +156,10 @@ Request endpoint: GET /api/V1/database/{id}
 
 Example API: see in [Github](../api/GovStack\_Digital\_registries\_BB\_Database\_API\_template-1.3.0.json).
 
+{% swagger src="https://raw.githubusercontent.com/GovStackWorkingGroup/bb-digital-registries/main/api/GovStack_Digital_registries_BB_Database_API_template-1.3.0.json" path="/database/{id}" method="get" %}
+[https://raw.githubusercontent.com/GovStackWorkingGroup/bb-digital-registries/main/api/GovStack_Digital_registries_BB_Database_API_template-1.3.0.json](https://raw.githubusercontent.com/GovStackWorkingGroup/bb-digital-registries/main/api/GovStack_Digital_registries_BB_Database_API_template-1.3.0.json)
+{% endswagger %}
+
 ## 8.12 DATABASE SCHEMA MODIFY
 
 Description: API creates a new registry database schema or updates existing schema if matching with input parameters is successful. If schema is not found the API will create a new schema.
@@ -197,6 +201,10 @@ Example API: see in [Github](../api/GovStack\_Digital\_registries\_BB\_Database\
 Request endpoint: PUT/data/{code}/{version}/create-entries
 
 [Example API](../api/GovStack\_Digital\_registries\_BB\_Data\_API\_template-1.3.0.json).
+
+{% swagger src="https://raw.githubusercontent.com/GovStackWorkingGroup/bb-digital-registries/main/api/GovStack_Digital_registries_BB_Data_API_template-1.3.0.json" path="/data/<registryname>/<versionnumber>/update-or-create" method="post" %}
+[https://raw.githubusercontent.com/GovStackWorkingGroup/bb-digital-registries/main/api/GovStack_Digital_registries_BB_Data_API_template-1.3.0.json](https://raw.githubusercontent.com/GovStackWorkingGroup/bb-digital-registries/main/api/GovStack_Digital_registries_BB_Data_API_template-1.3.0.json)
+{% endswagger %}
 
 
 
