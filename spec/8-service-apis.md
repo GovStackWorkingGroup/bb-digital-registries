@@ -1,6 +1,10 @@
 # 8 Service APIs
 
-This section describes external APIs that must be implemented by the building block. Additional APIs may be implemented by the building block (all APIs must adhere to the standards and protocols defined), but the listed APIs define a minimal set that must be provided by any implementation.
+This section provides a reference for APIs that should be implemented by this Building Block. The APIs defined here establish a blueprint for how the Building Block will interact with other Building Blocks. Additional APIs may be implemented by the Building Block, but the listed APIs define a minimal set of functionality that should be provided by any implementation of this Building Block.&#x20;
+
+The [GovStack non-functional requirements document](https://govstack.gitbook.io/specification/architecture-and-nonfunctional-requirements/6-onboarding) provides additional information on how 'adaptors' may be used to translate an existing API to the patterns described here.
+
+
 
 Registries BB may contain multiple registries/databases. The dynamic nature of the database structure requires a standard set automatically generated APIs for all databases hosted on the platform. The system generates default API method endpoints automatically after each publish of the database schema. A new API service version is generated after each schema publish. Database schema version and API versions are in sync.
 
