@@ -20,9 +20,9 @@ healthcheckApiCall() {
     echo "-----"
     curl ${API_URL}
     RETURN=$?
-    if [ $RETURN -eq 7 ];
+    if [ $RETURN -neq 0 ];
     then
-      echo "Api healthcheck call failed, curl returned status code 7"
+      echo "Api healthcheck call failed"
       return 1
     fi
     echo "-----"
