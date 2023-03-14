@@ -12,31 +12,28 @@ The resource model shows the relationship between data objects that are used by 
 
 **Resource Model**:
 
-![Illustration 3- Resource model.  (old)](<.gitbook/assets/GDB datamodel(1) (1).JPG>)
-
 ```mermaid
 erDiagram
     DATABASE||--o{ DATA: has
     DATABASE {
-        string id
-        string name
-        string schema
-        string logo-image
-        string version   }
+        int id
+        varchar name
+        json schema
+        numeric version   }
     DATA ||--|{ AUDIT-LOG: creates
     DATA {
-        string id
-        string registry-number
-        string field-type
-        string value
+        int id
+        varchar registry-number
+        varchar field-type
+        varchar value
     }
     AUDIT-LOG {
-        string old-value
-        float new-value    }
+        varchar old-value
+        varchar new-value    }
     DATABASE ||--|{ SCHEMA: has
     SCHEMA {
-        string id
-        string path    }
+        int id
+        varchar path    }
     SCHEMA ||--|{ DATA: contains
 ```
 
@@ -50,10 +47,9 @@ The Data Elements provide detail for the Resource Model defined above. This sect
 | ------------------- | ------------------------------------------------------------------------------------------------------- | ------------------------------------- | -------- | - |
 | Database ID         | Unique identifier of a database.                                                                        | integer                               | yes      |   |
 | Database name       | Name that will define the database content. Name is public.                                             | varchar                               | yes      |   |
+| Schema ID           | Database schema ID                                                                                      | integer                               | yes      |   |
 | Database schema     | Database schema. See example in Chapters 7.4.1 and 7.4.2.                                               | json                                  | yes      |   |
-| Database logo       | Visual image for the database.                                                                          | bytea                                 | no       |   |
 | Version             | Database version. Each change in schema will produce the next version of the database and API services. | numeric                               | yes      |   |
-| Catalogue name      | Database name in the list.                                                                              | varchar                               | yes      |   |
 | Data ID             | Data element unique identifier.                                                                         | integer                               | yes      |   |
 | Registry number     | Additional registry identifier. Unique identifier in the registry.                                      | varchar                               | yes      |   |
 | Field type          | Field type: datetime, date, boolean, text, number, file.                                                | varchar                               | yes      |   |
