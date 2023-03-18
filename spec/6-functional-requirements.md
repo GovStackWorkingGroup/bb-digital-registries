@@ -1,3 +1,7 @@
+---
+description: This section lists the technical capabilities of this Building Block.
+---
+
 # 6 Functional Requirements
 
 Requirements in this chapter are sufficient to deliver all functionality that is listed in the Key Digital Functionalities section. In this chapter's the main focus is on the following core functionality: \

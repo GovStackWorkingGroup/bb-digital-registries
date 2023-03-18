@@ -1,3 +1,9 @@
+---
+description: >-
+  This section will highlight important requirements or describe any additional
+  cross-cutting requirements that apply to this Building Block.
+---
+
 # 5 Cross-Cutting Requirements
 
 The Cross-cutting requirements described in this section are an extension of the cross-cutting requirements defined in the [Architecture specification](https://govstack.gitbook.io/specification/architecture-and-nonfunctional-requirements) and [Security requirements](https://govstack.gitbook.io/specification/security-requirements). This section highlights cross-functional requirements for the Digital Registries Building Block and in addition, describes any deviation to the Architecture Building Block cross-cutting requirements.

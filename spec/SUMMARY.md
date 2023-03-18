@@ -9,5 +9,5 @@
 * [6 Functional Requirements](6-functional-requirements.md)
 * [7 Data Structures](7-data-structures.md)
 * [8 Service APIs](8-service-apis.md)
-* [9 Workflows](9-workflows.md)
+* [9 Internal Workflows](9-workflows.md)
 * [10 Other Resources](10-other-resources.md)

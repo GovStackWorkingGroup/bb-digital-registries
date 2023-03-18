@@ -1,3 +1,9 @@
+---
+description: >-
+  Key Digital Functionalities describe the core (required) functions that this
+  Building Block must be able to perform.
+---
+
 # 4 Key Digital Functionalities
 
 The Key Digital Functionalities describe the core (required) functions that this Building Block must be able to perform. These functionalities are described as business processes as opposed to technical specifications or API definitions.

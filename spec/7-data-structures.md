@@ -1,3 +1,9 @@
+---
+description: >-
+  This section provides information on the core data structures/data models that
+  are used by this Building Block.
+---
+
 # 7 Data Structures
 
 ## 7.1 Standards/Protocols <a href="#docs-internal-guid-1e590c21-7fff-9d6f-674a-fa9e678943e1" id="docs-internal-guid-1e590c21-7fff-9d6f-674a-fa9e678943e1"></a>

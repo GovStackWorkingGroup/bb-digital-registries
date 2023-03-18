@@ -1,3 +1,7 @@
+---
+description: This section provides context for this Building Block.
+---
+
 # 2 Description
 
 This Digital Registries Building Block is a no-code application meant to oﬀer intuitive database/register creation and management functionalities.
