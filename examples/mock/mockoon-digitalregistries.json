@@ -1,11 +1,11 @@
 {
   "uuid": "a79a7b17-f1c7-42ce-93aa-dd08ac38af3f",
-  "lastMigration": 24,
+  "lastMigration": 27,
   "name": "DigitalRegistries",
   "endpointPrefix": "",
   "latency": 0,
   "port": 3001,
-  "hostname": "0.0.0.0",
+  "hostname": "",
   "routes": [
     {
       "uuid": "9117f9cc-e23b-447a-bf26-186f944daf82",
@@ -189,7 +189,8 @@
         }
       ],
       "enabled": true,
-      "responseMode": null
+      "responseMode": null,
+      "type": "http"
     },
     {
       "uuid": "e60d8cd6-c4d4-499a-b2fd-dc021f31e196",
@@ -412,7 +413,8 @@
         }
       ],
       "enabled": true,
-      "responseMode": null
+      "responseMode": null,
+      "type": "http"
     },
     {
       "uuid": "429efa1e-6926-44d7-997d-8a17cd2ec520",
@@ -564,7 +566,8 @@
         }
       ],
       "enabled": true,
-      "responseMode": null
+      "responseMode": null,
+      "type": "http"
     },
     {
       "uuid": "4c9bd964-ea0f-41de-b06e-6425f29aee01",
@@ -716,7 +719,8 @@
         }
       ],
       "enabled": true,
-      "responseMode": null
+      "responseMode": null,
+      "type": "http"
     },
     {
       "uuid": "d302ad25-f6c3-4cfe-bb8c-c0d2c6cd6e72",
@@ -907,7 +911,8 @@
         }
       ],
       "enabled": true,
-      "responseMode": null
+      "responseMode": null,
+      "type": "http"
     },
     {
       "uuid": "f4e32199-7547-4f1c-a26e-f7f05858df60",
@@ -1087,7 +1092,8 @@
         }
       ],
       "enabled": true,
-      "responseMode": null
+      "responseMode": null,
+      "type": "http"
     },
     {
       "uuid": "cc6141fc-6082-4519-b1e1-9a7601a3817b",
@@ -1446,7 +1452,8 @@
         }
       ],
       "enabled": true,
-      "responseMode": null
+      "responseMode": null,
+      "type": "http"
     },
     {
       "uuid": "2d835466-f4ac-4f5a-bd1c-b7d67f4ab615",
@@ -1654,7 +1661,8 @@
         }
       ],
       "enabled": true,
-      "responseMode": null
+      "responseMode": null,
+      "type": "http"
     },
     {
       "uuid": "ecffa065-a196-46ef-94bc-92094253a46e",
@@ -1735,7 +1743,8 @@
         }
       ],
       "enabled": true,
-      "responseMode": null
+      "responseMode": null,
+      "type": "http"
     },
     {
       "uuid": "8d90e854-eca4-4f41-b1da-a61826c10997",
@@ -2018,7 +2027,8 @@
         }
       ],
       "enabled": true,
-      "responseMode": null
+      "responseMode": null,
+      "type": "http"
     },
     {
       "uuid": "f4f2dd3c-888e-4e7a-873b-b3c2cb9a2246",
@@ -2028,7 +2038,7 @@
       "responses": [
         {
           "uuid": "8b4b5cf8-a879-4d4e-b9ad-ddbd95a43f90",
-          "body": "{\n  \"id\": {{urlParam 'id'}},\n  \"version\": \"2.7\",\n  \"name\": \"MCTS\",\n  \"description\": \"Database holding information about MCTS objects\",\n  \"institution\": \"Ministry of Social Affairs\",\n  \"number_format\": \"{code}{indexNoByCode}\",\n  \"schema\": {\n    \"type\": \"object\",\n    \"properties\": {\n      \"ID\": {\n        \"type\": \"string\",\n        \"triggers\": [\n          {\n            \"conditions\": [\n              {\n                \"logic\": \"==\",\n                \"value\": \"\",\n                \"gate\": \"&&\"\n              }\n            ],\n            \"actions\": [\n              {\n                \"type\": \"set-value\",\n                \"value\": \"MCTS{indexNoByCode}\",\n                \"field_id\": 1\n              }\n            ]\n          }\n        ],\n        \"primaryKey\": true,\n        \"readOnly\": true,\n        \"description\": \"Registration ID\",\n        \"example\": \"MCTS31\",\n        \"id\": 1\n      },\n      \"Child\": {\n        \"type\": \"string\",\n        \"properties\": {\n          \"ID\": {\n            \"type\": \"string\",\n            \"description\": \"Child ID\",\n            \"example\": \"ID2\",\n            \"id\": 13\n          }\n        }\n      }\n    },\n    \"incrementIndex\": 20,\n    \"required\": [\n      \"ID\"\n    ]\n  },\n  \"schema_tags\": [\n    {\n      \"name\": \"\",\n      \"path\": \"/Child/Citizenship\",\n      \"is_fulltext\": true\n    }\n  ],\n  \"schema_flags\": [\n    {\n      \"name\": \"mandatory\",\n      \"path\": \"/ID\"\n    }\n  ],\n  \"fields_uniques\": [\n    [\n      \"\"\n    ]\n  ],\n  \"is_draft\": false,\n  \"is_disabled\": false,\n  \"is_archived\": false,\n  \"modified_at\": \"2021-10-03T08:35:01.775915Z\",\n  \"by_user_name\": \"ingmar.dev\",\n  \"by_user_auth_id\": 1,\n  \"by_on_behalf_of_user_auth_id\": null,\n  \"by_on_behalf_of_user_name\": null,\n  \"generic_services\": [\n    {\n      \"service_id\": 1,\n      \"name\": \"data-create\",\n      \"is_visible\": true,\n      \"used_count\": 0\n    }\n  ],\n  \"data_index_increment\": 0,\n  \"has_logo\": false\n}",
+          "body": "{\n  \"id\": {{urlParam 'id'}},\n  \"version\": \"2.7\",\n  \"name\": \"MCTS\",\n  \"description\": \"Database holding information about MCTS objects\",\n  \"institution\": \"Ministry of Social Affairs\",\n  \"number_format\": \"{code}{indexNoByCode}\",\n  \"schema\": {\n    \"type\": \"object\",\n    \"properties\": {\n      \"ID\": {\n        \"type\": \"string\",\n        \"triggers\": [\n          {\n            \"conditions\": [\n              {\n                \"logic\": \"==\",\n                \"value\": \"\",\n                \"gate\": \"&&\"\n              }\n            ],\n            \"actions\": [\n              {\n                \"type\": \"set-value\",\n                \"value\": \"MCTS{indexNoByCode}\",\n                \"field_id\": 1\n              }\n            ]\n          }\n        ],\n        \"primaryKey\": true,\n        \"readOnly\": true,\n        \"description\": \"Registration ID\",\n        \"example\": \"MCTS31\",\n        \"id\": 1\n      },\n      \"Child\": {\n        \"type\": \"string\",\n        \"properties\": {\n          \"ID\": {\n            \"type\": \"string\",\n            \"description\": \"Child ID\",\n            \"example\": \"ID2\",\n            \"id\": 13\n          }\n        }\n      }\n    },\n    \"incrementIndex\": 20,\n    \"required\": [\n      \"ID\"\n    ]\n  },\n  \"schema_tags\": [\n    {\n      \"name\": \"\",\n      \"path\": \"/Child/Citizenship\",\n      \"is_fulltext\": true\n    }\n  ],\n  \"schema_flags\": [\n    {\n      \"name\": \"mandatory\",\n      \"path\": \"/ID\"\n    }\n  ],\n  \"fields_uniques\": [\n    [\n      \"\"\n    ]\n  ],\n  \"is_draft\": false,\n  \"is_disabled\": false,\n  \"is_archived\": false,\n  \"modified_at\": \"2021-10-03T08:35:01.775915Z\",\n  \"by_user_name\": \"ingmar.dev\",\n  \"by_user_auth_id\": 1,\n  \"by_on_behalf_of_user_auth_id\": 1,\n  \"by_on_behalf_of_user_name\": \"null\",\n  \"generic_services\": [\n    {\n      \"service_id\": 1,\n      \"name\": \"data-create\",\n      \"is_visible\": true,\n      \"used_count\": 0\n    }\n  ],\n  \"data_index_increment\": 0,\n  \"has_logo\": false\n}",
           "latency": 0,
           "statusCode": 200,
           "label": "Existing database",
@@ -2168,7 +2178,8 @@
         }
       ],
       "enabled": true,
-      "responseMode": null
+      "responseMode": null,
+      "type": "http"
     },
     {
       "uuid": "73a21e7f-cab7-461a-91ae-0206f3c7fb8f",
@@ -2272,7 +2283,8 @@
         }
       ],
       "enabled": true,
-      "responseMode": null
+      "responseMode": null,
+      "type": "http"
     },
     {
       "uuid": "d02ecd5c-360f-4de6-a172-109a352f8191",
@@ -2363,7 +2375,8 @@
         }
       ],
       "enabled": true,
-      "responseMode": null
+      "responseMode": null,
+      "type": "http"
     },
     {
       "uuid": "5b0282d8-3099-4852-808e-deb0dea6be71",
@@ -2468,7 +2481,8 @@
         }
       ],
       "enabled": true,
-      "responseMode": null
+      "responseMode": null,
+      "type": "http"
     }
   ],
   "proxyMode": false,
@@ -2502,5 +2516,64 @@
       "value": ""
     }
   ],
-  "data": []
+  "data": [],
+  "folders": [],
+  "rootChildren": [
+    {
+      "type": "route",
+      "uuid": "9117f9cc-e23b-447a-bf26-186f944daf82"
+    },
+    {
+      "type": "route",
+      "uuid": "e60d8cd6-c4d4-499a-b2fd-dc021f31e196"
+    },
+    {
+      "type": "route",
+      "uuid": "429efa1e-6926-44d7-997d-8a17cd2ec520"
+    },
+    {
+      "type": "route",
+      "uuid": "4c9bd964-ea0f-41de-b06e-6425f29aee01"
+    },
+    {
+      "type": "route",
+      "uuid": "d302ad25-f6c3-4cfe-bb8c-c0d2c6cd6e72"
+    },
+    {
+      "type": "route",
+      "uuid": "f4e32199-7547-4f1c-a26e-f7f05858df60"
+    },
+    {
+      "type": "route",
+      "uuid": "cc6141fc-6082-4519-b1e1-9a7601a3817b"
+    },
+    {
+      "type": "route",
+      "uuid": "2d835466-f4ac-4f5a-bd1c-b7d67f4ab615"
+    },
+    {
+      "type": "route",
+      "uuid": "ecffa065-a196-46ef-94bc-92094253a46e"
+    },
+    {
+      "type": "route",
+      "uuid": "8d90e854-eca4-4f41-b1da-a61826c10997"
+    },
+    {
+      "type": "route",
+      "uuid": "f4f2dd3c-888e-4e7a-873b-b3c2cb9a2246"
+    },
+    {
+      "type": "route",
+      "uuid": "73a21e7f-cab7-461a-91ae-0206f3c7fb8f"
+    },
+    {
+      "type": "route",
+      "uuid": "d02ecd5c-360f-4de6-a172-109a352f8191"
+    },
+    {
+      "type": "route",
+      "uuid": "5b0282d8-3099-4852-808e-deb0dea6be71"
+    }
+  ]
 }
