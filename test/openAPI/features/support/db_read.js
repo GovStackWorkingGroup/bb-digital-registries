@@ -4,7 +4,7 @@ const { Given, When, Then, Before, After } = require('@cucumber/cucumber');
 const {
   localhost,
   databaseReadEndpoint,
-  informationMediatorClientHeader,
+  header,
   acceptHeader,
   databaseReadResponseSchema,
   defaultExpectedResponseTime,
@@ -33,10 +33,7 @@ When(
   id =>
     specDatabaseRead
       .get(baseUrl)
-      .withHeaders(
-        `${informationMediatorClientHeader.key}`,
-        `${informationMediatorClientHeader.value}`
-      )
+      .withHeaders(`${header.key}`, `${header.value}`)
       .withPathParams({ id: id })
 );
 

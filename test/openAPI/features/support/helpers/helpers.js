@@ -4,7 +4,7 @@ module.exports = {
     key: 'content-type',
     value: 'application/json; charset=utf-8',
   },
-  informationMediatorClientHeader: {
+  header: {
     key: 'Information-Mediator-Client',
     value: 'INSTANCE/CLASS/MEMBER/SUBSYSTEM',
   },
