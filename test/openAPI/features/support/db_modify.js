@@ -4,7 +4,7 @@ const { Given, When, Then, Before, After } = require('@cucumber/cucumber');
 const {
   localhost,
   databaseModifyEndpoint,
-  informationMediatorClientHeader,
+  header,
   databaseModifyBody,
   defaultExpectedResponseTime,
   acceptHeader,
@@ -33,10 +33,7 @@ When(
   () =>
     specDatabaseModify
       .post(baseUrl)
-      .withHeaders(
-        `${informationMediatorClientHeader.key}`,
-        `${informationMediatorClientHeader.value}`
-      )
+      .withHeaders(`${header.key}`, `${header.value}`)
   // .withBody(databaseModifyBody)
 );
 
@@ -82,10 +79,7 @@ When(
   () =>
     specDatabaseModify
       .post(baseUrl)
-      .withHeaders(
-        `${informationMediatorClientHeader.key}`,
-        `${informationMediatorClientHeader.value}`
-      )
+      .withHeaders(`${header.key}`, `${header.value}`)
       .withBody(databaseModifyBody)
 );
 
