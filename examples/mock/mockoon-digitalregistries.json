@@ -2042,12 +2042,7 @@
           "latency": 0,
           "statusCode": 200,
           "label": "Existing database",
-          "headers": [
-            {
-              "key": "Content-Type",
-              "value": "application/json"
-            }
-          ],
+          "headers": [],
           "bodyType": "INLINE",
           "filePath": "",
           "databucketID": "",
@@ -2079,102 +2074,6 @@
           "disableTemplating": false,
           "fallbackTo404": false,
           "default": true
-        },
-        {
-          "uuid": "0a74ff82-d966-4ab8-bb68-c0bc070b75cf",
-          "body": "{\"Invalid route param id\"}",
-          "latency": 0,
-          "statusCode": 400,
-          "label": "Invalid route param id",
-          "headers": [],
-          "bodyType": "INLINE",
-          "filePath": "",
-          "databucketID": "",
-          "sendFileAsBody": false,
-          "rules": [
-            {
-              "target": "header",
-              "modifier": "Information-Mediator-Client",
-              "value": "[a-zA-Z0-9_]+\\/[a-zA-Z0-9_]+\\/[a-zA-Z0-9_]+\\/[a-zA-Z0-9_]+",
-              "invert": false,
-              "operator": "regex"
-            },
-            {
-              "target": "params",
-              "modifier": "id",
-              "value": "^((?:[1-9][0-9]*)(?:\\.[0-9]+)?)$",
-              "invert": true,
-              "operator": "regex"
-            },
-            {
-              "target": "params",
-              "modifier": "id",
-              "value": "",
-              "invert": true,
-              "operator": "null"
-            }
-          ],
-          "rulesOperator": "AND",
-          "disableTemplating": false,
-          "fallbackTo404": false,
-          "default": false
-        },
-        {
-          "uuid": "09466b32-fda0-4ad6-993d-ba46c79dcc2d",
-          "body": "{\"Information-Mediator-Client required\"}",
-          "latency": 0,
-          "statusCode": 400,
-          "label": "No obligatory \"Information-Mediator-Client\" header",
-          "headers": [],
-          "bodyType": "INLINE",
-          "filePath": "",
-          "databucketID": "",
-          "sendFileAsBody": false,
-          "rules": [
-            {
-              "target": "header",
-              "modifier": "Information-Mediator-Client",
-              "value": "",
-              "invert": false,
-              "operator": "null"
-            }
-          ],
-          "rulesOperator": "OR",
-          "disableTemplating": false,
-          "fallbackTo404": false,
-          "default": false
-        },
-        {
-          "uuid": "a5166674-408b-448c-a5b8-47bab85eaf03",
-          "body": "{\"Invalid format of Information-Mediator-Client, should match INSTANCE/CLASS/MEMBER/SUBSYSTEM\"}",
-          "latency": 0,
-          "statusCode": 400,
-          "label": "Invalid \"Information-Mediator-Client\" header",
-          "headers": [],
-          "bodyType": "INLINE",
-          "filePath": "",
-          "databucketID": "",
-          "sendFileAsBody": false,
-          "rules": [
-            {
-              "target": "header",
-              "modifier": "Information-Mediator-Client",
-              "value": "[a-zA-Z0-9_]+\\/[a-zA-Z0-9_]+\\/[a-zA-Z0-9_]+\\/[a-zA-Z0-9_]+",
-              "invert": true,
-              "operator": "regex"
-            },
-            {
-              "target": "header",
-              "modifier": "Information-Mediator-Client",
-              "value": "",
-              "invert": true,
-              "operator": "null"
-            }
-          ],
-          "rulesOperator": "OR",
-          "disableTemplating": false,
-          "fallbackTo404": false,
-          "default": false
         }
       ],
       "enabled": true,

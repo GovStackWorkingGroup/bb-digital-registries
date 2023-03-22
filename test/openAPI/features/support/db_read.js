@@ -5,7 +5,7 @@ const {
   localhost,
   databaseReadEndpoint,
   header,
-  acceptHeader,
+  contentTypeHeader,
   databaseReadResponseSchema,
   defaultExpectedResponseTime,
 } = require('./helpers/helpers');
@@ -33,42 +33,44 @@ When(
   id =>
     specDatabaseRead
       .get(baseUrl)
-      .withHeaders(`${header.key}`, `${header.value}`)
-      .withPathParams({ id: id })
+      .withHeaders(header.key, header.value)
+      .withPathParams('id', id)
 );
 
 Then(
-  'User receives a response from the \\/database\\/id endpoint',
+  'User receives a response from the GET \\/database\\/id endpoint',
   async () => await specDatabaseRead.toss()
 );
 
 Then(
-  'The \\/database\\/id endpoint response should be returned in a timely manner 15000ms',
+  'The GET \\/database\\/id endpoint response should be returned in a timely manner 15000ms',
   () =>
     specDatabaseRead
       .response()
       .to.have.responseTimeLessThan(defaultExpectedResponseTime)
 );
 
-Then('The \\/database\\/id endpoint response should have status 200', () =>
+Then('The GET \\/database\\/id endpoint response should have status 200', () =>
   specDatabaseRead.response().to.have.status(200)
 );
 
 Then(
-  'The \\/database\\/id endpoint response should have content-type: application\\/json header',
+  'The GET \\/database\\/id endpoint response should have content-type: application\\/json header',
   () =>
     specDatabaseRead
       .response()
-      .should.have.header(acceptHeader.key, acceptHeader.value)
+      .should.have.header(contentTypeHeader.key, contentTypeHeader.value)
 );
 
-Then('The \\/database\\/id endpoint response should match json schema', () =>
-  chai
-    .expect(specDatabaseRead._response.json)
-    .to.be.jsonSchema(databaseReadResponseSchema)
+Then(
+  'The GET \\/database\\/id endpoint response should match json schema',
+  () =>
+    chai
+      .expect(specDatabaseRead._response.json)
+      .to.be.jsonSchema(databaseReadResponseSchema)
 );
 
-//Scenario Outline: User successfully obtains Digital Registries database information with schema version smoke type test
+//Scenario Outline: User successfully obtains Digital Registries database information with schema version
 
 // "When", "Then" already written above
 

@@ -1,6 +1,6 @@
 module.exports = {
   localhost: 'http://localhost:3333/',
-  acceptHeader: {
+  contentTypeHeader: {
     key: 'content-type',
     value: 'application/json; charset=utf-8',
   },
@@ -10,115 +10,98 @@ module.exports = {
   },
   defaultExpectedResponseTime: 15000,
   databaseReadEndpoint: 'database/{id}',
-  databaseReadResponseSchema: {
+  databaseSchemaSchema: {
     type: 'object',
     properties: {
-      id: {
-        type: 'integer',
+      type: { type: 'string' },
+      properties: {
+        type: 'object',
+        properties: {
+          ID: {
+            type: 'object',
+            properties: {
+              type: 'string',
+              triggers: {
+                type: 'array',
+                items: {
+                  type: 'object',
+                  properties: {
+                    conditions: {
+                      type: 'array',
+                      properties: {
+                        logic: { type: 'string' },
+                        value: { type: 'string' },
+                        gate: { type: 'string' },
+                      },
+                      additionalProperties: false,
+                    },
+                    actions: {
+                      type: 'array',
+                      items: {
+                        type: 'object',
+                        properties: {
+                          type: { type: 'string' },
+                          value: { type: 'string' },
+                          field_id: { type: 'integer' },
+                        },
+                        additionalProperties: false,
+                      },
+                    },
+                  },
+                  additionalProperties: false,
+                },
+              },
+              primaryKey: { type: 'boolean' },
+              readOnly: { type: 'boolean' },
+              description: { type: 'string' },
+              example: { type: 'string' },
+              id: { type: 'integer' },
+            },
+            additionalProperties: false,
+          },
+          Child: {
+            type: 'object',
+            properties: {
+              type: {
+                type: 'string',
+                properties: {
+                  type: 'object',
+                  properties: {
+                    ID: {
+                      type: 'object',
+                      properties: {
+                        type: { type: 'string' },
+                        description: { type: 'string' },
+                        example: { type: 'string' },
+                        id: { type: 'integer' },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+        additionalProperties: false,
       },
+      incrementIndex: { type: 'integer' },
+      required: {
+        type: 'array',
+        items: { type: 'string' },
+      },
+      additionalProperties: false,
+    },
+  },
+  databaseInfoSchema: {
+    type: 'object',
+    properties: {
+      id: { type: 'integer' },
       version: { type: 'string' },
       name: { type: 'string' },
       description: { type: 'string' },
       institution: { type: 'string' },
       number_format: { type: 'string' },
-      schema: {
-        type: 'object',
-        properties: {
-          type: { type: 'string' },
-          properties: {
-            type: 'object',
-            properties: {
-              ID: {
-                type: 'object',
-                properties: {
-                  type: 'string',
-                  triggers: {
-                    type: 'array',
-                    items: {
-                      type: 'object',
-                      properties: {
-                        conditions: {
-                          type: 'array',
-                          properties: {
-                            logic: {
-                              type: 'string',
-                            },
-                            value: {
-                              type: 'string',
-                            },
-                            gate: { type: 'string' },
-                          },
-                          additionalProperties: false,
-                        },
-                        actions: {
-                          type: 'array',
-                          items: {
-                            type: 'object',
-                            properties: {
-                              type: {
-                                type: 'string',
-                              },
-                              value: { type: 'string' },
-                              field_id: { type: 'integer' },
-                            },
-                            additionalProperties: false,
-                          },
-                        },
-                      },
-                      additionalProperties: false,
-                    },
-                  },
-                  primaryKey: { type: 'boolean' },
-                  readOnly: { type: 'boolean' },
-                  description: { type: 'string' },
-                  example: { type: 'string' },
-                  id: { type: 'integer' },
-                },
-                additionalProperties: false,
-              },
-              Child: {
-                type: 'object',
-                properties: {
-                  type: {
-                    type: 'string',
-                    properties: {
-                      type: 'object',
-                      properties: {
-                        ID: {
-                          type: 'object',
-                          properties: {
-                            type: { type: 'string' },
-                            description: {
-                              type: 'string',
-                            },
-                            example: {
-                              type: 'string',
-                            },
-                            id: {
-                              type: 'integer',
-                            },
-                          },
-                        },
-                      },
-                    },
-                  },
-                },
-              },
-            },
-            additionalProperties: false,
-          },
-          incrementIndex: {
-            type: 'integer',
-          },
-          required: {
-            type: 'array',
-            items: {
-              type: 'string',
-            },
-          },
-          additionalProperties: false,
-        },
-      },
+      schema: this.databaseSchemaSchema,
       schema_tags: {
         type: 'array',
         items: {
@@ -176,6 +159,9 @@ module.exports = {
       data_index_increment: { type: 'integer' },
       has_logo: { type: 'boolean' },
     },
-    additionalProperties: false,
+  },
+  databaseReadResponseSchema: {
+    type: 'object',
+    properties: this.databaseInfoSchema,
   },
 };
