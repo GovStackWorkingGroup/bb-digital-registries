@@ -1,55 +1,83 @@
-const pactum = require('pactum');
+const chai = require('chai');
+const { spec } = require('pactum');
 const { Given, When, Then, Before, After } = require('@cucumber/cucumber');
-const { header, localhost } = require('./helpers/helpers');
+const {
+  localhost,
+  header,
+  contentTypeHeader,
+  defaultExpectedResponseTime,
+  databaseDeleteEndpoint,
+  databaseDeleteResponseSchema,
+} = require('./helpers/helpers');
 
-let databaseSchemaId;
+chai.use(require('chai-json-schema'));
+
 let specDatabaseDelete;
 
-const baseUrl = `${localhost}database/{id}`;
+const baseUrl = localhost + databaseDeleteEndpoint;
+const endpointTag = { tags: `@endpoint=/${databaseDeleteEndpoint}` };
 
-Before(() => {
-  specDatabaseDelete = pactum.spec();
+Before(endpointTag, () => {
+  specDatabaseDelete = spec();
 });
 
-// Scenario: User successfully deletes the Digital Registries schema
+// Scenario: User successfully deletes the Digital Registries schema smoke type test
 Given(
-  'The user wants to delete the Digital Registries schema and the database schema exists',
-  () => (databaseSchemaId = '12345')
+  'User wants to delete the Digital Registries schema',
+  () => 'User wants to delete the Digital Registries schema'
 );
 
-When('The user sends a valid request to delete the database schema', () =>
-  specDatabaseDelete
-    .delete(baseUrl)
-    .withHeaders(`${header.key}`, `${header.value}`)
-    .withPathParams('id', databaseSchemaId)
+When(
+  'The DELETE request with given Information-Mediator-Client header and {string} as id is sent',
+  id =>
+    specDatabaseDelete
+      .delete(baseUrl)
+      .withHeaders(header.key, header.value)
+      .withPathParams('id', Number.parseInt(id))
 );
 
 Then(
-  'The operation to delete the database schema completes successfully',
-  async () => {
-    await specDatabaseDelete.toss();
-    specDatabaseDelete.response().should.have.status(200);
-    specDatabaseDelete.response().should.have.body('Success');
-  }
+  'User receives a response from the DELETE \\/database\\/id endpoint',
+  async () => await specDatabaseDelete.toss()
 );
-
-// The user cannot delete the schema from Digital Registries because the schema does not exist
-Given(
-  'The user wants to delete the Digital Registries schema and the database schema does not exist',
-  () => (databaseSchemaId = '12')
-);
-
-// "When" is already written in line 20-25
 
 Then(
-  'The operation to delete a database schema returns an error because the schema does not exist',
-  async () => {
-    await specDatabaseDelete.toss();
-    specDatabaseDelete.response().should.have.status(400);
-    specDatabaseDelete.response().should.have.body('Failure');
-  }
+  'The DELETE \\/database\\/id endpoint response should be returned in a timely manner 15000ms',
+  () =>
+    specDatabaseDelete
+      .response()
+      .to.have.responseTimeLessThan(defaultExpectedResponseTime)
 );
 
-After(() => {
+Then(
+  'The DELETE \\/database\\/id endpoint response should have status 200',
+  () => specDatabaseDelete.response().should.have.status(200)
+);
+
+Then(
+  'The DELETE \\/database\\/id endpoint response should have content-type: application\\/json header',
+  () =>
+    specDatabaseDelete
+      .response()
+      .should.have.header(contentTypeHeader.key, contentTypeHeader.value)
+);
+
+Then(
+  'The DELETE \\/database\\/id endpoint response should match json schema',
+  () =>
+    chai
+      .expect(specDatabaseDelete._response.json)
+      .to.be.jsonSchema(databaseDeleteResponseSchema)
+);
+
+// Scenario Outline: User successfully deletes the Digital Registries schema
+// others Given, When, Then for this scenario are written in the aforementioned example
+
+Then(
+  'The DELETE \\/database\\/id endpoint response should have body {string}',
+  responseBody => specDatabaseDelete.response().to.have.body(responseBody)
+);
+
+After(endpointTag, () => {
   specDatabaseDelete.end();
 });
