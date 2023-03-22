@@ -178,4 +178,152 @@ module.exports = {
     },
     additionalProperties: false,
   },
+  databaseModifyEndpoint: 'database/modify',
+  databaseModifyBody: {
+    group_name: 'Test',
+    catalog_name: 'Mother and Child',
+    code: 'MCR',
+    schema: {
+      type: 'some object',
+      properties: {
+        ID: {
+          type: 'some string',
+          triggers: [
+            {
+              conditions: [
+                {
+                  logic: '==',
+                  value: '',
+                  gate: '&&',
+                },
+              ],
+              actions: [
+                {
+                  type: 'set-value',
+                  value: 'MCTS{indexNoByCode}',
+                  field_id: 1,
+                },
+              ],
+            },
+          ],
+          primaryKey: true,
+          readOnly: true,
+          description: 'Registration ID',
+          example: 'MCTS31',
+          id: 1,
+        },
+        Child: {
+          type: ' some string',
+          properties: {
+            ID: {
+              type: 'some string',
+              description: 'Child ID',
+              example: 'ID2',
+              id: 13,
+            },
+          },
+        },
+      },
+      incrementIndex: 30,
+      required: ['ID'],
+    },
+  },
+  databaseModifyResponseSchema: {
+    type: 'object',
+    properties: {
+      type: { type: 'string' },
+      properties: {
+        type: 'object',
+        properties: {
+          ID: {
+            type: 'object',
+            properties: {
+              type: 'string',
+              triggers: {
+                type: 'array',
+                items: {
+                  type: 'object',
+                  properties: {
+                    conditions: {
+                      type: 'array',
+                      properties: {
+                        logic: {
+                          type: 'string',
+                        },
+                        value: {
+                          type: 'string',
+                        },
+                        gate: { type: 'string' },
+                      },
+                      additionalProperties: false,
+                    },
+                    actions: {
+                      type: 'array',
+                      items: {
+                        type: 'object',
+                        properties: {
+                          type: {
+                            type: 'string',
+                          },
+                          value: { type: 'string' },
+                          field_id: { type: 'integer' },
+                        },
+                        additionalProperties: false,
+                      },
+                    },
+                  },
+                  additionalProperties: false,
+                },
+              },
+              primaryKey: { type: 'boolean' },
+              readOnly: { type: 'boolean' },
+              description: { type: 'string' },
+              example: { type: 'string' },
+              id: { type: 'integer' },
+            },
+            additionalProperties: false,
+          },
+          Child: {
+            type: 'object',
+            properties: {
+              type: {
+                type: 'string',
+                properties: {
+                  type: 'object',
+                  properties: {
+                    ID: {
+                      type: 'object',
+                      properties: {
+                        type: { type: 'string' },
+                        description: {
+                          type: 'string',
+                        },
+                        example: {
+                          type: 'string',
+                        },
+                        id: {
+                          type: 'integer',
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+        additionalProperties: false,
+      },
+      incrementIndex: {
+        type: 'integer',
+      },
+      required: {
+        type: 'array',
+        items: {
+          type: 'string',
+        },
+      },
+      additionalProperties: false,
+    },
+  },
 };

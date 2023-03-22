@@ -2195,27 +2195,6 @@
               "value": "[a-zA-Z0-9_]+\\/[a-zA-Z0-9_]+\\/[a-zA-Z0-9_]+\\/[a-zA-Z0-9_]+",
               "invert": false,
               "operator": "regex"
-            },
-            {
-              "target": "body",
-              "modifier": "group_name",
-              "value": "",
-              "invert": true,
-              "operator": "null"
-            },
-            {
-              "target": "body",
-              "modifier": "catalog_name",
-              "value": "",
-              "invert": true,
-              "operator": "null"
-            },
-            {
-              "target": "body",
-              "modifier": "schema",
-              "value": "",
-              "invert": true,
-              "operator": "null"
             }
           ],
           "rulesOperator": "AND",
