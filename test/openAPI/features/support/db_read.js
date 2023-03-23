@@ -21,7 +21,7 @@ Before(endpointTag, () => {
   specDatabaseRead = pactum.spec();
 });
 
-// Scenario: User successfully obtains Digital Registries database information with schema version smoke type test
+// Scenario: User successfully obtains database information with database schema smoke type test
 Given(
   'User wants to get the database information of Digital Registries with schema version',
   () =>
@@ -70,7 +70,7 @@ Then(
       .to.be.jsonSchema(databaseReadResponseSchema)
 );
 
-//Scenario Outline: User successfully obtains Digital Registries database information with schema version
+//Scenario Outline: User successfully obtains database information with database schema
 
 // "When", "Then" already written above
 

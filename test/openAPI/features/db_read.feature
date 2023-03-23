@@ -2,7 +2,7 @@
 Feature: API endpoint that allows user to get database information with database schema.
 
   @smoke 
-  Scenario: User successfully obtains Digital Registries database information with schema version smoke type test
+  Scenario: User successfully obtains database information with database schema smoke type test
     Given User wants to get the database information of Digital Registries with schema version
     When User sends GET request with given Information-Mediator-Client header and "1" as id
     Then User receives a response from the GET /database/id endpoint
@@ -12,7 +12,7 @@ Feature: API endpoint that allows user to get database information with database
     And The GET /database/id endpoint response should match json schema
 
   @unit @positive 
-  Scenario Outline: User successfully obtains Digital Registries database information with schema version
+  Scenario Outline: User successfully obtains database information with database schema
     Given User wants to get the database information of Digital Registries with schema version
     When User sends GET request with given Information-Mediator-Client header and "<id>" as id
     Then User receives a response from the GET /database/id endpoint
