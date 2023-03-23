@@ -32,9 +32,7 @@
   "paths": {
     "/database/{id}": {
       "get": {
-        "tags": [
-          "Database API"
-        ],
+        "tags": ["Database API"],
         "description": "API endpoint that allows user to get database information with schema",
         "parameters": [
           {
@@ -70,9 +68,7 @@
         ]
       },
       "delete": {
-        "tags": [
-          "Database API"
-        ],
+        "tags": ["Database API"],
         "description": "API endpoint that allows user to delete database schema",
         "parameters": [
           {
@@ -111,9 +107,7 @@
     },
     "/database/modify": {
       "post": {
-        "tags": [
-          "Database API"
-        ],
+        "tags": ["Database API"],
         "description": "API endpoint that allows user to create or modify database schema",
         "parameters": [
           {
@@ -147,11 +141,7 @@
                         "$ref": "#/components/schemas/DatabaseSchema"
                       }
                     ],
-                    "required": [
-                      "creationDate",
-                      "description",
-                      "filename"
-                    ]
+                    "required": ["creationDate", "description", "filename"]
                   }
                 }
               }
@@ -174,9 +164,7 @@
     },
     "/databases": {
       "get": {
-        "tags": [
-          "Databases"
-        ],
+        "tags": ["Databases"],
         "description": "API endpoint that allows user to get information about all databases",
         "parameters": [
           {
@@ -341,7 +329,7 @@
           "by_on_behalf_of_user_auth_id": {
             "type": "integer",
             "description": "Shows user id whose behalf was this database created",
-            "example": null
+            "example": 0
           },
           "by_on_behalf_of_user_name": {
             "type": "string",

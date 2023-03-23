@@ -85,10 +85,7 @@ module.exports = {
         additionalProperties: false,
       },
       incrementIndex: { type: 'integer' },
-      required: {
-        type: 'array',
-        items: { type: 'string' },
-      },
+      required: ['ID'],
       additionalProperties: false,
     },
   },
@@ -146,9 +143,7 @@ module.exports = {
         items: {
           type: 'object',
           properties: {
-            service_id: {
-              type: 'integer',
-            },
+            service_id: { type: 'integer' },
             name: { type: 'string' },
             is_visible: { type: 'boolean' },
             used_count: { type: 'integer' },
