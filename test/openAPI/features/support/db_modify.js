@@ -30,11 +30,7 @@ Given(
 
 When(
   'User sends POST request with given Information-Mediator-Client header',
-  () =>
-    specDatabaseModify
-      .post(baseUrl)
-      .withHeaders(`${header.key}`, `${header.value}`)
-  // .withBody(databaseModifyBody)
+  () => specDatabaseModify.post(baseUrl).withHeaders(header.key, header.value)
 );
 
 Then(
@@ -79,7 +75,7 @@ When(
   () =>
     specDatabaseModify
       .post(baseUrl)
-      .withHeaders(`${header.key}`, `${header.value}`)
+      .withHeaders(header.key, header.value)
       .withBody(databaseModifyBody)
 );
 
