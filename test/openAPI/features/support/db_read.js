@@ -34,7 +34,7 @@ When(
     specDatabaseRead
       .get(baseUrl)
       .withHeaders(header.key, header.value)
-      .withPathParams('id', id)
+      .withPathParams('id', Number.parseInt(id))
 );
 
 Then(
