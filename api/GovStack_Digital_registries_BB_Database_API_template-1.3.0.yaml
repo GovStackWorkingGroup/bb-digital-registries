@@ -23,7 +23,8 @@ paths:
     get:
       tags:
         - Database API
-      description: API endpoint that allows user to get database information with schema
+      description:
+        API endpoint that allows user to get database information with schema
       parameters:
         - $ref: '#/components/parameters/Information-Mediator-Client'
         - name: id
@@ -69,7 +70,8 @@ paths:
     post:
       tags:
         - Database API
-      description: API endpoint that allows user to create or modify database schema
+      description:
+        API endpoint that allows user to create or modify database schema
       parameters:
         - $ref: '#/components/parameters/Information-Mediator-Client'
       requestBody:
@@ -108,7 +110,8 @@ paths:
     get:
       tags:
         - Databases
-      description: API endpoint that allows user to get information about all databases
+      description:
+        API endpoint that allows user to get information about all databases
       parameters:
         - $ref: '#/components/parameters/Information-Mediator-Client'
       responses:
@@ -167,7 +170,8 @@ components:
           $ref: '#/components/schemas/DatabaseSchema'
         schema_tags:
           type: array
-          description: List of different schema tags that are related to the database
+          description:
+            List of different schema tags that are related to the database
           items:
             type: object
             properties:
@@ -182,7 +186,8 @@ components:
                 example: true
         schema_flags:
           type: array
-          description: List of different schema flags that are related to the database
+          description:
+            List of different schema flags that are related to the database
           items:
             type: object
             properties:
@@ -226,7 +231,7 @@ components:
         by_on_behalf_of_user_auth_id:
           type: integer
           description: Shows user id whose behalf was this database created
-          example: null
+          example: 0
         by_on_behalf_of_user_name:
           type: string
           description: Shows user name whose behalf was this database created
