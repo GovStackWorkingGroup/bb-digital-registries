@@ -2117,63 +2117,6 @@
           "disableTemplating": false,
           "fallbackTo404": false,
           "default": true
-        },
-        {
-          "uuid": "c8151b53-3673-4dc5-8f09-c0883e03b5f9",
-          "body": "{\"Information-Mediator-Client required\"}",
-          "latency": 0,
-          "statusCode": 400,
-          "label": "No obligatory \"Information-Mediator-Client\" header",
-          "headers": [],
-          "bodyType": "INLINE",
-          "filePath": "",
-          "databucketID": "",
-          "sendFileAsBody": false,
-          "rules": [
-            {
-              "target": "header",
-              "modifier": "Information-Mediator-Client",
-              "value": "",
-              "invert": false,
-              "operator": "null"
-            }
-          ],
-          "rulesOperator": "OR",
-          "disableTemplating": false,
-          "fallbackTo404": false,
-          "default": false
-        },
-        {
-          "uuid": "e8390932-4370-4cab-bd5e-79e6cb38251f",
-          "body": "{\"Invalid format of Information-Mediator-Client, should match INSTANCE/CLASS/MEMBER/SUBSYSTEM\"}",
-          "latency": 0,
-          "statusCode": 400,
-          "label": "Invalid \"Information-Mediator-Client\" header",
-          "headers": [],
-          "bodyType": "INLINE",
-          "filePath": "",
-          "databucketID": "",
-          "sendFileAsBody": false,
-          "rules": [
-            {
-              "target": "header",
-              "modifier": "Information-Mediator-Client",
-              "value": "[a-zA-Z0-9_]+\\/[a-zA-Z0-9_]+\\/[a-zA-Z0-9_]+\\/[a-zA-Z0-9_]+",
-              "invert": true,
-              "operator": "regex"
-            },
-            {
-              "target": "header",
-              "modifier": "Information-Mediator-Client",
-              "value": "",
-              "invert": true,
-              "operator": "null"
-            }
-          ],
-          "rulesOperator": "AND",
-          "disableTemplating": false,
-          "fallbackTo404": false,
-          "default": false
         }
       ],
       "enabled": true,

@@ -21,18 +21,15 @@ Before(endpointTag, () => {
   specDatabaseList = pactum.spec();
 });
 
-// Scenario: The user receives information about Digital Registries databases
+// Scenario: The user receives information about databases
 Given(
-  'User wants to view information about all Digital Registries databases',
-  () => 'User wants to view information about all Digital Registries databases'
+  'User wants to view information about all databases',
+  () => 'User wants to view information about all databases'
 );
 
 When(
   'User sends GET request with given Information-Mediator-Client header',
-  () =>
-    specDatabaseList
-      .get(baseUrl)
-      .withHeaders(`${header.key}`, `${header.value}`)
+  () => specDatabaseList.get(baseUrl).withHeaders(header.key, header.value)
 );
 
 Then(

@@ -11,7 +11,6 @@ module.exports = {
   defaultExpectedResponseTime: 15000,
   databaseReadEndpoint: 'database/{id}',
   databasesEndpoint: 'databases',
-
   databaseSchemaSchema: {
     type: 'object',
     properties: {
@@ -169,7 +168,7 @@ module.exports = {
       code: { type: 'string' },
       databases: {
         type: 'array',
-        items: this.databaseInfoSchemaVariables,
+        items: this.databaseInfoSchema,
       },
       group_id: { type: 'integer' },
       order: { type: 'integer' },
