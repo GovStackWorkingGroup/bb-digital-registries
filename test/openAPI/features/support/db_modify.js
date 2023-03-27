@@ -7,8 +7,8 @@ const {
   header,
   databaseModifyBody,
   defaultExpectedResponseTime,
-  acceptHeader,
   databaseModifyResponseSchema,
+  contentTypeHeader,
 } = require('./helpers/helpers');
 
 chai.use(require('chai-json-schema'));
@@ -22,10 +22,10 @@ Before(endpointTag, () => {
   specDatabaseModify = pactum.spec();
 });
 
-// Scenario: The user successfully creates the Digital Registries database schema smoke test type
+// Scenario: The user successfully creates a database schema smoke type test
 Given(
-  'User wants to create or modify the Digital Registries database schema',
-  () => 'User wants to create or modify the Digital Registries database schema'
+  'User wants to create or modify the database schema',
+  () => 'User wants to create or modify the database schema'
 );
 
 When(
@@ -55,7 +55,7 @@ Then(
   () =>
     specDatabaseModify
       .response()
-      .should.have.header(acceptHeader.key, acceptHeader.value)
+      .should.have.header(contentTypeHeader.key, contentTypeHeader.value)
 );
 
 Then(
@@ -66,7 +66,7 @@ Then(
       .to.be.jsonSchema(databaseModifyResponseSchema)
 );
 
-// Scenario Outline: The user successfully creates the Digital Registries database schema
+// Scenario: The user successfully creates a database schema
 
 // "Given" already written above
 
