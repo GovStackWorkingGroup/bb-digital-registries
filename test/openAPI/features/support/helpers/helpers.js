@@ -9,6 +9,8 @@ module.exports = {
     value: 'INSTANCE/CLASS/MEMBER/SUBSYSTEM',
   },
   defaultExpectedResponseTime: 15000,
+  databaseDeleteEndpoint: 'database/{id}',
+  databaseDeleteResponseSchema: { type: 'string' },
   databaseReadEndpoint: 'database/{id}',
   databaseSchemaSchema: {
     type: 'object',

@@ -2193,16 +2193,11 @@
       "responses": [
         {
           "uuid": "c97231c3-1b4d-4729-97cc-9c2b3ba89398",
-          "body": "\"Success\"",
+          "body": "\"Success\"\n\n",
           "latency": 0,
           "statusCode": 200,
           "label": "Success",
-          "headers": [
-            {
-              "key": "Content-Type",
-              "value": "application/json"
-            }
-          ],
+          "headers": [],
           "bodyType": "INLINE",
           "filePath": "",
           "databucketID": "",
@@ -2218,53 +2213,9 @@
             {
               "target": "params",
               "modifier": "id",
-              "value": "12345",
-              "invert": false,
-              "operator": "equals"
-            },
-            {
-              "target": "params",
-              "modifier": "id",
-              "value": "",
-              "invert": true,
-              "operator": "null"
-            }
-          ],
-          "rulesOperator": "AND",
-          "disableTemplating": false,
-          "fallbackTo404": false,
-          "default": false
-        },
-        {
-          "uuid": "956e2d0f-3f4f-43f1-8563-ab1a723e4c13",
-          "body": "\"Failure\"",
-          "latency": 0,
-          "statusCode": 400,
-          "label": "No obligatory `id` query param",
-          "headers": [
-            {
-              "key": "Content-Type",
-              "value": "application/json"
-            }
-          ],
-          "bodyType": "INLINE",
-          "filePath": "",
-          "databucketID": "",
-          "sendFileAsBody": false,
-          "rules": [
-            {
-              "target": "header",
-              "modifier": "Information-Mediator-Client",
-              "value": "[a-zA-Z0-9_]+\\/[a-zA-Z0-9_]+\\/[a-zA-Z0-9_]+\\/[a-zA-Z0-9_]+",
+              "value": "^((?:[1-9][0-9]*)(?:\\.[0-9]+)?)$",
               "invert": false,
               "operator": "regex"
-            },
-            {
-              "target": "params",
-              "modifier": "id",
-              "value": "",
-              "invert": false,
-              "operator": "null"
             }
           ],
           "rulesOperator": "AND",

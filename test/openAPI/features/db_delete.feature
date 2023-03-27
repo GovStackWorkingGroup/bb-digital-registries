@@ -1,12 +1,31 @@
-Feature: API endpoint that allows users to clear the schema of Digital Registries schema.
-  Request endpoint: DELETE /database/{id}/
+@method=DELETE @endpoint=/database/{id}
+Feature: API endpoint that allows user to delete database schema
 
-  Scenario: User successfully deletes the Digital Registries schema
-    Given The user wants to delete the Digital Registries schema and the database schema exists
-    When The user sends a valid request to delete the database schema
-    Then The operation to delete the database schema completes successfully
 
-  Scenario: The user cannot delete the schema from Digital Registries because the schema does not exist
-    Given The user wants to delete the Digital Registries schema and the database schema does not exist
-    When The user sends a valid request to delete the database schema
-    Then The operation to delete a database schema returns an error because the schema does not exist
+  Scenario: User successfully deletes the Digital Registries schema smoke type test
+
+    Given User wants to delete the Digital Registries schema
+    When The DELETE request with given Information-Mediator-Client header and "1" as id is sent
+    Then User receives a response from the DELETE /database/id endpoint
+    And The DELETE /database/id endpoint response should be returned in a timely manner 15000ms
+    And The DELETE /database/id endpoint response should have status 200
+    And The DELETE /database/id endpoint response should have content-type: application/json header
+    And The DELETE /database/id endpoint response should match json schema
+
+
+  Scenario Outline: User successfully deletes the Digital Registries schema
+
+    Given User wants to delete the Digital Registries schema
+    When The DELETE request with given Information-Mediator-Client header and "<id>" as id is sent
+    Then User receives a response from the DELETE /database/id endpoint
+    And The DELETE /database/id endpoint response should be returned in a timely manner 15000ms
+    And The DELETE /database/id endpoint response should have content-type: application/json header
+    And The DELETE /database/id endpoint response should match json schema
+    And The DELETE /database/id endpoint response should have body "Success"
+
+    Examples: Valid data
+    | id         |
+    | 123        |
+    | 8438778473 |
+    | 3287483474 |
+    | 8484848484 |
