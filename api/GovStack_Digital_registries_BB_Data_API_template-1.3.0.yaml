@@ -1,7 +1,10 @@
 openapi: 3.0.0
 info:
   title: GovStack Digital Registries BB API examples
-  description: Digital Registries System contains multiple registries in one instance. For each registry same set of APIs is described. In this example two example registries have been described.
+  description:
+    Digital Registries System contains multiple registries in one instance. For
+    each registry same set of APIs is described. In this example two example
+    registries have been described.
   contact:
     email: tambetartma88@gmail.com
   version: 1.3.0
@@ -20,11 +23,15 @@ paths:
     get:
       tags:
         - Registry data query API
-      description: 'Searches (Regex supported) and returns multiple records as an array-list. '
+      description:
+        'Searches (Regex supported) and returns multiple records as an
+        array-list. '
       operationId: list
       summary: list
       parameters:
         - $ref: '#/components/parameters/Information-Mediator-Client'
+        - $ref: '#/components/parameters/registryname'
+        - $ref: '#/components/parameters/versionnumber'
         - name: search
           in: query
           description: Field for searching random string type data from database
@@ -62,11 +69,14 @@ paths:
             example: 10
         - name: query.<fieldname>
           in: query
-          description: Example of searchable database field. If more searchable fields are in DB, then more similar fields will follow in input
+          description:
+            Example of searchable database field. If more searchable fields are
+            in DB, then more similar fields will follow in input
           required: false
           schema:
             type: string
-            example: Value can be in any supported format, for an example 'string'
+            example:
+              Value can be in any supported format, for an example 'string'
             readOnly: true
       responses:
         '200':
@@ -108,6 +118,8 @@ paths:
       summary: create
       parameters:
         - $ref: '#/components/parameters/Information-Mediator-Client'
+        - $ref: '#/components/parameters/registryname'
+        - $ref: '#/components/parameters/versionnumber'
       requestBody:
         description: ''
         required: true
@@ -141,11 +153,15 @@ paths:
     post:
       tags:
         - Registry data query API
-      description: Searches records based on input parameters and returns boolean answer (true/false).
+      description:
+        Searches records based on input parameters and returns boolean answer
+        (true/false).
       operationId: exists
       summary: exists
       parameters:
         - $ref: '#/components/parameters/Information-Mediator-Client'
+        - $ref: '#/components/parameters/registryname'
+        - $ref: '#/components/parameters/versionnumber'
       requestBody:
         description: ''
         required: true
@@ -197,6 +213,8 @@ paths:
       summary: read
       parameters:
         - $ref: '#/components/parameters/Information-Mediator-Client'
+        - $ref: '#/components/parameters/registryname'
+        - $ref: '#/components/parameters/versionnumber'
       requestBody:
         description: ''
         required: true
@@ -235,6 +253,8 @@ paths:
       summary: update
       parameters:
         - $ref: '#/components/parameters/Information-Mediator-Client'
+        - $ref: '#/components/parameters/registryname'
+        - $ref: '#/components/parameters/versionnumber'
       requestBody:
         description: ''
         required: true
@@ -270,11 +290,15 @@ paths:
     put:
       tags:
         - Registry data query API
-      description: Updates multiple records in the registry database that match the input query.
+      description:
+        Updates multiple records in the registry database that match the input
+        query.
       operationId: update-entries
       summary: update-entries
       parameters:
         - $ref: '#/components/parameters/Information-Mediator-Client'
+        - $ref: '#/components/parameters/registryname'
+        - $ref: '#/components/parameters/versionnumber'
       requestBody:
         description: ''
         required: true
@@ -310,11 +334,15 @@ paths:
     post:
       tags:
         - Registry data query API
-      description: 'API updates existing record if matching with input parameters is successful. If record is not found the API will create a new record. '
+      description:
+        'API updates existing record if matching with input parameters is
+        successful. If record is not found the API will create a new record. '
       operationId: update-or-create
       summary: update-or-create
       parameters:
         - $ref: '#/components/parameters/Information-Mediator-Client'
+        - $ref: '#/components/parameters/registryname'
+        - $ref: '#/components/parameters/versionnumber'
       requestBody:
         description: ''
         required: true
@@ -325,7 +353,9 @@ paths:
               properties:
                 query:
                   type: object
-                  description: Find object to update, if object not found, new will be created
+                  description:
+                    Find object to update, if object not found, new will be
+                    created
                   properties:
                     content:
                       $ref: '#/components/schemas/Example'
@@ -333,7 +363,9 @@ paths:
                     - content
                 write:
                   type: object
-                  description: Data that will be updated for found Example object. If object not found new object with this data is created
+                  description:
+                    Data that will be updated for found Example object. If
+                    object not found new object with this data is created
                   properties:
                     content:
                       $ref: '#/components/schemas/Example'
@@ -362,13 +394,17 @@ paths:
       summary: delete
       parameters:
         - $ref: '#/components/parameters/Information-Mediator-Client'
+        - $ref: '#/components/parameters/registryname'
+        - $ref: '#/components/parameters/versionnumber'
         - name: ID
           in: path
           required: true
           schema:
             type: string
             example: ID1
-            description: ID of the citizen that needs to be deleted from the Registry data query API
+            description:
+              ID of the citizen that needs to be deleted from the Registry data
+              query API
       responses:
         '204':
           description: ''
@@ -383,6 +419,8 @@ paths:
       summary: read-value
       parameters:
         - $ref: '#/components/parameters/Information-Mediator-Client'
+        - $ref: '#/components/parameters/registryname'
+        - $ref: '#/components/parameters/versionnumber'
         - name: uuid
           in: path
           required: true
@@ -395,14 +433,18 @@ paths:
           required: true
           schema:
             type: string
-            description: 'Data format. Endpoint: /data/DB/1.0/DB-1/read-value/First%20name.json'
+            description:
+              'Data format. Endpoint:
+              /data/DB/1.0/DB-1/read-value/First%20name.json'
             example: First name
         - name: ext
           in: path
           required: true
           schema:
             type: string
-            description: 'Data format. Endpoint: /data/DB/1.0/DB-1/read-value/First%20name.json'
+            description:
+              'Data format. Endpoint:
+              /data/DB/1.0/DB-1/read-value/First%20name.json'
             example: json
       responses:
         '200':
@@ -481,6 +523,18 @@ components:
       name: Information-Mediator-Client
       example: eGovStack/GOV/90000009/digitalregistries
       description: 'Format is: INSTANCE/CLASS/MEMBER/SUBSYSTEM'
+      schema:
+        type: string
+      required: true
+    registryname:
+      in: path
+      name: registryname
+      schema:
+        type: string
+      required: true
+    versionnumber:
+      in: path
+      name: versionnumber
       schema:
         type: string
       required: true
