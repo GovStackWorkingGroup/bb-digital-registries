@@ -2038,16 +2038,11 @@
       "responses": [
         {
           "uuid": "8b4b5cf8-a879-4d4e-b9ad-ddbd95a43f90",
-          "body": "{\n  \"id\": {{urlParam 'id'}},\n  \"version\": \"2.7\",\n  \"name\": \"MCTS\",\n  \"description\": \"Database holding information about MCTS objects\",\n  \"institution\": \"Ministry of Social Affairs\",\n  \"number_format\": \"{code}{indexNoByCode}\",\n  \"schema\": {\n    \"type\": \"object\",\n    \"properties\": {\n      \"ID\": {\n        \"type\": \"string\",\n        \"triggers\": [\n          {\n            \"conditions\": [\n              {\n                \"logic\": \"==\",\n                \"value\": \"\",\n                \"gate\": \"&&\"\n              }\n            ],\n            \"actions\": [\n              {\n                \"type\": \"set-value\",\n                \"value\": \"MCTS{indexNoByCode}\",\n                \"field_id\": 1\n              }\n            ]\n          }\n        ],\n        \"primaryKey\": true,\n        \"readOnly\": true,\n        \"description\": \"Registration ID\",\n        \"example\": \"MCTS31\",\n        \"id\": 1\n      },\n      \"Child\": {\n        \"type\": \"string\",\n        \"properties\": {\n          \"ID\": {\n            \"type\": \"string\",\n            \"description\": \"Child ID\",\n            \"example\": \"ID2\",\n            \"id\": 13\n          }\n        }\n      }\n    },\n    \"incrementIndex\": 20,\n    \"required\": [\n      \"ID\"\n    ]\n  },\n  \"schema_tags\": [\n    {\n      \"name\": \"\",\n      \"path\": \"/Child/Citizenship\",\n      \"is_fulltext\": true\n    }\n  ],\n  \"schema_flags\": [\n    {\n      \"name\": \"mandatory\",\n      \"path\": \"/ID\"\n    }\n  ],\n  \"fields_uniques\": [\n    [\n      \"\"\n    ]\n  ],\n  \"is_draft\": false,\n  \"is_disabled\": false,\n  \"is_archived\": false,\n  \"modified_at\": \"2021-10-03T08:35:01.775915Z\",\n  \"by_user_name\": \"ingmar.dev\",\n  \"by_user_auth_id\": 1,\n  \"by_on_behalf_of_user_auth_id\": null,\n  \"by_on_behalf_of_user_name\": null,\n  \"generic_services\": [\n    {\n      \"service_id\": 1,\n      \"name\": \"data-create\",\n      \"is_visible\": true,\n      \"used_count\": 0\n    }\n  ],\n  \"data_index_increment\": 0,\n  \"has_logo\": false\n}",
+          "body": "{\n  \"id\": {{urlParam 'id'}},\n  \"version\": \"2.7\",\n  \"name\": \"MCTS\",\n  \"description\": \"Database holding information about MCTS objects\",\n  \"institution\": \"Ministry of Social Affairs\",\n  \"number_format\": \"{code}{indexNoByCode}\",\n  \"schema\": {\n    \"type\": \"object\",\n    \"properties\": {\n      \"ID\": {\n        \"type\": \"string\",\n        \"triggers\": [\n          {\n            \"conditions\": [\n              {\n                \"logic\": \"==\",\n                \"value\": \"\",\n                \"gate\": \"&&\"\n              }\n            ],\n            \"actions\": [\n              {\n                \"type\": \"set-value\",\n                \"value\": \"MCTS{indexNoByCode}\",\n                \"field_id\": 1\n              }\n            ]\n          }\n        ],\n        \"primaryKey\": true,\n        \"readOnly\": true,\n        \"description\": \"Registration ID\",\n        \"example\": \"MCTS31\",\n        \"id\": 1\n      },\n      \"Child\": {\n        \"type\": \"string\",\n        \"properties\": {\n          \"ID\": {\n            \"type\": \"string\",\n            \"description\": \"Child ID\",\n            \"example\": \"ID2\",\n            \"id\": 13\n          }\n        }\n      }\n    },\n    \"incrementIndex\": 20,\n    \"required\": [\n      \"ID\"\n    ]\n  },\n  \"schema_tags\": [\n    {\n      \"name\": \"\",\n      \"path\": \"/Child/Citizenship\",\n      \"is_fulltext\": true\n    }\n  ],\n  \"schema_flags\": [\n    {\n      \"name\": \"mandatory\",\n      \"path\": \"/ID\"\n    }\n  ],\n  \"fields_uniques\": [\n    [\n      \"\"\n    ]\n  ],\n  \"is_draft\": false,\n  \"is_disabled\": false,\n  \"is_archived\": false,\n  \"modified_at\": \"2021-10-03T08:35:01.775915Z\",\n  \"by_user_name\": \"ingmar.dev\",\n  \"by_user_auth_id\": 1,\n  \"by_on_behalf_of_user_auth_id\": 1,\n  \"by_on_behalf_of_user_name\": \"null\",\n  \"generic_services\": [\n    {\n      \"service_id\": 1,\n      \"name\": \"data-create\",\n      \"is_visible\": true,\n      \"used_count\": 0\n    }\n  ],\n  \"data_index_increment\": 0,\n  \"has_logo\": false\n}",
           "latency": 0,
           "statusCode": 200,
           "label": "Existing database",
-          "headers": [
-            {
-              "key": "Content-Type",
-              "value": "application/json"
-            }
-          ],
+          "headers": [],
           "bodyType": "INLINE",
           "filePath": "",
           "databucketID": "",
@@ -2079,102 +2074,6 @@
           "disableTemplating": false,
           "fallbackTo404": false,
           "default": true
-        },
-        {
-          "uuid": "0a74ff82-d966-4ab8-bb68-c0bc070b75cf",
-          "body": "{\"Invalid route param id\"}",
-          "latency": 0,
-          "statusCode": 400,
-          "label": "Invalid route param id",
-          "headers": [],
-          "bodyType": "INLINE",
-          "filePath": "",
-          "databucketID": "",
-          "sendFileAsBody": false,
-          "rules": [
-            {
-              "target": "header",
-              "modifier": "Information-Mediator-Client",
-              "value": "[a-zA-Z0-9_]+\\/[a-zA-Z0-9_]+\\/[a-zA-Z0-9_]+\\/[a-zA-Z0-9_]+",
-              "invert": false,
-              "operator": "regex"
-            },
-            {
-              "target": "params",
-              "modifier": "id",
-              "value": "^((?:[1-9][0-9]*)(?:\\.[0-9]+)?)$",
-              "invert": true,
-              "operator": "regex"
-            },
-            {
-              "target": "params",
-              "modifier": "id",
-              "value": "",
-              "invert": true,
-              "operator": "null"
-            }
-          ],
-          "rulesOperator": "AND",
-          "disableTemplating": false,
-          "fallbackTo404": false,
-          "default": false
-        },
-        {
-          "uuid": "09466b32-fda0-4ad6-993d-ba46c79dcc2d",
-          "body": "{\"Information-Mediator-Client required\"}",
-          "latency": 0,
-          "statusCode": 400,
-          "label": "No obligatory \"Information-Mediator-Client\" header",
-          "headers": [],
-          "bodyType": "INLINE",
-          "filePath": "",
-          "databucketID": "",
-          "sendFileAsBody": false,
-          "rules": [
-            {
-              "target": "header",
-              "modifier": "Information-Mediator-Client",
-              "value": "",
-              "invert": false,
-              "operator": "null"
-            }
-          ],
-          "rulesOperator": "OR",
-          "disableTemplating": false,
-          "fallbackTo404": false,
-          "default": false
-        },
-        {
-          "uuid": "a5166674-408b-448c-a5b8-47bab85eaf03",
-          "body": "{\"Invalid format of Information-Mediator-Client, should match INSTANCE/CLASS/MEMBER/SUBSYSTEM\"}",
-          "latency": 0,
-          "statusCode": 400,
-          "label": "Invalid \"Information-Mediator-Client\" header",
-          "headers": [],
-          "bodyType": "INLINE",
-          "filePath": "",
-          "databucketID": "",
-          "sendFileAsBody": false,
-          "rules": [
-            {
-              "target": "header",
-              "modifier": "Information-Mediator-Client",
-              "value": "[a-zA-Z0-9_]+\\/[a-zA-Z0-9_]+\\/[a-zA-Z0-9_]+\\/[a-zA-Z0-9_]+",
-              "invert": true,
-              "operator": "regex"
-            },
-            {
-              "target": "header",
-              "modifier": "Information-Mediator-Client",
-              "value": "",
-              "invert": true,
-              "operator": "null"
-            }
-          ],
-          "rulesOperator": "OR",
-          "disableTemplating": false,
-          "fallbackTo404": false,
-          "default": false
         }
       ],
       "enabled": true,
