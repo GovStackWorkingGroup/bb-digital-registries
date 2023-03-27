@@ -39,25 +39,25 @@ Then(
 
 Then(
   'The \\/databases endpoint response should be returned in a timely manner 15000ms',
-  async () =>
+  () =>
     specDatabaseList
       .response()
       .to.have.responseTimeLessThan(defaultExpectedResponseTime)
 );
 
-Then('The \\/databases endpoint response should have status 200', async () =>
+Then('The \\/databases endpoint response should have status 200', () =>
   specDatabaseList.response().to.have.status(200)
 );
 
 Then(
   'The \\/databases endpoint response should have content-type: application\\/json header',
-  async () =>
+  () =>
     specDatabaseList
       .response()
       .should.have.header(contentTypeHeader.key, contentTypeHeader.value)
 );
 
-Then('The \\/databases endpoint response should match json schema', async () =>
+Then('The \\/databases endpoint response should match json schema', () =>
   chai
     .expect(specDatabaseList._response.json)
     .to.be.jsonSchema(databasesResponseSchema)
