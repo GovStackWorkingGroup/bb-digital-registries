@@ -22,15 +22,19 @@ Before(endpointTag, () => {
   specDatabaseModify = pactum.spec();
 });
 
-// Scenario: The user successfully creates a database schema smoke type test
+// Scenario: The user successfully creates a database schema
 Given(
   'User wants to create or modify the database schema',
   () => 'User wants to create or modify the database schema'
 );
 
 When(
-  'User sends POST request with given Information-Mediator-Client header',
-  () => specDatabaseModify.post(baseUrl).withHeaders(header.key, header.value)
+  'User sends POST request with given Information-Mediator-Client header and body',
+  () =>
+    specDatabaseModify
+      .post(baseUrl)
+      .withHeaders(header.key, header.value)
+      .withBody(databaseModifyBody)
 );
 
 Then(
@@ -65,21 +69,6 @@ Then(
       .expect(specDatabaseModify._response.json)
       .to.be.jsonSchema(databaseModifyResponseSchema)
 );
-
-// Scenario: The user successfully creates a database schema
-
-// "Given" already written above
-
-When(
-  'User sends POST request with given Information-Mediator-Client header and body',
-  () =>
-    specDatabaseModify
-      .post(baseUrl)
-      .withHeaders(header.key, header.value)
-      .withBody(databaseModifyBody)
-);
-
-// "Then" already written above
 
 After(endpointTag, () => {
   specDatabaseModify.end();
