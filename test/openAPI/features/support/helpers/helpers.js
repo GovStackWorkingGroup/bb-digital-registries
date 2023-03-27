@@ -13,6 +13,13 @@ module.exports = {
   databaseDeleteResponseSchema: { type: 'string' },
   databaseReadEndpoint: 'database/{id}',
   databasesEndpoint: 'databases',
+  dataCreateEndpoint: 'data/{registryname}/{versionnumber}/create',
+  dataCreateRequestBody: {
+    ID: 'EE378627342345',
+    FirstName: 'Anna',
+    LastName: 'Stock',
+    BirthCertificateID: 'RR-1234567999',
+  },
   databaseSchemaSchema: {
     type: 'object',
     properties: {
@@ -231,5 +238,18 @@ module.exports = {
       incrementIndex: 30,
       required: ['ID'],
     },
+  },
+  dataExampleSchema: {
+    type: 'object',
+    properties: {
+      ID: { type: 'string' },
+      FirstName: { type: 'string' },
+      LastName: { type: 'string' },
+      BirthCertificateID: { type: 'string' },
+    },
+  },
+  dataCreateResponseSchema: {
+    type: 'object',
+    properties: { content: this.dataExampleSchema },
   },
 };

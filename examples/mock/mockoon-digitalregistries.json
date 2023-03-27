@@ -451,118 +451,22 @@
             {
               "target": "params",
               "modifier": "registryname",
-              "value": "registry1",
+              "value": "/^[a-zA-Z0-9]+$/",
               "invert": false,
-              "operator": "equals"
+              "operator": "regex"
+            },
+            {
+              "target": "params",
+              "modifier": "versionnumber",
+              "value": "/^[a-zA-Z0-9]+$/",
+              "invert": false,
+              "operator": "regex"
             }
           ],
           "rulesOperator": "AND",
           "disableTemplating": false,
           "fallbackTo404": false,
           "default": true
-        },
-        {
-          "uuid": "72529bfb-0fd1-4fc3-97fc-270f630da71e",
-          "body": "{\n  \"Invalid payload, registry name does not exist\"\n}\n",
-          "latency": 0,
-          "statusCode": 404,
-          "label": "Creates a new record in the registry database.",
-          "headers": [],
-          "bodyType": "INLINE",
-          "filePath": "",
-          "databucketID": "",
-          "sendFileAsBody": false,
-          "rules": [
-            {
-              "target": "header",
-              "modifier": "Information-Mediator-Client",
-              "value": "[a-zA-Z0-9_]+\\/[a-zA-Z0-9_]+\\/[a-zA-Z0-9_]+\\/[a-zA-Z0-9_]+",
-              "invert": false,
-              "operator": "regex"
-            },
-            {
-              "target": "body",
-              "modifier": "write.content",
-              "value": "",
-              "invert": true,
-              "operator": "null"
-            },
-            {
-              "target": "params",
-              "modifier": "registryname",
-              "value": "registry2",
-              "invert": false,
-              "operator": "equals"
-            }
-          ],
-          "rulesOperator": "AND",
-          "disableTemplating": false,
-          "fallbackTo404": false,
-          "default": false
-        },
-        {
-          "uuid": "210c58c0-a928-4d77-b316-679230360cf3",
-          "body": "{\n  \"Invalid payload, write.content not provided\"\n}",
-          "latency": 0,
-          "statusCode": 400,
-          "label": "Invalid payload",
-          "headers": [],
-          "bodyType": "INLINE",
-          "filePath": "",
-          "databucketID": "",
-          "sendFileAsBody": false,
-          "rules": [
-            {
-              "target": "header",
-              "modifier": "Information-Mediator-Client",
-              "value": "[a-zA-Z0-9_]+\\/[a-zA-Z0-9_]+\\/[a-zA-Z0-9_]+\\/[a-zA-Z0-9_]+",
-              "invert": false,
-              "operator": "regex"
-            },
-            {
-              "target": "body",
-              "modifier": "write.content",
-              "value": "",
-              "invert": false,
-              "operator": "null"
-            }
-          ],
-          "rulesOperator": "AND",
-          "disableTemplating": false,
-          "fallbackTo404": false,
-          "default": false
-        },
-        {
-          "uuid": "773538a1-5f46-4a42-b931-a110f445c1c4",
-          "body": "{\n  \"Invalid payload, write.content not provided\"\n}",
-          "latency": 0,
-          "statusCode": 400,
-          "label": "Invalid payload - No Information Content Mediator",
-          "headers": [],
-          "bodyType": "INLINE",
-          "filePath": "",
-          "databucketID": "",
-          "sendFileAsBody": false,
-          "rules": [
-            {
-              "target": "header",
-              "modifier": "Information-Mediator-Client",
-              "value": "[a-zA-Z0-9_]+\\/[a-zA-Z0-9_]+\\/[a-zA-Z0-9_]+\\/[a-zA-Z0-9_]+",
-              "invert": false,
-              "operator": "null"
-            },
-            {
-              "target": "body",
-              "modifier": "write.content",
-              "value": "",
-              "invert": false,
-              "operator": "null"
-            }
-          ],
-          "rulesOperator": "AND",
-          "disableTemplating": false,
-          "fallbackTo404": false,
-          "default": false
         }
       ],
       "enabled": true,

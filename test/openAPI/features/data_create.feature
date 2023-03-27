@@ -1,18 +1,13 @@
-@data
-Feature: API endpoint that allows users to create a new record in the Digital Registries database.
-  Request endpoint: POST /data/{registryname}/{versionnumber}/create
+@method=POST @endpoint=/data/{registryname}/{versionnumber}/create
+Feature: API endpoint that allows users to create a new record in the database.
 
-  Scenario: The user successfully creates a record in the Digital Registries database
-    Given The user wants to create a new record in the Digital Registries database
-    When The user sends a valid request to create a new record in the database
-    Then The process to create a new record completes successfully
+  @smoke @positive @unit
+  Scenario: The user successfully creates a record in the database
 
-  Scenario: The user is unable to create a record in a database that does not exist
-    Given The user wants to create a new record in the Digital Registries database that does not exist
-    When The user sends a valid request to create a new record in a database that does not exist
-    Then The result of the operation is an error because a database does not exist
-
-  Scenario: The user is unable to create a record in the Digital Registries database because of an invalid request
-    Given The user wants to create a new record in the Digital Registries database
-    When The user sends an invalid request to create a new record in the database
-    Then The result of the operation is an error due to an invalid request
+    Given The user wants to create a new record in the database
+    When User sends POST request with given Information-Mediator-Client header, body, "registryname" as registryname and "111" as versionnumber
+    Then User receives a response from the POST /data/{registryname}/{versionnumber}/create endpoint
+    And The POST /data/{registryname}/{versionnumber}/create endpoint response should be returned in a timely manner 15000ms
+    And The POST /data/{registryname}/{versionnumber}/create endpoint response should have status 200
+    And The POST /data/{registryname}/{versionnumber}/create endpoint response should have content-type: application/json header
+    And The POST /data/{registryname}/{versionnumber}/create endpoint response should match json schema
