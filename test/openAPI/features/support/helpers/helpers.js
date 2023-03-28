@@ -9,17 +9,95 @@ module.exports = {
     value: 'INSTANCE/CLASS/MEMBER/SUBSYSTEM',
   },
   defaultExpectedResponseTime: 15000,
+  // data_create
+  dataCreateEndpoint: 'data/{registryname}/{versionnumber}/create',
+  dataCreateResponseSchema: {
+    type: 'object',
+    properties: { content: this.dataExampleSchema },
+  },
+  // db_delete
   databaseDeleteEndpoint: 'database/{id}',
   databaseDeleteResponseSchema: { type: 'string' },
+  // db_read
   databaseReadEndpoint: 'database/{id}',
-  databasesEndpoint: 'databases',
-  dataCreateEndpoint: 'data/{registryname}/{versionnumber}/create',
-  dataCreateRequestBody: {
-    ID: 'EE378627342345',
-    FirstName: 'Anna',
-    LastName: 'Stock',
-    BirthCertificateID: 'RR-1234567999',
+  databaseReadResponseSchema: {
+    type: 'object',
+    properties: this.databaseInfoSchema,
   },
+  // db-list
+  databasesEndpoint: 'databases',
+  databasesResponseSchema: {
+    type: 'object',
+    properties: {
+      id: { type: 'integer' },
+      name: { type: 'string' },
+      code: { type: 'string' },
+      databases: {
+        type: 'array',
+        items: this.databaseInfoSchema,
+      },
+      group_id: { type: 'integer' },
+      order: { type: 'integer' },
+      data_index_increment: { type: 'integer' },
+    },
+    additionalProperties: false,
+  },
+  // db_modify
+  databaseModifyEndpoint: 'database/modify',
+  databaseModifyResponseSchema: {
+    type: 'object',
+    properties: this.databaseSchemaSchema,
+  },
+  databaseModifyBody: {
+    group_name: 'Test',
+    catalog_name: 'Mother and Child',
+    code: 'MCR',
+    schema: {
+      type: 'some object',
+      properties: {
+        ID: {
+          type: 'some string',
+          triggers: [
+            {
+              conditions: [
+                {
+                  logic: '==',
+                  value: '',
+                  gate: '&&',
+                },
+              ],
+              actions: [
+                {
+                  type: 'set-value',
+                  value: 'MCTS{indexNoByCode}',
+                  field_id: 1,
+                },
+              ],
+            },
+          ],
+          primaryKey: true,
+          readOnly: true,
+          description: 'Registration ID',
+          example: 'MCTS31',
+          id: 1,
+        },
+        Child: {
+          type: ' some string',
+          properties: {
+            ID: {
+              type: 'some string',
+              description: 'Child ID',
+              example: 'ID2',
+              id: 13,
+            },
+          },
+        },
+      },
+      incrementIndex: 30,
+      required: ['ID'],
+    },
+  },
+  // shares
   databaseSchemaSchema: {
     type: 'object',
     properties: {
@@ -165,80 +243,6 @@ module.exports = {
       has_logo: { type: 'boolean' },
     },
   },
-  databaseReadResponseSchema: {
-    type: 'object',
-    properties: this.databaseInfoSchema,
-  },
-  databasesResponseSchema: {
-    type: 'object',
-    properties: {
-      id: { type: 'integer' },
-      name: { type: 'string' },
-      code: { type: 'string' },
-      databases: {
-        type: 'array',
-        items: this.databaseInfoSchema,
-      },
-      group_id: { type: 'integer' },
-      order: { type: 'integer' },
-      data_index_increment: { type: 'integer' },
-    },
-    additionalProperties: false,
-  },
-  databaseModifyEndpoint: 'database/modify',
-  databaseModifyResponseSchema: {
-    type: 'object',
-    properties: this.databaseSchemaSchema,
-  },
-  databaseModifyBody: {
-    group_name: 'Test',
-    catalog_name: 'Mother and Child',
-    code: 'MCR',
-    schema: {
-      type: 'some object',
-      properties: {
-        ID: {
-          type: 'some string',
-          triggers: [
-            {
-              conditions: [
-                {
-                  logic: '==',
-                  value: '',
-                  gate: '&&',
-                },
-              ],
-              actions: [
-                {
-                  type: 'set-value',
-                  value: 'MCTS{indexNoByCode}',
-                  field_id: 1,
-                },
-              ],
-            },
-          ],
-          primaryKey: true,
-          readOnly: true,
-          description: 'Registration ID',
-          example: 'MCTS31',
-          id: 1,
-        },
-        Child: {
-          type: ' some string',
-          properties: {
-            ID: {
-              type: 'some string',
-              description: 'Child ID',
-              example: 'ID2',
-              id: 13,
-            },
-          },
-        },
-      },
-      incrementIndex: 30,
-      required: ['ID'],
-    },
-  },
   dataExampleSchema: {
     type: 'object',
     properties: {
@@ -247,9 +251,5 @@ module.exports = {
       LastName: { type: 'string' },
       BirthCertificateID: { type: 'string' },
     },
-  },
-  dataCreateResponseSchema: {
-    type: 'object',
-    properties: { content: this.dataExampleSchema },
   },
 };

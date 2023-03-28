@@ -22,7 +22,7 @@ Before(endpointTag, () => {
   specDataCreate = pactum.spec();
 });
 
-// Scenario: The user successfully creates a record in the database
+// Scenario: The user successfully creates a record in the database smoke test type
 Given(
   'The user wants to create a new record in the database',
   () => 'The user wants to create a new record in the database'
@@ -38,7 +38,17 @@ When(
         registryname: registryname,
         versionnumber: versionnumber,
       })
-      .withBody(dataCreateRequestBody)
+);
+
+When(
+  'User provides body with parameters: {string} as ID, {string} as Firstname, {string} as LastName, {string} BirthCertificateID',
+  (ID, Firstname, LastName, BirthCertificateID) =>
+    specDataCreate.withBody({
+      ID: ID,
+      Firstname: Firstname,
+      LastName: LastName,
+      BirthCertificateID: BirthCertificateID,
+    })
 );
 
 Then(
@@ -74,6 +84,10 @@ Then(
       .expect(specDataCreate._response.json)
       .to.be.jsonSchema(dataCreateResponseSchema)
 );
+
+// Scenario: The user successfully creates a record in the database
+
+// Already written above
 
 After(endpointTag, () => {
   specDataCreate.end();
