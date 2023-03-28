@@ -178,4 +178,58 @@ module.exports = {
     },
     additionalProperties: false,
   },
+  databaseModifyEndpoint: 'database/modify',
+  databaseModifyResponseSchema: {
+    type: 'object',
+    properties: this.databaseSchemaSchema,
+  },
+  databaseModifyBody: {
+    group_name: 'Test',
+    catalog_name: 'Mother and Child',
+    code: 'MCR',
+    schema: {
+      type: 'some object',
+      properties: {
+        ID: {
+          type: 'some string',
+          triggers: [
+            {
+              conditions: [
+                {
+                  logic: '==',
+                  value: '',
+                  gate: '&&',
+                },
+              ],
+              actions: [
+                {
+                  type: 'set-value',
+                  value: 'MCTS{indexNoByCode}',
+                  field_id: 1,
+                },
+              ],
+            },
+          ],
+          primaryKey: true,
+          readOnly: true,
+          description: 'Registration ID',
+          example: 'MCTS31',
+          id: 1,
+        },
+        Child: {
+          type: ' some string',
+          properties: {
+            ID: {
+              type: 'some string',
+              description: 'Child ID',
+              example: 'ID2',
+              id: 13,
+            },
+          },
+        },
+      },
+      incrementIndex: 30,
+      required: ['ID'],
+    },
+  },
 };

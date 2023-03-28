@@ -2178,12 +2178,7 @@
           "latency": 0,
           "statusCode": 200,
           "label": "Database schema modified. ",
-          "headers": [
-            {
-              "key": "Content-Type",
-              "value": "application/json"
-            }
-          ],
+          "headers": [],
           "bodyType": "INLINE",
           "filePath": "",
           "databucketID": "",
@@ -2195,77 +2190,12 @@
               "value": "[a-zA-Z0-9_]+\\/[a-zA-Z0-9_]+\\/[a-zA-Z0-9_]+\\/[a-zA-Z0-9_]+",
               "invert": false,
               "operator": "regex"
-            },
-            {
-              "target": "body",
-              "modifier": "group_name",
-              "value": "",
-              "invert": true,
-              "operator": "null"
-            },
-            {
-              "target": "body",
-              "modifier": "catalog_name",
-              "value": "",
-              "invert": true,
-              "operator": "null"
-            },
-            {
-              "target": "body",
-              "modifier": "schema",
-              "value": "",
-              "invert": true,
-              "operator": "null"
             }
           ],
           "rulesOperator": "AND",
           "disableTemplating": false,
           "fallbackTo404": false,
           "default": true
-        },
-        {
-          "uuid": "147e5971-ff62-4f76-8596-2a8af2d5c42c",
-          "body": "\"At least `group_name`, `catalog_name`, `code` and `schema` fields are required in request payload\"",
-          "latency": 0,
-          "statusCode": 400,
-          "label": "No required data in body ",
-          "headers": [
-            {
-              "key": "Content-Type",
-              "value": "application/json"
-            }
-          ],
-          "bodyType": "INLINE",
-          "filePath": "",
-          "databucketID": "",
-          "sendFileAsBody": false,
-          "rules": [
-            {
-              "target": "body",
-              "modifier": "group_name",
-              "value": "",
-              "invert": false,
-              "operator": "null"
-            },
-            {
-              "target": "body",
-              "modifier": "catalog_name",
-              "value": "",
-              "invert": false,
-              "operator": "null"
-            },
-            {
-              "target": "body",
-              "modifier": "schema",
-              "value": "",
-              "invert": false,
-              "operator": "null"
-            }
-          ],
-          "rulesOperator": "OR",
-          "disableTemplating": false,
-          "fallbackTo404": false,
-          "default": false
         }
       ],
       "enabled": true,
