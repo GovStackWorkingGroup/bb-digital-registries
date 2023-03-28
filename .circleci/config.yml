@@ -8,15 +8,12 @@ workflows:
   test_everything:
     jobs:
       - test-harness/create-config:
-          context: bb-testing
-          environment:
-            - TEST_RESULT_STORAGE_URL=${TEST_RESULT_STORAGE_URL}
-            - TEST_RESULTS_STORAGE_API_KEY=${TEST_RESULTS_STORAGE_API_KEY}
           post-steps: # Persist to workspace has to be defined in main workflow
             - persist_to_workspace:
                 root: workspace
                 paths:
                   - generated.yml
       - test-harness/execute-tests:
+          context: bb-testing
           requires:
             - test-harness/create-config
