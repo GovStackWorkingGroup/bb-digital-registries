@@ -26,17 +26,21 @@
     }
   ],
   "paths": {
-    "/data/<registryname>/<versionnumber>": {
+    "/data/{registryname}/{versionnumber}": {
       "get": {
-        "tags": [
-          "Registry data query API"
-        ],
+        "tags": ["Registry data query API"],
         "description": "Searches (Regex supported) and returns multiple records as an array-list. ",
         "operationId": "list",
         "summary": "list",
         "parameters": [
           {
             "$ref": "#/components/parameters/Information-Mediator-Client"
+          },
+          {
+            "$ref": "#/components/parameters/registryname"
+          },
+          {
+            "$ref": "#/components/parameters/versionnumber"
           },
           {
             "name": "search",
@@ -132,10 +136,7 @@
                       }
                     }
                   },
-                  "required": [
-                    "count",
-                    "results"
-                  ]
+                  "required": ["count", "results"]
                 }
               }
             }
@@ -148,17 +149,21 @@
         ]
       }
     },
-    "/data/<registryname>/<versionnumber>/create": {
+    "/data/{registryname}/{versionnumber}/create": {
       "post": {
-        "tags": [
-          "Registry data query API"
-        ],
+        "tags": ["Registry data query API"],
         "description": "Creates a new record in the registry database.",
         "operationId": "create",
         "summary": "create",
         "parameters": [
           {
             "$ref": "#/components/parameters/Information-Mediator-Client"
+          },
+          {
+            "$ref": "#/components/parameters/registryname"
+          },
+          {
+            "$ref": "#/components/parameters/versionnumber"
           }
         ],
         "requestBody": {
@@ -176,14 +181,10 @@
                         "$ref": "#/components/schemas/Example"
                       }
                     },
-                    "required": [
-                      "content"
-                    ]
+                    "required": ["content"]
                   }
                 },
-                "required": [
-                  "write"
-                ]
+                "required": ["write"]
               }
             }
           }
@@ -212,17 +213,21 @@
         ]
       }
     },
-    "/data/<registryname>/<versionnumber>/exists": {
+    "/data/{registryname}/{versionnumber}/exists": {
       "post": {
-        "tags": [
-          "Registry data query API"
-        ],
+        "tags": ["Registry data query API"],
         "description": "Searches records based on input parameters and returns boolean answer (true/false).",
         "operationId": "exists",
         "summary": "exists",
         "parameters": [
           {
             "$ref": "#/components/parameters/Information-Mediator-Client"
+          },
+          {
+            "$ref": "#/components/parameters/registryname"
+          },
+          {
+            "$ref": "#/components/parameters/versionnumber"
           }
         ],
         "requestBody": {
@@ -240,14 +245,10 @@
                         "$ref": "#/components/schemas/Example"
                       }
                     },
-                    "required": [
-                      "content"
-                    ]
+                    "required": ["content"]
                   }
                 },
-                "required": [
-                  "query"
-                ]
+                "required": ["query"]
               }
             }
           }
@@ -274,14 +275,10 @@
                           "description": "More information about the object"
                         }
                       },
-                      "required": [
-                        "status"
-                      ]
+                      "required": ["status"]
                     }
                   },
-                  "required": [
-                    "answer"
-                  ]
+                  "required": ["answer"]
                 }
               }
             }
@@ -294,17 +291,21 @@
         ]
       }
     },
-    "/data/<registryname>/<versionnumber>/read": {
+    "/data/{registryname}/{versionnumber}/read": {
       "post": {
-        "tags": [
-          "Registry data query API"
-        ],
+        "tags": ["Registry data query API"],
         "description": "Searches and returns one record.",
         "operationId": "read",
         "summary": "read",
         "parameters": [
           {
             "$ref": "#/components/parameters/Information-Mediator-Client"
+          },
+          {
+            "$ref": "#/components/parameters/registryname"
+          },
+          {
+            "$ref": "#/components/parameters/versionnumber"
           }
         ],
         "requestBody": {
@@ -322,14 +323,10 @@
                         "$ref": "#/components/schemas/Example"
                       }
                     },
-                    "required": [
-                      "content"
-                    ]
+                    "required": ["content"]
                   }
                 },
-                "required": [
-                  "query"
-                ]
+                "required": ["query"]
               }
             }
           }
@@ -358,17 +355,21 @@
         ]
       }
     },
-    "/data/<registryname>/<versionnumber>/update": {
+    "/data/{registryname}/{versionnumber}/update": {
       "put": {
-        "tags": [
-          "Registry data query API"
-        ],
+        "tags": ["Registry data query API"],
         "description": "Updates one existing record in the registry database.",
         "operationId": "update",
         "summary": "update",
         "parameters": [
           {
             "$ref": "#/components/parameters/Information-Mediator-Client"
+          },
+          {
+            "$ref": "#/components/parameters/registryname"
+          },
+          {
+            "$ref": "#/components/parameters/versionnumber"
           }
         ],
         "requestBody": {
@@ -387,9 +388,7 @@
                         "$ref": "#/components/schemas/Example"
                       }
                     },
-                    "required": [
-                      "content"
-                    ]
+                    "required": ["content"]
                   },
                   "write": {
                     "type": "object",
@@ -399,14 +398,10 @@
                         "$ref": "#/components/schemas/Example"
                       }
                     },
-                    "required": [
-                      "content"
-                    ]
+                    "required": ["content"]
                   }
                 },
-                "required": [
-                  "write"
-                ]
+                "required": ["write"]
               }
             }
           }
@@ -423,17 +418,21 @@
         ]
       }
     },
-    "/data/<registryname>/<versionnumber>/update-entries": {
+    "/data/{registryname}/{versionnumber}/update-entries": {
       "put": {
-        "tags": [
-          "Registry data query API"
-        ],
+        "tags": ["Registry data query API"],
         "description": "Updates multiple records in the registry database that match the input query.",
         "operationId": "update-entries",
         "summary": "update-entries",
         "parameters": [
           {
             "$ref": "#/components/parameters/Information-Mediator-Client"
+          },
+          {
+            "$ref": "#/components/parameters/registryname"
+          },
+          {
+            "$ref": "#/components/parameters/versionnumber"
           }
         ],
         "requestBody": {
@@ -452,9 +451,7 @@
                         "$ref": "#/components/schemas/Example"
                       }
                     },
-                    "required": [
-                      "content"
-                    ]
+                    "required": ["content"]
                   },
                   "write": {
                     "type": "object",
@@ -464,14 +461,10 @@
                         "$ref": "#/components/schemas/Example"
                       }
                     },
-                    "required": [
-                      "content"
-                    ]
+                    "required": ["content"]
                   }
                 },
-                "required": [
-                  "write"
-                ]
+                "required": ["write"]
               }
             }
           }
@@ -488,17 +481,21 @@
         ]
       }
     },
-    "/data/<registryname>/<versionnumber>/update-or-create": {
+    "/data/{registryname}/{versionnumber}/update-or-create": {
       "post": {
-        "tags": [
-          "Registry data query API"
-        ],
+        "tags": ["Registry data query API"],
         "description": "API updates existing record if matching with input parameters is successful. If record is not found the API will create a new record. ",
         "operationId": "update-or-create",
         "summary": "update-or-create",
         "parameters": [
           {
             "$ref": "#/components/parameters/Information-Mediator-Client"
+          },
+          {
+            "$ref": "#/components/parameters/registryname"
+          },
+          {
+            "$ref": "#/components/parameters/versionnumber"
           }
         ],
         "requestBody": {
@@ -517,9 +514,7 @@
                         "$ref": "#/components/schemas/Example"
                       }
                     },
-                    "required": [
-                      "content"
-                    ]
+                    "required": ["content"]
                   },
                   "write": {
                     "type": "object",
@@ -529,14 +524,10 @@
                         "$ref": "#/components/schemas/Example"
                       }
                     },
-                    "required": [
-                      "content"
-                    ]
+                    "required": ["content"]
                   }
                 },
-                "required": [
-                  "write"
-                ]
+                "required": ["write"]
               }
             }
           }
@@ -565,17 +556,21 @@
         ]
       }
     },
-    "/data/<registryname>/<versionnumber>/{ID}/delete": {
+    "/data/{registryname}/{versionnumber}/{ID}/delete": {
       "delete": {
-        "tags": [
-          "Registry data query API"
-        ],
+        "tags": ["Registry data query API"],
         "description": "Delete record.",
         "operationId": "delete",
         "summary": "delete",
         "parameters": [
           {
             "$ref": "#/components/parameters/Information-Mediator-Client"
+          },
+          {
+            "$ref": "#/components/parameters/registryname"
+          },
+          {
+            "$ref": "#/components/parameters/versionnumber"
           },
           {
             "name": "ID",
@@ -600,17 +595,21 @@
         ]
       }
     },
-    "/data/<registryname>/<versionnumber>/{uuid}/read-value/{field}.{ext}": {
+    "/data/{registryname}/{versionnumber}/{uuid}/read-value/{field}.{ext}": {
       "get": {
-        "tags": [
-          "Registry data query API"
-        ],
+        "tags": ["Registry data query API"],
         "description": "Searches and returns one record’s one field value.",
         "operationId": "read-value",
         "summary": "read-value",
         "parameters": [
           {
             "$ref": "#/components/parameters/Information-Mediator-Client"
+          },
+          {
+            "$ref": "#/components/parameters/registryname"
+          },
+          {
+            "$ref": "#/components/parameters/versionnumber"
           },
           {
             "name": "uuid",
@@ -714,9 +713,7 @@
     },
     "/data/MyPersonalDataUsage/1.0": {
       "get": {
-        "tags": [
-          "MyPersonalDataUsage API"
-        ],
+        "tags": ["MyPersonalDataUsage API"],
         "description": "Allows a user to see who has read their personal data.",
         "operationId": "DPU",
         "parameters": [
@@ -785,6 +782,22 @@
         "name": "Information-Mediator-Client",
         "example": "eGovStack/GOV/90000009/digitalregistries",
         "description": "Format is: INSTANCE/CLASS/MEMBER/SUBSYSTEM",
+        "schema": {
+          "type": "string"
+        },
+        "required": true
+      },
+      "registryname": {
+        "in": "path",
+        "name": "registryname",
+        "schema": {
+          "type": "string"
+        },
+        "required": true
+      },
+      "versionnumber": {
+        "in": "path",
+        "name": "versionnumber",
         "schema": {
           "type": "string"
         },
@@ -889,11 +902,7 @@
                 ]
               }
             },
-            "required": [
-              "url",
-              "originalName",
-              "type"
-            ]
+            "required": ["url", "originalName", "type"]
           },
           {
             "type": "object",
@@ -902,9 +911,7 @@
                 "type": "number"
               }
             },
-            "required": [
-              "$documentId"
-            ]
+            "required": ["$documentId"]
           }
         ]
       },
@@ -985,11 +992,7 @@
                 ]
               }
             },
-            "required": [
-              "url",
-              "originalName",
-              "type"
-            ]
+            "required": ["url", "originalName", "type"]
           },
           {
             "type": "object",
@@ -998,9 +1001,7 @@
                 "type": "number"
               }
             },
-            "required": [
-              "$documentId"
-            ]
+            "required": ["$documentId"]
           }
         ]
       },
@@ -1039,11 +1040,7 @@
                 ]
               }
             },
-            "required": [
-              "url",
-              "originalName",
-              "type"
-            ]
+            "required": ["url", "originalName", "type"]
           },
           {
             "type": "object",
@@ -1052,9 +1049,7 @@
                 "type": "number"
               }
             },
-            "required": [
-              "$documentId"
-            ]
+            "required": ["$documentId"]
           }
         ]
       },

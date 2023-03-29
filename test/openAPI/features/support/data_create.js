@@ -1,116 +1,94 @@
+const chai = require('chai');
 const pactum = require('pactum');
 const { Given, When, Then, Before, After } = require('@cucumber/cucumber');
-const { header, localhost } = require('./helpers/helpers');
+const {
+  header,
+  localhost,
+  dataCreateEndpoint,
+  dataCreateRequestBody,
+  defaultExpectedResponseTime,
+  contentTypeHeader,
+  dataCreateResponseSchema,
+} = require('./helpers/helpers');
 
-let newUserVariables;
+chai.use(require('chai-json-schema'));
+
 let specDataCreate;
 
-const baseUrl = registryname =>
-  `${localhost}data/${registryname}/version1/create`;
+const baseUrl = localhost + dataCreateEndpoint;
+const endpointTag = { tags: `@endpoint=/${dataCreateEndpoint}` };
 
-Before(() => {
+Before(endpointTag, () => {
   specDataCreate = pactum.spec();
 });
 
-// Scenario: The user successfully creates a record in the Digital Registries database
+// Scenario: The user successfully creates a record in the database smoke test type
 Given(
-  'The user wants to create a new record in the Digital Registries database',
-  () =>
-    (newUserVariables = {
-      ID: 'EE378627348834',
-      FirstName: 'John',
-      LastName: 'Smith',
-      BirthCertificateID: 'RR-1234567889',
+  'The user wants to create a new record in the database',
+  () => 'The user wants to create a new record in the database'
+);
+
+When(
+  'User sends POST request with given Information-Mediator-Client header, body, {string} as registryname and {string} as versionnumber',
+  (registryname, versionnumber) =>
+    specDataCreate
+      .post(baseUrl)
+      .withHeaders(header.key, header.value)
+      .withPathParams({
+        registryname: registryname,
+        versionnumber: versionnumber,
+      })
+);
+
+When(
+  'User provides body with parameters: {string} as ID, {string} as Firstname, {string} as LastName, {string} BirthCertificateID',
+  (ID, Firstname, LastName, BirthCertificateID) =>
+    specDataCreate.withBody({
+      ID: ID,
+      Firstname: Firstname,
+      LastName: LastName,
+      BirthCertificateID: BirthCertificateID,
     })
 );
 
-When(
-  'The user sends a valid request to create a new record in the database',
-  () => {
-    specDataCreate
-      .post(`${baseUrl('registry1')}`)
-      .withHeaders(`${header.key}`, `${header.value}`)
-      .withBody({
-        write: {
-          content: newUserVariables,
-        },
-      });
-  }
+Then(
+  'User receives a response from the POST \\/data\\/\\{registryname}\\/\\{versionnumber}\\/create endpoint',
+  async () => await specDataCreate.toss()
 );
 
-Then('The process to create a new record completes successfully', async () => {
-  await specDataCreate.toss();
-  specDataCreate.response().should.have.status(200);
-  specDataCreate.response().should.have.jsonLike({
-    content: newUserVariables,
-  });
-});
-
-// Scenario: The user is unable to create a record in a database that does not exist
-Given(
-  'The user wants to create a new record in the Digital Registries database that does not exist',
+Then(
+  'The POST \\/data\\/\\{registryname}\\/\\{versionnumber}\\/create endpoint response should be returned in a timely manner 15000ms',
   () =>
-    (newUserVariables = {
-      ID: 'EE378627342345',
-      FirstName: 'Anna',
-      LastName: 'Stock',
-      BirthCertificateID: 'RR-1234567999',
-    })
-);
-
-When(
-  'The user sends a valid request to create a new record in a database that does not exist',
-  () => {
     specDataCreate
-      .post(`${baseUrl('registry2')}`)
-      .withHeaders(`${header.key}`, `${header.value}`)
-      .withBody({
-        write: {
-          content: newUserVariables,
-        },
-      });
-  }
+      .response()
+      .to.have.responseTimeLessThan(defaultExpectedResponseTime)
 );
 
 Then(
-  'The result of the operation is an error because a database does not exist',
-  async () => {
-    await specDataCreate.toss();
-    specDataCreate.response().should.have.status(404);
-    specDataCreate
-      .response()
-      .should.have.body(
-        '{\n  "Invalid payload, registry name does not exist"\n}\n'
-      );
-  }
-);
-
-// Scenario: The user is unable to create a record in the Digital Registries database because of an invalid request
-// "Given" already written in line 16-25
-
-When(
-  'The user sends an invalid request to create a new record in the database',
-  () => {
-    specDataCreate
-      .post(`${baseUrl('registry1')}`)
-      .withHeaders(`${header.key}`, `${header.value}`)
-      .withBody({});
-  }
+  'The POST \\/data\\/\\{registryname}\\/\\{versionnumber}\\/create endpoint response should have status 200',
+  () => specDataCreate.response().to.have.status(200)
 );
 
 Then(
-  'The result of the operation is an error due to an invalid request',
-  async () => {
-    await specDataCreate.toss();
-    specDataCreate.response().should.have.status(400);
+  'The POST \\/data\\/\\{registryname}\\/\\{versionnumber}\\/create endpoint response should have content-type: application\\/json header',
+  () =>
     specDataCreate
       .response()
-      .should.have.body(
-        '{\n  "Invalid payload, write.content not provided"\n}'
-      );
-  }
+      .should.have.header(contentTypeHeader.key, contentTypeHeader.value)
 );
 
-After(() => {
+Then(
+  'The POST \\/data\\/\\{registryname}\\/\\{versionnumber}\\/create endpoint response should match json schema',
+  () =>
+    chai
+      .expect(specDataCreate._response.json)
+      .to.be.jsonSchema(dataCreateResponseSchema)
+);
+
+// Scenario: The user successfully creates a record in the database
+
+// Already written above
+
+After(endpointTag, () => {
   specDataCreate.end();
 });
