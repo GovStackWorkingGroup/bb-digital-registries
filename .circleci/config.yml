@@ -16,3 +16,5 @@ workflows:
       - test-harness/execute-tests:
           requires:
             - test-harness/create-config
+      - store_test_results:
+          path: test/openAPI/result
