@@ -13,9 +13,9 @@ workflows:
                 root: workspace
                 paths:
                   - generated.yml
-            - store_test_results:
-                path: test/openAPI/result
       - test-harness/execute-tests:
           requires:
             - test-harness/create-config
-
+          post-steps:
+            - store_test_results:
+                path: test/openAPI/result
