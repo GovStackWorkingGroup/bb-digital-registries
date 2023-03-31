@@ -20,5 +20,3 @@ workflows:
             - run:
                 name: PWD
                 command: pwd
-            - store_test_results:
-                path: ./test/openAPI/result
