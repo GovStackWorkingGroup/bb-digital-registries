@@ -6,13 +6,6 @@ orbs:
 
 workflows:
   test_everything:
-    post-steps:
-      - run:
-        name: PWD
-        command: pwd
-      - store_test_results:
-        path: ./test/openAPI/result
-
     jobs:
       - test-harness/create-config:
           post-steps: # Persist to workspace has to be defined in main workflow
@@ -23,3 +16,9 @@ workflows:
       - test-harness/execute-tests:
           requires:
             - test-harness/create-config
+          post-steps:
+            - run:
+                name: PWD
+                command: pwd
+            - store_test_results:
+                path: ./test/openAPI/result
