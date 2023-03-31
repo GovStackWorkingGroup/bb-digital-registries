@@ -17,5 +17,8 @@ workflows:
           requires:
             - test-harness/create-config
           post-steps:
+            - run:
+                name: PWD
+                command: pwd
             - store_test_results:
-                path: test/openAPI/result
+                path: ./test/openAPI/result
