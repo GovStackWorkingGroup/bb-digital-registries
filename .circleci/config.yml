@@ -19,6 +19,6 @@ workflows:
           post-steps:
             - run:
                 name: PWD
-                command: pwd
+                command: ls test/openAPI
             - store_test_results:
                 path: ./test/openAPI/result
