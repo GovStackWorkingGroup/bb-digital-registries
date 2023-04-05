@@ -6,13 +6,9 @@ description: >-
 
 # 8 Service APIs
 
-This section provides a reference for APIs that should be implemented by this Building Block. The APIs defined here establish a blueprint for how the Building Block will interact with other Building Blocks. Additional APIs may be implemented by the Building Block, but the listed APIs define a minimal set of functionality that should be provided by any implementation of this Building Block.&#x20;
+The APIs defined here establish a blueprint for how the Building Block will interact with other Building Blocks. Additional APIs may be implemented by the Building Block, but the listed APIs define a minimal set of functionality that should be provided by any implementation of this Building Block. The [GovStack non-functional requirements document](https://govstack.gitbook.io/specification/architecture-and-nonfunctional-requirements/6-onboarding) provides additional information on how "adapters" may be used to translate an existing API to the patterns described here.
 
-The [GovStack non-functional requirements document](https://govstack.gitbook.io/specification/architecture-and-nonfunctional-requirements/6-onboarding) provides additional information on how 'adaptors' may be used to translate an existing API to the patterns described here.
-
-
-
-Registries BB may contain multiple registries/databases. The dynamic nature of the database structure requires a standard set automatically generated APIs for all databases hosted on the platform. The system generates default API method endpoints automatically after each publish of the database schema. A new API service version is generated after each schema publish. Database schema version and API versions are in sync.
+The Registries BB may contain multiple registries/databases. The dynamic nature of the database structure requires a standard set automatically generated APIs for all databases hosted on the platform. The system generates default API method endpoints automatically after each publish of the database schema. A new API service version is generated after each schema publish. Database schema version and API versions are in sync.
 
 The naming convention and a structure of the API endpoint is the following:
 
@@ -52,7 +48,7 @@ Request endpoint: PUT/data/{code}/{version}/update
 
 Example API: see in [Github](../api/GovStack\_Digital\_registries\_BB\_Data\_API\_template-1.3.0.json).
 
-{% swagger src="https://raw.githubusercontent.com/GovStackWorkingGroup/bb-digital-registries/main/api/GovStack_Digital_registries_BB_Data_API_template-1.3.0.json" path="/data/<registryname>/<versionnumber>/update" method="put" %}
+{% swagger src="https://raw.githubusercontent.com/GovStackWorkingGroup/bb-digital-registries/main/api/GovStack_Digital_registries_BB_Data_API_template-1.3.0.json" path="/data/{registryname}/{versionnumber}/update" method="put" %}
 [https://raw.githubusercontent.com/GovStackWorkingGroup/bb-digital-registries/main/api/GovStack_Digital_registries_BB_Data_API_template-1.3.0.json](https://raw.githubusercontent.com/GovStackWorkingGroup/bb-digital-registries/main/api/GovStack_Digital_registries_BB_Data_API_template-1.3.0.json)
 {% endswagger %}
 
@@ -64,7 +60,7 @@ Request endpoint: POST/data/{code}/{version}/update-or-create
 
 Example API: see in [Github](../api/GovStack\_Digital\_registries\_BB\_Data\_API\_template-1.3.0.json).
 
-{% swagger src="https://raw.githubusercontent.com/GovStackWorkingGroup/bb-digital-registries/main/api/GovStack_Digital_registries_BB_Data_API_template-1.3.0.json" path="/data/<registryname>/<versionnumber>/update-or-create" method="post" %}
+{% swagger src="https://raw.githubusercontent.com/GovStackWorkingGroup/bb-digital-registries/main/api/GovStack_Digital_registries_BB_Data_API_template-1.3.0.json" path="/data/{registryname}/{versionnumber}/update-or-create" method="post" %}
 [https://raw.githubusercontent.com/GovStackWorkingGroup/bb-digital-registries/main/api/GovStack_Digital_registries_BB_Data_API_template-1.3.0.json](https://raw.githubusercontent.com/GovStackWorkingGroup/bb-digital-registries/main/api/GovStack_Digital_registries_BB_Data_API_template-1.3.0.json)
 {% endswagger %}
 
@@ -78,7 +74,7 @@ Request endpoint: PUT/data/{code}/{version}/update-entries
 
 Example API: see in [Github](../api/GovStack\_Digital\_registries\_BB\_Data\_API\_template-1.3.0.json).
 
-{% swagger src="https://raw.githubusercontent.com/GovStackWorkingGroup/bb-digital-registries/main/api/GovStack_Digital_registries_BB_Data_API_template-1.3.0.json" path="/data/<registryname>/<versionnumber>/update-entries" method="put" %}
+{% swagger src="https://raw.githubusercontent.com/GovStackWorkingGroup/bb-digital-registries/main/api/GovStack_Digital_registries_BB_Data_API_template-1.3.0.json" path="/data/{registryname}/{versionnumber}/update-entries" method="put" %}
 [https://raw.githubusercontent.com/GovStackWorkingGroup/bb-digital-registries/main/api/GovStack_Digital_registries_BB_Data_API_template-1.3.0.json](https://raw.githubusercontent.com/GovStackWorkingGroup/bb-digital-registries/main/api/GovStack_Digital_registries_BB_Data_API_template-1.3.0.json)
 {% endswagger %}
 
@@ -90,7 +86,7 @@ Request endpoint: GET/data/{code}/{version}
 
 Example API: see in [Github](../api/GovStack\_Digital\_registries\_BB\_Data\_API\_template-1.3.0.json).
 
-{% swagger src="https://raw.githubusercontent.com/GovStackWorkingGroup/bb-digital-registries/main/api/GovStack_Digital_registries_BB_Data_API_template-1.3.0.json" path="/data/<registryname>/<versionnumber>" method="get" %}
+{% swagger src="https://raw.githubusercontent.com/GovStackWorkingGroup/bb-digital-registries/main/api/GovStack_Digital_registries_BB_Data_API_template-1.3.0.json" path="/data/{registryname}/{versionnumber}" method="get" %}
 [https://raw.githubusercontent.com/GovStackWorkingGroup/bb-digital-registries/main/api/GovStack_Digital_registries_BB_Data_API_template-1.3.0.json](https://raw.githubusercontent.com/GovStackWorkingGroup/bb-digital-registries/main/api/GovStack_Digital_registries_BB_Data_API_template-1.3.0.json)
 {% endswagger %}
 
@@ -102,7 +98,7 @@ Request endpoint: POST/data/{code}/{version}/read
 
 Example API: see in [Github](../api/GovStack\_Digital\_registries\_BB\_Data\_API\_template-1.3.0.json).
 
-{% swagger src="https://raw.githubusercontent.com/GovStackWorkingGroup/bb-digital-registries/main/api/GovStack_Digital_registries_BB_Data_API_template-1.3.0.json" path="/data/<registryname>/<versionnumber>/read" method="post" %}
+{% swagger src="https://raw.githubusercontent.com/GovStackWorkingGroup/bb-digital-registries/main/api/GovStack_Digital_registries_BB_Data_API_template-1.3.0.json" path="/data/{registryname}/{versionnumber}/read" method="post" %}
 [https://raw.githubusercontent.com/GovStackWorkingGroup/bb-digital-registries/main/api/GovStack_Digital_registries_BB_Data_API_template-1.3.0.json](https://raw.githubusercontent.com/GovStackWorkingGroup/bb-digital-registries/main/api/GovStack_Digital_registries_BB_Data_API_template-1.3.0.json)
 {% endswagger %}
 
@@ -114,7 +110,7 @@ Request endpoint: GET /data/{code}/{version}/{ID}/read-value/{field}.{ext}
 
 Example API: see in [Github](../api/GovStack\_Digital\_registries\_BB\_Data\_API\_template-1.3.0.json).
 
-{% swagger src="https://raw.githubusercontent.com/GovStackWorkingGroup/bb-digital-registries/main/api/GovStack_Digital_registries_BB_Data_API_template-1.3.0.json" path="/data/<registryname>/<versionnumber>/{uuid}/read-value/{field}.{ext}" method="get" %}
+{% swagger src="https://raw.githubusercontent.com/GovStackWorkingGroup/bb-digital-registries/main/api/GovStack_Digital_registries_BB_Data_API_template-1.3.0.json" path="/data/{registryname}/{versionnumber}/{uuid}/read-value/{field}.{ext}" method="get" %}
 [https://raw.githubusercontent.com/GovStackWorkingGroup/bb-digital-registries/main/api/GovStack_Digital_registries_BB_Data_API_template-1.3.0.json](https://raw.githubusercontent.com/GovStackWorkingGroup/bb-digital-registries/main/api/GovStack_Digital_registries_BB_Data_API_template-1.3.0.json)
 {% endswagger %}
 
@@ -126,7 +122,7 @@ Request endpoint: POST/data/{code}/{version}/exists
 
 Example API: see in [Github](../api/GovStack\_Digital\_registries\_BB\_Data\_API\_template-1.3.0.json).
 
-{% swagger src="https://raw.githubusercontent.com/GovStackWorkingGroup/bb-digital-registries/main/api/GovStack_Digital_registries_BB_Data_API_template-1.3.0.json" path="/data/<registryname>/<versionnumber>/exists" method="post" %}
+{% swagger src="https://raw.githubusercontent.com/GovStackWorkingGroup/bb-digital-registries/main/api/GovStack_Digital_registries_BB_Data_API_template-1.3.0.json" path="/data/{registryname}/{versionnumber}/exists" method="post" %}
 [https://raw.githubusercontent.com/GovStackWorkingGroup/bb-digital-registries/main/api/GovStack_Digital_registries_BB_Data_API_template-1.3.0.json](https://raw.githubusercontent.com/GovStackWorkingGroup/bb-digital-registries/main/api/GovStack_Digital_registries_BB_Data_API_template-1.3.0.json)
 {% endswagger %}
 
@@ -138,7 +134,7 @@ Request endpoint: DELETE/data/{code}/{version}/{ID}/delete
 
 Example API: see in [Github](../api/GovStack\_Digital\_registries\_BB\_Data\_API\_template-1.3.0.json).
 
-{% swagger src="https://raw.githubusercontent.com/GovStackWorkingGroup/bb-digital-registries/main/api/GovStack_Digital_registries_BB_Data_API_template-1.3.0.json" path="/data/<registryname>/<versionnumber>/{ID}/delete" method="delete" %}
+{% swagger src="https://raw.githubusercontent.com/GovStackWorkingGroup/bb-digital-registries/main/api/GovStack_Digital_registries_BB_Data_API_template-1.3.0.json" path="/data/{registryname}/{versionnumber}/{ID}/delete" method="delete" %}
 [https://raw.githubusercontent.com/GovStackWorkingGroup/bb-digital-registries/main/api/GovStack_Digital_registries_BB_Data_API_template-1.3.0.json](https://raw.githubusercontent.com/GovStackWorkingGroup/bb-digital-registries/main/api/GovStack_Digital_registries_BB_Data_API_template-1.3.0.json)
 {% endswagger %}
 
