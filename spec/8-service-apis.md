@@ -208,7 +208,7 @@ Request endpoint: PUT/data/{code}/{version}/create-entries
 
 [Example API](../api/GovStack\_Digital\_registries\_BB\_Data\_API\_template-1.3.0.json).
 
-{% swagger src="https://raw.githubusercontent.com/GovStackWorkingGroup/bb-digital-registries/main/api/GovStack_Digital_registries_BB_Data_API_template-1.3.0.json" path="/data/<registryname>/<versionnumber>/update-or-create" method="post" %}
+{% swagger src="https://raw.githubusercontent.com/GovStackWorkingGroup/bb-digital-registries/main/api/GovStack_Digital_registries_BB_Data_API_template-1.3.0.json" path="/data/mcts/1.4/create-entries" method="post" %}
 [https://raw.githubusercontent.com/GovStackWorkingGroup/bb-digital-registries/main/api/GovStack_Digital_registries_BB_Data_API_template-1.3.0.json](https://raw.githubusercontent.com/GovStackWorkingGroup/bb-digital-registries/main/api/GovStack_Digital_registries_BB_Data_API_template-1.3.0.json)
 {% endswagger %}
 
