@@ -8,7 +8,7 @@ description: >-
 
 ## 4.1 Overview of Digital Registries Building Block Functionality
 
-The Key Digital Functionalities describe the core (required) functions that this Building Block must be able to perform. These functionalities are described as business processes as opposed to technical specifications or API definitions.
+The building block is an application meant to offer fast and intuitive database management functionalities to entities without the need of database experts. Digital Registries is simple to use like online Excel with advanced data management and connectivity options for advanced users. Digital Registries BB is a multi tenant platform where users can create and manage new registry databases. Each registry database created in the system will have automatically REST services generated.&#x20;
 
 ## 4.2 Design and Components of Digital Registries Building Block <a href="#docs-internal-guid-d85f59a4-7fff-1564-6ae2-86d67f36a258" id="docs-internal-guid-d85f59a4-7fff-1564-6ae2-86d67f36a258"></a>
 
