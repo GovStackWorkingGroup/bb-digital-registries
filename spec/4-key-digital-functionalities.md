@@ -6,7 +6,11 @@ description: >-
 
 # 4 Key Digital Functionalities
 
+## 4.1 Overview of Digital Registries Building Block Functionality
+
 The Key Digital Functionalities describe the core (required) functions that this Building Block must be able to perform. These functionalities are described as business processes as opposed to technical specifications or API definitions.
+
+## 4.2 Design and Components of Digital Registries Building Block <a href="#docs-internal-guid-d85f59a4-7fff-1564-6ae2-86d67f36a258" id="docs-internal-guid-d85f59a4-7fff-1564-6ae2-86d67f36a258"></a>
 
 The first user of the Building Block is an **Administrator/Analyst** who is building a new registry. The Analyst is the person who is building the new registry database, changing the existing database configuration, or simply administering the API user authorization. The Administrator/analyst is using a web user interface. The main functions and user interface of the Building Block for Analysts are:
 
@@ -34,12 +38,12 @@ The second main user is an **Applicant** who is consuming registry data via othe
 6. Validate if given content exists in specified register (API service);
 7. Read statistics (API service).
 
-The Building Block has a user interface to query and consult the registry data but in most cases the Applicants are using the end client applications like Registration Building Block to access the registry. Any Building Block can query data from Digital Registries Building Block via APIs if authorization is given.
+The Building Block has a user interface to query and consult the registry data but in most cases, the Applicants are using the end client applications like Registration Building Block to access the registry. Any Building Block can query data from Digital Registries Building Block via APIs if authorization is given.
 
 ![Digital registries functional components](<.gitbook/assets/image3 (1) (1).png>)
 
-## 4.1 Out of Scope Assumptions
+## 4.3 Out of Scope Assumptions
 
 * Distributed database architecture; Blockchain solutions; integrations with distributed architecture solutions.
-* Automated data migration from Digital Registries solution to external databases.
+* Automated data migration from Digital Registries solutions to external databases.
 * Event notification to external endpoints.
