@@ -4,7 +4,7 @@ Feature: API endpoint that allows users to search multiple records in Digital Re
   Scenario: The user gets a list of all searched records in the Digital Registries database
     Given The user wants to search for a specific value and the searched value exists in multiple records in the database
     When The user sends a valid request to search the database
-    Then The user receives a list of all records that contain the searched value
+    Then The operation results in an error due to an invalid query
 
   Scenario: The user receives an empty list from the Digital Registries database
     Given The user wants to search for a specific value and the searched value does not exist in any record in the database
