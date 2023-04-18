@@ -6,11 +6,11 @@ description: >-
 
 # 8 Service APIs
 
-The APIs defined here establish a blueprint for how the Building Block will interact with other Building Blocks. Additional APIs may be implemented by the Building Block, but the listed APIs define a minimal set of functionality that should be provided by any implementation of this Building Block. The [GovStack non-functional requirements document](https://govstack.gitbook.io/specification/architecture-and-nonfunctional-requirements/6-onboarding) provides additional information on how "adapters" may be used to translate an existing API to the patterns described here.
+The APIs defined here establish a blueprint for how the Building Block will interact with other Building Blocks. Additional APIs may be implemented by the Building Block, but the listed APIs define a minimal set of functionality that should be provided by any implementation of this Building Block. The [GovStack non-functional requirements document](https://govstack.gitbook.io/specification/v/1-0/architecture-and-nonfunctional-requirements/6-onboarding) provides additional information on how "adapters" may be used to translate an existing API to the patterns described here.
 
-The Registries BB may contain multiple registries/databases. The dynamic nature of the database structure requires a standard set automatically generated APIs for all databases hosted on the platform. The system generates default API method endpoints automatically after each publish of the database schema. A new API service version is generated after each schema publish. Database schema version and API versions are in sync.
+The Registries BB may contain multiple registries/databases. The dynamic nature of the database structure requires a standard set automatically generated APIs for all databases hosted on the platform. The system generates default API method endpoints automatically after each publication of the database schema. A new API service version is generated after each schema publish. Database schema version and API versions are in sync.
 
-The naming convention and a structure of the API endpoint is the following:
+The naming convention and structure of the API endpoint are the following:
 
 /{information type}/{registry acronym or code}/{version}/{API method as a name}.
 
@@ -18,7 +18,7 @@ Example 1: ​/api/data​/cr​/1.0​/create
 
 Example 2: ​/api/v1/database/modify
 
-Each registry contains a unique set of data and the Building Block enables an Analyst to change the data storage structure/schema on the fly. In the following example API descriptions are generated for one example dataset for the Postpartum Infant Care Program registry, where Caretaker and infant child are registered and registration ID is issued.
+Each registry contains a unique set of data and the Building Block enables an Analyst to change the data storage structure/schema on the fly. In the following example API descriptions are generated for one example dataset for the Postpartum Infant Care Program registry, where the Caretaker and infant child are registered and a registration ID is issued.
 
 ![Example registry database logical data model.](<.gitbook/assets/Logical datamodel MCTS (1).JPG>)
 
@@ -33,8 +33,6 @@ Description: Creates a new record in the registry database.
 Request endpoint: POST/data/{code}/{version}/create
 
 Example API: see in [Github](../api/GovStack\_Digital\_registries\_BB\_Data\_API\_template-1.3.0.json).
-
-
 
 {% swagger src="https://raw.githubusercontent.com/GovStackWorkingGroup/bb-digital-registries/main/api/GovStack_Digital_registries_BB_Data_API_template-1.3.0.yaml" path="/data/{registryname}/{versionnumber}" method="get" %}
 [https://raw.githubusercontent.com/GovStackWorkingGroup/bb-digital-registries/main/api/GovStack_Digital_registries_BB_Data_API_template-1.3.0.yaml](https://raw.githubusercontent.com/GovStackWorkingGroup/bb-digital-registries/main/api/GovStack_Digital_registries_BB_Data_API_template-1.3.0.yaml)
@@ -63,8 +61,6 @@ Example API: see in [Github](../api/GovStack\_Digital\_registries\_BB\_Data\_API
 {% swagger src="https://raw.githubusercontent.com/GovStackWorkingGroup/bb-digital-registries/main/api/GovStack_Digital_registries_BB_Data_API_template-1.3.0.json" path="/data/{registryname}/{versionnumber}/update-or-create" method="post" %}
 [https://raw.githubusercontent.com/GovStackWorkingGroup/bb-digital-registries/main/api/GovStack_Digital_registries_BB_Data_API_template-1.3.0.json](https://raw.githubusercontent.com/GovStackWorkingGroup/bb-digital-registries/main/api/GovStack_Digital_registries_BB_Data_API_template-1.3.0.json)
 {% endswagger %}
-
-
 
 ## 8.4 DATA UPDATE-ENTRIES
 
@@ -150,8 +146,6 @@ Example API: see in [Github](../api/GovStack\_Digital\_registries\_BB\_Data\_API
 [https://raw.githubusercontent.com/GovStackWorkingGroup/bb-digital-registries/main/api/GovStack_Digital_registries_BB_Data_API_template-1.3.0.json](https://raw.githubusercontent.com/GovStackWorkingGroup/bb-digital-registries/main/api/GovStack_Digital_registries_BB_Data_API_template-1.3.0.json)
 {% endswagger %}
 
-
-
 **Database Schema APIs are following:**
 
 ## 8.11 DATABASE SCHEMA READ
@@ -211,7 +205,5 @@ Request endpoint: PUT/data/{code}/{version}/create-entries
 {% swagger src="https://raw.githubusercontent.com/GovStackWorkingGroup/bb-digital-registries/main/api/GovStack_Digital_registries_BB_Data_API_template-1.3.0.json" path="/data/mcts/1.4/create-entries" method="post" %}
 [https://raw.githubusercontent.com/GovStackWorkingGroup/bb-digital-registries/main/api/GovStack_Digital_registries_BB_Data_API_template-1.3.0.json](https://raw.githubusercontent.com/GovStackWorkingGroup/bb-digital-registries/main/api/GovStack_Digital_registries_BB_Data_API_template-1.3.0.json)
 {% endswagger %}
-
-
 
 The API is built using representational state transfer ([REST](https://restfulapi.net/)) software architectural style and described in [Open API 3 standard](https://swagger.io/specification/) using [YAML](https://yaml.org/) (a human-readable data-serialization language). Request and response body is in [JSON](https://www.json.org/json-en.html) (lightweight data-interchange format).
