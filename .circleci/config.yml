@@ -2,7 +2,7 @@ version: 2.1
 setup: true
 
 orbs:
-  test-harness: govstack-working-group/testutils@dev:6aff0fe7c95df6969ef0ad7163a937fa7c1b74e9
+  test-harness: govstack-working-group/testutils@1.0.3
 
 workflows:
   test_everything:
