@@ -6,17 +6,9 @@ description: >-
 
 # 7 Data Structures
 
-## 7.1 Standards/Protocols <a href="#docs-internal-guid-1e590c21-7fff-9d6f-674a-fa9e678943e1" id="docs-internal-guid-1e590c21-7fff-9d6f-674a-fa9e678943e1"></a>
-
-The following standards are applicable to data structures in the Digital Registries Building Block:
-
-* Open -API Version [3.0.0, 3.0.1, 3.1.0.](https://www.openapis.org/)
-
-## 7.2 Resource Model
+## 7.1 Resource Model
 
 The resource model shows the relationship between data objects that are used by this Building Block.
-
-**Resource Model**:
 
 ```mermaid
 erDiagram
@@ -43,31 +35,21 @@ erDiagram
     SCHEMA ||--|{ DATA: contains
 ```
 
-## 7.3 Data Elements <a href="#docs-internal-guid-f4ace18b-7fff-ada5-ebbb-3aaf5e08cb17" id="docs-internal-guid-f4ace18b-7fff-ada5-ebbb-3aaf5e08cb17"></a>
+## 7.2 Data Structures <a href="#docs-internal-guid-f4ace18b-7fff-ada5-ebbb-3aaf5e08cb17" id="docs-internal-guid-f4ace18b-7fff-ada5-ebbb-3aaf5e08cb17"></a>
 
-The Data Elements provide detail for the Resource Model defined above. This section will list the core/required fields for each resource. Note that the Data Elements can be extended for a particular use case, but they must always contain, at the minimum, the fields defined here.
+The Data Structures provide detail for the Resource Model defined above. This section will list the core/required fields for each resource.&#x20;
 
-**Minimum Required Data:**
+### 7.2.1 Minimum Required Data
 
-| Name                | Description                                                                                             | Type                                  | Required |   |
-| ------------------- | ------------------------------------------------------------------------------------------------------- | ------------------------------------- | -------- | - |
-| Database ID         | Unique identifier of a database.                                                                        | integer                               | yes      |   |
-| Database name       | Name that will define the database content. Name is public.                                             | varchar                               | yes      |   |
-| Schema ID           | Database schema ID                                                                                      | integer                               | yes      |   |
-| Database schema     | Database schema. See example in Chapters 7.4.1 and 7.4.2.                                               | json                                  | yes      |   |
-| Version             | Database version. Each change in schema will produce the next version of the database and API services. | numeric                               | yes      |   |
-| Data ID             | Data element unique identifier.                                                                         | integer                               | yes      |   |
-| Registry number     | Additional registry identifier. Unique identifier in the registry.                                      | varchar                               | yes      |   |
-| Field type          | Field type: datetime, date, boolean, text, number, file.                                                | varchar                               | yes      |   |
-| Field value         | Field value, data stored in the field.                                                                  | datetime, date, boolean, text, number | yes      |   |
-| Audit log old value | Field value before change.                                                                              | datetime, date, boolean, text, number | yes      |   |
-| Audit log new value | Field value after the change.                                                                           | datetime, date, boolean, text, number | yes      |   |
+**Description:** The Data Structures can be extended for a particular use case, but they must always contain, at the minimum, the fields defined here.
 
+**Fields:**
 
+<table><thead><tr><th>Name</th><th>Type</th><th>Description</th><th>Notes</th><th data-hidden></th></tr></thead><tbody><tr><td>Database ID</td><td>integer</td><td>Unique identifier of a database.</td><td>Required</td><td></td></tr><tr><td>Database name</td><td>varchar</td><td>Name that will define the database content. Name is public.</td><td>Required</td><td></td></tr><tr><td>Schema ID</td><td>integer</td><td>Database schema ID</td><td>Required</td><td></td></tr><tr><td>Database schema</td><td>json</td><td>Database schema. See example in Chapters 7.3.1 and 7.3.2.</td><td>Required</td><td></td></tr><tr><td>Version</td><td>numeric</td><td>Database version. Each change in schema will produce the next version of the database and API services.</td><td>Required</td><td></td></tr><tr><td>Data ID</td><td>integer</td><td>Data element unique identifier.</td><td>Required</td><td></td></tr><tr><td>Registry number</td><td>varchar</td><td>Additional registry identifier. Unique identifier in the registry.</td><td>Required</td><td></td></tr><tr><td>Field type</td><td>varchar</td><td>Field type: datetime, date, boolean, text, number, file.</td><td>Required</td><td></td></tr><tr><td>Field value</td><td>datetime, date, boolean, text, number</td><td>Field value, data stored in the field.</td><td>Required</td><td></td></tr><tr><td>Audit log old value</td><td>datetime, date, boolean, text, number</td><td>Field value before change.</td><td>Required</td><td></td></tr><tr><td>Audit log new value</td><td>datetime, date, boolean, text, number</td><td>Field value after the change.</td><td>Required</td><td></td></tr></tbody></table>
 
-### 7.4 Schema examples
+### 7.3 Schema examples
 
-#### 7.4.1 Database Read Schema Response Example
+#### 7.3.1 Database Read Schema Response Example
 
 ```
 {
@@ -392,7 +374,7 @@ The Data Elements provide detail for the Resource Model defined above. This sect
 }
 ```
 
-#### 7.4.2 Example Schema With Foreign Keys
+#### 7.3.2 Example Schema With Foreign Keys
 
 ```
 {
@@ -463,3 +445,8 @@ The Data Elements provide detail for the Resource Model defined above. This sect
     }
 ```
 
+## Standards/Protocols <a href="#docs-internal-guid-1e590c21-7fff-9d6f-674a-fa9e678943e1" id="docs-internal-guid-1e590c21-7fff-9d6f-674a-fa9e678943e1"></a>
+
+The following standards are applicable to data structures in the Digital Registries Building Block:
+
+* Open -API Version [3.0.0, 3.0.1, 3.1.0.](https://www.openapis.org/)
