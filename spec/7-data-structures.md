@@ -449,4 +449,4 @@ The Data Structures provide detail for the Resource Model defined above. This se
 
 The following standards are applicable to data structures in the Digital Registries Building Block:
 
-* Open -API Version [3.0.0, 3.0.1, 3.1.0.](https://www.openapis.org/)
+* OpenAPI Version [3.0.0](https://spec.openapis.org/oas/v3.0.0), [3.0.1](https://spec.openapis.org/oas/v3.0.1), [3.1.0](https://spec.openapis.org/oas/v3.1.0).
