@@ -252,4 +252,26 @@ module.exports = {
       BirthCertificateID: { type: 'string' },
     },
   },
+  dataListReadEndpoint: 'data/{registryname}/{versionnumber}',
+  dataListResponseSchema: {
+    type: 'object',
+    properties: {
+      count: { type: 'number' },
+      next: { type: 'string' },
+      previous: { type: ['string', 'null'] },
+      results: {
+        type: 'array',
+          items: {
+          type: 'object',
+            properties: {
+            ID: { type: 'string' },
+            FirstName: { type: 'string' },
+            LastName: { type: 'string' },
+            BirthCertificateID: { type: 'string' }
+          }
+        }
+      }
+    },
+    required: ['count', 'results']
+  }
 };

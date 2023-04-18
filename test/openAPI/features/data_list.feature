@@ -1,17 +1,36 @@
+@method=GET @endpoint=/data/{registryname}/{versionnumber}/
 Feature: API endpoint that allows users to search multiple records in Digital Registries database.
-  Request endpoint: GET /data/{registryname}/{versionnumber}/
 
-  Scenario: The user gets a list of all searched records in the Digital Registries database
-    Given The user wants to search for a specific value and the searched value exists in multiple records in the database
-    When The user sends a valid request to search the database
-    Then The user receives a list of all records that contain the searched value
+  @smoke
+  Scenario: User successfully obtains database users information with database schema smoke type test
+    Given User wants to get the database users information of Digital Registries
+    When User sends GET request with given Information-Mediator-Client header and "registryname" as registryname and "111" as versionnumber
+    Then User receives a response from the GET /data/{registryname}/{versionnumber} endpoint
+    And The GET /data/{registryname}/{versionnumber}/ endpoint response should be returned in a timely manner 15000ms
+    And The GET /data/{registryname}/{versionnumber}/ endpoint response should have status 200
+    And The GET /data/{registryname}/{versionnumber}/ endpoint response should have content-type: application/json header
+    And The GET /data/{registryname}/{versionnumber}/ endpoint response should match json schema
 
+  @unit @positive
+  Scenario Outline: User successfully obtains database users information  with database schema
+    Given User wants to get the database users information of Digital Registries
+    When User sends GET request with given Information-Mediator-Client header and "registryname" as registryname and "111" as versionnumber
+    And User filters users informations by using query parameters "<search>" as search and "<filter>" as filter and "<ordering>" as ordering
+    Then User receives a response from the GET /data/{registryname}/{versionnumber} endpoint
+    And The GET /data/{registryname}/{versionnumber}/ endpoint response should be returned in a timely manner 15000ms
+    And The GET /data/{registryname}/{versionnumber}/ endpoint response should have status 200
+    And The GET /data/{registryname}/{versionnumber}/ endpoint response should have content-type: application/json header
+    And The GET /data/{registryname}/{versionnumber}/ endpoint response should match json schema
+    Examples: Valid data
+      | search | filter | ordering |
+      | John | Black | ASC |
+      | Alice | Wonderland | DESC |
+      | Jack | Reed | ascending |
+      | Thomas | Rietler | descending |
+
+  @unit @positive
   Scenario: The user receives an empty list from the Digital Registries database
     Given The user wants to search for a specific value and the searched value does not exist in any record in the database
-    When The user sends a valid request to search the database
+    When User sends GET request with given Information-Mediator-Client header and "registryname" as registryname and "111" as versionnumber
+    And User filters users informations by using query parameters "John" as search and "John" as filter and "ASC" as ordering
     Then The user receives an empty list because there is no record in the database that contains the searched value
-
-  Scenario: The user cannot search for the records in the Digital Registries database due to an invalid query
-    Given The user wants to search for a specific value and the searched value exists in multiple records in the database
-    When The user sends an invalid request to search the database
-    Then The operation results in an error due to an invalid query

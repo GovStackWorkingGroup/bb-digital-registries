@@ -220,14 +220,14 @@
             {
               "target": "query",
               "modifier": "search",
-              "value": "Adrien",
+              "value": "[a-zA-Z0-9_]+\\/[a-zA-Z0-9_]+\\/[a-zA-Z0-9_]+\\/[a-zA-Z0-9_]+",
               "invert": false,
               "operator": "equals"
             },
             {
               "target": "query",
               "modifier": "filter",
-              "value": "FirstName",
+              "value": "[a-zA-Z0-9_]+\\/[a-zA-Z0-9_]+\\/[a-zA-Z0-9_]+\\/[a-zA-Z0-9_]+",
               "invert": false,
               "operator": "equals"
             }
@@ -268,7 +268,7 @@
               "modifier": "filter",
               "value": "FirstName",
               "invert": false,
-              "operator": "equals"
+              "operator": "null"
             }
           ],
           "rulesOperator": "AND",
@@ -303,7 +303,7 @@
         },
         {
           "uuid": "1901b0df-c7a3-4185-8951-f97022f42653",
-          "body": "{\n  \"count\": 5,\n  \"next\": \"1\",\n  \"previous\": null,\n  \"results\":  [\n    {{# repeat 5 }}\n      {\n        \"id\": \"{{ faker 'datatype.uuid' }}\",\n        \"FirstName\": \"John\",\n        \"LastName\": \"{{faker 'name.lastName'}}\",\n        \"BirthCertificateID\": \"RR-{{faker 'random.numeric' 10 }}\"\n      }\n    {{/ repeat }}\n  ]\n}",
+          "body": "{\n  \"count\": 5,\n  \"next\": \"1\",\n  \"previous\": null,\n  \"results\":  [\n    {{# repeat 5 }}\n      {\n        \"id\": \"{{ faker 'datatype.uuid' }}\",\n        \"FirstName\": \"{{faker 'name.firstName'}}\",\n        \"LastName\": \"{{faker 'name.lastName'}}\",\n        \"BirthCertificateID\": \"RR-{{faker 'random.numeric' 10 }}\"\n      }\n    {{/ repeat }}\n  ]\n}",
           "latency": 0,
           "statusCode": 200,
           "label": "Returns multiple records as an array-list. - All query params",
@@ -323,33 +323,33 @@
             {
               "target": "query",
               "modifier": "search",
-              "value": "john",
+              "value": "[a-zA-Z0-9_]+\\/[a-zA-Z0-9_]+\\/[a-zA-Z0-9_]+\\/[a-zA-Z0-9_]+",
               "invert": false,
               "operator": "equals"
             },
             {
-              "target": "body",
+              "target": "query",
               "modifier": "filter",
-              "value": "FirstName",
+              "value": "[a-zA-Z0-9_]+\\/[a-zA-Z0-9_]+\\/[a-zA-Z0-9_]+\\/[a-zA-Z0-9_]+",
               "invert": false,
               "operator": "equals"
             },
             {
-              "target": "body",
+              "target": "query",
               "modifier": "ordering",
               "value": "descending",
               "invert": false,
               "operator": "equals"
             },
             {
-              "target": "body",
+              "target": "query",
               "modifier": "page",
               "value": "1",
               "invert": false,
               "operator": "equals"
             },
             {
-              "target": "body",
+              "target": "query",
               "modifier": "page_size",
               "value": "10",
               "invert": false,
@@ -362,11 +362,11 @@
           "default": false
         },
         {
-          "uuid": "186bdd10-f1a9-4dd3-9016-4fbe1ae1cd9a",
-          "body": "{\n  \"Invalid format of Information-Mediator-Client, should match INSTANCE/CLASS/MEMBER/SUBSYSTEM\"\n}",
+          "uuid": "b3432ad4-8824-48cd-ae5f-b5886ffff45f",
+          "body": "{\n  \"count\": 5,\n  \"next\": \"1\",\n  \"previous\": null,\n  \"results\":  [\n    {{# repeat 5 }}\n      {\n        \"id\": \"{{ faker 'datatype.uuid' }}\",\n        \"FirstName\": \"{{faker 'name.firstName'}}\",\n        \"LastName\": \"{{faker 'name.lastName'}}\",\n        \"BirthCertificateID\": \"RR-{{faker 'random.numeric' 10 }}\"\n      }\n    {{/ repeat }}\n  ]\n}",
           "latency": 0,
-          "statusCode": 400,
-          "label": "Returns multiple records as an array-list. - Invalid mediator client format",
+          "statusCode": 200,
+          "label": "Returns multiple records as an array-list. - Query param search ",
           "headers": [],
           "bodyType": "INLINE",
           "filePath": "",
@@ -377,8 +377,15 @@
               "target": "header",
               "modifier": "Information-Mediator-Client",
               "value": "[a-zA-Z0-9_]+\\/[a-zA-Z0-9_]+\\/[a-zA-Z0-9_]+\\/[a-zA-Z0-9_]+",
-              "invert": true,
+              "invert": false,
               "operator": "regex"
+            },
+            {
+              "target": "query",
+              "modifier": "search",
+              "value": "[a-zA-Z0-9_]+\\/[a-zA-Z0-9_]+\\/[a-zA-Z0-9_]+\\/[a-zA-Z0-9_]+",
+              "invert": false,
+              "operator": "equals"
             }
           ],
           "rulesOperator": "AND",
@@ -387,11 +394,11 @@
           "default": false
         },
         {
-          "uuid": "d857c770-774d-4050-96ad-e15fcb879479",
-          "body": "{\"Information-Mediator-Client required\"}",
+          "uuid": "53130f54-3913-4bac-ab91-aadf0e70f8b5",
+          "body": "{\n  \"count\": 5,\n  \"next\": \"1\",\n  \"previous\": null,\n  \"results\":  [\n    {{# repeat 5 }}\n      {\n        \"id\": \"{{ faker 'datatype.uuid' }}\",\n        \"FirstName\": \"{{faker 'name.firstName'}}\",\n        \"LastName\": \"{{faker 'name.lastName'}}\",\n        \"BirthCertificateID\": \"RR-{{faker 'random.numeric' 10 }}\"\n      }\n    {{/ repeat }}\n  ]\n}",
           "latency": 0,
-          "statusCode": 400,
-          "label": "No mediator",
+          "statusCode": 200,
+          "label": "Returns multiple records as an array-list. - Ordering list",
           "headers": [],
           "bodyType": "INLINE",
           "filePath": "",
@@ -401,12 +408,19 @@
             {
               "target": "header",
               "modifier": "Information-Mediator-Client",
-              "value": "",
+              "value": "[a-zA-Z0-9_]+\\/[a-zA-Z0-9_]+\\/[a-zA-Z0-9_]+\\/[a-zA-Z0-9_]+",
               "invert": false,
-              "operator": "null"
+              "operator": "regex"
+            },
+            {
+              "target": "query",
+              "modifier": "ordering",
+              "value": "descending",
+              "invert": false,
+              "operator": "equals"
             }
           ],
-          "rulesOperator": "OR",
+          "rulesOperator": "AND",
           "disableTemplating": false,
           "fallbackTo404": false,
           "default": false
