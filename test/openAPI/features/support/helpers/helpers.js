@@ -261,15 +261,7 @@ module.exports = {
       previous: { type: ['string', 'null'] },
       results: {
         type: 'array',
-          items: {
-          type: 'object',
-            properties: {
-            ID: { type: 'string' },
-            FirstName: { type: 'string' },
-            LastName: { type: 'string' },
-            BirthCertificateID: { type: 'string' }
-          }
-        }
+          items: this.dataExampleSchema
       }
     },
     required: ['count', 'results']
