@@ -15,7 +15,7 @@
       "responses": [
         {
           "uuid": "af65df73-2417-459e-8156-725979689d70",
-          "body": "[\n  {\n    \"ID\": \"1234567\",\n    \"ReaderID\": \"{{queryParamRaw 'userID'}}\",\n    \"ReaderInitials\": \"JD\",\n    \"ReaderInstitutionID\": \"EE70049837\",\n    \"ReaderInstitutionName\": \"East Hospital\",\n    \"ReaderApplicationName\": \"East Hospital healthcare back office\",\n    \"SearchDateTime\": \"2017-07-21T17:32:28Z\",\n    \"Refrences\": [\n      {\n        \"ReferenceID\": \"{{queryParam 'DatabaseID'}}\"\n      }\n    ]\n  }\n]",
+          "body": "[\n  {\n    \"ID\": \"1234567\",\n    \"ReaderID\": \"{{queryParam 'userID'}}\",\n    \"ReaderInitials\": \"JD\",\n    \"ReaderInstitutionID\": \"EE70049837\",\n    \"ReaderInstitutionName\": \"East Hospital\",\n    \"ReaderApplicationName\": \"East Hospital healthcare back office\",\n    \"SearchDateTime\": \"2017-07-21T17:32:28Z\",\n    \"Refrences\": [\n      {\n        \"ReferenceID\": \"{{queryParam 'DatabaseID'}}\"\n      }\n    ]\n  }\n]",
           "latency": 0,
           "statusCode": 200,
           "label": "Returns user usage data. ",
@@ -200,10 +200,10 @@
       "responses": [
         {
           "uuid": "b8e1aca2-95f7-4677-abe8-caee59953cc3",
-          "body": "{\n  \"count\": 0,\n  \"results\": []\n}",
+          "body": "{\n  \"count\": 0,\n  \"next\": null,\n  \"previous\": null,\n  \"results\": []\n}",
           "latency": 0,
           "statusCode": 200,
-          "label": "Returns an empty array.",
+          "label": "Returns an empty array. - Filter by regex",
           "headers": [],
           "bodyType": "INLINE",
           "filePath": "",
@@ -211,9 +211,62 @@
           "sendFileAsBody": false,
           "rules": [
             {
-              "target": "params",
-              "modifier": "registryname",
-              "value": "registryempty",
+              "target": "header",
+              "modifier": "Information-Mediator-Client",
+              "value": "[a-zA-Z0-9_]+\\/[a-zA-Z0-9_]+\\/[a-zA-Z0-9_]+\\/[a-zA-Z0-9_]+",
+              "invert": false,
+              "operator": "regex"
+            },
+            {
+              "target": "query",
+              "modifier": "search",
+              "value": "Adrien",
+              "invert": false,
+              "operator": "equals"
+            },
+            {
+              "target": "query",
+              "modifier": "filter",
+              "value": "FirstName",
+              "invert": false,
+              "operator": "equals"
+            }
+          ],
+          "rulesOperator": "AND",
+          "disableTemplating": false,
+          "fallbackTo404": false,
+          "default": false
+        },
+        {
+          "uuid": "5452e9b2-5e9c-4a44-b75e-c3554b8826bc",
+          "body": "{\n  \"count\": 5,\n  \"next\": \"1\",\n  \"previous\": null,\n  \"results\":  [\n    {{# repeat 5 }}\n      {\n        \"id\": \"{{ faker 'datatype.uuid' }}\",\n        \"FirstName\": \"{{queryParam 'search'}}\",\n        \"LastName\": \"{{faker 'name.lastName'}}\",\n        \"BirthCertificateID\": \"RR-{{faker 'random.numeric' 10 }}\"\n      }\n    {{/ repeat }}\n  ]\n}",
+          "latency": 0,
+          "statusCode": 200,
+          "label": "Returns multiple records as an array-list. - No filter ",
+          "headers": [],
+          "bodyType": "INLINE",
+          "filePath": "",
+          "databucketID": "",
+          "sendFileAsBody": false,
+          "rules": [
+            {
+              "target": "header",
+              "modifier": "Information-Mediator-Client",
+              "value": "[a-zA-Z0-9_]+\\/[a-zA-Z0-9_]+\\/[a-zA-Z0-9_]+\\/[a-zA-Z0-9_]+",
+              "invert": false,
+              "operator": "regex"
+            },
+            {
+              "target": "query",
+              "modifier": "search",
+              "value": "john",
+              "invert": true,
+              "operator": "null"
+            },
+            {
+              "target": "query",
+              "modifier": "filter",
+              "value": "FirstName",
               "invert": false,
               "operator": "equals"
             }
@@ -241,54 +294,19 @@
               "value": "[a-zA-Z0-9_]+\\/[a-zA-Z0-9_]+\\/[a-zA-Z0-9_]+\\/[a-zA-Z0-9_]+",
               "invert": false,
               "operator": "regex"
-            },
-            {
-              "target": "query",
-              "modifier": "search",
-              "value": "",
-              "invert": false,
-              "operator": "null"
-            },
-            {
-              "target": "query",
-              "modifier": "filter",
-              "value": "",
-              "invert": false,
-              "operator": "null"
-            },
-            {
-              "target": "query",
-              "modifier": "ordering",
-              "value": "",
-              "invert": false,
-              "operator": "null"
-            },
-            {
-              "target": "query",
-              "modifier": "page",
-              "value": "",
-              "invert": false,
-              "operator": "null"
-            },
-            {
-              "target": "query",
-              "modifier": "page_size",
-              "value": "",
-              "invert": false,
-              "operator": "null"
             }
           ],
           "rulesOperator": "AND",
           "disableTemplating": false,
           "fallbackTo404": false,
-          "default": false
+          "default": true
         },
         {
-          "uuid": "53130f54-3913-4bac-ab91-aadf0e70f8b5",
-          "body": "{\n  \"count\": 5,\n  \"next\": \"1\",\n  \"previous\": null,\n  \"results\":  [\n    {{# repeat 5 }}\n      {\n        \"id\": \"{{ faker 'datatype.uuid' }}\",\n        \"FirstName\": \"{{ queryParamRaw 'search' }}\",\n        \"LastName\": \"{{faker 'name.lastName'}}\",\n        \"BirthCertificateID\": \"RR-{{faker 'random.numeric' 10 }}\"\n      }\n    {{/ repeat }}\n  ]\n}",
+          "uuid": "1901b0df-c7a3-4185-8951-f97022f42653",
+          "body": "{\n  \"count\": 5,\n  \"next\": \"1\",\n  \"previous\": null,\n  \"results\":  [\n    {{# repeat 5 }}\n      {\n        \"id\": \"{{ faker 'datatype.uuid' }}\",\n        \"FirstName\": \"John\",\n        \"LastName\": \"{{faker 'name.lastName'}}\",\n        \"BirthCertificateID\": \"RR-{{faker 'random.numeric' 10 }}\"\n      }\n    {{/ repeat }}\n  ]\n}",
           "latency": 0,
           "statusCode": 200,
-          "label": "Returns multiple records as an array-list. - Use search, filter and ordering params",
+          "label": "Returns multiple records as an array-list. - All query params",
           "headers": [],
           "bodyType": "INLINE",
           "filePath": "",
@@ -304,41 +322,91 @@
             },
             {
               "target": "query",
-              "modifier": "filter",
-              "value": "",
-              "invert": true,
-              "operator": "null"
-            },
-            {
-              "target": "query",
               "modifier": "search",
-              "value": "",
-              "invert": true,
-              "operator": "null"
-            },
-            {
-              "target": "query",
-              "modifier": "ordering",
-              "value": "",
-              "invert": true,
-              "operator": "null"
-            },
-            {
-              "target": "query",
-              "modifier": "page",
-              "value": "",
+              "value": "john",
               "invert": false,
-              "operator": "null"
+              "operator": "equals"
             },
             {
-              "target": "query",
+              "target": "body",
+              "modifier": "filter",
+              "value": "FirstName",
+              "invert": false,
+              "operator": "equals"
+            },
+            {
+              "target": "body",
+              "modifier": "ordering",
+              "value": "descending",
+              "invert": false,
+              "operator": "equals"
+            },
+            {
+              "target": "body",
+              "modifier": "page",
+              "value": "1",
+              "invert": false,
+              "operator": "equals"
+            },
+            {
+              "target": "body",
               "modifier": "page_size",
+              "value": "10",
+              "invert": false,
+              "operator": "equals"
+            }
+          ],
+          "rulesOperator": "AND",
+          "disableTemplating": false,
+          "fallbackTo404": false,
+          "default": false
+        },
+        {
+          "uuid": "186bdd10-f1a9-4dd3-9016-4fbe1ae1cd9a",
+          "body": "{\n  \"Invalid format of Information-Mediator-Client, should match INSTANCE/CLASS/MEMBER/SUBSYSTEM\"\n}",
+          "latency": 0,
+          "statusCode": 400,
+          "label": "Returns multiple records as an array-list. - Invalid mediator client format",
+          "headers": [],
+          "bodyType": "INLINE",
+          "filePath": "",
+          "databucketID": "",
+          "sendFileAsBody": false,
+          "rules": [
+            {
+              "target": "header",
+              "modifier": "Information-Mediator-Client",
+              "value": "[a-zA-Z0-9_]+\\/[a-zA-Z0-9_]+\\/[a-zA-Z0-9_]+\\/[a-zA-Z0-9_]+",
+              "invert": true,
+              "operator": "regex"
+            }
+          ],
+          "rulesOperator": "AND",
+          "disableTemplating": false,
+          "fallbackTo404": false,
+          "default": false
+        },
+        {
+          "uuid": "d857c770-774d-4050-96ad-e15fcb879479",
+          "body": "{\"Information-Mediator-Client required\"}",
+          "latency": 0,
+          "statusCode": 400,
+          "label": "No mediator",
+          "headers": [],
+          "bodyType": "INLINE",
+          "filePath": "",
+          "databucketID": "",
+          "sendFileAsBody": false,
+          "rules": [
+            {
+              "target": "header",
+              "modifier": "Information-Mediator-Client",
               "value": "",
               "invert": false,
               "operator": "null"
             }
           ],
-          "rulesOperator": "AND",
+          "rulesOperator": "OR",
           "disableTemplating": false,
           "fallbackTo404": false,
           "default": false

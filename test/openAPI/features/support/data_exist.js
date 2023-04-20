@@ -19,14 +19,14 @@ Before(endpointTag, () => {
   specDataExist = spec();
 });
 
-// Scenario: Successfully receives a message that the record exists in database
+// Scenario: Successfully receives a message that the record exists in database smoke type test
 Given(
-  /^get the database users information of Digital Registries$/,
-  () => 'get the database users information of Digital Registries'
+  /^user wants to check if the searched record exists in the database$/,
+  () => 'user wants to check if the searched record exists in the database'
   );
 
 When(
-  /^POST request with given path params "([^"]*)" as registryname and "([^"]*)" as versionnumber$/,
+  /^send POST request to check if record exist in database with given path params "([^"]*)" as registryname and "([^"]*)" as versionnumber$/,
   (registryName, versionNumber) =>
     specDataExist
       .post(baseUrl)
@@ -41,7 +41,7 @@ When(
   /^given body "([^"]*)" as ID and "([^"]*)" as FirstName and "([^"]*)" as LastName and "([^"]*)" as BirthCertificateID$/,
   (ID, FirstName, LastName, BirthCertificateID) =>
     specDataExist
-      .withBody({
+      .withJson({
         ID: ID,
         FirstName: FirstName,
         LastName: LastName,
@@ -85,12 +85,26 @@ Then(
       .to.be.jsonSchema(dataExistResponseSchema)
 );
 
+
+
+// Scenario: Successfully receives a message that the record exists in database
+
+// Given is already written above
+// When is already written above
+// Then is already written above
+
 Then(
   /^response should return status true for existing record$/,
   () =>
-      chai
-        .expect(specDataExist._response.json.answer.status).to.be.true
+    chai
+      .expect(specDataExist._response.json.answer.status).to.be.true
 );
+
+// Scenario: Successfully receives a message that the record not exists in database
+
+// Given is already written above
+// When is already written above
+// Then is already written above
 
 Then(
   /^response should return status false for non\-existing record$/,
