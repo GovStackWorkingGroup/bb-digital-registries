@@ -96,7 +96,7 @@ Given(
 // "When" is already written above
 
 Then(
-  /^receive an empty list because there is no record in the database$/,
+  /^results field should be an empty array$/,
   () => {
     const resultsArray = specDataList._response.json.results.map(field => field);
 
