@@ -97,6 +97,21 @@ module.exports = {
       required: ['ID'],
     },
   },
+  // data_list
+  dataListReadEndpoint: 'data/{registryname}/{versionnumber}',
+  dataListResponseSchema: {
+    type: 'object',
+    properties: {
+      count: { type: 'number' },
+      next: { type: 'string' },
+      previous: { type: ['string', 'null'] },
+      results: {
+        type: 'array',
+        items: this.dataExampleSchema
+      }
+    },
+    required: ['count', 'results']
+  },
   // shares
   databaseSchemaSchema: {
     type: 'object',
@@ -251,19 +266,5 @@ module.exports = {
       LastName: { type: 'string' },
       BirthCertificateID: { type: 'string' },
     },
-  },
-  dataListReadEndpoint: 'data/{registryname}/{versionnumber}',
-  dataListResponseSchema: {
-    type: 'object',
-    properties: {
-      count: { type: 'number' },
-      next: { type: 'string' },
-      previous: { type: ['string', 'null'] },
-      results: {
-        type: 'array',
-          items: this.dataExampleSchema
-      }
-    },
-    required: ['count', 'results']
   }
 };
