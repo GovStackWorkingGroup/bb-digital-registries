@@ -252,4 +252,32 @@ module.exports = {
       BirthCertificateID: { type: 'string' },
     },
   },
+  //data_exist
+  dataExistReadEndpoint: 'data/{registryname}/{versionnumber}/exists',
+  dataExistResponseSchema: {
+    type: 'object',
+    properties: {
+    query: {
+      type: 'object',
+        properties: {
+        content: {
+          type: 'object',
+          properties: {
+            ID: { type: 'string' },
+            FirstName: { type: 'string' },
+            LastName: { type: 'string' },
+            BirthCertificateID: { type: 'string' },
+          },
+        },
+          required: [
+            'ID',
+            'FirstName',
+            'LastName',
+            'BirthCertificateID'
+          ]
+        }
+      },
+      required: ['content']
+    }
+  }
 };

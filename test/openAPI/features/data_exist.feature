@@ -1,19 +1,37 @@
-Feature: API endpoint that allows users to check if an entry exists in the Digital Registries database.
-  Request endpoint: POST /data/{registryname}/{versionnumber}/exists
+@method=GET @endpoint=/data/{registryname}/{versionnumber}/exists
+Feature: API endpoint that allows users to check if an entry exists in the database.
 
-  Scenario: The user receives a message that the record exists in the Digital Registries database
-    Given The user wants to check if a record exists in the Digital Registries database
-    When The user sends a valid request to check if a record exists in the database
-    Then The process of receiving a message that a record exists in the database completes successfully
-    And The user receives the information that a record exists in the database
+  @smoke
+    Scenario: Successfully receives a message that the record exists in database
+    Given get the database users information of Digital Registries
+    When POST request with given path params "registryname" as registryname and "111" as versionnumber
+    And given body "ID" as ID and "FirstName" as FirstName and "LastName" as LastName and "BirthertificateID" as BirthCertificateID
+    Then response from /data/{registryname}/{versionnumber}/exist is received
+    And response should be returned in a timely manner 15000ms
+    And response should have status 200
+    And response should have content-type: application/json header
+    And response should match json schema
 
-  Scenario: The user receives the message that the record does not exist in the Digital Registries database
-    Given The user wants to check if the record exists in the Digital Registries database
-    When The user sends a valid request to check if a record exists in the database
-    Then The process of receiving a message that a record exists in the database completes successfully
-    And The user receives the information that the record does not exist in the database
+  @positive @unit
+    Scenario: Successfully receive status value true for existing record
+    Given get the database users information of Digital Registries
+    When POST request with given path params "registryname" as registryname and "111" as versionnumber
+    And given body "ID" as ID and "John" as FirstName and "LastName" as LastName and "BirthertificateID" as BirthCertificateID
+    Then response from /data/{registryname}/{versionnumber}/exist is received
+    And response should be returned in a timely manner 15000ms
+    And response should have status 200
+    And response should have content-type: application/json header
+    And response should match json schema
+    And response should return status true for existing record
 
-  Scenario: The user is unable to verify that the record exists in the Digital Registries database due to an invalid request
-    Given The user wants to check if a record exists in the Digital Registries database
-    When The user sends an invalid request to check if the record exists in the database
-    Then The operation returns an error due to an invalid request
+  @positive @unit
+    Scenario: Successfully receive status value false for non-existing record
+    Given get the database users information of Digital Registries
+    When POST request with given path params "registryname" as registryname and "111" as versionnumber
+    And given body "ID" as ID and "Jack" as FirstName and "LastName" as LastName and "BirthertificateID" as BirthCertificateID
+    Then response from /data/{registryname}/{versionnumber}/exist is received
+    And response should be returned in a timely manner 15000ms
+    And response should have status 200
+    And response should have content-type: application/json header
+    And response should match json schema
+    And response should return status false for non-existing record
