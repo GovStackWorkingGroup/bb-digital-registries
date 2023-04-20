@@ -18,10 +18,10 @@ Before(() => {
   specDataList = spec();
 });
 
-// Successfully obtains database users information with database schema smoke type test
+// Successfully obtains database users information smoke type test
 Given(
-  'get the database users information of Digital Registries',
-  () => 'get the database users information of Digital Registries'
+  'user wants to get the database users information',
+  () => 'user wants to get the database users information'
 );
 
 When(
@@ -39,27 +39,27 @@ Then(
 );
 
 Then(
-  /^response should be returned in a timely manner 15000ms$/,
+  /^the response from \/data\/\{registryname\}\/\{versionnumber\} should be returned in a timely manner 15000ms$/,
   () => specDataList.response().to.have.responseTimeLessThan(defaultExpectedResponseTime)
 );
 
 Then(
-  /^response should have status (\d+)$/,
+  /^the response from \/data\/\{registryname\}\/\{versionnumber\} should have status (\d+)$/,
   (status) => specDataList.response().to.have.status(status)
 );
 Then(
-  /^response should have content\-type: application\/json header$/,
+  /^the response from \/data\/\{registryname\}\/\{versionnumber\} should have content\-type: application\/json header$/,
   () => specDataList.response().should.have.header(contentTypeHeader.key, contentTypeHeader.value)
   );
 Then(
-  /^response should match json schema$/,
+  /^the response from \/data\/\{registryname\}\/\{versionnumber\} should match json schema$/,
   () =>
     chai
       .expect(specDataList._response.json)
       .to.be.jsonSchema(dataListResponseSchema)
   );
 
-// Scenario Outline: Successfully obtains database users information with database schema
+// Scenario Outline: Successfully obtains database users information
 
 // Given is already written above
 // When is already written above
@@ -79,7 +79,7 @@ When(
 // Then is already written above
 
 Then(
-  /^response is filtered by "([^"]*)" and "([^"]*)" provided in the query parameter$/,
+  /^the response from \/data\/\{registryname\}\/\{versionnumber\} is filtered by "([^"]*)" and "([^"]*)" provided in the query parameter$/,
   (search, filter) => {
     const nameFieldArray = specDataList._response.json.results.map(item => item.FirstName);
 
