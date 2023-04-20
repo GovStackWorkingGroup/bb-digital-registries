@@ -15,6 +15,32 @@ module.exports = {
     type: 'object',
     properties: { content: this.dataExampleSchema },
   },
+  // data_my_personal_data_usage
+  dataMyPersonalDataUsageEndpoint: 'data/MyPersonalDataUsage/1.0',
+  dataMyPersonalDataUsageResponseSchema: {
+    type: 'array',
+    properties: {
+      type: 'object',
+      properties: {
+        ID: { type: 'string' },
+        ReaderID: { type: 'string' },
+        ReaderInitials: { type: 'string' },
+        ReaderInstitutionID: { type: 'string' },
+        ReaderInstitutionName: { type: 'string' },
+        ReaderApplicationName: { type: 'string' },
+        SearchDateTime: { type: 'string', format: 'date-time' },
+        Refrences: {
+          type: 'array',
+          items: {
+            properties: {
+              ReferenceID: { type: 'string' },
+            },
+          },
+        },
+      },
+      additionalProperties: false,
+    },
+  },
   // db_delete
   databaseDeleteEndpoint: 'database/{id}',
   databaseDeleteResponseSchema: { type: 'string' },
