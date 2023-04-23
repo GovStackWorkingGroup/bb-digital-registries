@@ -128,6 +128,45 @@ module.exports = {
     },
     required: ['answer'],
   },
+  // data_update
+  dataUpdateReadEndpoint: 'data/{registryname}/{versionnumber}/update',
+  dataUpdateResponseSchema: {
+    type: 'object',
+    properties: {
+      query: {
+        type: 'object',
+        properties: {
+          content: {
+            type: 'object',
+            properties: {
+              ID: { type: 'string' },
+              FirstName: { type: 'string' },
+              LastName: { type: 'string' },
+              BirthCertificateID: { type: 'string' },
+            },
+            required: ['ID', 'FirstName', 'LastName', 'BirthCertificateID'],
+          },
+        },
+        required: ['content'],
+      },
+      write: {
+        type: 'object',
+        properties: {
+          content: {
+            type: 'object',
+            properties: {
+              ID: { type: 'string' },
+              FirstName: { type: 'string' },
+              LastName: { type: 'string' },
+              BirthCertificateID: { type: 'string' },
+            },
+            required: ['ID', 'FirstName', 'LastName', 'BirthCertificateID'],
+          },
+        },
+        required: ['content'],
+      },
+    },
+  },
   // shares
   databaseSchemaSchema: {
     type: 'object',

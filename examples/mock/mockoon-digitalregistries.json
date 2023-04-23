@@ -706,10 +706,31 @@
             },
             {
               "target": "body",
-              "modifier": "query.content.FirstName",
-              "value": "John Helmut",
+              "modifier": "query.content.ID",
+              "value": "[A-Za-z]+([+-]?(?=\\.\\d|\\d)(?:\\d+)?(?:\\.?\\d*))(?:[Ee]([+-]?\\d+))?",
               "invert": false,
-              "operator": "equals"
+              "operator": "regex"
+            },
+            {
+              "target": "body",
+              "modifier": "query.content.FirstName",
+              "value": "[A-Za-z]+\\s+[A-Za-z]+",
+              "invert": false,
+              "operator": "regex"
+            },
+            {
+              "target": "body",
+              "modifier": "query.content.LastName",
+              "value": "[A-Za-z]+\\s+[A-Za-z]+",
+              "invert": false,
+              "operator": "regex"
+            },
+            {
+              "target": "body",
+              "modifier": "query.content.BirthCertificateID",
+              "value": "[A-Za-z]+([+-]?(?=\\.\\d|\\d)(?:\\d+)?(?:\\.?\\d*))(?:[Ee]([+-]?\\d+))?",
+              "invert": false,
+              "operator": "regex"
             },
             {
               "target": "body",
@@ -720,133 +741,37 @@
             },
             {
               "target": "body",
+              "modifier": "write.content.ID",
+              "value": "[A-Za-z]+([+-]?(?=\\.\\d|\\d)(?:\\d+)?(?:\\.?\\d*))(?:[Ee]([+-]?\\d+))?",
+              "invert": false,
+              "operator": "regex"
+            },
+            {
+              "target": "body",
               "modifier": "write.content.FirstName",
-              "value": "",
-              "invert": true,
-              "operator": "null"
+              "value": "[A-Za-z]+\\s+[A-Za-z]+",
+              "invert": false,
+              "operator": "regex"
+            },
+            {
+              "target": "body",
+              "modifier": "write.content.LastName",
+              "value": "[A-Za-z]+\\s+[A-Za-z]+",
+              "invert": false,
+              "operator": "regex"
+            },
+            {
+              "target": "body",
+              "modifier": "write.content.BirthCertificateID",
+              "value": "[A-Za-z]+([+-]?(?=\\.\\d|\\d)(?:\\d+)?(?:\\.?\\d*))(?:[Ee]([+-]?\\d+))?",
+              "invert": false,
+              "operator": "regex"
             }
           ],
           "rulesOperator": "AND",
           "disableTemplating": false,
           "fallbackTo404": false,
           "default": true
-        },
-        {
-          "uuid": "eff236bb-eb54-42c7-9166-7f1d09ffcf12",
-          "body": "{\n  \"Record matching query not found.\"\n}",
-          "latency": 0,
-          "statusCode": 404,
-          "label": "Update non-existing entry",
-          "headers": [],
-          "bodyType": "INLINE",
-          "filePath": "",
-          "databucketID": "",
-          "sendFileAsBody": false,
-          "rules": [
-            {
-              "target": "header",
-              "modifier": "Information-Mediator-Client",
-              "value": "[a-zA-Z0-9_]+\\/[a-zA-Z0-9_]+\\/[a-zA-Z0-9_]+\\/[a-zA-Z0-9_]+",
-              "invert": false,
-              "operator": "regex"
-            },
-            {
-              "target": "body",
-              "modifier": "query.content",
-              "value": "",
-              "invert": true,
-              "operator": "null"
-            },
-            {
-              "target": "body",
-              "modifier": "query.content.FirstName",
-              "value": "John Helmut",
-              "invert": true,
-              "operator": "equals"
-            },
-            {
-              "target": "body",
-              "modifier": "write.content",
-              "value": "",
-              "invert": true,
-              "operator": "null"
-            },
-            {
-              "target": "body",
-              "modifier": "write.content.FirstName",
-              "value": "",
-              "invert": true,
-              "operator": "null"
-            }
-          ],
-          "rulesOperator": "AND",
-          "disableTemplating": false,
-          "fallbackTo404": false,
-          "default": false
-        },
-        {
-          "uuid": "22a95fee-566d-420c-8844-726968eabdd3",
-          "body": "{\n  \"Query not provided.\"\n}",
-          "latency": 0,
-          "statusCode": 400,
-          "label": "Invalid payload - query part.",
-          "headers": [],
-          "bodyType": "INLINE",
-          "filePath": "",
-          "databucketID": "",
-          "sendFileAsBody": false,
-          "rules": [
-            {
-              "target": "header",
-              "modifier": "Information-Mediator-Client",
-              "value": "[a-zA-Z0-9_]+\\/[a-zA-Z0-9_]+\\/[a-zA-Z0-9_]+\\/[a-zA-Z0-9_]+",
-              "invert": false,
-              "operator": "regex"
-            },
-            {
-              "target": "body",
-              "modifier": "query.content",
-              "value": "",
-              "invert": false,
-              "operator": "null"
-            }
-          ],
-          "rulesOperator": "AND",
-          "disableTemplating": false,
-          "fallbackTo404": false,
-          "default": false
-        },
-        {
-          "uuid": "91e2d050-2a7e-4a98-90a3-cbb33ad1f07b",
-          "body": "{\n  \"Query not provided.\"\n}",
-          "latency": 0,
-          "statusCode": 400,
-          "label": "Invalid payload - write part.",
-          "headers": [],
-          "bodyType": "INLINE",
-          "filePath": "",
-          "databucketID": "",
-          "sendFileAsBody": false,
-          "rules": [
-            {
-              "target": "header",
-              "modifier": "Information-Mediator-Client",
-              "value": "[a-zA-Z0-9_]+\\/[a-zA-Z0-9_]+\\/[a-zA-Z0-9_]+\\/[a-zA-Z0-9_]+",
-              "invert": false,
-              "operator": "regex"
-            },
-            {
-              "target": "body",
-              "modifier": "write.content",
-              "value": "",
-              "invert": false,
-              "operator": "null"
-            }
-          ],
-          "rulesOperator": "AND",
-          "disableTemplating": false,
-          "fallbackTo404": false,
-          "default": false
         }
       ],
       "enabled": true,
