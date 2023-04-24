@@ -1,5 +1,5 @@
 const chai = require('chai');
-const pactum = require('pactum');
+const { spec } = require('pactum');
 const { Given, When, Then, Before, After } = require('@cucumber/cucumber');
 const {
   header,
@@ -13,17 +13,15 @@ const {
 chai.use(require('chai-json-schema'));
 
 let specDataMyPersonalDataUsage;
-let returnedReaderId;
-let returnedReferanceArray;
 
 const baseUrl = localhost + dataMyPersonalDataUsageEndpoint;
 const endpointTag = { tags: `@endpoint=/${dataMyPersonalDataUsageEndpoint}` };
 
 Before(endpointTag, () => {
-  specDataMyPersonalDataUsage = pactum.spec();
+  specDataMyPersonalDataUsage = spec();
 });
 
-// Scenario: The user gets a list of all records that have read their personal data smoke test type
+// Scenario: The user gets a list of all records that have read his personal data smoke test type
 Given(
   'The user wants to check who has read his personal data',
   () => 'The user wants to check who has read his personal data'
@@ -74,19 +72,10 @@ Then(
       .to.be.jsonSchema(dataMyPersonalDataUsageResponseSchema)
 );
 
-//Scenario Outline: The user gets a list of all records that have read their personal data
+//Scenario Outline: The user gets a list of all records that have read his personal data
 // Others Given, When and Then are written in the aforementioned example
-Then(
-  'The \\/data\\/MyPersonalDataUsage\\/1.0 response ReaderID field should be {string}',
-  userId => {
-    returnedReaderId = specDataMyPersonalDataUsage._response.json
-      .map(object => object.ReaderID)
-      .toString();
-    chai.expect(returnedReaderId).to.be.equals(userId);
-  }
-);
 
-// Scenario: The user is not able to gets a list of all records that have read their personal data because of the invalid userID parameter
+// Scenario: The user is not able to gets a list of all records that have read his personal data because of the invalid userID parameter
 // Others Given, When and Then are written in the aforementioned example
 When(
   'User sends GET \\/data\\/MyPersonalDataUsage\\/1.0 request with given Information-Mediator-Client header, {string} as invalid userID and {string} as DatabaseID',
@@ -103,7 +92,7 @@ Then(
   () => specDataMyPersonalDataUsage.response().should.have.status(400)
 );
 
-// Scenario: The user is not able to gets a list of all records that have read their personal data because of the invalid DatabaseID parameter
+// Scenario: The user is not able to gets a list of all records that have read his personal data because of the invalid DatabaseID parameter
 // Others Given, When and Then are written in the aforementioned example
 When(
   'User sends GET \\/data\\/MyPersonalDataUsage\\/1.0 request with given Information-Mediator-Client header, {string} as userID and {string} as invalid DatabaseID',

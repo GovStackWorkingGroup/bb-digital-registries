@@ -15,7 +15,7 @@
       "responses": [
         {
           "uuid": "ad5ddc6e-bd4f-491b-b600-5cab337701f5",
-          "body": "[\n  {\n    \"ID\": \"1234567\",\n    \"ReaderID\": \"{{queryParam 'userID'}}\",\n    \"ReaderInitials\": \"JD\",\n    \"ReaderInstitutionID\": \"EE70049837\",\n    \"ReaderInstitutionName\": \"East Hospital\",\n    \"ReaderApplicationName\": \"East Hospital healthcare back office\",\n    \"SearchDateTime\": \"2017-07-21T17:32:28Z\",\n    \"Refrences\": [\n      {\n        \"ReferenceID\": \"MCTS311\"\n      }\n    ]\n  }\n]",
+          "body": "[\n  {\n    \"ID\": \"1234567\",\n    \"ReaderID\": \"EE37819285773\",\n    \"ReaderInitials\": \"JD\",\n    \"ReaderInstitutionID\": \"EE70049837\",\n    \"ReaderInstitutionName\": \"East Hospital\",\n    \"ReaderApplicationName\": \"East Hospital healthcare back office\",\n    \"SearchDateTime\": \"2017-07-21T17:32:28Z\",\n    \"Refrences\": [\n      {\n        \"ReferenceID\": \"MCTS311\"\n      }\n    ]\n  }\n]",
           "latency": 0,
           "statusCode": 200,
           "label": "Returns user usage data. ",
