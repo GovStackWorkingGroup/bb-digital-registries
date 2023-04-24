@@ -97,6 +97,22 @@ module.exports = {
       required: ['ID'],
     },
   },
+  //data_exist
+  dataExistReadEndpoint: 'data/{registryname}/{versionnumber}/exists',
+  dataExistResponseSchema: {
+    type: 'object',
+    properties: {
+      answer: {
+        type: "object",
+        properties: {
+          status: { type: "boolean" },
+          message: { type: "string" }
+        },
+        required: ["status", "message"]
+      }
+    },
+    required: ["answer"]
+  },
   // shares
   databaseSchemaSchema: {
     type: 'object',
@@ -251,33 +267,5 @@ module.exports = {
       LastName: { type: 'string' },
       BirthCertificateID: { type: 'string' },
     },
-  },
-  //data_exist
-  dataExistReadEndpoint: 'data/{registryname}/{versionnumber}/exists',
-  dataExistResponseSchema: {
-    type: 'object',
-    properties: {
-    query: {
-      type: 'object',
-        properties: {
-        content: {
-          type: 'object',
-          properties: {
-            ID: { type: 'string' },
-            FirstName: { type: 'string' },
-            LastName: { type: 'string' },
-            BirthCertificateID: { type: 'string' },
-          },
-        },
-          required: [
-            'ID',
-            'FirstName',
-            'LastName',
-            'BirthCertificateID'
-          ]
-        }
-      },
-      required: ['content']
-    }
   }
 };

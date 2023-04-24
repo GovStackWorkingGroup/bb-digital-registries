@@ -19,14 +19,15 @@ Before(endpointTag, () => {
   specDataExist = spec();
 });
 
-// Scenario: Successfully receives a message that the record exists in database smoke type test
+//Scenario: Successfully receives a message that the record exists in database smoke type test
+
 Given(
   /^user wants to check if the searched record exists in the database$/,
   () => 'user wants to check if the searched record exists in the database'
   );
 
 When(
-  /^send POST request to check if record exist in database with given path params "([^"]*)" as registryname and "([^"]*)" as versionnumber$/,
+  /^send POST request to check if the record exist in the database is sent with given path params "([^"]*)" as registryname and "([^"]*)" as versionnumber$/,
   (registryName, versionNumber) =>
     specDataExist
       .post(baseUrl)
@@ -50,12 +51,12 @@ When(
 );
 
 Then(
-  /^response from \/data\/\{registryname\}\/\{versionnumber\}\/exist is received$/,
+  /^the response from \/data\/\{registryname\}\/\{versionnumber\}\/exist is received$/,
   async () => await specDataExist.toss()
 );
 
 Then(
-  /^response should be returned in a timely manner 15000ms$/,
+  /^the response from \/data\/\{registryname\}\/\{versionnumber\}\/exists should be returned in a timely manner 15000ms$/,
   () =>
     specDataExist
       .response()
@@ -63,14 +64,14 @@ Then(
 );
 
 Then(
-  /^response should have status (\d+)$/,
+  /^the response from \/data\/\{registryname\}\/\{versionnumber\}\/exists should have status (\d+)$/,
   status => {
     specDataExist.response().to.have.status(status);
   }
 );
 
 Then(
-  /^response should have content\-type: application\/json header$/,
+  /^the response from \/data\/\{registryname\}\/\{versionnumber\}\/exists should have content\-type: application\/json header$/,
   () =>
     specDataExist
       .response()
@@ -78,36 +79,27 @@ Then(
 );
 
 Then(
-  /^response should match json schema$/,
-  () =>
+  /^the response from \/data\/\{registryname\}\/\{versionnumber\}\/exists should match json schema$/,
+  () => {
     chai
       .expect(specDataExist._response.json)
       .to.be.jsonSchema(dataExistResponseSchema)
+  }
 );
 
-
-
-// Scenario: Successfully receives a message that the record exists in database
-
-// Given is already written above
-// When is already written above
-// Then is already written above
-
 Then(
-  /^response should return status true for existing record$/,
+  /^the response from \/data\/\{registryname\}\/\{versionnumber\}\/exists should return status true for existing record$/,
   () =>
     chai
       .expect(specDataExist._response.json.answer.status).to.be.true
 );
 
-// Scenario: Successfully receives a message that the record not exists in database
+//Scenario: Successfully receives a message that the record not exists in database
 
-// Given is already written above
-// When is already written above
-// Then is already written above
+//Given, When and Then is already written above
 
 Then(
-  /^response should return status false for non\-existing record$/,
+  /^the response from \/data\/\{registryname\}\/\{versionnumber\}\/exists should return status false for non\-existing record$/,
   () =>
     chai
       .expect(specDataExist._response.json.answer.status).to.be.false
