@@ -21,7 +21,7 @@ Updates one existing record in the registry databas
     And The response from /data/{registryname}/{versionnumber}/update should have status 200
 
     Examples:
-      | updatedFirstName | updatedLastName | updatedBirthCertificateID |
-      | Jack | Black | RR-1234567880 |
-      | John | Redwood | RR-1234567888 |
-      | Bob | Rack | RR-1234567887 |
+    | updatedFirstName | updatedLastName | updatedBirthCertificateID |
+    | Jack             | Black           | RR-1234567880             |
+    | John             | Redwood         | RR-1234567888             |
+    | Bob              | Rack            | RR-1234567887             |
