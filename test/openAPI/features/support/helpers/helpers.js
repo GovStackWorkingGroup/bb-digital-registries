@@ -163,7 +163,7 @@ module.exports = {
             required: ['ID', 'FirstName', 'LastName', 'BirthCertificateID'],
           },
         },
-        required: ['ID', 'FirstName', 'LastName', 'BirthCertificateID'],
+        required: ['content'],
       },
     },
     required: ['query', 'write'],
