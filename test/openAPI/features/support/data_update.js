@@ -19,7 +19,7 @@ Before(endpointTag, () => {
   specDataUpdate = spec();
 });
 
-// Scenario: Successfully update user information record in database smoke type test
+// Scenario: Successfully updates user information record in the database smoke type test
 
 Given(
   /^User wants to update existing record in database$/,
@@ -27,7 +27,7 @@ Given(
 );
 
 When(
-  /^PUT request to check if the record exists in the database is sent with given path params "([^"]*)" as registryname and "([^"]*)" as versionnumber$/,
+  /^PUT request updates record in the database is sent with given path params "([^"]*)" as registryname and "([^"]*)" as versionnumber$/,
   (registryName, versionNumber) =>
     specDataUpdate
       .put(baseUrl)
@@ -89,7 +89,7 @@ Then(
     specDataUpdate.response().to.have.status(status)
 );
 
-// Scenario: Successfully update user information record in database
+// Scenario: Successfully updates user information record in the database
 
 // Given, When and Then is already written above
 

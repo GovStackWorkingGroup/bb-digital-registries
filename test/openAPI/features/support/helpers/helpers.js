@@ -163,9 +163,10 @@ module.exports = {
             required: ['ID', 'FirstName', 'LastName', 'BirthCertificateID'],
           },
         },
-        required: ['content'],
+        required: ['ID', 'FirstName', 'LastName', 'BirthCertificateID'],
       },
     },
+    required: ['query', 'write'],
   },
   // shares
   databaseSchemaSchema: {
