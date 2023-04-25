@@ -38,17 +38,33 @@ When(
       })
 );
 
-When(
-  /^the request contains a payload with given "([^"]*)" as ID "([^"]*)" as FirstName "([^"]*)" as LastName and "([^"]*)" as BirthCertificateID$/,
-  (ID, FirstName, LastName, BirthCertificateID) =>
+When(/^the request contains a payload with given "([^"]*)" as ID "([^"]*)" as FirstName "([^"]*)" as LastName and "([^"]*)" as BirthCertificateID and the request overwrites the record with given "([^"]*)" as updatedID "([^"]*)" as updatedFirstName "([^"]*)" as updatedLastName and "([^"]*)" as updatedBirthCertificateID$/,
+  (
+    ID,
+    FirstName,
+    LastName,
+    BirthCertificateID,
+    updatedID,
+    updatedFirstName,
+    updatedLastName,
+    updatedBirthCertificateID
+  ) =>
     specDataUpdate
       .withJson({
-        query: {
+        write: {
+          query: {
+            content: {
+              ID: ID,
+              FirstName: FirstName,
+              LastName: LastName,
+              BirthCertificateID: BirthCertificateID
+            }
+          },
           content: {
-            ID: ID,
-            FirstName: FirstName,
-            LastName: LastName,
-            BirthCertificateID: BirthCertificateID
+            ID: updatedID,
+            FirstName: updatedFirstName,
+            LastName: updatedLastName,
+            BirthCertificateID: updatedBirthCertificateID
           }
         }
       })
@@ -73,64 +89,9 @@ Then(
     specDataUpdate.response().to.have.status(status)
 );
 
-Then(
-  /^the response from \/data\/\{registryname\}\/\{versionnumber\}\/update should have content\-type: application\/json header$/,
-  () =>
-    specDataUpdate
-      .response()
-      .should.have.header(contentTypeHeader.key, contentTypeHeader.value)
-);
-
-Then(
-  /^the response from \/data\/\{registryname\}\/\{versionnumber\}\/update should match json schema$/,
-  () =>
-    chai
-      .expect(specDataUpdate._response.json)
-      .to.be.jsonSchema(dataUpdateResponseSchema)
-);
-
 // Scenario: Successfully update user information record in database
 
-// Given is already written above
-
-When(/^the request contains a payload with given "([^"]*)" as ID "([^"]*)" as FirstName "([^"]*)" as LastName and "([^"]*)" as BirthCertificateID and the request overwrites the record with given "([^"]*)" as updatedID "([^"]*)" as updatedFirstName "([^"]*)" as updatedLastName and "([^"]*)" as updatedBirthCertificateID$/,
-  (
-    ID,
-    FirstName,
-    LastName,
-    BirthCertificateID,
-    updatedID,
-    updatedFirstName,
-    updatedLastName,
-    updatedBirthCertificateID
-  ) =>
-    specDataUpdate
-    .withJson({
-      write: {
-        query: {
-          content: {
-            ID: ID,
-            FirstName: FirstName,
-            LastName: LastName,
-            BirthCertificateID: BirthCertificateID
-          }
-        },
-        content: {
-          ID: updatedID,
-          FirstName: updatedFirstName,
-          LastName: updatedLastName,
-          BirthCertificateID: updatedBirthCertificateID
-        }
-      }
-    })
-);
-
-//Then is already written above
-
-Then(
-  /^the response from \/data\/\{registryname\}\/\{versionnumber\}\/update should return updated record data$/,
-  () => chai.expect(specDataUpdate._response.json).to.have.property('content')
-);
+// Given, When and Then is already written above
 
 After(endpointTag, () => {
   specDataUpdate.end();
