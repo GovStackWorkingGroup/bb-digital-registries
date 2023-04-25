@@ -1,13 +1,11 @@
-const { spec, response } = require('pactum');
+const { spec } = require('pactum');
 const chai = require('chai');
 const { Given, When, Then, Before, After } = require('@cucumber/cucumber');
 const {
   header,
   localhost,
   defaultExpectedResponseTime,
-  contentTypeHeader,
-  dataUpdateResponseSchema,
-  dataUpdateReadEndpoint
+  dataUpdateReadEndpoint,
 } = require('./helpers/helpers');
 
 chai.use(require('chai-json-schema'));
@@ -19,64 +17,63 @@ Before(endpointTag, () => {
   specDataUpdate = spec();
 });
 
-// Scenario: Successfully updates user information record in the database smoke type test
-
+// Scenario: Successfully updates a record in the registry database smoke type test
 Given(
-  /^User wants to update existing record in database$/,
+  /^User wants to update an existing record in the database$/,
   () => 'User wants to update existing record in database'
 );
 
 When(
-  /^PUT request updates record in the database is sent with given path params "([^"]*)" as registryname and "([^"]*)" as versionnumber$/,
+  /^PUT request to update a record in the database is sent with given path params "([^"]*)" as registryname and "([^"]*)" as versionnumber$/,
   (registryName, versionNumber) =>
     specDataUpdate
       .put(baseUrl)
       .withHeaders(header.key, header.value)
       .withPathParams({
-        'registryname': registryName,
-        'versionnumber': versionNumber
+        registryname: registryName,
+        versionnumber: versionNumber,
       })
 );
 
-When(/^the request contains a payload with given "([^"]*)" as ID "([^"]*)" as FirstName "([^"]*)" as LastName and "([^"]*)" as BirthCertificateID and the request overwrites the record with given "([^"]*)" as updatedID "([^"]*)" as updatedFirstName "([^"]*)" as updatedLastName and "([^"]*)" as updatedBirthCertificateID$/,
+When(
+  /^The request contains a payload with given "([^"]*)" as ID "([^"]*)" as FirstName "([^"]*)" as LastName and "([^"]*)" as BirthCertificateID and the request overwrites the record with given "([^"]*)" as ID "([^"]*)" as FirstName "([^"]*)" as LastName and "([^"]*)" as BirthCertificateID$/,
   (
     ID,
     FirstName,
     LastName,
     BirthCertificateID,
-    updatedID,
-    updatedFirstName,
-    updatedLastName,
-    updatedBirthCertificateID
+    overwritingID,
+    overwritingFirstName,
+    overwritingLastName,
+    overwritingBirthCertificateID
   ) =>
-    specDataUpdate
-      .withJson({
-        write: {
-          query: {
-            content: {
-              ID: ID,
-              FirstName: FirstName,
-              LastName: LastName,
-              BirthCertificateID: BirthCertificateID
-            }
-          },
-          content: {
-            ID: updatedID,
-            FirstName: updatedFirstName,
-            LastName: updatedLastName,
-            BirthCertificateID: updatedBirthCertificateID
-          }
-        }
-      })
+    specDataUpdate.withJson({
+      query: {
+        content: {
+          ID: ID,
+          FirstName: FirstName,
+          LastName: LastName,
+          BirthCertificateID: BirthCertificateID,
+        },
+      },
+      write: {
+        content: {
+          ID: overwritingID,
+          FirstName: overwritingFirstName,
+          LastName: overwritingLastName,
+          BirthCertificateID: overwritingBirthCertificateID,
+        },
+      },
+    })
 );
 
 Then(
-  /^response from \/data\/\{registryname\}\/\{versionnumber\}\/update is received$/,
+  /^The response from \/data\/\{registryname\}\/\{versionnumber\}\/update is received$/,
   async () => await specDataUpdate.toss()
 );
 
 Then(
-  /^the response from \/data\/\{registryname\}\/\{versionnumber\}\/update should be returned in a timely manner 15000ms$/,
+  /^The response from \/data\/\{registryname\}\/\{versionnumber\}\/update should be returned in a timely manner 15000ms$/,
   () =>
     specDataUpdate
       .response()
@@ -84,14 +81,12 @@ Then(
 );
 
 Then(
-  /^the response from \/data\/\{registryname\}\/\{versionnumber\}\/update should have status (\d+)$/,
-  status =>
-    specDataUpdate.response().to.have.status(status)
+  /^The response from \/data\/\{registryname\}\/\{versionnumber\}\/update should have status (\d+)$/,
+  status => specDataUpdate.response().to.have.status(status)
 );
 
-// Scenario: Successfully updates user information record in the database
-
-// Given, When and Then is already written above
+// Scenario Outline: Successfully updates a record in the registry database
+// Given, When and Then are written in the aforementioned example
 
 After(endpointTag, () => {
   specDataUpdate.end();

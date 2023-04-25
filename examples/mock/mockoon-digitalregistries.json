@@ -680,7 +680,7 @@
       "responses": [
         {
           "uuid": "d96dc4ea-e98b-4fbf-a460-8dc2327c98b9",
-          "body": "{\n  \"content\": {\n    \"ID\": \"{{bodyRaw 'write.content.ID'}}\",\n    \"FirstName\": \"{{bodyRaw 'write.content.FirstName'}}\",\n    \"LastName\": \"{{bodyRaw 'write.content.LastName'}}\",\n    \"BirthCertificateID\": \"{{bodyRaw 'write.content.BirthCertificateID'}}\"\n  }\n}",
+          "body": "",
           "latency": 0,
           "statusCode": 200,
           "label": "Update existing entry",
@@ -706,31 +706,10 @@
             },
             {
               "target": "body",
-              "modifier": "query.content.ID",
-              "value": "[A-Za-z]+([+-]?(?=\\.\\d|\\d)(?:\\d+)?(?:\\.?\\d*))(?:[Ee]([+-]?\\d+))?",
-              "invert": false,
-              "operator": "regex"
-            },
-            {
-              "target": "body",
-              "modifier": "query.content.FirstName",
-              "value": "[A-Za-z]+\\s+[A-Za-z]+",
-              "invert": false,
-              "operator": "regex"
-            },
-            {
-              "target": "body",
-              "modifier": "query.content.LastName",
-              "value": "[A-Za-z]+\\s+[A-Za-z]+",
-              "invert": false,
-              "operator": "regex"
-            },
-            {
-              "target": "body",
-              "modifier": "query.content.BirthCertificateID",
-              "value": "[A-Za-z]+([+-]?(?=\\.\\d|\\d)(?:\\d+)?(?:\\.?\\d*))(?:[Ee]([+-]?\\d+))?",
-              "invert": false,
-              "operator": "regex"
+              "modifier": "write",
+              "value": "",
+              "invert": true,
+              "operator": "null"
             },
             {
               "target": "body",
@@ -738,34 +717,6 @@
               "value": "",
               "invert": true,
               "operator": "null"
-            },
-            {
-              "target": "body",
-              "modifier": "write.content.ID",
-              "value": "[A-Za-z]+([+-]?(?=\\.\\d|\\d)(?:\\d+)?(?:\\.?\\d*))(?:[Ee]([+-]?\\d+))?",
-              "invert": false,
-              "operator": "regex"
-            },
-            {
-              "target": "body",
-              "modifier": "write.content.FirstName",
-              "value": "[A-Za-z]+\\s+[A-Za-z]+",
-              "invert": false,
-              "operator": "regex"
-            },
-            {
-              "target": "body",
-              "modifier": "write.content.LastName",
-              "value": "[A-Za-z]+\\s+[A-Za-z]+",
-              "invert": false,
-              "operator": "regex"
-            },
-            {
-              "target": "body",
-              "modifier": "write.content.BirthCertificateID",
-              "value": "[A-Za-z]+([+-]?(?=\\.\\d|\\d)(?:\\d+)?(?:\\.?\\d*))(?:[Ee]([+-]?\\d+))?",
-              "invert": false,
-              "operator": "regex"
             }
           ],
           "rulesOperator": "AND",
