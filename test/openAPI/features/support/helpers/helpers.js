@@ -50,7 +50,7 @@ module.exports = {
     type: 'object',
     properties: this.databaseInfoSchema,
   },
-  // db-list
+  // db_list
   databasesEndpoint: 'databases',
   databasesResponseSchema: {
     type: 'object',
@@ -122,6 +122,77 @@ module.exports = {
       incrementIndex: 30,
       required: ['ID'],
     },
+  },
+  // data_list
+  dataListReadEndpoint: 'data/{registryname}/{versionnumber}',
+  dataListResponseSchema: {
+    type: 'object',
+    properties: {
+      count: { type: 'number' },
+      next: { type: 'string' },
+      previous: { type: ['string', 'null'] },
+      results: {
+        type: 'array',
+        items: this.dataExampleSchema,
+      },
+    },
+    required: ['count', 'results'],
+  },
+  //data_exist
+  dataExistReadEndpoint: 'data/{registryname}/{versionnumber}/exists',
+  dataExistResponseSchema: {
+    type: 'object',
+    properties: {
+      answer: {
+        type: 'object',
+        properties: {
+          status: { type: 'boolean' },
+          message: { type: 'string' },
+        },
+        required: ['status', 'message'],
+      },
+    },
+    required: ['answer'],
+  },
+  // data_update
+  dataUpdateReadEndpoint: 'data/{registryname}/{versionnumber}/update',
+  dataUpdateResponseSchema: {
+    type: 'object',
+    properties: {
+      query: {
+        type: 'object',
+        properties: {
+          content: {
+            type: 'object',
+            properties: {
+              ID: { type: 'string' },
+              FirstName: { type: 'string' },
+              LastName: { type: 'string' },
+              BirthCertificateID: { type: 'string' },
+            },
+            required: ['ID', 'FirstName', 'LastName', 'BirthCertificateID'],
+          },
+        },
+        required: ['content'],
+      },
+      write: {
+        type: 'object',
+        properties: {
+          content: {
+            type: 'object',
+            properties: {
+              ID: { type: 'string' },
+              FirstName: { type: 'string' },
+              LastName: { type: 'string' },
+              BirthCertificateID: { type: 'string' },
+            },
+            required: ['ID', 'FirstName', 'LastName', 'BirthCertificateID'],
+          },
+        },
+        required: ['content'],
+      },
+    },
+    required: ['query', 'write'],
   },
   // shares
   databaseSchemaSchema: {

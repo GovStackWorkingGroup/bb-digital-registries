@@ -1,112 +1,93 @@
-const pactum = require('pactum');
+const { spec } = require('pactum');
+const chai = require('chai');
 const { Given, When, Then, Before, After } = require('@cucumber/cucumber');
-const { header, localhost } = require('./helpers/helpers');
+const {
+  header,
+  localhost,
+  defaultExpectedResponseTime,
+  dataUpdateReadEndpoint,
+} = require('./helpers/helpers');
 
-let userActualVariables;
-let userUpdateVariables;
-let specDataUpdate;
+chai.use(require('chai-json-schema'));
 
-const baseUrl = `${localhost}data/registry1/version1/update`;
+const baseUrl = localhost + dataUpdateReadEndpoint;
+const endpointTag = { tags: `@endpoint=/${dataUpdateReadEndpoint}` };
 
-Before(() => {
-  specDataUpdate = pactum.spec();
+Before(endpointTag, () => {
+  specDataUpdate = spec();
 });
 
-// Scenario: The user successfully updates the record in the Digital Registries database
+// Scenario: Successfully updates a record in the registry database smoke type test
 Given(
-  'The user wants to update a record in the Digital Registries database and a record exists',
-  () =>
-    (userActualVariables = {
-      ID: 'EE378627348834',
-      FirstName: 'John Helmut',
-      LastName: 'Smith Carry',
-      BirthCertificateID: 'RR-1234567889',
-    }),
-
-  (userUpdateVariables = {
-    ID: 'EE378627348834',
-    FirstName: 'John Helmut',
-    LastName: 'Lasocki',
-    BirthCertificateID: 'RR-1234567889',
-  })
+  /^User wants to update an existing record in the database$/,
+  () => 'User wants to update existing record in database'
 );
 
 When(
-  'The user sends a valid request to update the record in the database',
-  () =>
+  /^PUT request to update a record in the database is sent with given path params "([^"]*)" as registryname and "([^"]*)" as versionnumber$/,
+  (registryName, versionNumber) =>
     specDataUpdate
-      .put(`${baseUrl}`)
-      .withHeaders(`${header.key}`, `${header.value}`)
-      .withBody({
-        query: {
-          content: userActualVariables,
-        },
-        write: {
-          content: userUpdateVariables,
-        },
+      .put(baseUrl)
+      .withHeaders(header.key, header.value)
+      .withPathParams({
+        registryname: registryName,
+        versionnumber: versionNumber,
       })
 );
 
-Then('The operation to update a record is completed successfully', async () => {
-  await specDataUpdate.toss();
-  specDataUpdate.response().should.have.status(200);
-  specDataUpdate.response().should.have.jsonLike({
-    content: userUpdateVariables,
-  });
-});
-
-// Scenario: The user cannot update the record because the record does not exist in the Digital Registries database
-Given(
-  'The user wants to update the record in the Digital Registries database and the record does not exist',
-  () =>
-    (userActualVariables = {
-      ID: 'EE378627348855',
-      FirstName: 'Anna',
-      LastName: 'Smith',
-      BirthCertificateID: 'RR-1234567880',
-    }),
-
-  (userUpdateVariables = {
-    ID: 'EE378627348855',
-    FirstName: 'Jasmine',
-    LastName: 'Lasocki',
-    BirthCertificateID: 'RR-1234567880',
-  })
+When(
+  /^The request contains a payload with given "([^"]*)" as ID "([^"]*)" as FirstName "([^"]*)" as LastName and "([^"]*)" as BirthCertificateID and the request overwrites the record with given "([^"]*)" as ID "([^"]*)" as FirstName "([^"]*)" as LastName and "([^"]*)" as BirthCertificateID$/,
+  (
+    ID,
+    FirstName,
+    LastName,
+    BirthCertificateID,
+    overwritingID,
+    overwritingFirstName,
+    overwritingLastName,
+    overwritingBirthCertificateID
+  ) =>
+    specDataUpdate.withJson({
+      query: {
+        content: {
+          ID: ID,
+          FirstName: FirstName,
+          LastName: LastName,
+          BirthCertificateID: BirthCertificateID,
+        },
+      },
+      write: {
+        content: {
+          ID: overwritingID,
+          FirstName: overwritingFirstName,
+          LastName: overwritingLastName,
+          BirthCertificateID: overwritingBirthCertificateID,
+        },
+      },
+    })
 );
 
-// "When" is already written in line 34-46
+Then(
+  /^The response from \/data\/\{registryname\}\/\{versionnumber\}\/update is received$/,
+  async () => await specDataUpdate.toss()
+);
 
 Then(
-  'The result of the operation to update the record is an error because the record does not exist in the database',
-  async () => {
-    await specDataUpdate.toss();
-    specDataUpdate.response().should.have.status(404);
+  /^The response from \/data\/\{registryname\}\/\{versionnumber\}\/update should be returned in a timely manner 15000ms$/,
+  () =>
     specDataUpdate
       .response()
-      .should.have.body('{\n  "Record matching query not found."\n}');
-  }
-);
-
-// Scenario: The user is not able to update a record in the Digital Registries database because of an invalid request
-// "Given" is already written in line 16-32
-
-When(
-  'The user sends an invalid request to update a new record in the database',
-  () =>
-    specDataUpdate
-      .put(`${baseUrl}`)
-      .withHeaders(`${header.key}`, `${header.value}`)
+      .to.have.responseTimeLessThan(defaultExpectedResponseTime)
 );
 
 Then(
-  'The result of the operation to update a record returns an error due to an invalid request',
-  async () => {
-    await specDataUpdate.toss();
-    specDataUpdate.response().should.have.status(400);
-    specDataUpdate.response().should.have.body('{\n  "Query not provided."\n}');
-  }
+  /^The response from \/data\/\{registryname\}\/\{versionnumber\}\/update should have status (\d+)$/,
+  status => specDataUpdate.response().to.have.status(status)
 );
 
-After(() => {
+// Scenario Outline: Successfully updates a record in the registry database
+// Given, When and Then are written in the aforementioned example
+
+After(endpointTag, () => {
   specDataUpdate.end();
 });
