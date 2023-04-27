@@ -14,3 +14,7 @@ description: >-
 ## 10.2 Future Considerations
 
 [A list of topics that may be relevant to future versions of this Building Block](https://govstack-global.atlassian.net/wiki/spaces/GH/pages/183468052/Future+Considerations+Digital+Registries).
+
+## **10.3** Out-of-Scope Assumptions
+
+[A list of functions out of the scope of this Building Block](https://govstack-global.atlassian.net/l/cp/pjfzm0LF).

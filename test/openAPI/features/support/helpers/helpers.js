@@ -111,6 +111,21 @@ module.exports = {
       }
     },
     required: ['count', 'results']
+  //data_exist
+  dataExistReadEndpoint: 'data/{registryname}/{versionnumber}/exists',
+  dataExistResponseSchema: {
+    type: 'object',
+    properties: {
+      answer: {
+        type: "object",
+        properties: {
+          status: { type: "boolean" },
+          message: { type: "string" }
+        },
+        required: ["status", "message"]
+      }
+    },
+    required: ["answer"]
   },
   // shares
   databaseSchemaSchema: {
