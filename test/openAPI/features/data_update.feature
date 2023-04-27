@@ -1,17 +1,27 @@
-Feature: API endpoint that allows users to update a new record in the Digital Registries database.
-  Request endpoint: PUT /data/{registryname}/{versionnumber}/update
+@method=GET @endpoint=/data/{registryname}/{versionnumber}/update
+Feature: API endpoint that allows users to update a record in the database.
 
-  Scenario: The user successfully updates the record in the Digital Registries database
-    Given The user wants to update a record in the Digital Registries database and a record exists
-    When The user sends a valid request to update the record in the database
-    Then The operation to update a record is completed successfully
+Updates one existing record in the registry databas
+  @smoke
+    Scenario: Successfully updates a record in the registry database smoke type test
+    Given User wants to update an existing record in the database
+    When PUT request to update a record in the database is sent with given path params "registryname" as registryname and "111" as versionnumber
+    And The request contains a payload with given "EE378627348834" as ID "John" as FirstName "Helmut" as LastName and "RR-1234567889" as BirthCertificateID and the request overwrites the record with given "EE378627348834" as ID "John" as FirstName "Helmut" as LastName and "RR-1234567889" as BirthCertificateID
+    Then The response from /data/{registryname}/{versionnumber}/update is received
+    And The response from /data/{registryname}/{versionnumber}/update should be returned in a timely manner 15000ms
+    And The response from /data/{registryname}/{versionnumber}/update should have status 200
 
-  Scenario: The user cannot update the record because the record does not exist in the Digital Registries database
-    Given The user wants to update the record in the Digital Registries database and the record does not exist
-    When The user sends a valid request to update the record in the database
-    Then The result of the operation to update the record is an error because the record does not exist in the database
+  @positive @unit
+  Scenario Outline: Successfully updates a record in the registry database
+    Given User wants to update an existing record in the database
+    When PUT request to update a record in the database is sent with given path params "registryname" as registryname and "111" as versionnumber
+    And The request contains a payload with given "EE378627348834" as ID "John" as FirstName "Helmut" as LastName and "RR-1234567889" as BirthCertificateID and the request overwrites the record with given "EE378627348834" as ID "<updatedFirstName>" as FirstName "<updatedLastName>" as LastName and "<updatedBirthCertificateID>" as BirthCertificateID
+    Then The response from /data/{registryname}/{versionnumber}/update is received
+    And The response from /data/{registryname}/{versionnumber}/update should be returned in a timely manner 15000ms
+    And The response from /data/{registryname}/{versionnumber}/update should have status 200
 
-  Scenario: The user is not able to update a record in the Digital Registries database because of an invalid request
-    Given The user wants to update a record in the Digital Registries database and a record exists
-    When The user sends an invalid request to update a new record in the database
-    Then The result of the operation to update a record returns an error due to an invalid request
+    Examples:
+    | updatedFirstName | updatedLastName | updatedBirthCertificateID |
+    | Jack             | Black           | RR-1234567880             |
+    | John             | Redwood         | RR-1234567888             |
+    | Bob              | Rack            | RR-1234567887             |
