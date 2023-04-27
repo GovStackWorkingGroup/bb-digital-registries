@@ -26,11 +26,11 @@ Feature: API endpoint that allows to search multiple records in the database.
     And results array length is consistent with count field value
 
     Examples: Valid data
-      | filter | search | ordering |
-      | FirstName | John | ascending |
-      | FirstName | Alice | descending |
-      | FirstName | Jack | ascending |
-      | FirstName | Bob | descending |
+      | filter    | search | ordering   |
+      | FirstName | John   | ascending  |
+      | FirstName | Alice  | descending |
+      | FirstName | Jack   | ascending  |
+      | FirstName | Bob    | descending |
 
   @unit @positive
   Scenario: Receive an empty list from the database
