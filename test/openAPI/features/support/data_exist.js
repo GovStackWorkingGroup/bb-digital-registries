@@ -1,97 +1,110 @@
-const pactum = require('pactum');
-const { Given, When, Then, Before, After } = require('@cucumber/cucumber');
-const { header, localhost } = require('./helpers/helpers');
+const { spec } = require('pactum');
+const chai = require('chai');
+const { When, Then, Given, Before, After } = require('@cucumber/cucumber');
+const {
+  header,
+  localhost,
+  dataExistReadEndpoint,
+  defaultExpectedResponseTime,
+  contentTypeHeader,
+  dataExistResponseSchema
+} = require('./helpers/helpers');
 
-let searchedRecord;
-let specDataExist;
+chai.use(require('chai-json-schema'));
 
-const baseUrl = `${localhost}data/registry1/version1/exists`;
+const baseUrl = localhost + dataExistReadEndpoint;
+const endpointTag = { tags: `@endpoint=/${dataExistReadEndpoint}` };
 
-Before(() => {
-  specDataExist = pactum.spec();
+Before(endpointTag, () => {
+  specDataExist = spec();
 });
 
-// Scenario: The user receives a message that the record exists in the Digital Registries database
+//Scenario: Successfully receives a message that the record exists in database smoke type test
+
 Given(
-  `The user wants to check if a record exists in the Digital Registries database`,
-  () => (searchedRecord = 'John Helmut')
-);
+  /^user wants to check if the searched record exists in the database$/,
+  () => 'user wants to check if the searched record exists in the database'
+  );
 
 When(
-  'The user sends a valid request to check if a record exists in the database',
-  () =>
+  /^send POST request to check if the record exist in the database is sent with given path params "([^"]*)" as registryname and "([^"]*)" as versionnumber$/,
+  (registryName, versionNumber) =>
     specDataExist
-      .post(`${baseUrl}`)
-      .withHeaders(`${header.key}`, `${header.value}`)
-      .withBody({
-        query: {
-          content: {
-            FirstName: searchedRecord,
-          },
-        },
+      .post(baseUrl)
+      .withHeaders(header.key, header.value)
+      .withPathParams({
+        'registryname': registryName,
+        'versionnumber': versionNumber
+      })
+  );
+
+When(
+  /^given body "([^"]*)" as ID and "([^"]*)" as FirstName and "([^"]*)" as LastName and "([^"]*)" as BirthCertificateID$/,
+  (ID, FirstName, LastName, BirthCertificateID) =>
+    specDataExist
+      .withJson({
+        ID: ID,
+        FirstName: FirstName,
+        LastName: LastName,
+        BirthCertificateID: BirthCertificateID
       })
 );
 
 Then(
-  'The process of receiving a message that a record exists in the database completes successfully',
-  async () => {
-    await specDataExist.toss();
-    specDataExist.response().should.have.status(200);
+  /^the response from \/data\/\{registryname\}\/\{versionnumber\}\/exist is received$/,
+  async () => await specDataExist.toss()
+);
+
+Then(
+  /^the response from \/data\/\{registryname\}\/\{versionnumber\}\/exists should be returned in a timely manner 15000ms$/,
+  () =>
+    specDataExist
+      .response()
+      .to.have.responseTimeLessThan(defaultExpectedResponseTime)
+);
+
+Then(
+  /^the response from \/data\/\{registryname\}\/\{versionnumber\}\/exists should have status (\d+)$/,
+  status => {
+    specDataExist.response().to.have.status(status);
   }
 );
 
 Then(
-  'The user receives the information that a record exists in the database',
+  /^the response from \/data\/\{registryname\}\/\{versionnumber\}\/exists should have content\-type: application\/json header$/,
   () =>
-    specDataExist.response().should.have.jsonLike({
-      answer: {
-        status: true,
-        message: 'Object found from database',
-      },
-    })
+    specDataExist
+      .response()
+      .should.have.header(contentTypeHeader.key, contentTypeHeader.value)
 );
-
-// Scenario: The user receives the message that the record does not exist in the Digital Registries database
-Given(
-  `The user wants to check if the record exists in the Digital Registries database`,
-  () => (searchedRecord = 'Adrien')
-);
-
-// "When" is already written in line 20-34
-
-// "Then" is already written in line 36-42
 
 Then(
-  'The user receives the information that the record does not exist in the database',
-  () =>
-    specDataExist.response().should.have.jsonLike({
-      answer: {
-        status: false,
-        message: 'Object not found from database',
-      },
-    })
+  /^the response from \/data\/\{registryname\}\/\{versionnumber\}\/exists should match json schema$/,
+  () => {
+    chai
+      .expect(specDataExist._response.json)
+      .to.be.jsonSchema(dataExistResponseSchema)
+  }
 );
 
-// Scenario: The user is unable to verify that the record exists in the Digital Registries database due to an invalid request
-// Given already written in line 15-18
-
-When(
-  'The user sends an invalid request to check if the record exists in the database',
+Then(
+  /^the response from \/data\/\{registryname\}\/\{versionnumber\}\/exists should return status true for existing record$/,
   () =>
-    specDataExist.post(`${baseUrl}`).withBody({
-      query: {
-        content: {
-          FirstName: searchedRecord,
-        },
-      },
-    })
+    chai
+      .expect(specDataExist._response.json.answer.status).to.be.true
 );
 
-Then('The operation returns an error due to an invalid request', async () => {
-  await specDataExist.toss();
-  specDataExist.response().should.have.status(400);
-});
+//Scenario: Successfully receives a message that the record not exists in database
 
-After(() => {
+//Given, When and Then is already written above
+
+Then(
+  /^the response from \/data\/\{registryname\}\/\{versionnumber\}\/exists should return status false for non\-existing record$/,
+  () =>
+    chai
+      .expect(specDataExist._response.json.answer.status).to.be.false
+);
+
+After(endpointTag, () => {
   specDataExist.end();
 });
