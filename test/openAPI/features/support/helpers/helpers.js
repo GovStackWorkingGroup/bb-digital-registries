@@ -24,7 +24,7 @@ module.exports = {
     type: 'object',
     properties: this.databaseInfoSchema,
   },
-  // db-list
+  // db_list
   databasesEndpoint: 'databases',
   databasesResponseSchema: {
     type: 'object',
@@ -97,21 +97,36 @@ module.exports = {
       required: ['ID'],
     },
   },
+  // data_list
+  dataListReadEndpoint: 'data/{registryname}/{versionnumber}',
+  dataListResponseSchema: {
+    type: 'object',
+    properties: {
+      count: { type: 'number' },
+      next: { type: 'string' },
+      previous: { type: ['string', 'null'] },
+      results: {
+        type: 'array',
+        items: this.dataExampleSchema,
+      },
+    },
+    required: ['count', 'results'],
+  },
   //data_exist
   dataExistReadEndpoint: 'data/{registryname}/{versionnumber}/exists',
   dataExistResponseSchema: {
     type: 'object',
     properties: {
       answer: {
-        type: "object",
+        type: 'object',
         properties: {
-          status: { type: "boolean" },
-          message: { type: "string" }
+          status: { type: 'boolean' },
+          message: { type: 'string' },
         },
-        required: ["status", "message"]
-      }
+        required: ['status', 'message'],
+      },
     },
-    required: ["answer"]
+    required: ['answer'],
   },
   // shares
   databaseSchemaSchema: {
@@ -267,5 +282,5 @@ module.exports = {
       LastName: { type: 'string' },
       BirthCertificateID: { type: 'string' },
     },
-  }
+  },
 };

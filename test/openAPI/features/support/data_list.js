@@ -1,74 +1,124 @@
-const pactum = require('pactum');
-const { When, Then, Given, After, Before } = require('@cucumber/cucumber');
-const { header, localhost } = require('./helpers/helpers');
+const { spec } = require('pactum');
+const chai = require('chai');
+const { When, Then, Given, Before, After } = require('@cucumber/cucumber');
+const {
+  header,
+  localhost,
+  dataListResponseSchema,
+  defaultExpectedResponseTime,
+  contentTypeHeader,
+  dataListReadEndpoint,
+} = require('./helpers/helpers');
 
-let searchedName;
+chai.use(require('chai-json-schema'));
 let specDataList;
 
-const baseUrl = `${localhost}data/registry1/version1`;
+const baseUrl = localhost + dataListReadEndpoint;
+const endpointTag = { tags: `@endpoint=/${dataListReadEndpoint}` };
 
 Before(() => {
-  specDataList = pactum.spec();
+  specDataList = spec();
 });
 
-// Scenario: The user gets a list of all searched records in the Digital Registries database
+// Successfully obtains database users information smoke type test
 Given(
-  'The user wants to search for a specific value and the searched value exists in multiple records in the database',
-  () => (searchedName = 'John')
+  'user wants to get the database users information',
+  () => 'user wants to get the database users information'
 );
 
-When('The user sends a valid request to search the database', () =>
-  specDataList
-    .get(`${baseUrl}?filter=FirstName&search=${searchedName}`)
-    .withHeaders(`${header.key}`, `${header.value}`)
+When(
+  /^send GET request with given Information\-Mediator\-Client header and "([^"]*)" as registryname and "([^"]*)" as versionnumber$/,
+  (registryName, versionNumber) =>
+    specDataList
+      .get(baseUrl)
+      .withHeaders(header.key, header.value)
+      .withPathParams('registryname', registryName)
+      .withPathParams('versionnumber', versionNumber)
 );
 
 Then(
-  'The user receives a list of all records that contain the searched value',
-  async () => {
-    await specDataList.toss();
-    specDataList.response().should.have.status(200);
-    specDataList.response().should.have.jsonLike({
-      results: [
-        {
-          FirstName: searchedName,
-        },
-      ],
+  /^receive a response from the GET \/data\/\{registryname\}\/\{versionnumber\} endpoint$/,
+  async () => await specDataList.toss()
+);
+
+Then(
+  /^the response from \/data\/\{registryname\}\/\{versionnumber\} should be returned in a timely manner 15000ms$/,
+  () =>
+    specDataList
+      .response()
+      .to.have.responseTimeLessThan(defaultExpectedResponseTime)
+);
+
+Then(
+  /^the response from \/data\/\{registryname\}\/\{versionnumber\} should have status (\d+)$/,
+  status => specDataList.response().to.have.status(status)
+);
+Then(
+  /^the response from \/data\/\{registryname\}\/\{versionnumber\} should have content\-type: application\/json header$/,
+  () =>
+    specDataList
+      .response()
+      .should.have.header(contentTypeHeader.key, contentTypeHeader.value)
+);
+Then(
+  /^the response from \/data\/\{registryname\}\/\{versionnumber\} should match json schema$/,
+  () =>
+    chai
+      .expect(specDataList._response.json)
+      .to.be.jsonSchema(dataListResponseSchema)
+);
+
+// Scenario Outline: Successfully obtains database users information
+
+// Given is already written above
+// When is already written above
+
+When(
+  /^filter users information by using query parameters "([^"]*)" as search and "([^"]*)" as filter and "([^"]*)" as ordering$/,
+  (search, filter, ordering) => {
+    specDataList.withQueryParams({
+      search: search,
+      filter: filter,
+      ordering: ordering,
     });
   }
 );
 
-// Scenario: The user receives an empty list from the Digital Registries database
-Given(
-  'The user wants to search for a specific value and the searched value does not exist in any record in the database',
-  () => (searchedName = 'Adrien')
-);
-
-// "When" is already written in line 20-24
+// Then is already written above
 
 Then(
-  'The user receives an empty list because there is no record in the database that contains the searched value',
-  async () => {
-    await specDataList.toss();
-    specDataList.response().should.have.status(200);
-    specDataList.response().should.have.jsonLike({
-      results: [],
-    });
+  /^the response from \/data\/\{registryname\}\/\{versionnumber\} is filtered by "([^"]*)" and "([^"]*)" provided in the query parameter$/,
+  (search, filter) => {
+    const nameFieldArray = specDataList._response.json.results.map(
+      item => item.FirstName
+    );
+
+    nameFieldArray.map(nameField => chai.expect(nameField).equals(search));
   }
 );
 
-// Scenario: The user is not able to search for the records in the Digital Registries database because of an invalid request
-// "Given" is already written in line 15-18
-
-When('The user sends an invalid request to search the database', () =>
-  specDataList.get(`${baseUrl}?filter=FirstName&search=${searchedName}`)
+// Scenario: Receive an empty list from the Digital Registries database
+Given(
+  /^search for a specific value and the searched value does not exist in any record in the database$/,
+  () =>
+    'search for a specific value and the searched value does not exist in any record in the database'
 );
 
-Then('The operation results in an error due to an invalid query', async () => {
-  await specDataList.toss();
-  specDataList.response().should.have.status(400);
+// "When" is already written above
+
+Then(/^results field should be an empty array$/, () => {
+  const resultsArray = specDataList._response.json.results.map(field => field);
+
+  chai.expect(resultsArray).to.have.length(0);
 });
 
-After(() => {
+Then(/^results array length is consistent with count field value$/, () => {
+  const resultsArray = specDataList._response.json.results.map(field => field);
+  const countValue = specDataList._response.json.count;
+
+  chai.expect(resultsArray).to.have.length(countValue);
+});
+
+After(endpointTag, () => {
   specDataList.end();
 });
