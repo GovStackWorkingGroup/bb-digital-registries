@@ -14,7 +14,7 @@ The first user of the Building Block is an **Administrator/Analyst** who is buil
 
 The key functions of the Building Block for Analysts are:
 
-1. Create a new register/database (API or Web user interface);
+1. Create a new register/database (via API or Web user interface);
 2. Create and configure the schema of the register (API or Web user interface);
 3. Change schema configuration and publish the new version of the database and API services (API or Web user interface);
 4. Enter data to the register (API or Web user interface);

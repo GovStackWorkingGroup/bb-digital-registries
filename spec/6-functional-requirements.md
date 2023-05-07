@@ -6,12 +6,12 @@ description: This section lists the technical capabilities of this Building Bloc
 
 ## 6.1 Administrative/Analyst Functions <a href="#docs-internal-guid-d85f59a4-7fff-1564-6ae2-86d67f36a258" id="docs-internal-guid-d85f59a4-7fff-1564-6ae2-86d67f36a258"></a>
 
-* DRS-1: Analysts have the option to create a new registry database by filling in the following information (REQUIRED),Use Case 1:
+* DRS-1: Analysts have the option to create a new registry database by filling in the following information (REQUIRED):
   1. Name of the database;
   2. A short name;
   3. Schema of the database (see DRS-3).
-* DRS-2: Analysts can create multiple databases in one system instance. Databases must be linkable with foreign keys. See the foreign key API description example in Appendix 2. Analysts can configure which databases and which fields are linked in the user interface. In this document and foreign key function, we consider databases as database tables that can be linked with one another. See the [example illustration](.gitbook/assets/Database%20Foreign%20key.png). User story: As a user, I can browse database content (Data) in the user interface and when databases are linked, then I can click and move from one database to another where the corresponding linked data will open in the user interface. In the Digital Registries Data user interface, it must be possible to open another database by clicking on the record ID in one database and all corresponding records from the other Database will open. It is required to have at least two levels of IDs (database ID and field ID) to link the databases. See the example API below in Appendix 2. Example: In one registry database we store information about Mother and Child records. In the second registry database, we store information about payments made for the mother. The system must enable a foreign key link between the payment database to the Mother and child record database. Users can click in the payment database record user interface to the Mother ID field and the system user interface must open the corresponding record in the Mother and Child database. (REQUIRED)
-*   DRS-3: Analysts have the option to add fields to the database schema. Fields of the database must contain at least the following elements (REQUIRED), Use Case 1:
+* DRS-2: Analysts can create multiple databases in one system instance. Databases must be linkable with foreign keys. See the foreign key API description example in [Appendix 2](.gitbook/assets/appendix2.json). Analysts can configure which databases and which fields are linked. In this document and foreign key function, we consider databases as database tables that can be linked with one another. See the [example illustration](.gitbook/assets/Database%20Foreign%20key.png). User story: As a user, I can browse database content (Data) in the user interface and when databases are linked, then I can click and move from one database/table to another where the corresponding linked data will open in the user interface. In the Digital Registries Data user interface, it should be possible to open another database by clicking on the record ID in one database and all corresponding records from the other Database will open. It is required to have at least two levels of IDs (database ID and field ID) to link the databases. See the example API in[ Appendix 2](.gitbook/assets/appendix2.json). Example: In one registry database we store information about Mother and Child records. In the second registry database, we store information about payments made for the mother. The system must enable a foreign key link between the payment database to the Mother and child record database. Users can click in the payment database record user interface to the Mother ID field and the system user interface should open the corresponding record in the Mother and Child database. (REQUIRED)
+*   DRS-3: Analysts have the option to add fields to the database schema. Fields of the database must contain at least the following elements (REQUIRED):
 
     1. Field name;
     2. Field type, at least with the following types:
@@ -53,22 +53,22 @@ description: This section lists the technical capabilities of this Building Bloc
 
     Analysts have the option to manage user rights of a database and data via API and via a user interface.
 
-    * Any logged-in user role must be available;
-    * Anonymous user role must be available;
+    * "Any logged-in user" role must be available;
+    * "Anonymous" user role must be available;
     * Attribute Based Access Control (ABAC) logic could be used (API, Schema, data fields, record filter, users);
     * Per user, per group of users option must be available.
       * Group is a set of users in a role.
       * Role is a set of rights.
-* DRS-7: The system must log all data processing in the database. (REQUIRED), Use Case 3.
+* DRS-7: The system must log all data processing in the database. (REQUIRED)
   * Schema changes must be logged;
   * Data processing (Create, Read, Update, Delete) must be logged;
   * Logs must be visible and searchable to the Analyst via the User Interface;
   * Every data owner (e.g. physical person) has the option to see who has processed his/her data (PersonalData). The function is a standard function for all registries ([DRS-14 API example](../api/GovStack\_Digital\_registries\_BB\_Data\_API\_template-1.3.0.json)).
   * Change logs are protected with the highest level of integrity (chaining of logs)
   * Database logs could be logged with an external blockchain for additional security (optional).
-*   DRS-8: Personal Data usage. (REQUIRED), Use Case 3.
+*   DRS-8: Personal Data usage. (REQUIRED)
 
-    System must automatically store all data read requests and store these in the ser log table.
+    System must automatically store all data read requests and store these in the log table.
 
     * Covers data read events via User Interface and via APIs.&#x20;
     * Personal Data logs are stored with PersonalData data tag, storing at least the following information.
@@ -90,12 +90,12 @@ description: This section lists the technical capabilities of this Building Bloc
   * View is not for changing or deleting data, only for reading;
   * View rights are managed by the user rights management system.
 * DRS-10: The option export database schema to JSON file, (optional: XLS file format). (REQUIRED)
-* DRS-11: The option to import database schema from JSON file; The option to import database schema from XLS file. (OPTIONAL)
+* DRS-11: The option to import database schema from JSON file. (REQUIRED); The option to import database schema from XLS file. (OPTIONAL)
 * DRS-12: Service usage statistics (OPTIONAL)
   * System must record all API service usage information.
   * System must record all searches made in the Registry User Interface and via APIs.
-* DRS-13: An analyst must be able to mark a field as PersonalData log object (This field contains personal data). (OPTIONAL), Use Case 3.
-* DRS-14: An analyst must be able to mark a field as PersonalDataID. This is the data owner’s ID. (OPTIONAL), Use Case 3.
+* DRS-13: An analyst must be able to mark a field as PersonalData log object (This field contains personal data). (OPTIONAL)
+* DRS-14: An analyst must be able to mark a field as PersonalDataID. This is the data owner’s ID. (OPTIONAL)
 *   DRS-15: An analyst must be able to mark a field as secret- This field contains secret data (credit card number). E.g. secret data (card data) must be encrypted while at REST.
 
     Information in transit between the Building Blocks is secured with encryption. Information in Transit is described and governed by Information Mediator Building Block. (REQUIRED)
@@ -117,7 +117,7 @@ description: This section lists the technical capabilities of this Building Bloc
     * multiple value/array. User can add more values (e.g. multi select from catalog list) to the same field. Multiple values are:
       * array type field;
       * validation options- Required, Unique, max, min.
-      * Foreign keys (to link other databases in the same ecosystem). See the example schema in Appendix 2.&#x20;
+      * Foreign keys (to link other databases in the same ecosystem). See the example schema in [Appendix 2](.gitbook/assets/appendix2.json).&#x20;
     * Triggers to automate field content-related actions:&#x20;
       * create IDs,&#x20;
       * merge fields,&#x20;
@@ -154,7 +154,7 @@ description: This section lists the technical capabilities of this Building Bloc
   * Schema templates can be shared in the same instance (internal marketplace).&#x20;
   * Schema templates can be shared in a marketplace.&#x20;
   * Schema templates can be imported and exported.
-*   DRS-17: Analyst has a view to see all data in the registry. (REQUIRED), Use Case 2 and Use Case 3.
+*   DRS-17: Analyst has a view to see all data in the registry. (REQUIRED)
 
     Two main views:
 
@@ -164,23 +164,22 @@ description: This section lists the technical capabilities of this Building Bloc
       * See documents(open if image, download if other type);
       * Data log view (changes (create, update, delete). Data before and after).
       * Data read view (information about who has looked at/exported the data). Data and data reader information is stored in the log registry.
-* DRS-18: (REQUIRED)
-  1. Analyst has a view to edit data in the registry. Two main views:
-     * Main grid (inline editing).
-     *   Detail record edit view:
+* DRS-18: Analyst has a view to edit data in the registry. (REQUIRED) Two main views:
+  * Main grid (inline editing).
+  *   Detail record edit view:
 
-         * Edit data;
-         * Remove/add documents (upload).
+      * Edit data;
+      * Remove/add documents (upload).
 
-         All data changes are logged.
-  2. Analyst has option to delete data in the registry.
-     * All data changes are logged.
-* DRS-19: Analyst can use additional functions to simplify data searching (REQUIRED), Use Case 2.
+      All data changes are logged.
+  * Analyst has option to delete data in the registry.
+    * All data changes are logged.
+* DRS-19: Analyst can use additional functions to simplify data searching (REQUIRED)
   * Filtering by search criteria by field content.
   * Full-text data search.
   * Order by each data field.
 * DRS-20: Import data to the registry. Analyst has the option to import information into the database. Import formats are: JSON, CSV, XLS. (REQUIRED)
-* DRS-21: Export data from the registry. Analyst has the option to export selected/filtered data from a registry to CSV/XLS, JSON. (REQUIRED), Use Case 2.
+* DRS-21: Export data from the registry. Analyst has the option to export selected/filtered data from a registry to CSV/XLS, JSON. (REQUIRED)
 * DRS-22: Statistical queries. The system should have the ability to (REQUIRED):
   1. Produce standard statistical reports
      * System must show statistics of all registered items in the registry, with various criteria for filtering. For example:
@@ -193,7 +192,7 @@ description: This section lists the technical capabilities of this Building Bloc
      * (Option) Develop functionality to allow custom dashboards for analysts to analyze data within databases.
      * Provide APIs for extracting data from databases to analyze in external data analytics systems (e.g. Tableau).
 * DRS-33: Users can share data with other users. Share data with other users via e-mail, or via a unique and secure URL. Sharing must be at a record level and field level. Data sharing can be turned off in the authorization module. Data can be shared with anonymous users. The data shared with anonymous users is Open Data. (REQUIRED)
-* DRS-28: Developer has the option to create a new registry database by sending data via API (REQUIRED)
+* DRS-28: Developer has the option to create a new registry database by sending data via API (REQUIRED). Developer is a user who is using API interface.&#x20;
   1. Name of the database;
   2. A short name;
   3. Schema of the database (see DRS-3).
@@ -216,7 +215,7 @@ description: This section lists the technical capabilities of this Building Bloc
 
 ## 6.2 Applicant Functions <a href="#docs-internal-guid-d85f59a4-7fff-1564-6ae2-86d67f36a258" id="docs-internal-guid-d85f59a4-7fff-1564-6ae2-86d67f36a258"></a>
 
-*   DRS-23: Building Block must enable client systems to process (CRUD) the database records via Open API services. (REQUIRED), Use Case 1 and Use Case 2.
+*   DRS-23: Building Block must enable client systems to process (CRUD) the database records via Open API services. (REQUIRED)
 
     * Applicant can search data;
     * Applicant can create data;
@@ -236,7 +235,7 @@ description: This section lists the technical capabilities of this Building Bloc
     * Example data of each field.
 
     If possible then the example must be real so that whoever is looking at the API specifications can test the example data in the service (try it).
-* DRS-25: System has an API for PersonalData usage report. (REQUIRED), Use Case 3.
+* DRS-25: System has an API for PersonalData usage report. (REQUIRED)
   * API input must be configurable by the analyst. Input must be a unique identifier of the data owner(e.g. personal identification number).
   * If the registry database schema is designed to store personal data then the analyst must be able to link the personal data to the owner of personal data (e.g. citizen).
 * DRS-26: Statistical queries via API. (OPTIONAL)
@@ -247,7 +246,7 @@ description: This section lists the technical capabilities of this Building Bloc
     * Date, time ranges;
     * Registered Program.
   * Only authorized data should be available through the API.
-* DRS-27: Using viewing event logs- every data owner has the right to see who has looked at their personal data. (REQUIRED), Use Case 3.
+* DRS-27: Using viewing event logs- every data owner has the right to see who has looked at their personal data. (REQUIRED)
   * Data owner is a physical person whose personal data is stored in the registry.
   * Data owner has the right to access data reading/processing event logs of the personal data they own. Personal data in a registry is marked accordingly (PersonalData) by the analyst.
   * PersonalData logs are visible via API or via User Interface (PersonalData report).
