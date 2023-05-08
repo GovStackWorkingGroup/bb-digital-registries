@@ -50,6 +50,9 @@ module.exports = {
     type: 'object',
     properties: this.databaseInfoSchema,
   },
+  // data_read_value
+  dataReadValueEndpoint:
+    'data/{registryname}/{versionnumber}/{uuid}/read-value/{field}.{ext}',
   // db_list
   databasesEndpoint: 'databases',
   databasesResponseSchema: {
