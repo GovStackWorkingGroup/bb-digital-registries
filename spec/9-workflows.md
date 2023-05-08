@@ -38,13 +38,10 @@ As an Administrator/Analyst I want to use a web user interface to create a regis
 3. Publish the database.
 4. Validate/configure the API services.
 5. Manage user rights to access the database and APIs.
-6. Create a new registry database project.
-7. Define the database fields.
-8. Publish the database.
-9. Validate/configure the API services.
-10. Manage user rights to access the database and APIs.
 
-**Postconditions:**
+
+
+**Post conditions:**
 
 1. System contains a database that is ready to process new data.
 2. System has API services to CRUD (Create, Read, Update, Delete) data (and API to validate if data exist).
@@ -82,7 +79,7 @@ As an Administrator/Analyst, I want to process (Create, Read, Update, Delete) re
 3. Analyst processes a record;
 4. System stores changes to the Change Log database.
 
-**Post conditions**:
+**Postconditions**:
 
 Processing changes by Analyst are done and log for change is created.
 
@@ -97,7 +94,7 @@ As an IT developer, I want to Create/update/delete registry database schema via 
 **Preconditions**:
 
 1. Developer is using API with a client system or a script that is connected to Information Mediator Building Block. Client system is any Building Block that is using API services via Information Mediator;
-2. IT Developer (Information Mediator organization) has been given authorization to Create/update/delete database schemas via API services.
+2. IT Developer (Information Mediator organization) has been given authorization to Create/update/delete database schema via API services.
 3. Developer has internet;
 4. System has electricity.
 
@@ -149,7 +146,7 @@ As an Applicant, I want to process CRUD (Create, Read, Update, Delete) data in t
    * Applicant can validate data.
 2. System logs all processing events in the dedicated audit registry.
 
-**Post conditions**:
+**Postconditions**:
 
 1. When Applicant is authenticated by a client system (e.g. Registration Building Block) the registry allows processing (CRUD) information from the registry. All users who are authenticated can read data.
 2. When a user is not authenticated in the system, the system allows processing (CRUD) data from all databases where an anonymous user has been allowed to process data.
