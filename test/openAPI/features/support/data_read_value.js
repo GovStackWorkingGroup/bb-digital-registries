@@ -7,6 +7,7 @@ const {
   dataReadValueEndpoint,
   contentTypeHeader,
   defaultExpectedResponseTime,
+  dataReadValueResponseSchema,
 } = require('./helpers/helpers');
 
 chai.use(require('chai-json-schema'));
@@ -73,7 +74,7 @@ Then(
   () =>
     chai
       .expect(specDataReadValue._response.json)
-      .to.be.jsonSchema({ type: 'string' })
+      .to.be.jsonSchema(dataReadValueResponseSchema)
 );
 
 After(endpointTag, () => {
