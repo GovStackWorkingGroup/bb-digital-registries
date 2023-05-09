@@ -194,6 +194,23 @@ module.exports = {
     },
     required: ['query', 'write'],
   },
+  // update-or-create
+  dataUpdateOrCreateEndpoint:
+    'data/{registryname}/{versionnumber}/update-or-create',
+  dataUpdateOrCreateResponseSchema: {
+    type: 'object',
+    properties: {
+      content: {
+        type: 'object',
+        properties: {
+          ID: { type: 'string' },
+          FirstName: { type: 'string' },
+          LastName: { type: 'string' },
+          BirthCertificateID: { type: 'string' },
+        },
+      },
+    },
+  },
   // shares
   databaseSchemaSchema: {
     type: 'object',

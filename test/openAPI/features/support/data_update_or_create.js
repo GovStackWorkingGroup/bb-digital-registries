@@ -1,117 +1,148 @@
-const pactum = require('pactum');
+const chai = require('chai');
+const { spec } = require('pactum');
 const { Given, When, Then, Before, After } = require('@cucumber/cucumber');
-const { header, localhost } = require('./helpers/helpers');
+const {
+  header,
+  localhost,
+  contentTypeHeader,
+  defaultExpectedResponseTime,
+  dataUpdateOrCreateEndpoint,
+  dataUpdateOrCreateResponseSchema,
+} = require('./helpers/helpers');
 
-let userVariables = {};
+chai.use(require('chai-json-schema'));
+
 let specDataUpdateOrCreate;
 
-const baseUrl = `${localhost}data/registry1/version1/update-or-create`;
+const baseUrl = localhost + dataUpdateOrCreateEndpoint;
+const endpointTag = { tags: `@endpoint=/${dataUpdateOrCreateEndpoint}` };
 
-Before(() => {
-  specDataUpdateOrCreate = pactum.spec();
+Before(endpointTag, () => {
+  specDataUpdateOrCreate = spec();
 });
 
-// Scenario: The user successfully creates a new record in the Digital Registries database
+// Scenario: The record is successfully created in the database smoke type test
 Given(
-  'The user wants to create a new record or update an existing record if it already exists in the Digital Registries database',
-  () =>
-    (userVariables = {
-      ID: 'EE378627348834',
-      FirstName: 'Jon',
-      LastName: 'Snake',
-      BirthCertificateID: 'RR-1234567889',
-    })
-);
-
-Given(
-  'The requested record does not exist in the database',
-  () => 'The requested record "Jon Snake" does not exist in the database'
+  'User wants to create a new record in the database',
+  () => 'User wants to create a new record in the database'
 );
 
 When(
-  'The user sends a valid request to create or update a record in the database',
-  () =>
+  /^User sends POST request to \/data\/{registryname}\/{versionnumber}\/update-or-create with given Information-Mediator-Client header, "([^"]*)" as registryname and "([^"]*)" as versionnumber$/,
+  (registryName, versionNumber) =>
     specDataUpdateOrCreate
       .post(baseUrl)
-      .withHeaders(`${header.key}`, `${header.value}`)
-      .withBody({
-        query: {
-          content: userVariables,
-        },
-        write: {
-          content: userVariables,
-        },
+      .withHeaders(header.key, header.value)
+      .withPathParams({
+        registryname: registryName,
+        versionnumber: versionNumber,
       })
 );
 
-Then(
-  'The process of creating the new record has been successfully completed',
-  async () => {
-    await specDataUpdateOrCreate.toss();
-    specDataUpdateOrCreate.response().should.have.status(200);
-    specDataUpdateOrCreate.response().should.have.jsonLike({
-      content: userVariables,
-    });
-  }
-);
-
-// Scenario: The user successfully updates an existing record in the Digital Registries database
-Given(
-  'The user wants to update an existing record in the Digital Registries database',
-  () =>
-    (userVariables = {
-      ID: 'EE378627348834',
-      FirstName: 'Johny',
-      LastName: 'Small',
-      BirthCertificateID: 'RR-1234567889',
+When(
+  /^The request contains a payload with query and write objects that both contain content object with given: "([^"]*)" as ID, "([^"]*)" as FirstName, "([^"]*)" as LastName and "([^"]*)" as BirthCertificateID$/,
+  (ID, FirstName, LastName, BirthCertificateID) =>
+    specDataUpdateOrCreate.withJson({
+      query: {
+        content: {
+          ID: ID,
+          FirstName: FirstName,
+          LastName: LastName,
+          BirthCertificateID: BirthCertificateID,
+        },
+      },
+      write: {
+        content: {
+          ID: ID,
+          FirstName: FirstName,
+          LastName: LastName,
+          BirthCertificateID: BirthCertificateID,
+        },
+      },
     })
 );
 
-Given(
-  'The requested record already exists in the database',
-  () => 'The requested record "Johny Small" already exists in the database'
+Then(
+  /^User receives a response from the \/data\/{registryname}\/{versionnumber}\/update-or-create endpoint$/,
+  async () => await specDataUpdateOrCreate.toss()
 );
-
-// "When" is already written in line 31-46
 
 Then(
-  'The process of updating the record has been successfully completed',
-  async () => {
-    await specDataUpdateOrCreate.toss();
-    specDataUpdateOrCreate.response().should.have.status(200);
-    specDataUpdateOrCreate.response().should.have.jsonLike({
-      content: userVariables,
-    });
-  }
-);
-
-// Scenario: The user is unable to create/update a record in the Digital Registries database because the request is invalid
-// "Given" already writtennin the line 15-24
-
-When(
-  'The user sends an invalid request to create or update a record in the database',
+  /^The \/data\/{registryname}\/{versionnumber}\/update-or-create response should be returned in a timely manner 15000ms$/,
   () =>
-    specDataUpdateOrCreate
-      .post(baseUrl)
-      .withHeaders(`${header.key}`, `${header.value}`)
-      .withBody({
-        query: {
-          content: userVariables,
-        },
-      })
-);
-
-Then(
-  `The result of an operation to create\\/update the record returns an error because the request is invalid`,
-  async () => {
-    await specDataUpdateOrCreate.toss();
-    specDataUpdateOrCreate.response().should.have.status(400);
     specDataUpdateOrCreate
       .response()
-      .should.have.body('{\n  "Query not provided."\n}');
-  }
+      .to.have.responseTimeLessThan(defaultExpectedResponseTime)
 );
 
-After(() => {
+Then(
+  /^The \/data\/{registryname}\/{versionnumber}\/update-or-create response should have status (\d+)$/,
+  status => specDataUpdateOrCreate.response().to.have.status(status)
+);
+
+Then(
+  /^The \/data\/{registryname}\/{versionnumber}\/update-or-create response should have content-type: application\/json header$/,
+  () =>
+    specDataUpdateOrCreate
+      .response()
+      .should.have.header(contentTypeHeader.key, contentTypeHeader.value)
+);
+
+Then(
+  /^The \/data\/{registryname}\/{versionnumber}\/update-or-create response should match json schema$/,
+  () =>
+    chai
+      .expect(specDataUpdateOrCreate._response.json)
+      .to.be.jsonSchema(dataUpdateOrCreateResponseSchema)
+);
+
+// Scenario: The existing record is successfully updated in the database
+// Others When, Then for this scenario are written in the aforementioned example
+Given(
+  'User wants to update previously created record in the database',
+  () => 'User wants to update previously created record in the database'
+);
+
+When(
+  /^The request contains a payload with query object that contains content object with given: "([^"]*)" as ID, "([^"]*)" as FirstName, "([^"]*)" as LastName and "([^"]*)" as BirthCertificateID and write object that contains content object with given: "([^"]*)" as ID, "([^"]*)" as FirstName, "([^"]*)" as LastName and "([^"]*)" as BirthCertificateID$/,
+  (
+    ID,
+    FirstName,
+    LastName,
+    BirthCertificateID,
+    UpdatedID,
+    UpdatedFirstName,
+    UpdatedLastName,
+    UpdatedBirthCertificateID
+  ) =>
+    specDataUpdateOrCreate.withJson({
+      query: {
+        content: {
+          ID: ID,
+          FirstName: FirstName,
+          LastName: LastName,
+          BirthCertificateID: BirthCertificateID,
+        },
+      },
+      write: {
+        content: {
+          ID: UpdatedID,
+          FirstName: UpdatedFirstName,
+          LastName: UpdatedLastName,
+          BirthCertificateID: UpdatedBirthCertificateID,
+        },
+      },
+    })
+);
+
+Then(
+  /^The \/data\/{registryname}\/{versionnumber}\/update-or-create response should contain "([^"]*)" property equals "([^"]*)"$/,
+  (propertyName, updatedValueOfProperty) =>
+    chai
+      .expect(specDataUpdateOrCreate._response.json.content[propertyName])
+      .to.be.equal(updatedValueOfProperty)
+);
+
+After(endpointTag, () => {
   specDataUpdateOrCreate.end();
 });
