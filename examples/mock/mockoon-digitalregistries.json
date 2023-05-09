@@ -14,8 +14,8 @@
       "endpoint": "data/MyPersonalDataUsage/1.0",
       "responses": [
         {
-          "uuid": "af65df73-2417-459e-8156-725979689d70",
-          "body": "[\n  {\n    \"ID\": \"1234567\",\n    \"ReaderID\": \"{{queryParamRaw 'userID'}}\",\n    \"ReaderInitials\": \"JD\",\n    \"ReaderInstitutionID\": \"EE70049837\",\n    \"ReaderInstitutionName\": \"East Hospital\",\n    \"ReaderApplicationName\": \"East Hospital healthcare back office\",\n    \"SearchDateTime\": \"2017-07-21T17:32:28Z\",\n    \"Refrences\": [\n      {\n        \"ReferenceID\": \"{{queryParam 'DatabaseID'}}\"\n      }\n    ]\n  }\n]",
+          "uuid": "ad5ddc6e-bd4f-491b-b600-5cab337701f5",
+          "body": "[\n  {\n    \"ID\": \"1234567\",\n    \"ReaderID\": \"EE37819285773\",\n    \"ReaderInitials\": \"JD\",\n    \"ReaderInstitutionID\": \"EE70049837\",\n    \"ReaderInstitutionName\": \"East Hospital\",\n    \"ReaderApplicationName\": \"East Hospital healthcare back office\",\n    \"SearchDateTime\": \"2017-07-21T17:32:28Z\",\n    \"Refrences\": [\n      {\n        \"ReferenceID\": \"MCTS311\"\n      }\n    ]\n  }\n]",
           "latency": 0,
           "statusCode": 200,
           "label": "Returns user usage data. ",
@@ -26,23 +26,37 @@
           "sendFileAsBody": false,
           "rules": [
             {
-              "target": "header",
-              "modifier": "Information-Mediator-Client",
-              "value": "[a-zA-Z0-9_]+\\/[a-zA-Z0-9_]+\\/[a-zA-Z0-9_]+\\/[a-zA-Z0-9_]+",
+              "target": "query",
+              "modifier": "userID",
+              "value": "^[0-9a-zA-Z]+$",
+              "invert": false,
+              "operator": "regex"
+            },
+            {
+              "target": "query",
+              "modifier": "DatabaseID",
+              "value": "^[0-9a-zA-Z]+$",
               "invert": false,
               "operator": "regex"
             },
             {
               "target": "query",
               "modifier": "userID",
-              "value": "282392302",
-              "invert": false,
-              "operator": "equals"
+              "value": "",
+              "invert": true,
+              "operator": "null"
             },
             {
               "target": "query",
               "modifier": "DatabaseID",
-              "value": "[a-zA-z0-9_]+",
+              "value": "",
+              "invert": true,
+              "operator": "null"
+            },
+            {
+              "target": "header",
+              "modifier": "Information-Mediator-Client",
+              "value": "[a-zA-Z0-9_]+\\/[a-zA-Z0-9_]+\\/[a-zA-Z0-9_]+\\/[a-zA-Z0-9_]+",
               "invert": false,
               "operator": "regex"
             }
@@ -53,50 +67,11 @@
           "default": true
         },
         {
-          "uuid": "d5b47566-7737-4ade-9111-ed1ba9339ee6",
-          "body": "[]",
-          "latency": 0,
-          "statusCode": 200,
-          "label": "Returns empty list of user usage data. ",
-          "headers": [],
-          "bodyType": "INLINE",
-          "filePath": "",
-          "databucketID": "",
-          "sendFileAsBody": false,
-          "rules": [
-            {
-              "target": "header",
-              "modifier": "Information-Mediator-Client",
-              "value": "[a-zA-Z0-9_]+\\/[a-zA-Z0-9_]+\\/[a-zA-Z0-9_]+\\/[a-zA-Z0-9_]+",
-              "invert": false,
-              "operator": "regex"
-            },
-            {
-              "target": "query",
-              "modifier": "userID",
-              "value": "748382347",
-              "invert": false,
-              "operator": "equals"
-            },
-            {
-              "target": "query",
-              "modifier": "DatabaseID",
-              "value": "[a-zA-z0-9_]+",
-              "invert": false,
-              "operator": "regex"
-            }
-          ],
-          "rulesOperator": "AND",
-          "disableTemplating": false,
-          "fallbackTo404": false,
-          "default": false
-        },
-        {
-          "uuid": "ae60cc46-d24e-49c4-a01f-5142edc4274d",
-          "body": "\"userID or DatabaseID not provided.\"",
+          "uuid": "9d9bde34-2396-4bb0-a262-d9db32627d0d",
+          "body": "",
           "latency": 0,
           "statusCode": 400,
-          "label": "No query parameters",
+          "label": "Invalid ID supplied",
           "headers": [],
           "bodyType": "INLINE",
           "filePath": "",
@@ -113,76 +88,33 @@
             {
               "target": "query",
               "modifier": "userID",
-              "value": "[a-zA-z0-9_]+",
-              "invert": false,
-              "operator": "null"
+              "value": "^[0-9a-zA-Z]+$",
+              "invert": true,
+              "operator": "regex"
             },
             {
               "target": "query",
               "modifier": "DatabaseID",
-              "value": "[a-zA-z0-9_]+",
-              "invert": false,
-              "operator": "null"
-            }
-          ],
-          "rulesOperator": "AND",
-          "disableTemplating": false,
-          "fallbackTo404": false,
-          "default": false
-        },
-        {
-          "uuid": "9d9bde34-2396-4bb0-a262-d9db32627d0d",
-          "body": "\"userID or DatabaseID not found\"",
-          "latency": 0,
-          "statusCode": 404,
-          "label": "Invalid Parameters",
-          "headers": [],
-          "bodyType": "INLINE",
-          "filePath": "",
-          "databucketID": "",
-          "sendFileAsBody": false,
-          "rules": [
+              "value": "^[0-9a-zA-Z]+$",
+              "invert": true,
+              "operator": "regex"
+            },
             {
               "target": "query",
               "modifier": "userID",
-              "value": "invalid",
+              "value": "",
               "invert": false,
-              "operator": "equals"
+              "operator": "null"
             },
             {
               "target": "query",
               "modifier": "DatabaseID",
-              "value": "invalid",
+              "value": "",
               "invert": false,
-              "operator": "equals"
+              "operator": "null"
             }
           ],
           "rulesOperator": "OR",
-          "disableTemplating": false,
-          "fallbackTo404": false,
-          "default": false
-        },
-        {
-          "uuid": "27e71c27-0d59-490c-9a44-a2640e3f5a56",
-          "body": "{\n  \"Invalid format of Information-Mediator-Client, should match INSTANCE/CLASS/MEMBER/SUBSYSTEM\"\n}",
-          "latency": 0,
-          "statusCode": 400,
-          "label": "Return field value in string format - Invalid mediator client format",
-          "headers": [],
-          "bodyType": "INLINE",
-          "filePath": "",
-          "databucketID": "",
-          "sendFileAsBody": false,
-          "rules": [
-            {
-              "target": "header",
-              "modifier": "Information-Mediator-Client",
-              "value": "[a-zA-Z0-9_]+\\/[a-zA-Z0-9_]+\\/[a-zA-Z0-9_]+\\/[a-zA-Z0-9_]+",
-              "invert": true,
-              "operator": "regex"
-            }
-          ],
-          "rulesOperator": "AND",
           "disableTemplating": false,
           "fallbackTo404": false,
           "default": false
