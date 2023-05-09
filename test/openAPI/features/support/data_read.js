@@ -1,92 +1,103 @@
-const pactum = require('pactum');
+const chai = require('chai');
+const { spec } = require('pactum');
 const { Given, When, Then, Before, After } = require('@cucumber/cucumber');
-const { header, localhost } = require('./helpers/helpers');
+const {
+  header,
+  localhost,
+  dataReadEndpoint,
+  defaultExpectedResponseTime,
+  dataReadResponseSchema,
+  contentTypeHeader,
+} = require('./helpers/helpers');
 
-let searchedRecord;
 let specDataRead;
 
-const baseUrl = `${localhost}data/registry1/version1/read`;
+const baseUrl = localhost + dataReadEndpoint;
+const endpointTag = { tags: `@endpoint=/${dataReadEndpoint}` };
 
-Before(() => {
-  specDataRead = pactum.spec();
+Before(endpointTag, () => {
+  specDataRead = spec();
 });
 
-// Scenario: User obtains a searched record from the Digital Registries database
+// Scenario: User obtains a searched record from the database smoke type test
 Given(
-  'The user wants to search for a record in the Digital Registries database and the searched record exists in the database',
-  () => (searchedRecord = 'John Benz')
+  'The user wants to search for a record in the database',
+  () => 'The user wants to search for a record in the database'
 );
 
 When(
-  'The user sends a valid request to search for a record in the database',
-  () =>
+  'User sends POST \\/data\\/\\{registryname}\\/\\{versionnumber}\\/read request with given Information-Mediator-Client header, {string} as registryname, {string} as versionnumber, {string} as FirstName',
+  (registryName, versionNumber, firstName) =>
     specDataRead
-      .post(`${baseUrl}`)
-      .withHeaders(`${header.key}`, `${header.value}`)
-      .withBody({
+      .post(baseUrl)
+      .withHeaders(header.key, header.value)
+      .withPathParams({
+        registryname: registryName,
+        versionnumber: versionNumber,
+      })
+      .withJson({
         query: {
           content: {
-            FirstName: searchedRecord,
+            FirstName: firstName,
           },
         },
       })
 );
 
-Then('The user receives a searched record', async () => {
-  await specDataRead.toss();
-  specDataRead.response().should.have.status(200);
-  specDataRead.response().should.have.jsonLike({
-    content: {
-      ID: 'c473a46c-dd2d-42f5-aca3-f318d478d736',
-      FirstName: 'John Benz',
-      LastName: 'Wintheiser',
-      BirthCertificateID: 'RR-4419523937',
-    },
-  });
-});
-
-// Scenario: The user does not receive a searched record from the Digital Registries database
-Given(
-  'The user wants to search for a record in the Digital Registries database and the searched record does not exist in the database',
-  () => (searchedRecord = 'David Belt')
+Then(
+  'User receives a response from the \\/data\\/\\{registryname}\\/\\{versionnumber}\\/read endpoint',
+  async () => await specDataRead.toss()
 );
-
-// "When" is already written in line 20-31
 
 Then(
-  'The user receives a message that there is no searched record in the database',
-  async () => {
-    await specDataRead.toss();
-    specDataRead.response().should.have.status(404);
-  }
-);
-
-// Scenario: The user is unable to obtain a searched record from the Digital Registries database because the request is invalid
-Given(
-  'The user wants to search for one record in the Digital Registries database',
-  () => (searchedRecord = 'Ali Benz')
-);
-
-When(
-  'The user sends an invalid request to search for a record in the Digital Registries database',
+  'The \\/data\\/\\{registryname}\\/\\{versionnumber}\\/read endpoint response should be returned in a timely manner 15000ms',
   () =>
-    specDataRead.post(`${baseUrl}`).withBody({
-      query: {
-        content: {
-          FirstName: searchedRecord,
-        },
-      },
-    })
+    specDataRead
+      .response()
+      .to.have.responseTimeLessThan(defaultExpectedResponseTime)
 );
 
 Then(
-  'The result of the operation to obtain a searched record is an error',
-  async () => {
-    await specDataRead.toss();
-    specDataRead.response().should.have.status(400);
-  }
+  'The \\/data\\/\\{registryname}\\/\\{versionnumber}\\/read endpoint response should have status 200',
+  () => specDataRead.response().should.have.status(200)
 );
 
-After(() => {
+Then(
+  'The \\/data\\/\\{registryname}\\/\\{versionnumber}\\/read endpoint response should have content-type: application\\/json header',
+  () =>
+    specDataRead
+      .response()
+      .should.have.header(contentTypeHeader.key, contentTypeHeader.value)
+);
+
+Then(
+  'The \\/data\\/\\{registryname}\\/\\{versionnumber}\\/read endpoint response should match json schema',
+  () =>
+    chai
+      .expect(specDataRead._response.json)
+      .to.be.jsonSchema(dataReadResponseSchema)
+);
+
+// Scenario Outline: User obtains a searched record from the database
+When(
+  'User sends POST \\/data\\/\\{registryname}\\/\\{versionnumber}\\/read request with given Information-Mediator-Client header, {string} as registryname, {string} as versionnumber, {string} as {string}',
+  (registryName, versionNumber, parameterValue, bodyParameter) =>
+    specDataRead
+      .post(baseUrl)
+      .withHeaders(header.key, header.value)
+      .withPathParams({
+        registryname: registryName,
+        versionnumber: versionNumber,
+      })
+      .withJson({
+        query: {
+          content: {
+            [bodyParameter]: parameterValue,
+          },
+        },
+      })
+);
+
+After(endpointTag, () => {
   specDataRead.end();
 });
