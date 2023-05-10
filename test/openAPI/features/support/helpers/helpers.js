@@ -194,6 +194,16 @@ module.exports = {
     },
     required: ['query', 'write'],
   },
+  // update-or-create
+  dataUpdateOrCreateEndpoint:
+    'data/{registryname}/{versionnumber}/update-or-create',
+  dataUpdateOrCreateResponseSchema: {
+    type: 'object',
+    properties: {
+      content: this.dataExampleSchema,
+    },
+    required: ['content'],
+  },
   // shares
   databaseSchemaSchema: {
     type: 'object',
