@@ -15,32 +15,6 @@ module.exports = {
     type: 'object',
     properties: { content: this.dataExampleSchema },
   },
-  // data_my_personal_data_usage
-  dataMyPersonalDataUsageEndpoint: 'data/MyPersonalDataUsage/1.0',
-  dataMyPersonalDataUsageResponseSchema: {
-    type: 'array',
-    properties: {
-      type: 'object',
-      properties: {
-        ID: { type: 'string' },
-        ReaderID: { type: 'string' },
-        ReaderInitials: { type: 'string' },
-        ReaderInstitutionID: { type: 'string' },
-        ReaderInstitutionName: { type: 'string' },
-        ReaderApplicationName: { type: 'string' },
-        SearchDateTime: { type: 'string', format: 'date-time' },
-        Refrences: {
-          type: 'array',
-          items: {
-            properties: {
-              ReferenceID: { type: 'string' },
-            },
-          },
-        },
-      },
-      additionalProperties: false,
-    },
-  },
   // db_delete
   databaseDeleteEndpoint: 'database/{id}',
   databaseDeleteResponseSchema: { type: 'string' },
@@ -123,6 +97,38 @@ module.exports = {
       required: ['ID'],
     },
   },
+  // data_create
+  dataCreateEndpoint: 'data/{registryname}/{versionnumber}/create',
+  dataCreateResponseSchema: {
+    type: 'object',
+    properties: { content: this.dataExampleSchema },
+  },
+  // data_my_personal_data_usage
+  dataMyPersonalDataUsageEndpoint: 'data/MyPersonalDataUsage/1.0',
+  dataMyPersonalDataUsageResponseSchema: {
+    type: 'array',
+    properties: {
+      type: 'object',
+      properties: {
+        ID: { type: 'string' },
+        ReaderID: { type: 'string' },
+        ReaderInitials: { type: 'string' },
+        ReaderInstitutionID: { type: 'string' },
+        ReaderInstitutionName: { type: 'string' },
+        ReaderApplicationName: { type: 'string' },
+        SearchDateTime: { type: 'string', format: 'date-time' },
+        Refrences: {
+          type: 'array',
+          items: {
+            properties: {
+              ReferenceID: { type: 'string' },
+            },
+          },
+        },
+      },
+      additionalProperties: false,
+    },
+  },
   // data_list
   dataListReadEndpoint: 'data/{registryname}/{versionnumber}',
   dataListResponseSchema: {
@@ -194,7 +200,7 @@ module.exports = {
     },
     required: ['query', 'write'],
   },
-  // update-or-create
+  // data_update_or_create
   dataUpdateOrCreateEndpoint:
     'data/{registryname}/{versionnumber}/update-or-create',
   dataUpdateOrCreateResponseSchema: {
@@ -204,6 +210,10 @@ module.exports = {
     },
     required: ['content'],
   },
+  // data_read_value
+  dataReadValueEndpoint:
+    'data/{registryname}/{versionnumber}/{uuid}/read-value/{field}.{ext}',
+  dataReadValueResponseSchema: { type: 'string' },
   // shares
   databaseSchemaSchema: {
     type: 'object',
