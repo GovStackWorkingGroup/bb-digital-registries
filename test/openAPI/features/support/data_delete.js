@@ -1,64 +1,61 @@
-const pactum = require('pactum');
+const { spec } = require('pactum');
 const { Given, When, Then, Before, After } = require('@cucumber/cucumber');
-const { header, localhost } = require('./helpers/helpers');
+const {
+  header,
+  localhost,
+  dataDeleteEndpoint,
+  defaultExpectedResponseTime,
+} = require('./helpers/helpers');
 
-let dataID;
 let specDataDelete;
 
-const baseUrl = `${localhost}data/registry1/version1/{id}/delete`;
-const validRequestFunction = () =>
-  specDataDelete
-    .delete(baseUrl)
-    .withHeaders(`${header.key}`, `${header.value}`)
-    .withPathParams('id', dataID);
+const baseUrl = localhost + dataDeleteEndpoint;
+const endpointTag = { tags: `@endpoint=/${dataDeleteEndpoint}` };
 
-Before(() => {
-  specDataDelete = pactum.spec();
+Before(endpointTag, () => {
+  specDataDelete = spec();
 });
 
-// The user successfully deletes a record from the Digital Registries database
+// Successfully deletes a record from the database smoke type test
 Given(
-  'The user wants to remove the record from the Digital Registries database',
-  () => (dataID = 'id231Q')
-);
-
-Given(
-  'The record exists in the database',
-  () => 'The record exists in the database'
-);
-
-When('The user sends a valid request to delete the database record', () =>
-  validRequestFunction()
-);
-
-Then('The process to delete the record completes successfully', async () => {
-  await specDataDelete.toss();
-  specDataDelete.response().should.have.status(200);
-  specDataDelete.response().should.have.body('{\n  "Success"\n}');
-});
-
-// Scenario: The user cannot remove a record from the Digital Registries database because it does not exist
-Given(
-  'The user wants to remove the record that does not exist from the Digital Registries database',
-  () => (dataID = 'ID001')
+  'The user wants to remove the record from the  database',
+  () => 'The user wants to remove the record from the  database'
 );
 
 When(
-  'The user sends a valid request to delete the non-existent record from the database',
-  () => validRequestFunction()
+  'User sends DELETE \\/data\\/\\{registryname}\\/\\{versionnumber}\\/\\{id}\\/delete request with given Information-Mediator-Client header, {string} as registryname and {string} as versionnumber, {string} as ID',
+  (registryName, versionNumber, id) =>
+    specDataDelete
+      .delete(baseUrl)
+      .withHeaders(header.key, header.value)
+      .withPathParams({
+        registryname: registryName,
+        versionnumber: versionNumber,
+        ID: id,
+      })
 );
 
 Then(
-  'The result of the operation to delete the record is an error because the record does not exist',
-  async () => {
-    await specDataDelete.toss();
-    specDataDelete.response().should.have.status(404);
-    specDataDelete
-      .response()
-      .should.have.body('{\n  "Provided id does not exist in the database"\n}');
-  }
+  'User receives a response from the \\/data\\/\\{registryname}\\/\\{versionnumber}\\/\\{id}\\/delete endpoint',
+  async () => await specDataDelete.toss()
 );
 
-After(() => {
+Then(
+  'The \\/data\\/\\{registryname}\\/\\{versionnumber}\\/\\{id}\\/delete endpoint response should be returned in a timely manner 15000ms',
+  () =>
+    specDataDelete
+      .response()
+      .to.have.responseTimeLessThan(defaultExpectedResponseTime)
+);
+
+Then(
+  'The \\/data\\/\\{registryname}\\/\\{versionnumber}\\/\\{id}\\/delete endpoint response should have status 204',
+  () => specDataDelete.response().should.have.status(204)
+);
+
+// Scenario Outline: Successfully deletes a record from the database
+// Others Given, When and Then are written in the aforementioned example
+
+After(endpointTag, () => {
   specDataDelete.end();
 });
