@@ -4,7 +4,7 @@ Feature: API endpoint that allows users to search for the field value of a recor
   @smoke @unit @positive
   Scenario: The user gets the first name of the searched user from the database smoke type test
     Given The user wants to search for the user's first name of the user in the database
-    When User sends GET request with given Information-Mediator-Client header, "registryname" as registryname and "111" as versionnumber, "DB-1" as uuid, "First name" as field and "json" as ext
+    When User sends GET request with given Information-Mediator-Client header, "registryname" as registryname and "111" as versionnumber, "DB-1" as uuid, "FirstName" as field and "json" as ext
     Then User receives a response from the GET /data/{registryname}/{versionnumber}/{uuid}/read-value/{field}.{ext} endpoint
     And The GET /data/{registryname}/{versionnumber}/{uuid}/read-value/{field}.{ext} endpoint response should be returned in a timely manner 15000ms
     And The GET /data/{registryname}/{versionnumber}/{uuid}/read-value/{field}.{ext} endpoint response should have status 200
