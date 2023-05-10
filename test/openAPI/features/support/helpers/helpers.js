@@ -98,6 +98,9 @@ module.exports = {
     },
   },
   // data_create
+  dataUpdateEntriesEndpoint:
+    'data/{registryname}/{versionnumber}/update-entries',
+  // data_update_entries
   dataCreateEndpoint: 'data/{registryname}/{versionnumber}/create',
   dataCreateResponseSchema: {
     type: 'object',
