@@ -200,16 +200,9 @@ module.exports = {
   dataUpdateOrCreateResponseSchema: {
     type: 'object',
     properties: {
-      content: {
-        type: 'object',
-        properties: {
-          ID: { type: 'string' },
-          FirstName: { type: 'string' },
-          LastName: { type: 'string' },
-          BirthCertificateID: { type: 'string' },
-        },
-      },
+      content: this.dataExampleSchema,
     },
+    required: ['content'],
   },
   // shares
   databaseSchemaSchema: {
