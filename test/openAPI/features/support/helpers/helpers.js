@@ -97,6 +97,9 @@ module.exports = {
       required: ['ID'],
     },
   },
+  // data_update_entries
+  dataUpdateEntriesEndpoint:
+    'data/{registryname}/{versionnumber}/update-entries',
   // data_create
   dataCreateEndpoint: 'data/{registryname}/{versionnumber}/create',
   dataCreateResponseSchema: {
