@@ -193,6 +193,24 @@ module.exports = {
   dataReadValueEndpoint:
     'data/{registryname}/{versionnumber}/{uuid}/read-value/{field}.{ext}',
   dataReadValueResponseSchema: { type: 'string' },
+  // data_read
+  dataReadEndpoint: 'data/{registryname}/{versionnumber}/read',
+  dataReadResponseSchema: {
+    type: 'object',
+    properties: {
+      content: this.dataExampleSchema,
+    },
+    required: ['content'],
+  },
+  dataRead404ResponseSchema: {
+    type: 'object',
+    properties: {
+      detail: {
+        type: 'string',
+        enum: ['no record found'],
+      },
+    },
+  },
   // shares
   databaseSchemaSchema: {
     type: 'object',
