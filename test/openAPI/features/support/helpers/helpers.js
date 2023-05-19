@@ -165,32 +165,14 @@ module.exports = {
       query: {
         type: 'object',
         properties: {
-          content: {
-            type: 'object',
-            properties: {
-              ID: { type: 'string' },
-              FirstName: { type: 'string' },
-              LastName: { type: 'string' },
-              BirthCertificateID: { type: 'string' },
-            },
-            required: ['ID', 'FirstName', 'LastName', 'BirthCertificateID'],
-          },
+          content: this.dataExampleSchema,
         },
         required: ['content'],
       },
       write: {
         type: 'object',
         properties: {
-          content: {
-            type: 'object',
-            properties: {
-              ID: { type: 'string' },
-              FirstName: { type: 'string' },
-              LastName: { type: 'string' },
-              BirthCertificateID: { type: 'string' },
-            },
-            required: ['ID', 'FirstName', 'LastName', 'BirthCertificateID'],
-          },
+          content: this.dataExampleSchema,
         },
         required: ['content'],
       },
@@ -211,6 +193,24 @@ module.exports = {
   dataReadValueEndpoint:
     'data/{registryname}/{versionnumber}/{uuid}/read-value/{field}.{ext}',
   dataReadValueResponseSchema: { type: 'string' },
+  // data_read
+  dataReadEndpoint: 'data/{registryname}/{versionnumber}/read',
+  dataReadResponseSchema: {
+    type: 'object',
+    properties: {
+      content: this.dataExampleSchema,
+    },
+    required: ['content'],
+  },
+  dataRead404ResponseSchema: {
+    type: 'object',
+    properties: {
+      detail: {
+        type: 'string',
+        enum: ['no record found'],
+      },
+    },
+  },
   // data_delete
   dataDeleteEndpoint: 'data/{registryname}/{versionnumber}/{id}/delete',
   // shares
@@ -367,5 +367,6 @@ module.exports = {
       LastName: { type: 'string' },
       BirthCertificateID: { type: 'string' },
     },
+    required: ['ID', 'FirstName', 'LastName', 'BirthCertificateID'],
   },
 };
