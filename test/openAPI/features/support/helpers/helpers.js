@@ -211,6 +211,8 @@ module.exports = {
       },
     },
   },
+  // data_delete
+  dataDeleteEndpoint: 'data/{registryname}/{versionnumber}/{id}/delete',
   // shares
   databaseSchemaSchema: {
     type: 'object',
