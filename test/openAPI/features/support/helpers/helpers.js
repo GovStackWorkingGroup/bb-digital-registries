@@ -9,12 +9,6 @@ module.exports = {
     value: 'INSTANCE/CLASS/MEMBER/SUBSYSTEM',
   },
   defaultExpectedResponseTime: 15000,
-  // data_create
-  dataCreateEndpoint: 'data/{registryname}/{versionnumber}/create',
-  dataCreateResponseSchema: {
-    type: 'object',
-    properties: { content: this.dataExampleSchema },
-  },
   // db_delete
   databaseDeleteEndpoint: 'database/{id}',
   databaseDeleteResponseSchema: { type: 'string' },
@@ -147,7 +141,7 @@ module.exports = {
     },
     required: ['count', 'results'],
   },
-  //data_exist
+  // data_exist
   dataExistReadEndpoint: 'data/{registryname}/{versionnumber}/exists',
   dataExistResponseSchema: {
     type: 'object',
@@ -217,6 +211,8 @@ module.exports = {
   dataReadValueEndpoint:
     'data/{registryname}/{versionnumber}/{uuid}/read-value/{field}.{ext}',
   dataReadValueResponseSchema: { type: 'string' },
+  // data_delete
+  dataDeleteEndpoint: 'data/{registryname}/{versionnumber}/{id}/delete',
   // shares
   databaseSchemaSchema: {
     type: 'object',

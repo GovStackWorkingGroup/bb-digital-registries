@@ -1,13 +1,24 @@
-Feature: API endpoint that allows users to remove an entry from the Digital Registries database.
-  Request endpoint: DELETE /data/{registryname}/{versionnumber}/{id}/delete
+@method=DELETE @endpoint=/data/{registryname}/{versionnumber}/{id}/delete
+Feature: API endpoint that allows users to remove an entry from the database.
 
-  Scenario: The user successfully deletes a record from the Digital Registries database
-    Given The user wants to remove the record from the Digital Registries database
-    And The record exists in the database
-    When The user sends a valid request to delete the database record
-    Then The process to delete the record completes successfully
+  @smoke
+  Scenario: Successfully deletes a record from the database smoke type test
+    Given The user wants to remove the record from the  database
+    When User sends DELETE /data/{registryname}/{versionnumber}/{id}/delete request with given Information-Mediator-Client header, "registryname" as registryname and "111" as versionnumber, "EE378627348834" as ID
+    Then User receives a response from the /data/{registryname}/{versionnumber}/{id}/delete endpoint
+    And The /data/{registryname}/{versionnumber}/{id}/delete endpoint response should be returned in a timely manner 15000ms
+    And The /data/{registryname}/{versionnumber}/{id}/delete endpoint response should have status 204
 
-  Scenario: The user cannot remove a record from the Digital Registries database because it does not exist
-    Given The user wants to remove the record that does not exist from the Digital Registries database
-    When The user sends a valid request to delete the non-existent record from the database
-    Then The result of the operation to delete the record is an error because the record does not exist
+  @unit @positive
+  Scenario Outline: Successfully deletes a record from the database
+    Given The user wants to remove the record from the  database
+    When User sends DELETE /data/{registryname}/{versionnumber}/{id}/delete request with given Information-Mediator-Client header, "registryname" as registryname and "111" as versionnumber, "<ID>" as ID
+    Then User receives a response from the /data/{registryname}/{versionnumber}/{id}/delete endpoint
+    And The /data/{registryname}/{versionnumber}/{id}/delete endpoint response should be returned in a timely manner 15000ms
+    And The /data/{registryname}/{versionnumber}/{id}/delete endpoint response should have status 204
+
+    Examples:
+    | ID             |
+    | EE378627348855 |
+    | RR378627348834 |
+    | DD378627348834 |

@@ -725,9 +725,9 @@
       "responses": [
         {
           "uuid": "23aecb69-312e-4abc-8bc0-1d4c1d8f6d33",
-          "body": "{\n  \"Success\"\n}",
+          "body": "",
           "latency": 0,
-          "statusCode": 200,
+          "statusCode": 204,
           "label": "Delete existing record based on ID",
           "headers": [],
           "bodyType": "INLINE",
@@ -738,48 +738,9 @@
             {
               "target": "header",
               "modifier": "Information-Mediator-Client",
-              "value": "[a-zA-Z0-9_]+\\/[a-zA-Z0-9_]+\\/[a-zA-Z0-9_]+\\/[a-zA-Z0-9_]+",
-              "invert": false,
-              "operator": "regex"
-            },
-            {
-              "target": "params",
-              "modifier": "ID",
-              "value": "id231Q",
-              "invert": false,
-              "operator": "equals"
-            },
-            {
-              "target": "params",
-              "modifier": "ID",
-              "value": "[a-zA-Z]{2}\\d{3}[a-zA-Z0-9]{1}",
-              "invert": false,
-              "operator": "regex"
-            }
-          ],
-          "rulesOperator": "AND",
-          "disableTemplating": false,
-          "fallbackTo404": false,
-          "default": true
-        },
-        {
-          "uuid": "c421fe9a-38fe-4ad7-b245-6eef2bdeabe1",
-          "body": "{\n  \"Provided id does not exist in the database\"\n}",
-          "latency": 0,
-          "statusCode": 404,
-          "label": "Delete record - ID does not exist",
-          "headers": [],
-          "bodyType": "INLINE",
-          "filePath": "",
-          "databucketID": "",
-          "sendFileAsBody": false,
-          "rules": [
-            {
-              "target": "header",
-              "modifier": "Information-Mediator-Client",
-              "value": "[a-zA-Z0-9_]+\\/[a-zA-Z0-9_]+\\/[a-zA-Z0-9_]+\\/[a-zA-Z0-9_]+",
-              "invert": false,
-              "operator": "regex"
+              "value": "",
+              "invert": true,
+              "operator": "null"
             },
             {
               "target": "params",
@@ -787,12 +748,26 @@
               "value": "",
               "invert": true,
               "operator": "null"
+            },
+            {
+              "target": "params",
+              "modifier": "registryname",
+              "value": "",
+              "invert": true,
+              "operator": "null"
+            },
+            {
+              "target": "params",
+              "modifier": "versionnumber",
+              "value": "",
+              "invert": true,
+              "operator": "null"
             }
           ],
-          "rulesOperator": "OR",
+          "rulesOperator": "AND",
           "disableTemplating": false,
           "fallbackTo404": false,
-          "default": false
+          "default": true
         }
       ],
       "enabled": true,
