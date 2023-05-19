@@ -6,7 +6,11 @@ description: >-
 
 # 8 Service APIs
 
-The APIs defined here establish a blueprint for how the Building Block will interact with other Building Blocks. Additional APIs may be implemented by the Building Block, but the listed APIs define a minimal set of functionality that should be provided by any implementation of this Building Block. The [GovStack non-functional requirements document](https://govstack.gitbook.io/specification/v/1-0/architecture-and-nonfunctional-requirements/6-onboarding) provides additional information on how "adapters" may be used to translate an existing API to the patterns described here.
+The APIs defined here establish a blueprint for how the Building Block will interact with other Building Blocks. Additional APIs may be implemented by the Building Block, but the listed APIs define a minimal set of functionality that should be provided by any implementation of this Building Block.&#x20;
+
+The [GovStack non-functional requirements document](https://govstack.gitbook.io/specification/v/1.0/architecture-and-nonfunctional-requirements/6-onboarding) provides additional information on how 'adaptors' may be used to translate an existing API to the patterns described here. This section also provides guidance on how candidate products are tested and how GovStack validates a product's API against the API specifications defined here.&#x20;
+
+The tests for the Digital Registries Building Block can be found in [this GitHub repository](https://github.com/GovStackWorkingGroup/bb-digital-registries/tree/main/test/openAPI).
 
 The Digital Registries Building Block may contain multiple registries/databases. The dynamic nature of the database structure requires a standard set of automatically generated APIs for all databases hosted on the platform. The system generates default API method endpoints automatically after each publication of the database schema. A new API service version is generated after each schema publish. Database schema version and API versions are in sync.
 
