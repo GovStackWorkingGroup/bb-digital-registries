@@ -1,0 +1,196 @@
+{
+  "informationMediatorClientHeader": {
+    "key": "Information-Mediator-Client",
+    "value": "INSTANCE/CLASS/MEMBER/SUBSYSTEM"
+  },
+  "database": [
+    {
+      "registryname": "registryname",
+      "versionnumber": "111",
+      "databaseID": "MCTS",
+      "records": [
+        {
+          "uuid": "80bcb084-fa17-11ed-be56-0242ac120002",
+          "id": "EE123627348834",
+          "FirstName": "John",
+          "LastName": "Bon",
+          "BirthCertificateID": "RR-3334537999",
+          "PersonalData": []
+        },
+        {
+          "uuid": "80bcb34a-fa17-11ed-be56-0242ac120002",
+          "id": "EE456627348834",
+          "FirstName": "Alice",
+          "LastName": "Hendrix",
+          "BirthCertificateID": "RR-1114537999",
+          "PersonalData": []
+        },
+        {
+          "uuid": "80bcb49e-fa17-11ed-be56-0242ac120002",
+          "id": "EE789627348834",
+          "FirstName": "Jack",
+          "LastName": "King",
+          "BirthCertificateID": "RR-4444537999",
+          "PersonalData": []
+        },
+        {
+          "uuid": "80bcb5b6-fa17-11ed-be56-0242ac120002",
+          "id": "EE987627348834",
+          "FirstName": "Bob",
+          "LastName": "Small",
+          "BirthCertificateID": "RR-5555537999",
+          "PersonalData": []
+        },
+        {
+          "uuid": "80bcb6ec-fa17-11ed-be56-0242ac120002",
+          "id": "EE654627348834",
+          "FirstName": "Eva",
+          "LastName": "Sorenz",
+          "BirthCertificateID": "RR-7777537999",
+          "PersonalData": []
+        },
+        {
+          "uuid": "80bcc15a-fa17-11ed-be56-0242ac120002",
+          "id": "EE6546273487865",
+          "FirstName": "Emma",
+          "LastName": "Smith",
+          "BirthCertificateID": "RR-7777536299",
+          "PersonalData": []
+        },
+        {
+          "uuid": "80bcc268-fa17-11ed-be56-0242ac1200022",
+          "id": "EE6546273487865",
+          "FirstName": "Tobias",
+          "LastName": "Smith",
+          "BirthCertificateID": "RR-4419523937",
+          "PersonalData": []
+        },
+        {
+          "uuid": "80bcc376-fa17-11ed-be56-0242ac120002",
+          "id": "EE378129127223",
+          "FirstName": "Billy",
+          "LastName": "Johnson",
+          "BirthCertificateID": "RR-1112223331",
+          "PersonalData": [
+            {
+              "ID": "1234567",
+              "ReaderID": "EE37819285773",
+              "ReaderInitials": "JD",
+              "ReaderInstitutionID": "EE70049837",
+              "ReaderInstitutionName": "East Hospital",
+              "ReaderApplicationName": "East Hospital healthcare back office",
+              "SearchDateTime": "2017-07-21T17:32:28Z",
+              "Refrences": [
+                {
+                  "ReferenceID": "MCTS31"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "uuid": "80bcc47a-fa17-11ed-be56-0242ac120002",
+          "id": "EE334569121212",
+          "FirstName": "John",
+          "LastName": "Smith",
+          "BirthCertificateID": "RR-1234567890",
+          "PersonalData": [
+            {
+              "ID": "1234567",
+              "ReaderID": "EE37819285773",
+              "ReaderInitials": "JD",
+              "ReaderInstitutionID": "EE70049837",
+              "ReaderInstitutionName": "East Hospital",
+              "ReaderApplicationName": "East Hospital healthcare back office",
+              "SearchDateTime": "2017-07-21T17:32:28Z",
+              "Refrences": [
+                {
+                  "ReferenceID": "MCTS31"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "uuid": "80bcc57e-fa17-11ed-be56-0242ac120002",
+          "id": "EE390029120500",
+          "FirstName": "Ana",
+          "LastName": "Adams",
+          "BirthCertificateID": "RR-0987654321",
+          "PersonalData": [
+            {
+              "ID": "1234567",
+              "ReaderID": "EE37819285773",
+              "ReaderInitials": "JD",
+              "ReaderInstitutionID": "EE70049837",
+              "ReaderInstitutionName": "East Hospital",
+              "ReaderApplicationName": "East Hospital healthcare back office",
+              "SearchDateTime": "2017-07-21T17:32:28Z",
+              "Refrences": [
+                {
+                  "ReferenceID": "MCTS31"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "uuid": "80bcb084-fa17-11ed-be56-0242ac120002",
+          "id": "EE378129277266",
+          "FirstName": "John",
+          "LastName": "Bon",
+          "BirthCertificateID": "RR-3334537999",
+          "PersonalData": [
+            {
+              "ID": "1234567",
+              "ReaderID": "EE37819285773",
+              "ReaderInitials": "JD",
+              "ReaderInstitutionID": "EE70049837",
+              "ReaderInstitutionName": "East Hospital",
+              "ReaderApplicationName": "East Hospital healthcare back office",
+              "SearchDateTime": "2017-07-21T17:32:28Z",
+              "Refrences": [
+                {
+                  "ReferenceID": "MCTS31"
+                }
+              ]
+            }
+          ]
+        },
+        "//records below have to be deleted in the test - don't use it to update etc.",
+        {
+          "uuid": "80bcb804-fa17-11ed-be56-0242ac120002",
+          "id": "EE378627348834",
+          "FirstName": "John",
+          "LastName": "Corn",
+          "BirthCertificateID": "RR-0987000321",
+          "PersonalData": []
+        },
+        {
+          "uuid": "80bcbc46-fa17-11ed-be56-0242ac120002",
+          "id": "EE378627348855",
+          "FirstName": "John",
+          "LastName": "Snow",
+          "BirthCertificateID": "RR-0900654321",
+          "PersonalData": []
+        },
+        {
+          "uuid": "80bcbe62-fa17-11ed-be56-0242ac120002",
+          "id": "RR378627348834",
+          "FirstName": "John",
+          "LastName": "Great",
+          "BirthCertificateID": "RR-0987654300",
+          "PersonalData": []
+        },
+        {
+          "uuid": "80bcc02e-fa17-11ed-be56-0242ac120002",
+          "id": "DD378627348834",
+          "FirstName": "John",
+          "LastName": "Kane",
+          "BirthCertificateID": "RR-0008765401",
+          "PersonalData": []
+        }
+      ]
+    }
+  ]
+}
