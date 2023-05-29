@@ -1,9 +1,9 @@
 {
   "informationMediatorClientHeader": {
     "key": "Information-Mediator-Client",
-    "value": "INSTANCE/CLASS/MEMBER/SUBSYSTEM"
+    "value": "eGovStack/GOV/90000009/digitalregistries"
   },
-  "dataAPI": {
+  "registries": {
     "registryname": "registryname",
     "versionnumber": "111",
     "databaseID": "MCTS",
@@ -191,7 +191,7 @@
       }
     ]
   },
-  "databaseAPI": [
+  "databases": [
     {
       "id": 85,
       "name": "Mother and Child",
