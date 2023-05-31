@@ -6,7 +6,7 @@ module.exports = {
   },
   header: {
     key: 'Information-Mediator-Client',
-    value: 'INSTANCE/CLASS/MEMBER/SUBSYSTEM',
+    value: 'eGovStack/GOV/90000009/digitalregistries',
   },
   defaultExpectedResponseTime: 15000,
   // db_delete
