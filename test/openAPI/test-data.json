@@ -156,6 +156,85 @@
           }
         ]
       },
+      {
+        "uuid": "01fbf75d-43bb-4ee8-9f49-f85d26361e2e",
+        "id": "EE3784545277266",
+        "FirstName": "Philip",
+        "LastName": "Red",
+        "BirthCertificateID": "RR-30045370099",
+        "PersonalData": [
+          {
+            "ID": "3444567",
+            "ReaderID": "EE44419285773",
+            "ReaderInitials": "JD",
+            "ReaderInstitutionID": "EE71119837",
+            "ReaderInstitutionName": "West Hospital",
+            "ReaderApplicationName": "West Hospital healthcare back office",
+            "SearchDateTime": "2017-05-21T17:32:28Z",
+            "Refrences": [
+              {
+                "ReferenceID": "MCTS31"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "uuid": "38aabe75-a1e5-4bba-9b40-5207be85b8d2",
+        "id": "EE34462734834865",
+        "FirstName": "Alex",
+        "LastName": "Green",
+        "BirthCertificateID": "RR-441124937",
+        "PersonalData": []
+      },
+      {
+        "uuid": "29448e66-84cb-4d80-998f-267cda61e210",
+        "id": "EE61287673487865",
+        "FirstName": "Alise",
+        "LastName": "Black",
+        "BirthCertificateID": "RR-49075937",
+        "PersonalData": []
+      },
+      {
+        "uuid": "e32a07b4-f4f1-4631-bfd9-514e320e7128",
+        "id": "EE6534523487865",
+        "FirstName": "Zyra",
+        "LastName": "Blue",
+        "BirthCertificateID": "RR-24523937",
+        "PersonalData": []
+      },
+      {
+        "uuid": "4784f9c5-c5d7-40ce-9e19-88c1a1a8a8908",
+        "id": "EE65346467865",
+        "FirstName": "Alina",
+        "LastName": "Soft",
+        "BirthCertificateID": "RR-24521537",
+        "PersonalData": []
+      },
+      {
+        "uuid": "0708b733-a2f5-4ec5-8a7d-d79c71de2fbb",
+        "id": "EE65989865",
+        "FirstName": "Casandra",
+        "LastName": "Flu",
+        "BirthCertificateID": "RR-20021537",
+        "PersonalData": []
+      },
+      {
+        "uuid": "ea55fda3-35b7-49dd-87fc-c742fa31e0b2",
+        "id": "EE6387665",
+        "FirstName": "Olga",
+        "LastName": "Bread",
+        "BirthCertificateID": "RR-200215677",
+        "PersonalData": []
+      },
+      {
+        "uuid": "ef6d09ee-a2ed-49ad-8d6f-44f434a620f2",
+        "id": "EE1112223331",
+        "FirstName": "Billy",
+        "LastName": "Johnson",
+        "BirthCertificateID": "RR-1112223331",
+        "PersonalData": []
+      },
       "//records below have to be deleted in the test - don't use it to update etc.",
       {
         "uuid": "80bcb804-fa17-11ed-be56-0242ac120002",
