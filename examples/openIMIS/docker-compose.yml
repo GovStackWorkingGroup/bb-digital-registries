@@ -1,0 +1,58 @@
+version: "2.4"
+
+services:
+  db:
+    container_name: ${PROJECT_NAME:-openimis}-db
+    image: ghcr.io/openimis/openimis-mssql:${DB_TAG:-latest}
+    restart: always
+    environment:
+      - DB_USER_PASSWORD=${DB_PASSWORD}
+      - SA_PASSWORD=${DB_PASSWORD}
+      - DB_NAME=${DB_NAME}
+      - DB_USER=${DB_USER}
+      - ACCEPT_EULA=${ACCEPT_EULA}
+    healthcheck:
+      test: "bash /app/healthcheck.sh"
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 100s
+    networks:
+      openimis-net:
+    volumes:
+      - database:/var/opt/mssql/data
+    ports:
+      - 1433:1433
+  backend:
+    build:
+      context: https://github.com/openimis/openimis-be_py.git#Test_Harness_Setup
+      args:
+        OPENIMIS_CONF_JSON: ${OPENIMIS_BE_CONF_JSON}
+    image: openimis/backend:${PROJECT_NAME:-local}
+    volumes:
+      - photos:/openimis-be/openIMIS/images/insurees
+      - ./import_data.py:/openimis-be/openIMIS/custom_scripts/import_data.py
+    command: start
+    environment: &backend-env
+      - DB_HOST=${DB_HOST}
+      - DB_PORT=${DB_PORT}
+      - DB_NAME=${DB_NAME}
+      - DB_USER=${DB_USER}
+      - DB_PASSWORD=${DB_PASSWORD}
+      - SITE_ROOT=api
+      - SITE_URL=${NEW_OPENIMIS_HOST}
+      - CELERY_BROKER_URL=amqp://rabbitmq
+      - PHOTO_ROOT_PATH=images/insurees
+    depends_on:  
+      db:
+        condition: service_healthy
+    networks:
+      openimis-net:
+    ports:
+      - 3333:8000
+
+networks:
+  openimis-net:
+volumes:
+  database:
+  photos:
