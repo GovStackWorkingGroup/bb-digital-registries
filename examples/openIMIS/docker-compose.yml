@@ -32,6 +32,7 @@ services:
     volumes:
       - photos:/openimis-be/openIMIS/images/insurees
       - ./import_data.py:/openimis-be/openIMIS/custom_scripts/import_data.py
+      - ./check_service_availability.sh:/openimis-be/openIMIS/custom_scripts/check_service_availability.sh
     command: start
     environment: &backend-env
       - DB_HOST=${DB_HOST}
