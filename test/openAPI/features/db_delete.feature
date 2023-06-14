@@ -5,7 +5,7 @@ Feature: API endpoint that allows user to delete database schema
   Scenario: User successfully deletes the Digital Registries schema smoke type test
 
     Given User wants to delete the Digital Registries schema
-    When The DELETE request with given Information-Mediator-Client header and "1" as id is sent
+    When The DELETE request with given Information-Mediator-Client header and "75858" as id is sent
     Then User receives a response from the DELETE /database/id endpoint
     And The DELETE /database/id endpoint response should be returned in a timely manner 15000ms
     And The DELETE /database/id endpoint response should have status 200
@@ -24,8 +24,7 @@ Feature: API endpoint that allows user to delete database schema
     And The DELETE /database/id endpoint response should have body "Success"
 
     Examples: Valid data
-    | id         |
-    | 123        |
-    | 8438778473 |
-    | 3287483474 |
-    | 8484848484 |
+    | id     |
+    | 6745   |
+    | 896756 |
+    | 234234 |

@@ -5,7 +5,7 @@ Feature: API endpoint that updates multiple records in the registry database tha
   Scenario: Successfully updates multiple records in the database by first name smoke type test
     Given User wants to update multiple records in the database
     When User sends PUT request to /data/{registryname}/{versionnumber}/update-entries with given Information-Mediator-Client header, "registryname" as registryname and "111" as versionnumber
-    And The request contains a payload with two objects: query object that contains content object with given: "John" as FirstName and write object that contains content object with given: "Jack" as FirstName
+    And The request contains a payload with two objects: query object that contains content object with given: "Alina" as FirstName and write object that contains content object with given: "Jack" as FirstName
     Then User receives a response from the /data/{registryname}/{versionnumber}/update-entries endpoint
     And The /data/{registryname}/{versionnumber}/update-entries response should be returned in a timely manner 15000ms
     And The /data/{registryname}/{versionnumber}/update-entries response should have status 200
@@ -21,8 +21,8 @@ Feature: API endpoint that updates multiple records in the registry database tha
 
     Examples:
     | FirstName | UpdatedFirstName |
-    | Bob       | Rick             |
-    | Emma      | Alice            |
+    | Casandra  | Tamara           |
+    | Olga      | Alice            |
 
   
   @unit @positive

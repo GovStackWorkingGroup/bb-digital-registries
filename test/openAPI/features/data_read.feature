@@ -23,11 +23,11 @@ Feature: API endpoint that allows users to search for a record in the database.
     And The /data/{registryname}/{versionnumber}/read response should contain "<body_parameter>" property equals "<parameter_value>"
 
     Examples:
-    | body_parameter     | parameter_value                      |
-    | ID                 | c473a46c-dd2d-42f5-aca3-f318d478d555 |
-    | FirstName          | Eva                                  |
-    | LastName           | Smith                                |
-    | BirthCertificateID | EE-4419523937                        |
+    | body_parameter     | parameter_value |
+    | ID                 | EE378129127223  |
+    | FirstName          | Eva             |
+    | LastName           | Smith           |
+    | BirthCertificateID | EE6546273487865 |
 
   @unit @positive 
   Scenario: The user gets a searched record from the database when he specifies all parameters
@@ -44,8 +44,8 @@ Feature: API endpoint that allows users to search for a record in the database.
     And The /data/{registryname}/{versionnumber}/read response should contain "BirthCertificateID" property equals "<BirthCertificateID>"
 
     Examples:
-    | FirstName   | LastName | ID                                   | BirthCertificateID |
-    | John Helmut | Smith    | c473a46c-dd2d-42f5-aca3-f318d478d000 | EE-4419523937      |
+    | FirstName | LastName | ID             | BirthCertificateID |
+    | Billy     | Johnson  | EE378129127223 | RR-1112223331      |
 
   @unit @negative 
   Scenario: Receives a message that the record not found in the database
