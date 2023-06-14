@@ -40,9 +40,9 @@ waitForAPI() {
       healthcheckApiCall
       notAvailable=$?
       retries=$(( $retries - 1 ))
-      if [ $retries -ne 10 ]
+      if [ $retries -ne 5 ]
       then 
-         sleep 60
+         sleep 1
       fi
     done
 
