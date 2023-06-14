@@ -22,7 +22,6 @@ services:
   backend:
     container_name: ${PROJECT_NAME:-openimis}-api
     image: openimis/backend:${PROJECT_NAME:-local}
-    restart: always
     command: start
     build:
       context: https://github.com/openimis/openimis-be_py.git#govstack-testing-setup
