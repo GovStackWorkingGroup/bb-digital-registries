@@ -1,0 +1,56 @@
+version: "2.4"
+
+services:
+  db:
+    container_name: ${PROJECT_NAME:-openimis}-db
+    image: ghcr.io/openimis/openimis-pgsql:${DB_TAG:-latest}
+    environment:
+      - POSTGRES_PASSWORD=${DB_PASSWORD}
+      - POSTGRES_DB=${DB_NAME}
+      - POSTGRES_USER=${DB_USER}
+    healthcheck:
+      test: pg_isready -U ${DB_USER} -d ${DB_NAME}
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 100s
+    networks:
+      openimis-net:
+    ports:
+      - 5433:5432
+
+  backend:
+    container_name: ${PROJECT_NAME:-openimis}-api
+    image: openimis/backend:${PROJECT_NAME:-local}
+    restart: always
+    command: start
+    build:
+      context: https://github.com/openimis/openimis-be_py.git#govstack-testing-setup
+    volumes:
+      - ./import_data.py:/import_data.py
+      - ./check_service_availability.sh:/check_service_availability.sh
+    environment: &backend-env
+      - DB_HOST=${DB_HOST}
+      - DB_PORT=5432
+      - DB_NAME=${DB_NAME}
+      - DB_USER=${DB_USER}
+      - DB_ENGINE=${DB_ENGINE}
+      - DB_PASSWORD=${DB_PASSWORD}
+      - SITE_ROOT=api
+      - DEBUG=True
+      - DJANGO_LOG_LEVEL=DEBUG
+      - SITE_URL=${NEW_OPENIMIS_HOST}
+      - CELERY_BROKER_URL=amqp://rabbitmq
+    depends_on:  
+      db:
+        condition: service_healthy
+    networks:
+      openimis-net:
+    ports:
+      - 3333:8000
+
+networks:
+  openimis-net:
+volumes:
+  database:
+  photos:
