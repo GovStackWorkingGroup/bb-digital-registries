@@ -28,6 +28,7 @@ services:
     volumes:
       - ./import_data.py:/import_data.py
       - ./check_service_availability.sh:/check_service_availability.sh
+      - ../../test/openAPI/test-data.json:/test-data.json
     environment: &backend-env
       - DB_HOST=${DB_HOST}
       - DB_PORT=5432
