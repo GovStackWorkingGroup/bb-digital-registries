@@ -71,17 +71,17 @@ if __name__ == "__main__":
     print("-------------")
     for record in test_data["registries"]["records"]:
         print(record)
-        create_interactive_user_from_data(
-            user_id=record["id"],
-            user_uuid=record["uuid"],
-            username=record["FirstName"],
-            other_names=record["FirstName"],
-            last_name=record["LastName"],
-            birth_certificate_id=None,
-            password="Test1234",
-            roles=None,
-            custom_props=None
-        )
+        # create_interactive_user_from_data(
+        #     user_id=record["id"],
+        #     user_uuid=record["uuid"],
+        #     username=record["FirstName"],
+        #     other_names=record["FirstName"],
+        #     last_name=record["LastName"],
+        #     birth_certificate_id=None,
+        #     password="Test1234",
+        #     roles=None,
+        #     custom_props=None
+        # )
         print(record["id"], record["uuid"], record["FirstName"], record["FirstName"], record["LastName"])
         print("------------- end")
 
