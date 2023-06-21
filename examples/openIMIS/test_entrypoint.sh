@@ -1,5 +1,5 @@
 #!/bin/bash
-docker-compose build db backend
+docker-compose build --no-cache db backend
 
 docker-compose up -d db backend
 
