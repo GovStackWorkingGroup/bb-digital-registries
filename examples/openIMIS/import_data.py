@@ -65,12 +65,12 @@ def create_interactive_user_from_data(
 
 if __name__ == "__main__":
     print("It does work")
-    load_django_settings
-    test_data = load_json_data("../../test-data.json")
+    # load_django_settings
+    # test_data = load_json_data("../../test-data.json")
     
     print("-------------")
-    for record in test_data["registries"]["records"]:
-        print(record)
+    # for record in test_data["registries"]["records"]:
+        # print(record)
         # create_interactive_user_from_data(
         #     user_id=record["id"],
         #     user_uuid=record["uuid"],
@@ -82,8 +82,8 @@ if __name__ == "__main__":
         #     roles=None,
         #     custom_props=None
         # )
-        print(record["id"], record["uuid"], record["FirstName"], record["FirstName"], record["LastName"])
-        print("------------- end")
+        # print(record["id"], record["uuid"], record["FirstName"], record["FirstName"], record["LastName"])
+        # print("------------- end")
 
     # create_test_interactive_user("Lucas2")
-    print("report_definitions")
+    # print("report_definitions")
