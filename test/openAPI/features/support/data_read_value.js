@@ -1,82 +1,82 @@
-const pactum = require('pactum');
+const chai = require('chai');
+const { spec } = require('pactum');
 const { Given, When, Then, Before, After } = require('@cucumber/cucumber');
-const { header, localhost } = require('./helpers/helpers');
+const {
+  header,
+  localhost,
+  dataReadValueEndpoint,
+  contentTypeHeader,
+  defaultExpectedResponseTime,
+  dataReadValueResponseSchema,
+} = require('./helpers/helpers');
 
-let searchedRecord;
-let searchedFieldParameter;
-let searchedFieldExt;
+chai.use(require('chai-json-schema'));
+
 let specDataReadValue;
 
-const baseUrl = (uuid, field, ext) =>
-  `${localhost}data/registry1/version1/${uuid}/read-value/${field}.${ext}`;
+const baseUrl = localhost + dataReadValueEndpoint;
+const endpointTag = { tags: `@endpoint=/${dataReadValueEndpoint}` };
 
-Before(() => {
-  specDataReadValue = pactum.spec();
-  searchedFieldParameter = 'User';
-  searchedFieldExt = 'FirstName';
+Before(endpointTag, () => {
+  specDataReadValue = spec();
 });
 
-// Scenario: The user gets the first name of the searched user from the Digital Registries database
+// Scenario: The user gets the first name of the searched user from the database smoke type test
 Given(
-  "The user wants to search for the user's first name of the user in the Digital Registries database and the first name of the record is matched",
-  () => (searchedRecord = '2dcad39a-9abb-4552-954d-c62958d44ec5')
+  "The user wants to search for the user's first name of the user in the database",
+  () =>
+    "The user wants to search for the user's first name of the user in the database"
 );
 
 When(
-  'The user sends a valid request to obtain the first name of the searched user from the database',
+  'User sends GET request with given Information-Mediator-Client header, {string} as registryname and {string} as versionnumber, {string} as uuid, {string} as field and {string} as ext',
+  (registryname, versionnumber, uuid, field, ext) =>
+    specDataReadValue
+      .get(baseUrl)
+      .withHeaders(header.key, header.value)
+      .withPathParams({
+        registryname: registryname,
+        versionnumber: versionnumber,
+        uuid: uuid,
+        field: field,
+        ext: ext,
+      })
+);
+
+Then(
+  'User receives a response from the GET \\/data\\/\\{registryname}\\/\\{versionnumber}\\/\\{uuid}\\/read-value\\/\\{field}.\\{ext} endpoint',
+  async () => await specDataReadValue.toss()
+);
+
+Then(
+  'The GET \\/data\\/\\{registryname}\\/\\{versionnumber}\\/\\{uuid}\\/read-value\\/\\{field}.\\{ext} endpoint response should be returned in a timely manner 15000ms',
   () =>
     specDataReadValue
-      .get(
-        `${baseUrl(searchedRecord, searchedFieldParameter, searchedFieldExt)}`
-      )
-      .withHeaders(`${header.key}`, `${header.value}`)
+      .response()
+      .to.have.responseTimeLessThan(defaultExpectedResponseTime)
 );
-
-Then('The user receives the first name of the searched user', async () => {
-  await specDataReadValue.toss();
-  specDataReadValue.response().should.have.status(200);
-  specDataReadValue.response().should.have.jsonLike('John Helmut');
-});
-
-// Scenario: The user does not obtain the first name of the searched user from the Digital Registries database
-Given(
-  'The user wants to search for the first name of the user in the Digital Registries database and the first name of the record is empty',
-  () => (searchedRecord = '3dcad39a-9abb-4552-954d-c62958d44ec9')
-);
-
-// "When" is already written in line 25-34
 
 Then(
-  'The user receives a message that the first name of the searched user is empty',
-  async () => {
-    await specDataReadValue.toss();
-    specDataReadValue.response().should.have.status(200);
-    specDataReadValue.response().should.have.jsonLike('');
-  }
+  'The GET \\/data\\/\\{registryname}\\/\\{versionnumber}\\/\\{uuid}\\/read-value\\/\\{field}.\\{ext} endpoint response should have status 200',
+  () => specDataReadValue.response().should.have.status(200)
 );
 
-// Scenario: The user is unable to obtain the user's first name from the Digital Registries database because the request is invalid
-Given(
-  "The user wants to search for the user's first name in the Digital Registries database",
-  () => (searchedRecord = '3dcad39a-9abb-4552-954d-c62958d44e')
-);
-
-When(
-  'The user sends an invalid request to get the first name of the searched user from the Digital Registries database',
+Then(
+  'The GET \\/data\\/\\{registryname}\\/\\{versionnumber}\\/\\{uuid}\\/read-value\\/\\{field}.\\{ext} endpoint response should have content-type: application\\/json header',
   () =>
-    specDataReadValue.get(
-      `${baseUrl(searchedRecord, searchedFieldParameter, searchedFieldExt)}`
-    )
+    specDataReadValue
+      .response()
+      .should.have.header(contentTypeHeader.key, contentTypeHeader.value)
 );
 
 Then(
-  "The result of the operation to receive the user's first name is an error",
-  async () => {
-    await specDataReadValue.toss();
-    specDataReadValue.response().should.have.status(400);
-  }
+  'The GET \\/data\\/\\{registryname}\\/\\{versionnumber}\\/\\{uuid}\\/read-value\\/\\{field}.\\{ext} endpoint response should match json schema',
+  () =>
+    chai
+      .expect(specDataReadValue._response.json)
+      .to.be.jsonSchema(dataReadValueResponseSchema)
 );
 
-After(() => {
+After(endpointTag, () => {
   specDataReadValue.end();
 });

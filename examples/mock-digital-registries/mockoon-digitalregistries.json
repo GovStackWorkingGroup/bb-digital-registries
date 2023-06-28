@@ -1,0 +1,1173 @@
+{
+  "uuid": "a79a7b17-f1c7-42ce-93aa-dd08ac38af3f",
+  "lastMigration": 27,
+  "name": "DigitalRegistries",
+  "endpointPrefix": "",
+  "latency": 0,
+  "port": 3001,
+  "hostname": "",
+  "routes": [
+    {
+      "uuid": "9117f9cc-e23b-447a-bf26-186f944daf82",
+      "documentation": "Allows a user to see who has read their personal data.",
+      "method": "get",
+      "endpoint": "data/MyPersonalDataUsage/1.0",
+      "responses": [
+        {
+          "uuid": "ad5ddc6e-bd4f-491b-b600-5cab337701f5",
+          "body": "[\n  {\n    \"ID\": \"1234567\",\n    \"ReaderID\": \"EE37819285773\",\n    \"ReaderInitials\": \"JD\",\n    \"ReaderInstitutionID\": \"EE70049837\",\n    \"ReaderInstitutionName\": \"East Hospital\",\n    \"ReaderApplicationName\": \"East Hospital healthcare back office\",\n    \"SearchDateTime\": \"2017-07-21T17:32:28Z\",\n    \"Refrences\": [\n      {\n        \"ReferenceID\": \"MCTS311\"\n      }\n    ]\n  }\n]",
+          "latency": 0,
+          "statusCode": 200,
+          "label": "Returns user usage data. ",
+          "headers": [],
+          "bodyType": "INLINE",
+          "filePath": "",
+          "databucketID": "",
+          "sendFileAsBody": false,
+          "rules": [
+            {
+              "target": "query",
+              "modifier": "userID",
+              "value": "^[0-9a-zA-Z]+$",
+              "invert": false,
+              "operator": "regex"
+            },
+            {
+              "target": "query",
+              "modifier": "DatabaseID",
+              "value": "^[0-9a-zA-Z]+$",
+              "invert": false,
+              "operator": "regex"
+            },
+            {
+              "target": "query",
+              "modifier": "userID",
+              "value": "",
+              "invert": true,
+              "operator": "null"
+            },
+            {
+              "target": "query",
+              "modifier": "DatabaseID",
+              "value": "",
+              "invert": true,
+              "operator": "null"
+            },
+            {
+              "target": "header",
+              "modifier": "Information-Mediator-Client",
+              "value": "[a-zA-Z0-9_]+\\/[a-zA-Z0-9_]+\\/[a-zA-Z0-9_]+\\/[a-zA-Z0-9_]+",
+              "invert": false,
+              "operator": "regex"
+            }
+          ],
+          "rulesOperator": "AND",
+          "disableTemplating": false,
+          "fallbackTo404": false,
+          "default": true
+        },
+        {
+          "uuid": "9d9bde34-2396-4bb0-a262-d9db32627d0d",
+          "body": "",
+          "latency": 0,
+          "statusCode": 400,
+          "label": "Invalid ID supplied",
+          "headers": [],
+          "bodyType": "INLINE",
+          "filePath": "",
+          "databucketID": "",
+          "sendFileAsBody": false,
+          "rules": [
+            {
+              "target": "header",
+              "modifier": "Information-Mediator-Client",
+              "value": "[a-zA-Z0-9_]+\\/[a-zA-Z0-9_]+\\/[a-zA-Z0-9_]+\\/[a-zA-Z0-9_]+",
+              "invert": false,
+              "operator": "regex"
+            },
+            {
+              "target": "query",
+              "modifier": "userID",
+              "value": "^[0-9a-zA-Z]+$",
+              "invert": true,
+              "operator": "regex"
+            },
+            {
+              "target": "query",
+              "modifier": "DatabaseID",
+              "value": "^[0-9a-zA-Z]+$",
+              "invert": true,
+              "operator": "regex"
+            },
+            {
+              "target": "query",
+              "modifier": "userID",
+              "value": "",
+              "invert": false,
+              "operator": "null"
+            },
+            {
+              "target": "query",
+              "modifier": "DatabaseID",
+              "value": "",
+              "invert": false,
+              "operator": "null"
+            }
+          ],
+          "rulesOperator": "OR",
+          "disableTemplating": false,
+          "fallbackTo404": false,
+          "default": false
+        }
+      ],
+      "enabled": true,
+      "responseMode": null,
+      "type": "http"
+    },
+    {
+      "uuid": "e60d8cd6-c4d4-499a-b2fd-dc021f31e196",
+      "documentation": "Searches (Regex supported) and returns multiple records as an array-list.",
+      "method": "get",
+      "endpoint": "data/:registryname/:versionname",
+      "responses": [
+        {
+          "uuid": "b8e1aca2-95f7-4677-abe8-caee59953cc3",
+          "body": "{\n  \"count\": 0,\n  \"results\": []\n}",
+          "latency": 0,
+          "statusCode": 200,
+          "label": "Returns an empty array.",
+          "headers": [],
+          "bodyType": "INLINE",
+          "filePath": "",
+          "databucketID": "",
+          "sendFileAsBody": false,
+          "rules": [
+            {
+              "target": "params",
+              "modifier": "registryname",
+              "value": "registryempty",
+              "invert": false,
+              "operator": "equals"
+            }
+          ],
+          "rulesOperator": "AND",
+          "disableTemplating": false,
+          "fallbackTo404": false,
+          "default": true
+        },
+        {
+          "uuid": "558cf138-169a-4da3-aef7-60ef71b1f29f",
+          "body": "{\n  \"count\": 10,\n  \"next\": \"1\",\n  \"previous\": null,\n  \"results\":  [\n    {{# repeat 10 }}\n      {\n        \"id\": \"{{ faker 'datatype.uuid' }}\",\n        \"FirstName\": \"{{faker 'name.firstName'}}\",\n        \"LastName\": \"{{faker 'name.lastName'}}\",\n        \"BirthCertificateID\": \"RR-{{faker 'random.numeric' 10 }}\"\n      }\n    {{/ repeat }}\n  ]\n}",
+          "latency": 0,
+          "statusCode": 200,
+          "label": "Returns multiple records as an array-list. - No filter ",
+          "headers": [],
+          "bodyType": "INLINE",
+          "filePath": "",
+          "databucketID": "",
+          "sendFileAsBody": false,
+          "rules": [
+            {
+              "target": "header",
+              "modifier": "Information-Mediator-Client",
+              "value": "[a-zA-Z0-9_]+\\/[a-zA-Z0-9_]+\\/[a-zA-Z0-9_]+\\/[a-zA-Z0-9_]+",
+              "invert": false,
+              "operator": "regex"
+            },
+            {
+              "target": "query",
+              "modifier": "search",
+              "value": "",
+              "invert": false,
+              "operator": "null"
+            },
+            {
+              "target": "query",
+              "modifier": "filter",
+              "value": "",
+              "invert": false,
+              "operator": "null"
+            },
+            {
+              "target": "query",
+              "modifier": "ordering",
+              "value": "",
+              "invert": false,
+              "operator": "null"
+            },
+            {
+              "target": "query",
+              "modifier": "page",
+              "value": "",
+              "invert": false,
+              "operator": "null"
+            },
+            {
+              "target": "query",
+              "modifier": "page_size",
+              "value": "",
+              "invert": false,
+              "operator": "null"
+            }
+          ],
+          "rulesOperator": "AND",
+          "disableTemplating": false,
+          "fallbackTo404": false,
+          "default": false
+        },
+        {
+          "uuid": "53130f54-3913-4bac-ab91-aadf0e70f8b5",
+          "body": "{\n  \"count\": 5,\n  \"next\": \"1\",\n  \"previous\": null,\n  \"results\":  [\n    {{# repeat 5 }}\n      {\n        \"id\": \"{{ faker 'datatype.uuid' }}\",\n        \"FirstName\": \"{{ queryParamRaw 'search' }}\",\n        \"LastName\": \"{{faker 'name.lastName'}}\",\n        \"BirthCertificateID\": \"RR-{{faker 'random.numeric' 10 }}\"\n      }\n    {{/ repeat }}\n  ]\n}",
+          "latency": 0,
+          "statusCode": 200,
+          "label": "Returns multiple records as an array-list. - Use search, filter and ordering params",
+          "headers": [],
+          "bodyType": "INLINE",
+          "filePath": "",
+          "databucketID": "",
+          "sendFileAsBody": false,
+          "rules": [
+            {
+              "target": "header",
+              "modifier": "Information-Mediator-Client",
+              "value": "[a-zA-Z0-9_]+\\/[a-zA-Z0-9_]+\\/[a-zA-Z0-9_]+\\/[a-zA-Z0-9_]+",
+              "invert": false,
+              "operator": "regex"
+            },
+            {
+              "target": "query",
+              "modifier": "filter",
+              "value": "",
+              "invert": true,
+              "operator": "null"
+            },
+            {
+              "target": "query",
+              "modifier": "search",
+              "value": "",
+              "invert": true,
+              "operator": "null"
+            },
+            {
+              "target": "query",
+              "modifier": "ordering",
+              "value": "",
+              "invert": true,
+              "operator": "null"
+            },
+            {
+              "target": "query",
+              "modifier": "page",
+              "value": "",
+              "invert": false,
+              "operator": "null"
+            },
+            {
+              "target": "query",
+              "modifier": "page_size",
+              "value": "",
+              "invert": false,
+              "operator": "null"
+            }
+          ],
+          "rulesOperator": "AND",
+          "disableTemplating": false,
+          "fallbackTo404": false,
+          "default": false
+        }
+      ],
+      "enabled": true,
+      "responseMode": null,
+      "type": "http"
+    },
+    {
+      "uuid": "429efa1e-6926-44d7-997d-8a17cd2ec520",
+      "documentation": "Creates a new record in the registry database.",
+      "method": "post",
+      "endpoint": "data/:registryname/:versionname/create",
+      "responses": [
+        {
+          "uuid": "7919071c-dcbe-459a-9a87-8e44583833db",
+          "body": "{\n  \"content\": {\n    \"ID\": \"{{bodyRaw 'write.content.ID'}}\",\n    \"FirstName\": \"{{bodyRaw 'write.content.FirstName'}}\",\n    \"LastName\": \"{{bodyRaw 'write.content.LastName'}}\",\n    \"BirthCertificateID\": \"{{bodyRaw 'write.content.BirthCertificateID'}}\"\n  }\n}",
+          "latency": 0,
+          "statusCode": 200,
+          "label": "Creates a new record in the registry database.",
+          "headers": [],
+          "bodyType": "INLINE",
+          "filePath": "",
+          "databucketID": "",
+          "sendFileAsBody": false,
+          "rules": [
+            {
+              "target": "header",
+              "modifier": "Information-Mediator-Client",
+              "value": "[a-zA-Z0-9_]+\\/[a-zA-Z0-9_]+\\/[a-zA-Z0-9_]+\\/[a-zA-Z0-9_]+",
+              "invert": false,
+              "operator": "regex"
+            },
+            {
+              "target": "body",
+              "modifier": "write.content",
+              "value": "",
+              "invert": true,
+              "operator": "null"
+            },
+            {
+              "target": "params",
+              "modifier": "registryname",
+              "value": "/^[a-zA-Z0-9]+$/",
+              "invert": false,
+              "operator": "regex"
+            },
+            {
+              "target": "params",
+              "modifier": "versionnumber",
+              "value": "/^[a-zA-Z0-9]+$/",
+              "invert": false,
+              "operator": "regex"
+            }
+          ],
+          "rulesOperator": "AND",
+          "disableTemplating": false,
+          "fallbackTo404": false,
+          "default": true
+        }
+      ],
+      "enabled": true,
+      "responseMode": null,
+      "type": "http"
+    },
+    {
+      "uuid": "4c9bd964-ea0f-41de-b06e-6425f29aee01",
+      "documentation": "Searches records based on input parameters and returns boolean answer (true/false).",
+      "method": "post",
+      "endpoint": "data/:registryname/:versionname/exists",
+      "responses": [
+        {
+          "uuid": "d89a16d0-7059-42bb-8608-23de618cfcb7",
+          "body": "{\n  \"answer\": {\n    \"status\": true,\n    \"message\": \"Object found from database\"\n  }\n}",
+          "latency": 0,
+          "statusCode": 200,
+          "label": "Searches records for existing entry",
+          "headers": [],
+          "bodyType": "INLINE",
+          "filePath": "",
+          "databucketID": "",
+          "sendFileAsBody": false,
+          "rules": [
+            {
+              "target": "header",
+              "modifier": "Information-Mediator-Client",
+              "value": "[a-zA-Z0-9_]+\\/[a-zA-Z0-9_]+\\/[a-zA-Z0-9_]+\\/[a-zA-Z0-9_]+",
+              "invert": false,
+              "operator": "regex"
+            },
+            {
+              "target": "body",
+              "modifier": "FirstName",
+              "value": "John",
+              "invert": false,
+              "operator": "equals"
+            }
+          ],
+          "rulesOperator": "AND",
+          "disableTemplating": false,
+          "fallbackTo404": false,
+          "default": true
+        },
+        {
+          "uuid": "7b3d9b31-bc29-4d0a-ad56-09b17e213151",
+          "body": "{\n  \"answer\": {\n    \"status\": false,\n    \"message\": \"Object not found from database\"\n  }\n}",
+          "latency": 0,
+          "statusCode": 200,
+          "label": "Searches records for non-existing entry",
+          "headers": [],
+          "bodyType": "INLINE",
+          "filePath": "",
+          "databucketID": "",
+          "sendFileAsBody": false,
+          "rules": [
+            {
+              "target": "header",
+              "modifier": "Information-Mediator-Client",
+              "value": "[a-zA-Z0-9_]+\\/[a-zA-Z0-9_]+\\/[a-zA-Z0-9_]+\\/[a-zA-Z0-9_]+",
+              "invert": false,
+              "operator": "regex"
+            },
+            {
+              "target": "body",
+              "modifier": "FirstName",
+              "value": "John",
+              "invert": true,
+              "operator": "equals"
+            }
+          ],
+          "rulesOperator": "AND",
+          "disableTemplating": false,
+          "fallbackTo404": false,
+          "default": false
+        }
+      ],
+      "enabled": true,
+      "responseMode": null,
+      "type": "http"
+    },
+    {
+      "uuid": "d302ad25-f6c3-4cfe-bb8c-c0d2c6cd6e72",
+      "documentation": "Searches and returns one record.",
+      "method": "post",
+      "endpoint": "data/:registryname/:versionname/read",
+      "responses": [
+        {
+          "uuid": "246e924b-989d-4d5b-bda1-e65f55ea50f6",
+          "body": "{\n  \"detail\": \"no record found\"\n}",
+          "latency": 0,
+          "statusCode": 404,
+          "label": "Searches records not found",
+          "headers": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "bodyType": "INLINE",
+          "filePath": "",
+          "databucketID": "",
+          "sendFileAsBody": false,
+          "rules": [
+            {
+              "target": "header",
+              "modifier": "Information-Mediator-Client",
+              "value": "[a-zA-Z0-9_]+\\/[a-zA-Z0-9_]+\\/[a-zA-Z0-9_]+\\/[a-zA-Z0-9_]+",
+              "invert": false,
+              "operator": "regex"
+            },
+            {
+              "target": "body",
+              "modifier": "query.content",
+              "value": "",
+              "invert": true,
+              "operator": "null"
+            },
+            {
+              "target": "body",
+              "modifier": "query.content.FirstName",
+              "value": "NotExist",
+              "invert": false,
+              "operator": "equals"
+            }
+          ],
+          "rulesOperator": "AND",
+          "disableTemplating": false,
+          "fallbackTo404": false,
+          "default": true
+        },
+        {
+          "uuid": "fdb35f8a-4c63-4bf0-8fcc-5d2e08f3d5e5",
+          "body": "{\n  \"content\": {\n    \"ID\": \"{{bodyRaw 'query.content.ID'}}\",\n    \"FirstName\": \"{{bodyRaw 'query.content.FirstName'}}\",\n    \"LastName\": \"{{bodyRaw 'query.content.LastName'}}\",\n    \"BirthCertificateID\": \"{{bodyRaw 'query.content.BirthCertificateID'}}\"\n  }\n}",
+          "latency": 0,
+          "statusCode": 200,
+          "label": "Searches records for existing entry",
+          "headers": [],
+          "bodyType": "INLINE",
+          "filePath": "",
+          "databucketID": "",
+          "sendFileAsBody": false,
+          "rules": [
+            {
+              "target": "header",
+              "modifier": "Information-Mediator-Client",
+              "value": "[a-zA-Z0-9_]+\\/[a-zA-Z0-9_]+\\/[a-zA-Z0-9_]+\\/[a-zA-Z0-9_]+",
+              "invert": false,
+              "operator": "regex"
+            },
+            {
+              "target": "body",
+              "modifier": "query.content",
+              "value": "",
+              "invert": true,
+              "operator": "null"
+            },
+            {
+              "target": "body",
+              "modifier": "query.content.FirstName",
+              "value": "",
+              "invert": true,
+              "operator": "null"
+            },
+            {
+              "target": "body",
+              "modifier": "query.content.LastName",
+              "value": "",
+              "invert": true,
+              "operator": "null"
+            },
+            {
+              "target": "body",
+              "modifier": "query.content.ID",
+              "value": "",
+              "invert": true,
+              "operator": "null"
+            },
+            {
+              "target": "body",
+              "modifier": "query.content.BirthCertificateID",
+              "value": "",
+              "invert": true,
+              "operator": "null"
+            }
+          ],
+          "rulesOperator": "AND",
+          "disableTemplating": false,
+          "fallbackTo404": false,
+          "default": false
+        },
+        {
+          "uuid": "b7239697-d182-486e-aafc-75bde27857b7",
+          "body": "{\n  \"content\": {\n    \"ID\": \"c473a46c-dd2d-42f5-aca3-f318d478d736\",\n    \"FirstName\": \"{{bodyRaw 'query.content.FirstName'}}\",\n    \"LastName\": \"Wintheiser\",\n    \"BirthCertificateID\": \"RR-4419523937\"\n  }\n}",
+          "latency": 0,
+          "statusCode": 200,
+          "label": "Searches records with one params FirstName for existing entry ",
+          "headers": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "bodyType": "INLINE",
+          "filePath": "",
+          "databucketID": "",
+          "sendFileAsBody": false,
+          "rules": [
+            {
+              "target": "header",
+              "modifier": "Information-Mediator-Client",
+              "value": "[a-zA-Z0-9_]+\\/[a-zA-Z0-9_]+\\/[a-zA-Z0-9_]+\\/[a-zA-Z0-9_]+",
+              "invert": false,
+              "operator": "regex"
+            },
+            {
+              "target": "body",
+              "modifier": "query.content",
+              "value": "",
+              "invert": true,
+              "operator": "null"
+            },
+            {
+              "target": "body",
+              "modifier": "query.content.FirstName",
+              "value": "",
+              "invert": true,
+              "operator": "null"
+            }
+          ],
+          "rulesOperator": "AND",
+          "disableTemplating": false,
+          "fallbackTo404": false,
+          "default": false
+        },
+        {
+          "uuid": "55dd405f-5979-42e0-a69e-0e01871a5c98",
+          "body": "{\n  \"content\": {\n    \"ID\": \"c473a46c-dd2d-42f5-aca3-f318d478d736\",\n    \"FirstName\": \"John Helmut\",\n    \"LastName\": \"{{bodyRaw 'query.content.LastName'}}\",\n    \"BirthCertificateID\": \"RR-4419523937\"\n  }\n}",
+          "latency": 0,
+          "statusCode": 200,
+          "label": "Searches records with one params LastName for existing entry",
+          "headers": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "bodyType": "INLINE",
+          "filePath": "",
+          "databucketID": "",
+          "sendFileAsBody": false,
+          "rules": [
+            {
+              "target": "header",
+              "modifier": "Information-Mediator-Client",
+              "value": "[a-zA-Z0-9_]+\\/[a-zA-Z0-9_]+\\/[a-zA-Z0-9_]+\\/[a-zA-Z0-9_]+",
+              "invert": false,
+              "operator": "regex"
+            },
+            {
+              "target": "body",
+              "modifier": "query.content",
+              "value": "",
+              "invert": true,
+              "operator": "null"
+            },
+            {
+              "target": "body",
+              "modifier": "query.content.LastName",
+              "value": "",
+              "invert": true,
+              "operator": "null"
+            }
+          ],
+          "rulesOperator": "AND",
+          "disableTemplating": false,
+          "fallbackTo404": false,
+          "default": false
+        },
+        {
+          "uuid": "92cb93ec-6235-4383-a534-8d7e3a32eed8",
+          "body": "{\n  \"content\": {\n    \"ID\": \"{{bodyRaw 'query.content.ID'}}\",\n    \"FirstName\": \"John Helmut\",\n    \"LastName\": \"Smith\",\n    \"BirthCertificateID\": \"RR-4419523937\"\n  }\n}",
+          "latency": 0,
+          "statusCode": 200,
+          "label": "Searches records with one params ID for existing entry",
+          "headers": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "bodyType": "INLINE",
+          "filePath": "",
+          "databucketID": "",
+          "sendFileAsBody": false,
+          "rules": [
+            {
+              "target": "header",
+              "modifier": "Information-Mediator-Client",
+              "value": "[a-zA-Z0-9_]+\\/[a-zA-Z0-9_]+\\/[a-zA-Z0-9_]+\\/[a-zA-Z0-9_]+",
+              "invert": false,
+              "operator": "regex"
+            },
+            {
+              "target": "body",
+              "modifier": "query.content",
+              "value": "",
+              "invert": true,
+              "operator": "null"
+            },
+            {
+              "target": "body",
+              "modifier": "query.content.ID",
+              "value": "",
+              "invert": true,
+              "operator": "null"
+            }
+          ],
+          "rulesOperator": "AND",
+          "disableTemplating": false,
+          "fallbackTo404": false,
+          "default": false
+        },
+        {
+          "uuid": "982584c1-7252-4feb-b6fd-50dd82eb2421",
+          "body": "{\n  \"content\": {\n    \"ID\": \"c473a46c-dd2d-42f5-aca3-f318d478d736\",\n    \"FirstName\": \"John Helmut\",\n    \"LastName\": \"Smith\",\n    \"BirthCertificateID\": \"{{bodyRaw 'query.content.BirthCertificateID'}}\"\n  }\n}",
+          "latency": 0,
+          "statusCode": 200,
+          "label": "Searches records with one params BirthCertificateIDfor existing entry",
+          "headers": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "bodyType": "INLINE",
+          "filePath": "",
+          "databucketID": "",
+          "sendFileAsBody": false,
+          "rules": [
+            {
+              "target": "header",
+              "modifier": "Information-Mediator-Client",
+              "value": "[a-zA-Z0-9_]+\\/[a-zA-Z0-9_]+\\/[a-zA-Z0-9_]+\\/[a-zA-Z0-9_]+",
+              "invert": false,
+              "operator": "regex"
+            },
+            {
+              "target": "body",
+              "modifier": "query.content",
+              "value": "",
+              "invert": true,
+              "operator": "null"
+            },
+            {
+              "target": "body",
+              "modifier": "query.content.BirthCertificateID",
+              "value": "",
+              "invert": true,
+              "operator": "null"
+            }
+          ],
+          "rulesOperator": "AND",
+          "disableTemplating": false,
+          "fallbackTo404": false,
+          "default": false
+        }
+      ],
+      "enabled": true,
+      "responseMode": null,
+      "type": "http"
+    },
+    {
+      "uuid": "f4e32199-7547-4f1c-a26e-f7f05858df60",
+      "documentation": "Updates one existing record in the registry database.",
+      "method": "put",
+      "endpoint": "data/:registryname/:versionname/update",
+      "responses": [
+        {
+          "uuid": "d96dc4ea-e98b-4fbf-a460-8dc2327c98b9",
+          "body": "",
+          "latency": 0,
+          "statusCode": 200,
+          "label": "Update existing entry",
+          "headers": [],
+          "bodyType": "INLINE",
+          "filePath": "",
+          "databucketID": "",
+          "sendFileAsBody": false,
+          "rules": [
+            {
+              "target": "header",
+              "modifier": "Information-Mediator-Client",
+              "value": "[a-zA-Z0-9_]+\\/[a-zA-Z0-9_]+\\/[a-zA-Z0-9_]+\\/[a-zA-Z0-9_]+",
+              "invert": false,
+              "operator": "regex"
+            },
+            {
+              "target": "body",
+              "modifier": "query.content",
+              "value": "",
+              "invert": true,
+              "operator": "null"
+            },
+            {
+              "target": "body",
+              "modifier": "write",
+              "value": "",
+              "invert": true,
+              "operator": "null"
+            },
+            {
+              "target": "body",
+              "modifier": "write.content",
+              "value": "",
+              "invert": true,
+              "operator": "null"
+            }
+          ],
+          "rulesOperator": "AND",
+          "disableTemplating": false,
+          "fallbackTo404": false,
+          "default": true
+        }
+      ],
+      "enabled": true,
+      "responseMode": null,
+      "type": "http"
+    },
+    {
+      "uuid": "cc6141fc-6082-4519-b1e1-9a7601a3817b",
+      "documentation": "Updates multiple records in the registry database that match the input query.",
+      "method": "put",
+      "endpoint": "data/:registryname/:versionname/update-entries",
+      "responses": [
+        {
+          "uuid": "62d9db7e-2676-40c0-b462-04fecec019b7",
+          "body": "",
+          "latency": 0,
+          "statusCode": 200,
+          "label": "Successfully updated records in the database",
+          "headers": [],
+          "bodyType": "INLINE",
+          "filePath": "",
+          "databucketID": "",
+          "sendFileAsBody": false,
+          "rules": [],
+          "rulesOperator": "OR",
+          "disableTemplating": false,
+          "fallbackTo404": false,
+          "default": true
+        }
+      ],
+      "enabled": true,
+      "responseMode": null,
+      "type": "http"
+    },
+    {
+      "uuid": "2d835466-f4ac-4f5a-bd1c-b7d67f4ab615",
+      "documentation": "API updates existing record if matching with input parameters is successful. If record is not found the API will create a new record.",
+      "method": "post",
+      "endpoint": "data/:registryname/:versionname/update-or-create",
+      "responses": [
+        {
+          "uuid": "b2045883-ac22-49cf-954e-f0722afb5323",
+          "body": "{\n  \"content\": {\n    \"ID\": \"{{bodyRaw 'write.content.ID'}}\",\n    \"FirstName\": \"{{bodyRaw 'write.content.FirstName'}}\",\n    \"LastName\": \"{{bodyRaw 'write.content.LastName'}}\",\n    \"BirthCertificateID\": \"{{bodyRaw 'write.content.BirthCertificateID'}}\"\n  }\n}",
+          "latency": 0,
+          "statusCode": 200,
+          "label": "Create or Update an existing record",
+          "headers": [],
+          "bodyType": "INLINE",
+          "filePath": "",
+          "databucketID": "",
+          "sendFileAsBody": false,
+          "rules": [],
+          "rulesOperator": "AND",
+          "disableTemplating": false,
+          "fallbackTo404": false,
+          "default": true
+        }
+      ],
+      "enabled": true,
+      "responseMode": null,
+      "type": "http"
+    },
+    {
+      "uuid": "ecffa065-a196-46ef-94bc-92094253a46e",
+      "documentation": "Delete record.",
+      "method": "delete",
+      "endpoint": "data/:registryname/:versionname/:ID/delete",
+      "responses": [
+        {
+          "uuid": "23aecb69-312e-4abc-8bc0-1d4c1d8f6d33",
+          "body": "",
+          "latency": 0,
+          "statusCode": 204,
+          "label": "Delete existing record based on ID",
+          "headers": [],
+          "bodyType": "INLINE",
+          "filePath": "",
+          "databucketID": "",
+          "sendFileAsBody": false,
+          "rules": [
+            {
+              "target": "header",
+              "modifier": "Information-Mediator-Client",
+              "value": "",
+              "invert": true,
+              "operator": "null"
+            },
+            {
+              "target": "params",
+              "modifier": "ID",
+              "value": "",
+              "invert": true,
+              "operator": "null"
+            },
+            {
+              "target": "params",
+              "modifier": "registryname",
+              "value": "",
+              "invert": true,
+              "operator": "null"
+            },
+            {
+              "target": "params",
+              "modifier": "versionnumber",
+              "value": "",
+              "invert": true,
+              "operator": "null"
+            }
+          ],
+          "rulesOperator": "AND",
+          "disableTemplating": false,
+          "fallbackTo404": false,
+          "default": true
+        }
+      ],
+      "enabled": true,
+      "responseMode": null,
+      "type": "http"
+    },
+    {
+      "uuid": "8d90e854-eca4-4f41-b1da-a61826c10997",
+      "documentation": "Searches and returns one record’s one field value.",
+      "method": "get",
+      "endpoint": "data/:registryname/:versionname/:uuid/read-value/:field.:ext",
+      "responses": [
+        {
+          "uuid": "1118011c-8273-4c2f-9f3c-6cf424f855e4",
+          "body": "\"John Helmut\"",
+          "latency": 0,
+          "statusCode": 200,
+          "label": "Return field value in string format",
+          "headers": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "bodyType": "INLINE",
+          "filePath": "",
+          "databucketID": "",
+          "sendFileAsBody": false,
+          "rules": [],
+          "rulesOperator": "AND",
+          "disableTemplating": false,
+          "fallbackTo404": false,
+          "default": true
+        }
+      ],
+      "enabled": true,
+      "responseMode": null,
+      "type": "http"
+    },
+    {
+      "uuid": "f4f2dd3c-888e-4e7a-873b-b3c2cb9a2246",
+      "documentation": "API endpoint that allows user to get database information with schema",
+      "method": "get",
+      "endpoint": "database/:id",
+      "responses": [
+        {
+          "uuid": "8b4b5cf8-a879-4d4e-b9ad-ddbd95a43f90",
+          "body": "{\n  \"id\": {{urlParam 'id'}},\n  \"version\": \"2.7\",\n  \"name\": \"MCTS\",\n  \"description\": \"Database holding information about MCTS objects\",\n  \"institution\": \"Ministry of Social Affairs\",\n  \"number_format\": \"{code}{indexNoByCode}\",\n  \"schema\": {\n    \"type\": \"object\",\n    \"properties\": {\n      \"ID\": {\n        \"type\": \"string\",\n        \"triggers\": [\n          {\n            \"conditions\": [\n              {\n                \"logic\": \"==\",\n                \"value\": \"\",\n                \"gate\": \"&&\"\n              }\n            ],\n            \"actions\": [\n              {\n                \"type\": \"set-value\",\n                \"value\": \"MCTS{indexNoByCode}\",\n                \"field_id\": 1\n              }\n            ]\n          }\n        ],\n        \"primaryKey\": true,\n        \"readOnly\": true,\n        \"description\": \"Registration ID\",\n        \"example\": \"MCTS31\",\n        \"id\": 1\n      },\n      \"Child\": {\n        \"type\": \"string\",\n        \"properties\": {\n          \"ID\": {\n            \"type\": \"string\",\n            \"description\": \"Child ID\",\n            \"example\": \"ID2\",\n            \"id\": 13\n          }\n        }\n      }\n    },\n    \"incrementIndex\": 20,\n    \"required\": [\n      \"ID\"\n    ]\n  },\n  \"schema_tags\": [\n    {\n      \"name\": \"\",\n      \"path\": \"/Child/Citizenship\",\n      \"is_fulltext\": true\n    }\n  ],\n  \"schema_flags\": [\n    {\n      \"name\": \"mandatory\",\n      \"path\": \"/ID\"\n    }\n  ],\n  \"fields_uniques\": [\n    [\n      \"\"\n    ]\n  ],\n  \"is_draft\": false,\n  \"is_disabled\": false,\n  \"is_archived\": false,\n  \"modified_at\": \"2021-10-03T08:35:01.775915Z\",\n  \"by_user_name\": \"ingmar.dev\",\n  \"by_user_auth_id\": 1,\n  \"by_on_behalf_of_user_auth_id\": 1,\n  \"by_on_behalf_of_user_name\": \"null\",\n  \"generic_services\": [\n    {\n      \"service_id\": 1,\n      \"name\": \"data-create\",\n      \"is_visible\": true,\n      \"used_count\": 0\n    }\n  ],\n  \"data_index_increment\": 0,\n  \"has_logo\": false\n}",
+          "latency": 0,
+          "statusCode": 200,
+          "label": "Existing database",
+          "headers": [],
+          "bodyType": "INLINE",
+          "filePath": "",
+          "databucketID": "",
+          "sendFileAsBody": false,
+          "rules": [
+            {
+              "target": "header",
+              "modifier": "Information-Mediator-Client",
+              "value": "[a-zA-Z0-9_]+\\/[a-zA-Z0-9_]+\\/[a-zA-Z0-9_]+\\/[a-zA-Z0-9_]+",
+              "invert": false,
+              "operator": "regex"
+            },
+            {
+              "target": "params",
+              "modifier": "id",
+              "value": "^((?:[1-9][0-9]*)(?:\\.[0-9]+)?)$",
+              "invert": false,
+              "operator": "regex"
+            },
+            {
+              "target": "params",
+              "modifier": "id",
+              "value": "",
+              "invert": true,
+              "operator": "null"
+            }
+          ],
+          "rulesOperator": "AND",
+          "disableTemplating": false,
+          "fallbackTo404": false,
+          "default": true
+        }
+      ],
+      "enabled": true,
+      "responseMode": null,
+      "type": "http"
+    },
+    {
+      "uuid": "73a21e7f-cab7-461a-91ae-0206f3c7fb8f",
+      "documentation": "API endpoint that allows user to get information about all databases",
+      "method": "get",
+      "endpoint": "databases",
+      "responses": [
+        {
+          "uuid": "eb0263ec-5c73-44c4-960a-23d613ac481d",
+          "body": "{\n  \"id\": 85,\n  \"name\": \"Mother and Child\",\n  \"code\": \"MCTS\",\n  \"databases\": [\n    {\n      \"id\": 353,\n      \"version\": \"2.7\",\n      \"name\": \"MCTS\",\n      \"description\": \"Database holding information about MCTS objects\",\n      \"institution\": \"Ministry of Social Affairs\",\n      \"number_format\": \"{code}{indexNoByCode}\",\n      \"schema\": {\n        \"type\": \"object\",\n        \"properties\": {\n          \"ID\": {\n            \"type\": \"string\",\n            \"triggers\": [\n              {\n                \"conditions\": [\n                  {\n                    \"logic\": \"==\",\n                    \"value\": \"\",\n                    \"gate\": \"&&\"\n                  }\n                ],\n                \"actions\": [\n                  {\n                    \"type\": \"set-value\",\n                    \"value\": \"MCTS{indexNoByCode}\",\n                    \"field_id\": 1\n                  }\n                ]\n              }\n            ],\n            \"primaryKey\": true,\n            \"readOnly\": true,\n            \"description\": \"Registration ID\",\n            \"example\": \"MCTS31\",\n            \"id\": 1\n          },\n          \"Child\": {\n            \"type\": \"string\",\n            \"properties\": {\n              \"ID\": {\n                \"type\": \"string\",\n                \"description\": \"Child ID\",\n                \"example\": \"ID2\",\n                \"id\": 13\n              }\n            }\n          }\n        },\n        \"incrementIndex\": 20,\n        \"required\": [\n          \"ID\"\n        ]\n      },\n      \"schema_tags\": [\n        {\n          \"name\": \"\",\n          \"path\": \"/Child/Citizenship\",\n          \"is_fulltext\": true\n        }\n      ],\n      \"schema_flags\": [\n        {\n          \"name\": \"mandatory\",\n          \"path\": \"/ID\"\n        }\n      ],\n      \"fields_uniques\": [\n        [\n          \"aa\"\n        ]\n      ],\n      \"is_draft\": false,\n      \"is_disabled\": false,\n      \"is_archived\": false,\n      \"modified_at\": \"2021-10-03T08:35:01.775915Z\",\n      \"by_user_name\": \"ingmar.dev\",\n      \"by_user_auth_id\": 1,\n      \"by_on_behalf_of_user_auth_id\": 1,\n      \"by_on_behalf_of_user_name\": \"string\",\n      \"generic_services\": [\n        {\n          \"service_id\": 1,\n          \"name\": \"data-create\",\n          \"is_visible\": true,\n          \"used_count\": 0\n        }\n      ],\n      \"data_index_increment\": 0,\n      \"has_logo\": false\n    }\n  ],\n  \"group_id\": 10,\n  \"order\": 76,\n  \"data_index_increment\": 3\n}",
+          "latency": 0,
+          "statusCode": 200,
+          "label": "Existing database",
+          "headers": [],
+          "bodyType": "INLINE",
+          "filePath": "",
+          "databucketID": "",
+          "sendFileAsBody": false,
+          "rules": [
+            {
+              "target": "header",
+              "modifier": "Information-Mediator-Client",
+              "value": "[a-zA-Z0-9_]+\\/[a-zA-Z0-9_]+\\/[a-zA-Z0-9_]+\\/[a-zA-Z0-9_]+",
+              "invert": false,
+              "operator": "regex"
+            },
+            {
+              "target": "header",
+              "modifier": "Information-Mediator-Client",
+              "value": "",
+              "invert": true,
+              "operator": "null"
+            }
+          ],
+          "rulesOperator": "AND",
+          "disableTemplating": false,
+          "fallbackTo404": false,
+          "default": true
+        }
+      ],
+      "enabled": true,
+      "responseMode": null,
+      "type": "http"
+    },
+    {
+      "uuid": "d02ecd5c-360f-4de6-a172-109a352f8191",
+      "documentation": "API endpoint that allows user to delete database schema",
+      "method": "delete",
+      "endpoint": "database/:id",
+      "responses": [
+        {
+          "uuid": "c97231c3-1b4d-4729-97cc-9c2b3ba89398",
+          "body": "\"Success\"\n\n",
+          "latency": 0,
+          "statusCode": 200,
+          "label": "Success",
+          "headers": [],
+          "bodyType": "INLINE",
+          "filePath": "",
+          "databucketID": "",
+          "sendFileAsBody": false,
+          "rules": [
+            {
+              "target": "header",
+              "modifier": "Information-Mediator-Client",
+              "value": "[a-zA-Z0-9_]+\\/[a-zA-Z0-9_]+\\/[a-zA-Z0-9_]+\\/[a-zA-Z0-9_]+",
+              "invert": false,
+              "operator": "regex"
+            },
+            {
+              "target": "params",
+              "modifier": "id",
+              "value": "^((?:[1-9][0-9]*)(?:\\.[0-9]+)?)$",
+              "invert": false,
+              "operator": "regex"
+            }
+          ],
+          "rulesOperator": "AND",
+          "disableTemplating": false,
+          "fallbackTo404": false,
+          "default": true
+        }
+      ],
+      "enabled": true,
+      "responseMode": null,
+      "type": "http"
+    },
+    {
+      "uuid": "5b0282d8-3099-4852-808e-deb0dea6be71",
+      "documentation": "API endpoint that allows user to create or modify database schema",
+      "method": "post",
+      "endpoint": "database/modify",
+      "responses": [
+        {
+          "uuid": "83f9b890-7ad4-4b57-a81e-735578e80cad",
+          "body": "{\n  \"type\": \"object\",\n  \"properties\": {\n    \"ID\": {\n      \"type\": \"string\",\n      \"triggers\": [\n        {\n          \"conditions\": [\n            {\n              \"logic\": \"==\",\n              \"value\": \"\",\n              \"gate\": \"&&\"\n            }\n          ],\n          \"actions\": [\n            {\n              \"type\": \"set-value\",\n              \"value\": \"MCTS{indexNoByCode}\",\n              \"field_id\": 1\n            }\n          ]\n        }\n      ],\n      \"primaryKey\": true,\n      \"readOnly\": true,\n      \"description\": \"Registration ID\",\n      \"example\": \"MCTS31\",\n      \"id\": 1\n    },\n    \"Child\": {\n      \"type\": \"string\",\n      \"properties\": {\n        \"ID\": {\n          \"type\": \"string\",\n          \"description\": \"Child ID\",\n          \"example\": \"ID2\",\n          \"id\": 13\n        }\n      }\n    }\n  },\n  \"incrementIndex\": 20,\n  \"required\": [\n    \"ID\"\n  ]\n}",
+          "latency": 0,
+          "statusCode": 200,
+          "label": "Database schema modified. ",
+          "headers": [],
+          "bodyType": "INLINE",
+          "filePath": "",
+          "databucketID": "",
+          "sendFileAsBody": false,
+          "rules": [
+            {
+              "target": "header",
+              "modifier": "Information-Mediator-Client",
+              "value": "[a-zA-Z0-9_]+\\/[a-zA-Z0-9_]+\\/[a-zA-Z0-9_]+\\/[a-zA-Z0-9_]+",
+              "invert": false,
+              "operator": "regex"
+            }
+          ],
+          "rulesOperator": "AND",
+          "disableTemplating": false,
+          "fallbackTo404": false,
+          "default": true
+        }
+      ],
+      "enabled": true,
+      "responseMode": null,
+      "type": "http"
+    }
+  ],
+  "proxyMode": false,
+  "proxyHost": "",
+  "proxyRemovePrefix": false,
+  "tlsOptions": {
+    "enabled": false,
+    "type": "CERT",
+    "pfxPath": "",
+    "certPath": "",
+    "keyPath": "",
+    "caPath": "",
+    "passphrase": ""
+  },
+  "cors": true,
+  "headers": [
+    {
+      "key": "Content-Type",
+      "value": "application/json"
+    }
+  ],
+  "proxyReqHeaders": [
+    {
+      "key": "",
+      "value": ""
+    }
+  ],
+  "proxyResHeaders": [
+    {
+      "key": "",
+      "value": ""
+    }
+  ],
+  "data": [],
+  "folders": [],
+  "rootChildren": [
+    {
+      "type": "route",
+      "uuid": "9117f9cc-e23b-447a-bf26-186f944daf82"
+    },
+    {
+      "type": "route",
+      "uuid": "e60d8cd6-c4d4-499a-b2fd-dc021f31e196"
+    },
+    {
+      "type": "route",
+      "uuid": "429efa1e-6926-44d7-997d-8a17cd2ec520"
+    },
+    {
+      "type": "route",
+      "uuid": "4c9bd964-ea0f-41de-b06e-6425f29aee01"
+    },
+    {
+      "type": "route",
+      "uuid": "d302ad25-f6c3-4cfe-bb8c-c0d2c6cd6e72"
+    },
+    {
+      "type": "route",
+      "uuid": "f4e32199-7547-4f1c-a26e-f7f05858df60"
+    },
+    {
+      "type": "route",
+      "uuid": "cc6141fc-6082-4519-b1e1-9a7601a3817b"
+    },
+    {
+      "type": "route",
+      "uuid": "2d835466-f4ac-4f5a-bd1c-b7d67f4ab615"
+    },
+    {
+      "type": "route",
+      "uuid": "ecffa065-a196-46ef-94bc-92094253a46e"
+    },
+    {
+      "type": "route",
+      "uuid": "8d90e854-eca4-4f41-b1da-a61826c10997"
+    },
+    {
+      "type": "route",
+      "uuid": "f4f2dd3c-888e-4e7a-873b-b3c2cb9a2246"
+    },
+    {
+      "type": "route",
+      "uuid": "73a21e7f-cab7-461a-91ae-0206f3c7fb8f"
+    },
+    {
+      "type": "route",
+      "uuid": "d02ecd5c-360f-4de6-a172-109a352f8191"
+    },
+    {
+      "type": "route",
+      "uuid": "5b0282d8-3099-4852-808e-deb0dea6be71"
+    }
+  ]
+}

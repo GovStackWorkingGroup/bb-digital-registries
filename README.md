@@ -31,6 +31,15 @@ README.md
   /application-c
 ```
 
+## Test data
+
+In order to properly call the tests, a file with input data has been created.
+
+The data must exist in tested software before running the tests.
+
+This data are compatible with the data used in the tests and they are stored in
+the `openAPI` folder in the `test-data.json`.
+
 ## Run Cucumber tests
 
 Cucumber-js is used to execute test harness to check compability of application

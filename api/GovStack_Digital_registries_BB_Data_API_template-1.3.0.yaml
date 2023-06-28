@@ -242,6 +242,16 @@ paths:
                 properties:
                   content:
                     $ref: '#/components/schemas/Example'
+        '404':
+          description: 'Record not found'
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  detail:
+                    type: string
+                    enum: ['no record found']
       security:
         - apiKey: []
   /data/{registryname}/{versionnumber}/update:

@@ -1,22 +1,35 @@
-Feature: API endpoint that allows users to update multiple records in the Digital Registries database.
-  Request endpoint: PUT /data/{registryname}/{versionnumber}/update-entries
+@method=PUT @endpoint=/data/{registryname}/{versionnumber}/update-entries
+Feature: API endpoint that updates multiple records in the registry database that match the input query.
 
-  Scenario: User successfully updates two existing records in the Digital Registries database
-    Given The user wants to update multiple records in the Digital Registries database and these records already exist
-    When The user sends a valid request to update records in the database
-    Then The record update process completes successfully
+  @smoke
+  Scenario: Successfully updates multiple records in the database by first name smoke type test
+    Given User wants to update multiple records in the database
+    When User sends PUT request to /data/{registryname}/{versionnumber}/update-entries with given Information-Mediator-Client header, "registryname" as registryname and "111" as versionnumber
+    And The request contains a payload with two objects: query object that contains content object with given: "Alina" as FirstName and write object that contains content object with given: "Jack" as FirstName
+    Then User receives a response from the /data/{registryname}/{versionnumber}/update-entries endpoint
+    And The /data/{registryname}/{versionnumber}/update-entries response should be returned in a timely manner 15000ms
+    And The /data/{registryname}/{versionnumber}/update-entries response should have status 200
+  
+  @unit @positive
+  Scenario Outline: Successfully updates multiple records in the database by first name
+    Given User wants to update multiple records in the database
+    When User sends PUT request to /data/{registryname}/{versionnumber}/update-entries with given Information-Mediator-Client header, "registryname" as registryname and "111" as versionnumber
+    And The request contains a payload with two objects: query object that contains content object with given: "<FirstName>" as FirstName and write object that contains content object with given: "<UpdatedFirstName>" as FirstName
+    Then User receives a response from the /data/{registryname}/{versionnumber}/update-entries endpoint
+    And The /data/{registryname}/{versionnumber}/update-entries response should be returned in a timely manner 15000ms
+    And The /data/{registryname}/{versionnumber}/update-entries response should have status 200
 
-  Scenario: The user is unable to update two records that do not exist in the Digital Registries database
-    Given The user wants to update multiple records in the Digital Registries database and these records do not exist
-    When The user sends a valid request to update records in the database
-    Then The result of an operation to update records returns an error
+    Examples:
+    | FirstName | UpdatedFirstName |
+    | Casandra  | Tamara           |
+    | Olga      | Alice            |
 
-  Scenario: The user is unable to update two records in the Digital Registries database due to an invalid request
-    Given The user wants to update multiple records in the Digital Registries database
-    When The user sends an invalid request to update records in the database
-    Then The result of an operation to update records returns an error because the request is invalid
-
-  Scenario: The user is not able to update two records in the Digital Registries database because of missing users data
-    Given The user wants to update multiple records in the Digital Registries database
-    When The user sends an invalid request with missing user data to update records in the database
-    Then The result of an operation to update records returns an error because of missing users data
+  
+  @unit @positive
+  Scenario: Successfully updates multiple records in the database
+    Given User wants to update multiple records in the database
+    When User sends PUT request to /data/{registryname}/{versionnumber}/update-entries with given Information-Mediator-Client header, "registryname" as registryname and "111" as versionnumber
+    And The request contains a payload with two objects: query object that contains content object with given: "EE1112223331" as ID, "Billy" as FirstName, "Johnson" as LastName, "RR-1112223331" as BirthCertificateID and write object that contains content object with given: "EE1112223331" as ID, "Bob" as FirstName, "Son" as LastName, "RR-1112223331" as BirthCertificateID
+    Then User receives a response from the /data/{registryname}/{versionnumber}/update-entries endpoint
+    And The /data/{registryname}/{versionnumber}/update-entries response should be returned in a timely manner 15000ms
+    And The /data/{registryname}/{versionnumber}/update-entries response should have status 200

@@ -1,131 +1,112 @@
-const pactum = require('pactum');
+const chai = require('chai');
+const { spec } = require('pactum');
 const { Given, When, Then, Before, After } = require('@cucumber/cucumber');
-const { header, localhost } = require('./helpers/helpers');
+const {
+  header,
+  localhost,
+  defaultExpectedResponseTime,
+  dataUpdateEntriesEndpoint,
+} = require('./helpers/helpers');
 
-let userVariables = {};
-let specDataUpdateEntries;
+chai.use(require('chai-json-schema'));
 
-const baseUrl = `${localhost}data/registry1/version1/update-entries`;
-const validRequestFunction = () =>
-  specDataUpdateEntries
-    .put(baseUrl)
-    .withHeaders(`${header.key}`, `${header.value}`)
-    .withBody({
-      query: {
-        content: userVariables,
-      },
-      write: {
-        content: userVariables,
-      },
-    });
+const baseUrl = localhost + dataUpdateEntriesEndpoint;
+const endpointTag = { tags: `@endpoint=/${dataUpdateEntriesEndpoint}` };
 
-Before(() => {
-  specDataUpdateEntries = pactum.spec();
+Before(endpointTag, () => {
+  specDataUpdateEntries = spec();
 });
 
-// Scenario: User successfully updates two existing records in the Digital Registries database
+// Scenario: Successfully updates multiple records in the database by first name smoke type test
 Given(
-  'The user wants to update multiple records in the Digital Registries database and these records already exist',
-  () =>
-    (userVariables = {
-      ID: 'EE378627348834',
-      FirstName: 'Alfie',
-      LastName: 'Grande',
-      BirthCertificateID: 'RR-1234567889',
-    })
-);
-
-When('The user sends a valid request to update records in the database', () =>
-  validRequestFunction()
-);
-
-Then('The record update process completes successfully', async () => {
-  await specDataUpdateEntries.toss();
-  specDataUpdateEntries.response().should.have.status(200);
-});
-
-// Scenario: The user is unable to update two records that do not exist in the Digital Registries database
-Given(
-  'The user wants to update multiple records in the Digital Registries database and these records do not exist',
-  () =>
-    (userVariables = {
-      ID: 'EE378627348834',
-      FirstName: 'Jerry',
-      LastName: 'Blake',
-      BirthCertificateID: 'RR-1234567889',
-    })
-);
-
-// "When" is already written in line 38-40
-
-Then(
-  `The result of an operation to update records returns an error`,
-  async () => {
-    await specDataUpdateEntries.toss();
-    specDataUpdateEntries.response().should.have.status(404);
-    specDataUpdateEntries
-      .response()
-      .should.have.body('{\n  "Record matching query not found."\n}');
-  }
-);
-
-// Scenario: The user is unable to update two records in the Digital Registries database due to an invalid request
-Given(
-  'The user wants to update multiple records in the Digital Registries database',
-  () =>
-    (userVariables = {
-      ID: 'EE378627348834',
-      FirstName: 'Jasmine',
-      LastName: 'Sun',
-      BirthCertificateID: null,
-    })
+  'User wants to update multiple records in the database',
+  () => 'User wants to update multiple records in the database'
 );
 
 When(
-  'The user sends an invalid request to update records in the database',
-  () =>
+  /^User sends PUT request to \/data\/{registryname}\/{versionnumber}\/update-entries with given Information-Mediator-Client header, "([^"]*)" as registryname and "([^"]*)" as versionnumber$/,
+  (registryName, versionNumber) =>
     specDataUpdateEntries
       .put(baseUrl)
-      .withHeaders(`${header.key}`, `${header.value}`)
-      .withBody({
-        query: {
-          content: userVariables,
-        },
+      .withHeaders(header.key, header.value)
+      .withPathParams({
+        registryname: registryName,
+        versionnumber: versionNumber,
       })
 );
 
-Then(
-  `The result of an operation to update records returns an error because the request is invalid`,
-  async () => {
-    await specDataUpdateEntries.toss();
-    specDataUpdateEntries.response().should.have.status(400);
-    specDataUpdateEntries
-      .response()
-      .should.have.body('{\n  "Query not provided."\n}');
-  }
-);
-
-// Scenario: The user is unable to update two records in the Digital Registries database because the user data is missing
-// "Given" is already written in line 73-82
-
 When(
-  `The user sends an invalid request with missing user data to update records in the database`,
-  () => validRequestFunction()
+  /^The request contains a payload with two objects: query object that contains content object with given: "([^"]*)" as FirstName and write object that contains content object with given: "([^"]*)" as FirstName$/,
+  (FirstName, UpdatedFirstName) =>
+    specDataUpdateEntries.withJson({
+      query: {
+        content: {
+          FirstName: FirstName,
+        },
+      },
+      write: {
+        content: {
+          FirstName: UpdatedFirstName,
+        },
+      },
+    })
 );
 
 Then(
-  `The result of an operation to update records returns an error because of missing users data`,
-  async () => {
-    await specDataUpdateEntries.toss();
-    specDataUpdateEntries.response().should.have.status(400);
-    specDataUpdateEntries
-      .response()
-      .should.have.bodyContains(
-        'Invalid payload, query.content.FirstName, query.content.ID, query.content.LastName or query.content.BirthCertificateID not provided'
-      );
-  }
+  /^User receives a response from the \/data\/{registryname}\/{versionnumber}\/update-entries endpoint$/,
+  async () => await specDataUpdateEntries.toss()
 );
 
-After(() => {
+Then(
+  /^The \/data\/{registryname}\/{versionnumber}\/update-entries response should be returned in a timely manner 15000ms$/,
+  () =>
+    specDataUpdateEntries
+      .response()
+      .to.have.responseTimeLessThan(defaultExpectedResponseTime)
+);
+
+Then(
+  /^The \/data\/{registryname}\/{versionnumber}\/update-entries response should have status (\d+)$/,
+  status => specDataUpdateEntries.response().to.have.status(status)
+);
+
+// Scenario Outline: Successfully updates multiple records in the database by first name
+// All Given When Then are the same as for the afoementioned smoke type test
+
+// Scenario: Successfully updates multiple records in the database
+// Others Given When Then are written in the afoementioned smoke type test example
+When(
+  /^The request contains a payload with two objects: query object that contains content object with given: "([^"]*)" as ID, "([^"]*)" as FirstName, "([^"]*)" as LastName, "([^"]*)" as BirthCertificateID and write object that contains content object with given: "([^"]*)" as ID, "([^"]*)" as FirstName, "([^"]*)" as LastName, "([^"]*)" as BirthCertificateID$/,
+  (
+    ID,
+    FirstName,
+    LastName,
+    BirthCertificateID,
+    UpdatedID,
+    UpdatedFirstName,
+    UpdatedLastName,
+    UpdatedBirthCertificateID
+  ) =>
+    specDataUpdateEntries.withJson({
+      query: {
+        content: {
+          ID: ID,
+          FirstName: FirstName,
+          LastName: LastName,
+          BirthCertificateID: BirthCertificateID,
+        },
+      },
+      write: {
+        content: {
+          ID: UpdatedID,
+          FirstName: UpdatedFirstName,
+          LastName: UpdatedLastName,
+          BirthCertificateID: UpdatedBirthCertificateID,
+        },
+      },
+    })
+);
+
+After(endpointTag, () => {
   specDataUpdateEntries.end();
 });

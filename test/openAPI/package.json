@@ -6,10 +6,11 @@
   },
   "devDependencies": {
     "@cucumber/cucumber": "8.10.0",
+    "cucumber-junit": "^1.7.1",
     "pactum": "3.3.2"
   },
   "dependencies": {
     "chai": "^4.3.7",
-    "chai-json-schema": "1.5.1"
+    "chai-json-schema": "^1.5.1"
   }
 }

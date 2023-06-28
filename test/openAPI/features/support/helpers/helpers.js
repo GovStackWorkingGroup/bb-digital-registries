@@ -6,15 +6,9 @@ module.exports = {
   },
   header: {
     key: 'Information-Mediator-Client',
-    value: 'INSTANCE/CLASS/MEMBER/SUBSYSTEM',
+    value: 'eGovStack/GOV/90000009/digitalregistries',
   },
   defaultExpectedResponseTime: 15000,
-  // data_create
-  dataCreateEndpoint: 'data/{registryname}/{versionnumber}/create',
-  dataCreateResponseSchema: {
-    type: 'object',
-    properties: { content: this.dataExampleSchema },
-  },
   // db_delete
   databaseDeleteEndpoint: 'database/{id}',
   databaseDeleteResponseSchema: { type: 'string' },
@@ -24,7 +18,7 @@ module.exports = {
     type: 'object',
     properties: this.databaseInfoSchema,
   },
-  // db-list
+  // db_list
   databasesEndpoint: 'databases',
   databasesResponseSchema: {
     type: 'object',
@@ -97,6 +91,128 @@ module.exports = {
       required: ['ID'],
     },
   },
+  // data_update_entries
+  dataUpdateEntriesEndpoint:
+    'data/{registryname}/{versionnumber}/update-entries',
+  // data_create
+  dataCreateEndpoint: 'data/{registryname}/{versionnumber}/create',
+  dataCreateResponseSchema: {
+    type: 'object',
+    properties: { content: this.dataExampleSchema },
+  },
+  // data_my_personal_data_usage
+  dataMyPersonalDataUsageEndpoint: 'data/MyPersonalDataUsage/1.0',
+  dataMyPersonalDataUsageResponseSchema: {
+    type: 'array',
+    properties: {
+      type: 'object',
+      properties: {
+        ID: { type: 'string' },
+        ReaderID: { type: 'string' },
+        ReaderInitials: { type: 'string' },
+        ReaderInstitutionID: { type: 'string' },
+        ReaderInstitutionName: { type: 'string' },
+        ReaderApplicationName: { type: 'string' },
+        SearchDateTime: { type: 'string', format: 'date-time' },
+        Refrences: {
+          type: 'array',
+          items: {
+            properties: {
+              ReferenceID: { type: 'string' },
+            },
+          },
+        },
+      },
+      additionalProperties: false,
+    },
+  },
+  // data_list
+  dataListReadEndpoint: 'data/{registryname}/{versionnumber}',
+  dataListResponseSchema: {
+    type: 'object',
+    properties: {
+      count: { type: 'number' },
+      next: { type: 'string' },
+      previous: { type: ['string', 'null'] },
+      results: {
+        type: 'array',
+        items: this.dataExampleSchema,
+      },
+    },
+    required: ['count', 'results'],
+  },
+  // data_exist
+  dataExistReadEndpoint: 'data/{registryname}/{versionnumber}/exists',
+  dataExistResponseSchema: {
+    type: 'object',
+    properties: {
+      answer: {
+        type: 'object',
+        properties: {
+          status: { type: 'boolean' },
+          message: { type: 'string' },
+        },
+        required: ['status', 'message'],
+      },
+    },
+    required: ['answer'],
+  },
+  // data_update
+  dataUpdateReadEndpoint: 'data/{registryname}/{versionnumber}/update',
+  dataUpdateResponseSchema: {
+    type: 'object',
+    properties: {
+      query: {
+        type: 'object',
+        properties: {
+          content: this.dataExampleSchema,
+        },
+        required: ['content'],
+      },
+      write: {
+        type: 'object',
+        properties: {
+          content: this.dataExampleSchema,
+        },
+        required: ['content'],
+      },
+    },
+    required: ['query', 'write'],
+  },
+  // data_update_or_create
+  dataUpdateOrCreateEndpoint:
+    'data/{registryname}/{versionnumber}/update-or-create',
+  dataUpdateOrCreateResponseSchema: {
+    type: 'object',
+    properties: {
+      content: this.dataExampleSchema,
+    },
+    required: ['content'],
+  },
+  // data_read_value
+  dataReadValueEndpoint:
+    'data/{registryname}/{versionnumber}/{uuid}/read-value/{field}.{ext}',
+  dataReadValueResponseSchema: { type: 'string' },
+  // data_read
+  dataReadEndpoint: 'data/{registryname}/{versionnumber}/read',
+  dataReadResponseSchema: {
+    type: 'object',
+    properties: {
+      content: this.dataExampleSchema,
+    },
+    required: ['content'],
+  },
+  dataRead404ResponseSchema: {
+    type: 'object',
+    properties: {
+      detail: {
+        type: 'string',
+        enum: ['no record found'],
+      },
+    },
+  },
+  // data_delete
+  dataDeleteEndpoint: 'data/{registryname}/{versionnumber}/{id}/delete',
   // shares
   databaseSchemaSchema: {
     type: 'object',
@@ -251,5 +367,6 @@ module.exports = {
       LastName: { type: 'string' },
       BirthCertificateID: { type: 'string' },
     },
+    required: ['ID', 'FirstName', 'LastName', 'BirthCertificateID'],
   },
 };

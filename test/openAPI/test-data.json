@@ -1,0 +1,1126 @@
+{
+  "informationMediatorClientHeader": {
+    "key": "Information-Mediator-Client",
+    "value": "eGovStack/GOV/90000009/digitalregistries"
+  },
+  "registries": {
+    "registryname": "registryname",
+    "versionnumber": "111",
+    "databaseID": "MCTS",
+    "records": [
+      {
+        "uuid": "80bcb084-fa17-11ed-be56-0242ac120002",
+        "id": "EE123627348834",
+        "FirstName": "John",
+        "LastName": "Bon",
+        "BirthCertificateID": "RR-3334537999",
+        "PersonalData": []
+      },
+      {
+        "uuid": "80bcb34a-fa17-11ed-be56-0242ac120002",
+        "id": "EE456627348834",
+        "FirstName": "Alice",
+        "LastName": "Hendrix",
+        "BirthCertificateID": "RR-1114537999",
+        "PersonalData": []
+      },
+      {
+        "uuid": "80bcb49e-fa17-11ed-be56-0242ac120002",
+        "id": "EE789627348834",
+        "FirstName": "Jack",
+        "LastName": "King",
+        "BirthCertificateID": "RR-4444537999",
+        "PersonalData": []
+      },
+      {
+        "uuid": "80bcb5b6-fa17-11ed-be56-0242ac120002",
+        "id": "EE987627348834",
+        "FirstName": "Bob",
+        "LastName": "Small",
+        "BirthCertificateID": "RR-5555537999",
+        "PersonalData": []
+      },
+      {
+        "uuid": "80bcb6ec-fa17-11ed-be56-0242ac120002",
+        "id": "EE654627348834",
+        "FirstName": "Eva",
+        "LastName": "Sorenz",
+        "BirthCertificateID": "RR-7777537999",
+        "PersonalData": []
+      },
+      {
+        "uuid": "80bcc15a-fa17-11ed-be56-0242ac120002",
+        "id": "EE6546273487865",
+        "FirstName": "Emma",
+        "LastName": "Smith",
+        "BirthCertificateID": "RR-7777536299",
+        "PersonalData": []
+      },
+      {
+        "uuid": "80bcc268-fa17-11ed-be56-0242ac1200022",
+        "id": "EE6546273487865",
+        "FirstName": "Tobias",
+        "LastName": "Smith",
+        "BirthCertificateID": "RR-4419523937",
+        "PersonalData": []
+      },
+      {
+        "uuid": "80bcc376-fa17-11ed-be56-0242ac120002",
+        "id": "EE378129127223",
+        "FirstName": "Billy",
+        "LastName": "Johnson",
+        "BirthCertificateID": "RR-1112223331",
+        "PersonalData": [
+          {
+            "ID": "1234567",
+            "ReaderID": "EE37819285773",
+            "ReaderInitials": "JD",
+            "ReaderInstitutionID": "EE70049837",
+            "ReaderInstitutionName": "East Hospital",
+            "ReaderApplicationName": "East Hospital healthcare back office",
+            "SearchDateTime": "2017-07-21T17:32:28Z",
+            "Refrences": [
+              {
+                "ReferenceID": "MCTS31"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "uuid": "80bcc47a-fa17-11ed-be56-0242ac120002",
+        "id": "EE334569121212",
+        "FirstName": "John",
+        "LastName": "Smith",
+        "BirthCertificateID": "RR-1234567890",
+        "PersonalData": [
+          {
+            "ID": "1234567",
+            "ReaderID": "EE37819285773",
+            "ReaderInitials": "JD",
+            "ReaderInstitutionID": "EE70049837",
+            "ReaderInstitutionName": "East Hospital",
+            "ReaderApplicationName": "East Hospital healthcare back office",
+            "SearchDateTime": "2017-07-21T17:32:28Z",
+            "Refrences": [
+              {
+                "ReferenceID": "MCTS31"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "uuid": "80bcc57e-fa17-11ed-be56-0242ac120002",
+        "id": "EE390029120500",
+        "FirstName": "Ana",
+        "LastName": "Adams",
+        "BirthCertificateID": "RR-0987654321",
+        "PersonalData": [
+          {
+            "ID": "1234567",
+            "ReaderID": "EE37819285773",
+            "ReaderInitials": "JD",
+            "ReaderInstitutionID": "EE70049837",
+            "ReaderInstitutionName": "East Hospital",
+            "ReaderApplicationName": "East Hospital healthcare back office",
+            "SearchDateTime": "2017-07-21T17:32:28Z",
+            "Refrences": [
+              {
+                "ReferenceID": "MCTS31"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "uuid": "80bcb084-fa17-11ed-be56-0242ac120002",
+        "id": "EE378129277266",
+        "FirstName": "John",
+        "LastName": "Bon",
+        "BirthCertificateID": "RR-3334537999",
+        "PersonalData": [
+          {
+            "ID": "1234567",
+            "ReaderID": "EE37819285773",
+            "ReaderInitials": "JD",
+            "ReaderInstitutionID": "EE70049837",
+            "ReaderInstitutionName": "East Hospital",
+            "ReaderApplicationName": "East Hospital healthcare back office",
+            "SearchDateTime": "2017-07-21T17:32:28Z",
+            "Refrences": [
+              {
+                "ReferenceID": "MCTS31"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "uuid": "01fbf75d-43bb-4ee8-9f49-f85d26361e2e",
+        "id": "EE3784545277266",
+        "FirstName": "Philip",
+        "LastName": "Red",
+        "BirthCertificateID": "RR-30045370099",
+        "PersonalData": [
+          {
+            "ID": "3444567",
+            "ReaderID": "EE44419285773",
+            "ReaderInitials": "JD",
+            "ReaderInstitutionID": "EE71119837",
+            "ReaderInstitutionName": "West Hospital",
+            "ReaderApplicationName": "West Hospital healthcare back office",
+            "SearchDateTime": "2017-05-21T17:32:28Z",
+            "Refrences": [
+              {
+                "ReferenceID": "MCTS31"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "uuid": "38aabe75-a1e5-4bba-9b40-5207be85b8d2",
+        "id": "EE34462734834865",
+        "FirstName": "Alex",
+        "LastName": "Green",
+        "BirthCertificateID": "RR-441124937",
+        "PersonalData": []
+      },
+      {
+        "uuid": "29448e66-84cb-4d80-998f-267cda61e210",
+        "id": "EE61287673487865",
+        "FirstName": "Alise",
+        "LastName": "Black",
+        "BirthCertificateID": "RR-49075937",
+        "PersonalData": []
+      },
+      {
+        "uuid": "e32a07b4-f4f1-4631-bfd9-514e320e7128",
+        "id": "EE6534523487865",
+        "FirstName": "Zyra",
+        "LastName": "Blue",
+        "BirthCertificateID": "RR-24523937",
+        "PersonalData": []
+      },
+      {
+        "uuid": "4784f9c5-c5d7-40ce-9e19-88c1a1a8a8908",
+        "id": "EE65346467865",
+        "FirstName": "Alina",
+        "LastName": "Soft",
+        "BirthCertificateID": "RR-24521537",
+        "PersonalData": []
+      },
+      {
+        "uuid": "0708b733-a2f5-4ec5-8a7d-d79c71de2fbb",
+        "id": "EE65989865",
+        "FirstName": "Casandra",
+        "LastName": "Flu",
+        "BirthCertificateID": "RR-20021537",
+        "PersonalData": []
+      },
+      {
+        "uuid": "ea55fda3-35b7-49dd-87fc-c742fa31e0b2",
+        "id": "EE6387665",
+        "FirstName": "Olga",
+        "LastName": "Bread",
+        "BirthCertificateID": "RR-200215677",
+        "PersonalData": []
+      },
+      {
+        "uuid": "ef6d09ee-a2ed-49ad-8d6f-44f434a620f2",
+        "id": "EE1112223331",
+        "FirstName": "Billy",
+        "LastName": "Johnson",
+        "BirthCertificateID": "RR-1112223331",
+        "PersonalData": []
+      },
+      "//records below have to be deleted in the test - don't use it to update etc.",
+      {
+        "uuid": "80bcb804-fa17-11ed-be56-0242ac120002",
+        "id": "EE378627348834",
+        "FirstName": "John",
+        "LastName": "Corn",
+        "BirthCertificateID": "RR-0987000321",
+        "PersonalData": []
+      },
+      {
+        "uuid": "80bcbc46-fa17-11ed-be56-0242ac120002",
+        "id": "EE378627348855",
+        "FirstName": "John",
+        "LastName": "Snow",
+        "BirthCertificateID": "RR-0900654321",
+        "PersonalData": []
+      },
+      {
+        "uuid": "80bcbe62-fa17-11ed-be56-0242ac120002",
+        "id": "RR378627348834",
+        "FirstName": "John",
+        "LastName": "Great",
+        "BirthCertificateID": "RR-0987654300",
+        "PersonalData": []
+      },
+      {
+        "uuid": "80bcc02e-fa17-11ed-be56-0242ac120002",
+        "id": "DD378627348834",
+        "FirstName": "John",
+        "LastName": "Kane",
+        "BirthCertificateID": "RR-0008765401",
+        "PersonalData": []
+      }
+    ]
+  },
+  "databases": [
+    {
+      "id": 85,
+      "name": "Mother and Child",
+      "code": "MCTS",
+      "databases": [
+        {
+          "id": 1,
+          "version": "1.1",
+          "name": "MCTS",
+          "description": "Database holding information about MCTS objects",
+          "institution": "Ministry of Social Affairs",
+          "number_format": "{code}{indexNoByCode}",
+          "schema": {
+            "type": "object",
+            "properties": {
+              "ID": {
+                "type": "string",
+                "triggers": [
+                  {
+                    "conditions": [
+                      {
+                        "logic": "==",
+                        "value": "",
+                        "gate": "&&"
+                      }
+                    ],
+                    "actions": [
+                      {
+                        "type": "set-value",
+                        "value": "MCTS{indexNoByCode}",
+                        "field_id": 1
+                      }
+                    ]
+                  }
+                ],
+                "primaryKey": true,
+                "readOnly": true,
+                "description": "Registration ID",
+                "example": "MCTS31",
+                "id": 1
+              },
+              "Child": {
+                "type": "string",
+                "properties": {
+                  "ID": {
+                    "type": "string",
+                    "description": "Child ID",
+                    "example": "ID2",
+                    "id": 13
+                  }
+                }
+              }
+            },
+            "incrementIndex": 20,
+            "required": ["ID"]
+          },
+          "schema_tags": [
+            {
+              "name": "",
+              "path": "/Child/Citizenship",
+              "is_fulltext": true
+            }
+          ],
+          "schema_flags": [
+            {
+              "name": "mandatory",
+              "path": "/ID"
+            }
+          ],
+          "fields_uniques": [[""]],
+          "is_draft": false,
+          "is_disabled": false,
+          "is_archived": false,
+          "modified_at": "2021-10-03T08:35:01.775915Z",
+          "by_user_name": "ingmar.dev",
+          "by_user_auth_id": 1,
+          "by_on_behalf_of_user_auth_id": 0,
+          "by_on_behalf_of_user_name": null,
+          "generic_services": [
+            {
+              "service_id": 1,
+              "name": "data-create",
+              "is_visible": true,
+              "used_count": 0
+            }
+          ],
+          "data_index_increment": 0,
+          "has_logo": false
+        },
+        {
+          "id": 123,
+          "version": "1.1",
+          "name": "MCTS",
+          "description": "Database holding information about MCTS objects",
+          "institution": "Ministry of Social Affairs",
+          "number_format": "{code}{indexNoByCode}",
+          "schema": {
+            "type": "object",
+            "properties": {
+              "ID": {
+                "type": "string",
+                "triggers": [
+                  {
+                    "conditions": [
+                      {
+                        "logic": "==",
+                        "value": "",
+                        "gate": "&&"
+                      }
+                    ],
+                    "actions": [
+                      {
+                        "type": "set-value",
+                        "value": "MCTS{indexNoByCode}",
+                        "field_id": 1
+                      }
+                    ]
+                  }
+                ],
+                "primaryKey": true,
+                "readOnly": true,
+                "description": "Registration ID",
+                "example": "MCTS31",
+                "id": 1
+              },
+              "Child": {
+                "type": "string",
+                "properties": {
+                  "ID": {
+                    "type": "string",
+                    "description": "Child ID",
+                    "example": "ID2",
+                    "id": 13
+                  }
+                }
+              }
+            },
+            "incrementIndex": 20,
+            "required": ["ID"]
+          },
+          "schema_tags": [
+            {
+              "name": "",
+              "path": "/Child/Citizenship",
+              "is_fulltext": true
+            }
+          ],
+          "schema_flags": [
+            {
+              "name": "mandatory",
+              "path": "/ID"
+            }
+          ],
+          "fields_uniques": [[""]],
+          "is_draft": false,
+          "is_disabled": false,
+          "is_archived": false,
+          "modified_at": "2021-10-03T08:35:01.775915Z",
+          "by_user_name": "ingmar.dev",
+          "by_user_auth_id": 1,
+          "by_on_behalf_of_user_auth_id": 0,
+          "by_on_behalf_of_user_name": null,
+          "generic_services": [
+            {
+              "service_id": 1,
+              "name": "data-create",
+              "is_visible": true,
+              "used_count": 0
+            }
+          ],
+          "data_index_increment": 0,
+          "has_logo": false
+        },
+        {
+          "id": 8438778473,
+          "version": "1.1",
+          "name": "MCTS",
+          "description": "Database holding information about MCTS objects",
+          "institution": "Ministry of Social Affairs",
+          "number_format": "{code}{indexNoByCode}",
+          "schema": {
+            "type": "object",
+            "properties": {
+              "ID": {
+                "type": "string",
+                "triggers": [
+                  {
+                    "conditions": [
+                      {
+                        "logic": "==",
+                        "value": "",
+                        "gate": "&&"
+                      }
+                    ],
+                    "actions": [
+                      {
+                        "type": "set-value",
+                        "value": "MCTS{indexNoByCode}",
+                        "field_id": 1
+                      }
+                    ]
+                  }
+                ],
+                "primaryKey": true,
+                "readOnly": true,
+                "description": "Registration ID",
+                "example": "MCTS31",
+                "id": 1
+              },
+              "Child": {
+                "type": "string",
+                "properties": {
+                  "ID": {
+                    "type": "string",
+                    "description": "Child ID",
+                    "example": "ID2",
+                    "id": 13
+                  }
+                }
+              }
+            },
+            "incrementIndex": 20,
+            "required": ["ID"]
+          },
+          "schema_tags": [
+            {
+              "name": "",
+              "path": "/Child/Citizenship",
+              "is_fulltext": true
+            }
+          ],
+          "schema_flags": [
+            {
+              "name": "mandatory",
+              "path": "/ID"
+            }
+          ],
+          "fields_uniques": [[""]],
+          "is_draft": false,
+          "is_disabled": false,
+          "is_archived": false,
+          "modified_at": "2021-10-03T08:35:01.775915Z",
+          "by_user_name": "ingmar.dev",
+          "by_user_auth_id": 1,
+          "by_on_behalf_of_user_auth_id": 0,
+          "by_on_behalf_of_user_name": null,
+          "generic_services": [
+            {
+              "service_id": 1,
+              "name": "data-create",
+              "is_visible": true,
+              "used_count": 0
+            }
+          ],
+          "data_index_increment": 0,
+          "has_logo": false
+        },
+        {
+          "id": 3287483474,
+          "version": "1.1",
+          "name": "MCTS",
+          "description": "Database holding information about MCTS objects",
+          "institution": "Ministry of Social Affairs",
+          "number_format": "{code}{indexNoByCode}",
+          "schema": {
+            "type": "object",
+            "properties": {
+              "ID": {
+                "type": "string",
+                "triggers": [
+                  {
+                    "conditions": [
+                      {
+                        "logic": "==",
+                        "value": "",
+                        "gate": "&&"
+                      }
+                    ],
+                    "actions": [
+                      {
+                        "type": "set-value",
+                        "value": "MCTS{indexNoByCode}",
+                        "field_id": 1
+                      }
+                    ]
+                  }
+                ],
+                "primaryKey": true,
+                "readOnly": true,
+                "description": "Registration ID",
+                "example": "MCTS31",
+                "id": 1
+              },
+              "Child": {
+                "type": "string",
+                "properties": {
+                  "ID": {
+                    "type": "string",
+                    "description": "Child ID",
+                    "example": "ID2",
+                    "id": 13
+                  }
+                }
+              }
+            },
+            "incrementIndex": 20,
+            "required": ["ID"]
+          },
+          "schema_tags": [
+            {
+              "name": "",
+              "path": "/Child/Citizenship",
+              "is_fulltext": true
+            }
+          ],
+          "schema_flags": [
+            {
+              "name": "mandatory",
+              "path": "/ID"
+            }
+          ],
+          "fields_uniques": [[""]],
+          "is_draft": false,
+          "is_disabled": false,
+          "is_archived": false,
+          "modified_at": "2021-10-03T08:35:01.775915Z",
+          "by_user_name": "ingmar.dev",
+          "by_user_auth_id": 1,
+          "by_on_behalf_of_user_auth_id": 0,
+          "by_on_behalf_of_user_name": null,
+          "generic_services": [
+            {
+              "service_id": 1,
+              "name": "data-create",
+              "is_visible": true,
+              "used_count": 0
+            }
+          ],
+          "data_index_increment": 0,
+          "has_logo": false
+        },
+        {
+          "id": 8484848484,
+          "version": "1.1",
+          "name": "MCTS",
+          "description": "Database holding information about MCTS objects",
+          "institution": "Ministry of Social Affairs",
+          "number_format": "{code}{indexNoByCode}",
+          "schema": {
+            "type": "object",
+            "properties": {
+              "ID": {
+                "type": "string",
+                "triggers": [
+                  {
+                    "conditions": [
+                      {
+                        "logic": "==",
+                        "value": "",
+                        "gate": "&&"
+                      }
+                    ],
+                    "actions": [
+                      {
+                        "type": "set-value",
+                        "value": "MCTS{indexNoByCode}",
+                        "field_id": 1
+                      }
+                    ]
+                  }
+                ],
+                "primaryKey": true,
+                "readOnly": true,
+                "description": "Registration ID",
+                "example": "MCTS31",
+                "id": 1
+              },
+              "Child": {
+                "type": "string",
+                "properties": {
+                  "ID": {
+                    "type": "string",
+                    "description": "Child ID",
+                    "example": "ID2",
+                    "id": 13
+                  }
+                }
+              }
+            },
+            "incrementIndex": 20,
+            "required": ["ID"]
+          },
+          "schema_tags": [
+            {
+              "name": "",
+              "path": "/Child/Citizenship",
+              "is_fulltext": true
+            }
+          ],
+          "schema_flags": [
+            {
+              "name": "mandatory",
+              "path": "/ID"
+            }
+          ],
+          "fields_uniques": [[""]],
+          "is_draft": false,
+          "is_disabled": false,
+          "is_archived": false,
+          "modified_at": "2021-10-03T08:35:01.775915Z",
+          "by_user_name": "ingmar.dev",
+          "by_user_auth_id": 1,
+          "by_on_behalf_of_user_auth_id": 0,
+          "by_on_behalf_of_user_name": null,
+          "generic_services": [
+            {
+              "service_id": 1,
+              "name": "data-create",
+              "is_visible": true,
+              "used_count": 0
+            }
+          ],
+          "data_index_increment": 0,
+          "has_logo": false
+        },
+        "//schemas that will be deleted in db_delete tests",
+        {
+          "id": 75858,
+          "version": "1.1",
+          "name": "MCTS",
+          "description": "Database holding information about MCTS objects",
+          "institution": "Ministry of Social Affairs",
+          "number_format": "{code}{indexNoByCode}",
+          "schema": {
+            "type": "object",
+            "properties": {
+              "ID": {
+                "type": "string",
+                "triggers": [
+                  {
+                    "conditions": [
+                      {
+                        "logic": "==",
+                        "value": "",
+                        "gate": "&&"
+                      }
+                    ],
+                    "actions": [
+                      {
+                        "type": "set-value",
+                        "value": "MCTS{indexNoByCode}",
+                        "field_id": 1
+                      }
+                    ]
+                  }
+                ],
+                "primaryKey": true,
+                "readOnly": true,
+                "description": "Registration ID",
+                "example": "MCTS31",
+                "id": 1
+              },
+              "Child": {
+                "type": "string",
+                "properties": {
+                  "ID": {
+                    "type": "string",
+                    "description": "Child ID",
+                    "example": "ID2",
+                    "id": 13
+                  }
+                }
+              }
+            },
+            "incrementIndex": 20,
+            "required": ["ID"]
+          },
+          "schema_tags": [
+            {
+              "name": "",
+              "path": "/Child/Citizenship",
+              "is_fulltext": true
+            }
+          ],
+          "schema_flags": [
+            {
+              "name": "mandatory",
+              "path": "/ID"
+            }
+          ],
+          "fields_uniques": [[""]],
+          "is_draft": false,
+          "is_disabled": false,
+          "is_archived": false,
+          "modified_at": "2021-10-03T08:35:01.775915Z",
+          "by_user_name": "ingmar.dev",
+          "by_user_auth_id": 1,
+          "by_on_behalf_of_user_auth_id": 0,
+          "by_on_behalf_of_user_name": null,
+          "generic_services": [
+            {
+              "service_id": 1,
+              "name": "data-create",
+              "is_visible": true,
+              "used_count": 0
+            }
+          ],
+          "data_index_increment": 0,
+          "has_logo": false
+        },
+        {
+          "id": 6745,
+          "version": "1.1",
+          "name": "MCTS",
+          "description": "Database holding information about MCTS objects",
+          "institution": "Ministry of Social Affairs",
+          "number_format": "{code}{indexNoByCode}",
+          "schema": {
+            "type": "object",
+            "properties": {
+              "ID": {
+                "type": "string",
+                "triggers": [
+                  {
+                    "conditions": [
+                      {
+                        "logic": "==",
+                        "value": "",
+                        "gate": "&&"
+                      }
+                    ],
+                    "actions": [
+                      {
+                        "type": "set-value",
+                        "value": "MCTS{indexNoByCode}",
+                        "field_id": 1
+                      }
+                    ]
+                  }
+                ],
+                "primaryKey": true,
+                "readOnly": true,
+                "description": "Registration ID",
+                "example": "MCTS31",
+                "id": 1
+              },
+              "Child": {
+                "type": "string",
+                "properties": {
+                  "ID": {
+                    "type": "string",
+                    "description": "Child ID",
+                    "example": "ID2",
+                    "id": 13
+                  }
+                }
+              }
+            },
+            "incrementIndex": 20,
+            "required": ["ID"]
+          },
+          "schema_tags": [
+            {
+              "name": "",
+              "path": "/Child/Citizenship",
+              "is_fulltext": true
+            }
+          ],
+          "schema_flags": [
+            {
+              "name": "mandatory",
+              "path": "/ID"
+            }
+          ],
+          "fields_uniques": [[""]],
+          "is_draft": false,
+          "is_disabled": false,
+          "is_archived": false,
+          "modified_at": "2021-10-03T08:35:01.775915Z",
+          "by_user_name": "ingmar.dev",
+          "by_user_auth_id": 1,
+          "by_on_behalf_of_user_auth_id": 0,
+          "by_on_behalf_of_user_name": null,
+          "generic_services": [
+            {
+              "service_id": 1,
+              "name": "data-create",
+              "is_visible": true,
+              "used_count": 0
+            }
+          ],
+          "data_index_increment": 0,
+          "has_logo": false
+        },
+        {
+          "id": 896756,
+          "version": "1.1",
+          "name": "MCTS",
+          "description": "Database holding information about MCTS objects",
+          "institution": "Ministry of Social Affairs",
+          "number_format": "{code}{indexNoByCode}",
+          "schema": {
+            "type": "object",
+            "properties": {
+              "ID": {
+                "type": "string",
+                "triggers": [
+                  {
+                    "conditions": [
+                      {
+                        "logic": "==",
+                        "value": "",
+                        "gate": "&&"
+                      }
+                    ],
+                    "actions": [
+                      {
+                        "type": "set-value",
+                        "value": "MCTS{indexNoByCode}",
+                        "field_id": 1
+                      }
+                    ]
+                  }
+                ],
+                "primaryKey": true,
+                "readOnly": true,
+                "description": "Registration ID",
+                "example": "MCTS31",
+                "id": 1
+              },
+              "Child": {
+                "type": "string",
+                "properties": {
+                  "ID": {
+                    "type": "string",
+                    "description": "Child ID",
+                    "example": "ID2",
+                    "id": 13
+                  }
+                }
+              }
+            },
+            "incrementIndex": 20,
+            "required": ["ID"]
+          },
+          "schema_tags": [
+            {
+              "name": "",
+              "path": "/Child/Citizenship",
+              "is_fulltext": true
+            }
+          ],
+          "schema_flags": [
+            {
+              "name": "mandatory",
+              "path": "/ID"
+            }
+          ],
+          "fields_uniques": [[""]],
+          "is_draft": false,
+          "is_disabled": false,
+          "is_archived": false,
+          "modified_at": "2021-10-03T08:35:01.775915Z",
+          "by_user_name": "ingmar.dev",
+          "by_user_auth_id": 1,
+          "by_on_behalf_of_user_auth_id": 0,
+          "by_on_behalf_of_user_name": null,
+          "generic_services": [
+            {
+              "service_id": 1,
+              "name": "data-create",
+              "is_visible": true,
+              "used_count": 0
+            }
+          ],
+          "data_index_increment": 0,
+          "has_logo": false
+        },
+        {
+          "id": 234234,
+          "version": "1.1",
+          "name": "MCTS",
+          "description": "Database holding information about MCTS objects",
+          "institution": "Ministry of Social Affairs",
+          "number_format": "{code}{indexNoByCode}",
+          "schema": {
+            "type": "object",
+            "properties": {
+              "ID": {
+                "type": "string",
+                "triggers": [
+                  {
+                    "conditions": [
+                      {
+                        "logic": "==",
+                        "value": "",
+                        "gate": "&&"
+                      }
+                    ],
+                    "actions": [
+                      {
+                        "type": "set-value",
+                        "value": "MCTS{indexNoByCode}",
+                        "field_id": 1
+                      }
+                    ]
+                  }
+                ],
+                "primaryKey": true,
+                "readOnly": true,
+                "description": "Registration ID",
+                "example": "MCTS31",
+                "id": 1
+              },
+              "Child": {
+                "type": "string",
+                "properties": {
+                  "ID": {
+                    "type": "string",
+                    "description": "Child ID",
+                    "example": "ID2",
+                    "id": 13
+                  }
+                }
+              }
+            },
+            "incrementIndex": 20,
+            "required": ["ID"]
+          },
+          "schema_tags": [
+            {
+              "name": "",
+              "path": "/Child/Citizenship",
+              "is_fulltext": true
+            }
+          ],
+          "schema_flags": [
+            {
+              "name": "mandatory",
+              "path": "/ID"
+            }
+          ],
+          "fields_uniques": [[""]],
+          "is_draft": false,
+          "is_disabled": false,
+          "is_archived": false,
+          "modified_at": "2021-10-03T08:35:01.775915Z",
+          "by_user_name": "ingmar.dev",
+          "by_user_auth_id": 1,
+          "by_on_behalf_of_user_auth_id": 0,
+          "by_on_behalf_of_user_name": null,
+          "generic_services": [
+            {
+              "service_id": 1,
+              "name": "data-create",
+              "is_visible": true,
+              "used_count": 0
+            }
+          ],
+          "data_index_increment": 0,
+          "has_logo": false
+        },
+        {
+          "id": 34536,
+          "version": "1.1",
+          "name": "MCTS",
+          "description": "Database holding information about MCTS objects",
+          "institution": "Ministry of Social Affairs",
+          "number_format": "{code}{indexNoByCode}",
+          "schema": {
+            "type": "object",
+            "properties": {
+              "ID": {
+                "type": "string",
+                "triggers": [
+                  {
+                    "conditions": [
+                      {
+                        "logic": "==",
+                        "value": "",
+                        "gate": "&&"
+                      }
+                    ],
+                    "actions": [
+                      {
+                        "type": "set-value",
+                        "value": "MCTS{indexNoByCode}",
+                        "field_id": 1
+                      }
+                    ]
+                  }
+                ],
+                "primaryKey": true,
+                "readOnly": true,
+                "description": "Registration ID",
+                "example": "MCTS31",
+                "id": 1
+              },
+              "Child": {
+                "type": "string",
+                "properties": {
+                  "ID": {
+                    "type": "string",
+                    "description": "Child ID",
+                    "example": "ID2",
+                    "id": 13
+                  }
+                }
+              }
+            },
+            "incrementIndex": 20,
+            "required": ["ID"]
+          },
+          "schema_tags": [
+            {
+              "name": "",
+              "path": "/Child/Citizenship",
+              "is_fulltext": true
+            }
+          ],
+          "schema_flags": [
+            {
+              "name": "mandatory",
+              "path": "/ID"
+            }
+          ],
+          "fields_uniques": [[""]],
+          "is_draft": false,
+          "is_disabled": false,
+          "is_archived": false,
+          "modified_at": "2021-10-03T08:35:01.775915Z",
+          "by_user_name": "ingmar.dev",
+          "by_user_auth_id": 1,
+          "by_on_behalf_of_user_auth_id": 0,
+          "by_on_behalf_of_user_name": null,
+          "generic_services": [
+            {
+              "service_id": 1,
+              "name": "data-create",
+              "is_visible": true,
+              "used_count": 0
+            }
+          ],
+          "data_index_increment": 0,
+          "has_logo": false
+        }
+      ],
+      "group_id": 10,
+      "order": 76,
+      "data_index_increment": 3
+    }
+  ]
+}

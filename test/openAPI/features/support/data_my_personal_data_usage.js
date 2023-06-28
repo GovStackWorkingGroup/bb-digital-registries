@@ -1,102 +1,110 @@
-const pactum = require('pactum');
+const chai = require('chai');
+const { spec } = require('pactum');
 const { Given, When, Then, Before, After } = require('@cucumber/cucumber');
-const { header, localhost } = require('./helpers/helpers');
+const {
+  header,
+  localhost,
+  defaultExpectedResponseTime,
+  contentTypeHeader,
+  dataMyPersonalDataUsageEndpoint,
+  dataMyPersonalDataUsageResponseSchema,
+} = require('./helpers/helpers');
 
-let userID;
-let databaseID;
+chai.use(require('chai-json-schema'));
+
 let specDataMyPersonalDataUsage;
 
-const baseUrl = `${localhost}data/MyPersonalDataUsage/1.0`;
+const baseUrl = localhost + dataMyPersonalDataUsageEndpoint;
+const endpointTag = { tags: `@endpoint=/${dataMyPersonalDataUsageEndpoint}` };
 
-const correctUrlRequest = (userID, databaseID) =>
-  specDataMyPersonalDataUsage
-    .get(baseUrl)
-    .withHeaders(`${header.key}`, `${header.value}`)
-    .withQueryParams('userID', userID)
-    .withQueryParams('DatabaseID', databaseID);
-
-Before(() => {
-  specDataMyPersonalDataUsage = pactum.spec();
-  databaseID = 'MCTS';
+Before(endpointTag, () => {
+  specDataMyPersonalDataUsage = spec();
 });
 
-// Scenario: The user gets a list of all records that have read their personal data in the Digital Registries database
+// Scenario: The user gets a list of all records that have read his personal data smoke test type
 Given(
-  'The user wants to check who has read his personal data in the Digital Registries database and there is a list of users who have done so',
-  () => (userID = '282392302')
+  'The user wants to check who has read his personal data',
+  () => 'The user wants to check who has read his personal data'
 );
 
 When(
-  'The user sends a valid request and receives a list of users who have read his personal data',
-  () => {
-    correctUrlRequest(userID, databaseID);
-  }
-);
-
-Then('The user receives a list of all records', async () => {
-  await specDataMyPersonalDataUsage.toss();
-  specDataMyPersonalDataUsage.response().should.have.status(200);
-  specDataMyPersonalDataUsage.response().should.have.jsonLike([
-    {
-      ID: '1234567',
-      ReaderID: userID,
-      ReaderInitials: 'JD',
-      ReaderInstitutionID: 'EE70049837',
-      ReaderInstitutionName: 'East Hospital',
-      ReaderApplicationName: 'East Hospital healthcare back office',
-      SearchDateTime: '2017-07-21T17:32:28Z',
-      Refrences: [
-        {
-          ReferenceID: databaseID,
-        },
-      ],
-    },
-  ]);
-});
-
-// Scenario: The user receives an empty list of records that have read his personal data from the Digital Registries database
-Given(
-  'The user wants to check who has read his personal data from Digital Registries database and there is an empty list of users who have done so',
-  () => (userID = '748382347')
-);
-
-// "When" is already written in line 29-32
-
-Then(
-  'The user receives an empty list because there are no records in the database about other users who have read his personal data',
-  async () => {
-    await specDataMyPersonalDataUsage.toss();
-    specDataMyPersonalDataUsage.response().should.have.status(200);
-    specDataMyPersonalDataUsage.response().should.have.jsonLike([]);
-  }
-);
-
-// Scenario: The user is unable to obtain data from the Digital Registries database due to an invalid request
-Given(
-  'The user wants to check who has read his personal data in the Digital Registries database',
-  () => (userID = '3782347')
-);
-
-When(
-  'The user sends an invalid request and receives a list of users who have read his personal data',
-  () => {
+  'User sends GET \\/data\\/MyPersonalDataUsage\\/1.0 request with given Information-Mediator-Client header, {string} as userID and {string} as DatabaseID',
+  (userId, databaseId) => {
     specDataMyPersonalDataUsage
       .get(baseUrl)
-      .withQueryParams('userID', userID)
-      .withQueryParams('DatabaseID', databaseID);
+      .withHeaders(header.key, header.value)
+      .withQueryParams('userID', userId)
+      .withQueryParams('DatabaseID', databaseId);
   }
 );
 
-Then('The operation to get a list of results is an error', async () => {
-  await specDataMyPersonalDataUsage.toss();
-  specDataMyPersonalDataUsage.response().should.have.status(400);
-  specDataMyPersonalDataUsage
-    .response()
-    .should.have.body(
-      '{\n  "Invalid format of Information-Mediator-Client, should match INSTANCE/CLASS/MEMBER/SUBSYSTEM"\n}'
-    );
-});
+Then(
+  'User receives a response from the \\/data\\/MyPersonalDataUsage\\/1.0 endpoint',
+  async () => await specDataMyPersonalDataUsage.toss()
+);
 
-After(() => {
+Then(
+  'The \\/data\\/MyPersonalDataUsage\\/1.0 endpoint response should be returned in a timely manner 15000ms',
+  () =>
+    specDataMyPersonalDataUsage
+      .response()
+      .to.have.responseTimeLessThan(defaultExpectedResponseTime)
+);
+
+Then(
+  'The \\/data\\/MyPersonalDataUsage\\/1.0 endpoint response should have status 200',
+  () => specDataMyPersonalDataUsage.response().should.have.status(200)
+);
+
+Then(
+  'The \\/data\\/MyPersonalDataUsage\\/1.0 endpoint response should have content-type: application\\/json header',
+  () =>
+    specDataMyPersonalDataUsage
+      .response()
+      .should.have.header(contentTypeHeader.key, contentTypeHeader.value)
+);
+
+Then(
+  'The \\/data\\/MyPersonalDataUsage\\/1.0 endpoint response should match json schema',
+  () =>
+    chai
+      .expect(specDataMyPersonalDataUsage._response.json)
+      .to.be.jsonSchema(dataMyPersonalDataUsageResponseSchema)
+);
+
+//Scenario Outline: The user gets a list of all records that have read his personal data
+// Others Given, When and Then are written in the aforementioned example
+
+// Scenario: The user is not able to gets a list of all records that have read his personal data because of the invalid userID parameter
+// Others Given, When and Then are written in the aforementioned example
+When(
+  'User sends GET \\/data\\/MyPersonalDataUsage\\/1.0 request with given Information-Mediator-Client header, {string} as invalid userID and {string} as DatabaseID',
+  (userId, databaseId) => {
+    specDataMyPersonalDataUsage
+      .get(baseUrl)
+      .withHeaders(header.key, header.value)
+      .withQueryParams('userID', userId)
+      .withQueryParams('DatabaseID', databaseId);
+  }
+);
+Then(
+  'The \\/data\\/MyPersonalDataUsage\\/1.0 endpoint response should have status 400',
+  () => specDataMyPersonalDataUsage.response().should.have.status(400)
+);
+
+// Scenario: The user is not able to gets a list of all records that have read his personal data because of the invalid DatabaseID parameter
+// Others Given, When and Then are written in the aforementioned example
+When(
+  'User sends GET \\/data\\/MyPersonalDataUsage\\/1.0 request with given Information-Mediator-Client header, {string} as userID and {string} as invalid DatabaseID',
+  (userId, databaseId) => {
+    specDataMyPersonalDataUsage
+      .get(baseUrl)
+      .withHeaders(header.key, header.value)
+      .withQueryParams('userID', userId)
+      .withQueryParams('DatabaseID', databaseId);
+  }
+);
+
+After(endpointTag, () => {
   specDataMyPersonalDataUsage.end();
 });
