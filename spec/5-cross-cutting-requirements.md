@@ -6,30 +6,28 @@ description: >-
 
 # 5 Cross-Cutting Requirements
 
-The Cross-cutting requirements described in this section are an extension of the cross-cutting requirements defined in the [Architecture specification](https://govstack.gitbook.io/specification/architecture-and-nonfunctional-requirements) and [Security requirements](https://govstack.gitbook.io/specification/security-requirements). This section highlights cross-functional requirements for the Digital Registries Building Block and in addition, describes any deviation to the Architecture Building Block cross-cutting requirements.
+The Cross-cutting requirements described in this section are an extension of the cross-cutting requirements defined in the [Architecture specification](https://govstack.gitbook.io/specification/v/1-0/architecture-and-nonfunctional-requirements) and [Security requirements](https://govstack.gitbook.io/specification/v/1-0/security-requirements). This section highlights cross-functional requirements for the Digital Registries Building Block and in addition, describes any deviation to the Architecture Building Block cross-cutting requirements.
 
-The following requirements should be optional:
+## 5.1  Citizen-Centric (RECOMMENDED)
 
-**Citizen-Centric (2.1 in Architecture Blueprint)**
+Cancel mandatory requirement: "Right to be forgotten: everything must be deletable". This is not a good practice for government registries.
 
-* Right to be forgotten: everything must be deletable (not a good practice for government registries).
+## 5.2  Open (RECOMMENDED)
 
-**Open (2.2 in Architecture Blueprint )**
+Cancel mandatory requirement: "Cloud-native, i.e. Docker and Kubernetes". Digital Registries must have also an on-site installation option.
 
-* Cloud-native, i.e. Docker and Kubernetes (must have also an on-site installation option).
+## 5.3  Robust (RECOMMENDED)
 
-**Robust ( 2.7 in Architecture Blueprint)**
+Operates in low-resource environments
 
-* Operates in low-resource environments
-  * Occasional power: not possible, should be optional. This can be solved with backup power resources (UPS) and a generator that keeps the systems running without interruptions.
-  * Low-reliability connectivity: Client-server systems are not reliable in this situation.
+Cancel mandatory requirement: "Occasional power". In Digital Registries not possible, thus should be optional. This can be solved with backup power resources (UPS) and a generator that keeps the systems running without interruptions.
 
-**Databases MUST not include business logic (3.21 in Architecture Blueprint)**
+Cancel mandatory requirement: "Low-reliability connectivity". Client-server systems are not reliable in this situation, instead additional hand held connection-less data capturing devices should be used and data reentered/uploaded to the servers when connection is restored (not covered in this version scope).
 
-* This means no triggers/stored procedures shall be used (some stored procedures may be needed FOR database record ID generation).
+## 5.3  Databases must not include business logic (RECOMMENDED)
 
-The following requirement should be added to other Building Blocks' cross-cutting requirements:
+Cancel mandatory requirement. "no triggers/stored procedures shall be used". Some stored procedures may be needed for database record ID generation.
 
-**Privacy and protection of user data**
+## 5.4  Privacy and protection of user data (REQUIRED)
 
-Each owner of the personal data (e.g. citizen) must be able to see who has looked at their personal data in the registry. All captured personal user data must be marked as “personal data”. Users can make requests to see the information/logs of accessing personal information. API must be available for authenticated users to see their own personal data audit logs.
+Add mandatory requirement. The following requirement should be added to other Building Blocks' cross-cutting requirements: Each owner of the personal data (e.g. citizen) must be able to see who has looked at their personal data in the registry. All captured personal user data must be marked as “personal data”. Users can make requests to see the information/logs of accessing personal information. API must be available for authenticated users to see their own personal data audit logs.

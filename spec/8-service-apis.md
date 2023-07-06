@@ -6,11 +6,15 @@ description: >-
 
 # 8 Service APIs
 
-The APIs defined here establish a blueprint for how the Building Block will interact with other Building Blocks. Additional APIs may be implemented by the Building Block, but the listed APIs define a minimal set of functionality that should be provided by any implementation of this Building Block. The [GovStack non-functional requirements document](https://govstack.gitbook.io/specification/architecture-and-nonfunctional-requirements/6-onboarding) provides additional information on how "adapters" may be used to translate an existing API to the patterns described here.
+The APIs defined here establish a blueprint for how the Building Block will interact with other Building Blocks. Additional APIs may be implemented by the Building Block, but the listed APIs define a minimal set of functionality that should be provided by any implementation of this Building Block.&#x20;
 
-The Registries BB may contain multiple registries/databases. The dynamic nature of the database structure requires a standard set automatically generated APIs for all databases hosted on the platform. The system generates default API method endpoints automatically after each publish of the database schema. A new API service version is generated after each schema publish. Database schema version and API versions are in sync.
+The [GovStack non-functional requirements document](https://govstack.gitbook.io/specification/v/1.0/architecture-and-nonfunctional-requirements/6-onboarding) provides additional information on how 'adaptors' may be used to translate an existing API to the patterns described here. This section also provides guidance on how candidate products are tested and how GovStack validates a product's API against the API specifications defined here.&#x20;
 
-The naming convention and a structure of the API endpoint is the following:
+The tests for the Digital Registries Building Block can be found in [this GitHub repository](https://github.com/GovStackWorkingGroup/bb-digital-registries/tree/main/test/openAPI).
+
+The Digital Registries Building Block may contain multiple registries/databases. The dynamic nature of the database structure requires a standard set of automatically generated APIs for all databases hosted on the platform. The system generates default API method endpoints automatically after each publication of the database schema. A new API service version is generated after each schema publish. Database schema version and API versions are in sync.
+
+The naming convention and structure of the API endpoint are the following:
 
 /{information type}/{registry acronym or code}/{version}/{API method as a name}.
 
@@ -18,7 +22,7 @@ Example 1: ​/api/data​/cr​/1.0​/create
 
 Example 2: ​/api/v1/database/modify
 
-Each registry contains a unique set of data and the Building Block enables an Analyst to change the data storage structure/schema on the fly. In the following example API descriptions are generated for one example dataset for the Postpartum Infant Care Program registry, where Caretaker and infant child are registered and registration ID is issued.
+Each registry contains a unique set of data and the Building Block enables an Analyst to change the data storage structure/schema on the fly. In the following example API descriptions are generated for one example dataset for the Postpartum Infant Care Program registry, where the Caretaker and infant child are registered and a registration ID is issued.
 
 ![Example registry database logical data model.](<.gitbook/assets/Logical datamodel MCTS (1).JPG>)
 
@@ -26,192 +30,76 @@ Each registry contains a unique set of data and the Building Block enables an An
 
 Digital Registries Building Block is expected to host the following API services for each database hosted on the platform.
 
-## 8.1 DATA CREATE <a href="#docs-internal-guid-f400fe68-7fff-bffb-3d00-0b067c81eb40" id="docs-internal-guid-f400fe68-7fff-bffb-3d00-0b067c81eb40"></a>
+The API is built using a representational state transfer ([REST](https://restfulapi.net/)) software architectural style and described in [Open API 3 standard](https://swagger.io/specification/) using [YAML](https://yaml.org/) (a human-readable data-serialization language). Request and response body is in [JSON](https://www.json.org/json-en.html) (lightweight data-interchange format).
 
-Description: Creates a new record in the registry database.
-
-Request endpoint: POST/data/{code}/{version}/create
-
-Example API: see in [Github](../api/GovStack\_Digital\_registries\_BB\_Data\_API\_template-1.3.0.json).
-
-
+## 8.1 Administrative/Analyst Functions <a href="#docs-internal-guid-d85f59a4-7fff-1564-6ae2-86d67f36a258" id="docs-internal-guid-d85f59a4-7fff-1564-6ae2-86d67f36a258"></a>
 
 {% swagger src="https://raw.githubusercontent.com/GovStackWorkingGroup/bb-digital-registries/main/api/GovStack_Digital_registries_BB_Data_API_template-1.3.0.yaml" path="/data/{registryname}/{versionnumber}" method="get" %}
 [https://raw.githubusercontent.com/GovStackWorkingGroup/bb-digital-registries/main/api/GovStack_Digital_registries_BB_Data_API_template-1.3.0.yaml](https://raw.githubusercontent.com/GovStackWorkingGroup/bb-digital-registries/main/api/GovStack_Digital_registries_BB_Data_API_template-1.3.0.yaml)
 {% endswagger %}
 
-## 8.2 DATA UPDATE
-
-Description: Updates one existing record in the registry database.
-
-Request endpoint: PUT/data/{code}/{version}/update
-
-Example API: see in [Github](../api/GovStack\_Digital\_registries\_BB\_Data\_API\_template-1.3.0.json).
-
 {% swagger src="https://raw.githubusercontent.com/GovStackWorkingGroup/bb-digital-registries/main/api/GovStack_Digital_registries_BB_Data_API_template-1.3.0.json" path="/data/{registryname}/{versionnumber}/update" method="put" %}
 [https://raw.githubusercontent.com/GovStackWorkingGroup/bb-digital-registries/main/api/GovStack_Digital_registries_BB_Data_API_template-1.3.0.json](https://raw.githubusercontent.com/GovStackWorkingGroup/bb-digital-registries/main/api/GovStack_Digital_registries_BB_Data_API_template-1.3.0.json)
 {% endswagger %}
-
-## 8.3 DATA UPDATE-OR-CREATE
-
-Description: API updates existing record if matching with input parameters is successful. If record is not found the API will create a new record.
-
-Request endpoint: POST/data/{code}/{version}/update-or-create
-
-Example API: see in [Github](../api/GovStack\_Digital\_registries\_BB\_Data\_API\_template-1.3.0.json).
 
 {% swagger src="https://raw.githubusercontent.com/GovStackWorkingGroup/bb-digital-registries/main/api/GovStack_Digital_registries_BB_Data_API_template-1.3.0.json" path="/data/{registryname}/{versionnumber}/update-or-create" method="post" %}
 [https://raw.githubusercontent.com/GovStackWorkingGroup/bb-digital-registries/main/api/GovStack_Digital_registries_BB_Data_API_template-1.3.0.json](https://raw.githubusercontent.com/GovStackWorkingGroup/bb-digital-registries/main/api/GovStack_Digital_registries_BB_Data_API_template-1.3.0.json)
 {% endswagger %}
 
-
-
-## 8.4 DATA UPDATE-ENTRIES
-
-Description: Updates multiple records in the registry database that match the input query.
-
-Request endpoint: PUT/data/{code}/{version}/update-entries
-
-Example API: see in [Github](../api/GovStack\_Digital\_registries\_BB\_Data\_API\_template-1.3.0.json).
-
 {% swagger src="https://raw.githubusercontent.com/GovStackWorkingGroup/bb-digital-registries/main/api/GovStack_Digital_registries_BB_Data_API_template-1.3.0.json" path="/data/{registryname}/{versionnumber}/update-entries" method="put" %}
 [https://raw.githubusercontent.com/GovStackWorkingGroup/bb-digital-registries/main/api/GovStack_Digital_registries_BB_Data_API_template-1.3.0.json](https://raw.githubusercontent.com/GovStackWorkingGroup/bb-digital-registries/main/api/GovStack_Digital_registries_BB_Data_API_template-1.3.0.json)
 {% endswagger %}
-
-## 8.5 DATA LIST (Search)
-
-Description: Searches (Regex supported) and returns multiple records as an array list.
-
-Request endpoint: GET/data/{code}/{version}
-
-Example API: see in [Github](../api/GovStack\_Digital\_registries\_BB\_Data\_API\_template-1.3.0.json).
 
 {% swagger src="https://raw.githubusercontent.com/GovStackWorkingGroup/bb-digital-registries/main/api/GovStack_Digital_registries_BB_Data_API_template-1.3.0.json" path="/data/{registryname}/{versionnumber}" method="get" %}
 [https://raw.githubusercontent.com/GovStackWorkingGroup/bb-digital-registries/main/api/GovStack_Digital_registries_BB_Data_API_template-1.3.0.json](https://raw.githubusercontent.com/GovStackWorkingGroup/bb-digital-registries/main/api/GovStack_Digital_registries_BB_Data_API_template-1.3.0.json)
 {% endswagger %}
 
-## 8.6 DATA READ
-
-Description: Searches and returns one record.
-
-Request endpoint: POST/data/{code}/{version}/read
-
-Example API: see in [Github](../api/GovStack\_Digital\_registries\_BB\_Data\_API\_template-1.3.0.json).
-
 {% swagger src="https://raw.githubusercontent.com/GovStackWorkingGroup/bb-digital-registries/main/api/GovStack_Digital_registries_BB_Data_API_template-1.3.0.json" path="/data/{registryname}/{versionnumber}/read" method="post" %}
 [https://raw.githubusercontent.com/GovStackWorkingGroup/bb-digital-registries/main/api/GovStack_Digital_registries_BB_Data_API_template-1.3.0.json](https://raw.githubusercontent.com/GovStackWorkingGroup/bb-digital-registries/main/api/GovStack_Digital_registries_BB_Data_API_template-1.3.0.json)
 {% endswagger %}
 
-## 8.7 DATA READ-VALUE
-
-Description: Searches and returns one record’s field value.
-
-Request endpoint: GET /data/{code}/{version}/{ID}/read-value/{field}.{ext}
-
-Example API: see in [Github](../api/GovStack\_Digital\_registries\_BB\_Data\_API\_template-1.3.0.json).
+## 8.2 Applicant Functions <a href="#docs-internal-guid-d85f59a4-7fff-1564-6ae2-86d67f36a258" id="docs-internal-guid-d85f59a4-7fff-1564-6ae2-86d67f36a258"></a>
 
 {% swagger src="https://raw.githubusercontent.com/GovStackWorkingGroup/bb-digital-registries/main/api/GovStack_Digital_registries_BB_Data_API_template-1.3.0.json" path="/data/{registryname}/{versionnumber}/{uuid}/read-value/{field}.{ext}" method="get" %}
 [https://raw.githubusercontent.com/GovStackWorkingGroup/bb-digital-registries/main/api/GovStack_Digital_registries_BB_Data_API_template-1.3.0.json](https://raw.githubusercontent.com/GovStackWorkingGroup/bb-digital-registries/main/api/GovStack_Digital_registries_BB_Data_API_template-1.3.0.json)
 {% endswagger %}
 
-## 8.8 DATA EXISTS
-
-Description: Searches records based on input parameters and returns boolean answers (true/false).
-
-Request endpoint: POST/data/{code}/{version}/exists
-
-Example API: see in [Github](../api/GovStack\_Digital\_registries\_BB\_Data\_API\_template-1.3.0.json).
-
 {% swagger src="https://raw.githubusercontent.com/GovStackWorkingGroup/bb-digital-registries/main/api/GovStack_Digital_registries_BB_Data_API_template-1.3.0.json" path="/data/{registryname}/{versionnumber}/exists" method="post" %}
 [https://raw.githubusercontent.com/GovStackWorkingGroup/bb-digital-registries/main/api/GovStack_Digital_registries_BB_Data_API_template-1.3.0.json](https://raw.githubusercontent.com/GovStackWorkingGroup/bb-digital-registries/main/api/GovStack_Digital_registries_BB_Data_API_template-1.3.0.json)
 {% endswagger %}
-
-## 8.9 DATA DELETE
-
-Description: Delete record.
-
-Request endpoint: DELETE/data/{code}/{version}/{ID}/delete
-
-Example API: see in [Github](../api/GovStack\_Digital\_registries\_BB\_Data\_API\_template-1.3.0.json).
 
 {% swagger src="https://raw.githubusercontent.com/GovStackWorkingGroup/bb-digital-registries/main/api/GovStack_Digital_registries_BB_Data_API_template-1.3.0.json" path="/data/{registryname}/{versionnumber}/{ID}/delete" method="delete" %}
 [https://raw.githubusercontent.com/GovStackWorkingGroup/bb-digital-registries/main/api/GovStack_Digital_registries_BB_Data_API_template-1.3.0.json](https://raw.githubusercontent.com/GovStackWorkingGroup/bb-digital-registries/main/api/GovStack_Digital_registries_BB_Data_API_template-1.3.0.json)
 {% endswagger %}
 
-## 8.10 DATA My personal data usage
-
-Description: The purpose of this API is to make personal data protection better and make BB personal data usage transparent by showing who has looked at personal data of the user. Each user can see who has looked at their personal data and when. The definition of personal data is described by each Building Block owner in the respective country.
-
-Request endpoint: GET/data/MyPersonalDataUsage/{version}
-
-Example API: see in [Github](../api/GovStack\_Digital\_registries\_BB\_Data\_API\_template-1.3.0.json).
-
 {% swagger src="https://raw.githubusercontent.com/GovStackWorkingGroup/bb-digital-registries/main/api/GovStack_Digital_registries_BB_Data_API_template-1.3.0.json" path="/data/MyPersonalDataUsage/1.0" method="get" %}
 [https://raw.githubusercontent.com/GovStackWorkingGroup/bb-digital-registries/main/api/GovStack_Digital_registries_BB_Data_API_template-1.3.0.json](https://raw.githubusercontent.com/GovStackWorkingGroup/bb-digital-registries/main/api/GovStack_Digital_registries_BB_Data_API_template-1.3.0.json)
 {% endswagger %}
-
-
-
-**Database Schema APIs are following:**
-
-## 8.11 DATABASE SCHEMA READ
-
-Description: API reads existing registry database schema.
-
-Request endpoint: GET /api/V1/database/{id}
-
-Example API: see in [Github](../api/GovStack\_Digital\_registries\_BB\_Database\_API\_template-1.3.0.json).
 
 {% swagger src="https://raw.githubusercontent.com/GovStackWorkingGroup/bb-digital-registries/main/api/GovStack_Digital_registries_BB_Database_API_template-1.3.0.json" path="/database/{id}" method="get" %}
 [https://raw.githubusercontent.com/GovStackWorkingGroup/bb-digital-registries/main/api/GovStack_Digital_registries_BB_Database_API_template-1.3.0.json](https://raw.githubusercontent.com/GovStackWorkingGroup/bb-digital-registries/main/api/GovStack_Digital_registries_BB_Database_API_template-1.3.0.json)
 {% endswagger %}
 
-## 8.12 DATABASE SCHEMA MODIFY
-
-Description: API creates a new registry database schema or updates existing schema if matching with input parameters is successful. If schema is not found the API will create a new schema.
-
-Request endpoint: POST/api/V1/database/modify
-
-Example API: see in [Github](../api/GovStack\_Digital\_registries\_BB\_Database\_API\_template-1.3.0.json).
-
 {% swagger src="https://raw.githubusercontent.com/GovStackWorkingGroup/bb-digital-registries/main/api/GovStack_Digital_registries_BB_Database_API_template-1.3.0.json" path="/database/modify" method="post" %}
 [https://raw.githubusercontent.com/GovStackWorkingGroup/bb-digital-registries/main/api/GovStack_Digital_registries_BB_Database_API_template-1.3.0.json](https://raw.githubusercontent.com/GovStackWorkingGroup/bb-digital-registries/main/api/GovStack_Digital_registries_BB_Database_API_template-1.3.0.json)
 {% endswagger %}
-
-## 8.13 DATABASE SCHEMA DELETE
-
-Description: API deletes registry database.
-
-Request endpoint: DELETE/api/v1/database/{id}
-
-Example API: see in [Github](../api/GovStack\_Digital\_registries\_BB\_Database\_API\_template-1.3.0.json).
 
 {% swagger src="https://raw.githubusercontent.com/GovStackWorkingGroup/bb-digital-registries/main/api/GovStack_Digital_registries_BB_Database_API_template-1.3.0.json" path="/database/{id}" method="delete" %}
 [https://raw.githubusercontent.com/GovStackWorkingGroup/bb-digital-registries/main/api/GovStack_Digital_registries_BB_Database_API_template-1.3.0.json](https://raw.githubusercontent.com/GovStackWorkingGroup/bb-digital-registries/main/api/GovStack_Digital_registries_BB_Database_API_template-1.3.0.json)
 {% endswagger %}
 
-## 8.14 DATABASES LIST
-
-Description: API gets all databases and schema versions as a list array.\
-Request endpoint: GET/api/v1/databases\
-Example API: see in [Github](../api/GovStack\_Digital\_registries\_BB\_Database\_API\_template-1.3.0.json).
-
 {% swagger src="https://raw.githubusercontent.com/GovStackWorkingGroup/bb-digital-registries/main/api/GovStack_Digital_registries_BB_Database_API_template-1.3.0.json" path="/databases" method="get" %}
 [https://raw.githubusercontent.com/GovStackWorkingGroup/bb-digital-registries/main/api/GovStack_Digital_registries_BB_Database_API_template-1.3.0.json](https://raw.githubusercontent.com/GovStackWorkingGroup/bb-digital-registries/main/api/GovStack_Digital_registries_BB_Database_API_template-1.3.0.json)
 {% endswagger %}
-
-## 8.15 DATA CREATE-ENTRIES
-
-**Description: Creates multiple records in the registry database.**
-
-Request endpoint: PUT/data/{code}/{version}/create-entries
-
-[Example API](../api/GovStack\_Digital\_registries\_BB\_Data\_API\_template-1.3.0.json).
 
 {% swagger src="https://raw.githubusercontent.com/GovStackWorkingGroup/bb-digital-registries/main/api/GovStack_Digital_registries_BB_Data_API_template-1.3.0.json" path="/data/mcts/1.4/create-entries" method="post" %}
 [https://raw.githubusercontent.com/GovStackWorkingGroup/bb-digital-registries/main/api/GovStack_Digital_registries_BB_Data_API_template-1.3.0.json](https://raw.githubusercontent.com/GovStackWorkingGroup/bb-digital-registries/main/api/GovStack_Digital_registries_BB_Data_API_template-1.3.0.json)
 {% endswagger %}
 
+{% swagger src="https://raw.githubusercontent.com/GovStackWorkingGroup/bb-digital-registries/main/api/GovStack_Digital_registries_BB_Data_API_template-1.3.0.json" path="/data/{registryname}/{versionnumber}" method="get" %}
+[https://raw.githubusercontent.com/GovStackWorkingGroup/bb-digital-registries/main/api/GovStack_Digital_registries_BB_Data_API_template-1.3.0.json](https://raw.githubusercontent.com/GovStackWorkingGroup/bb-digital-registries/main/api/GovStack_Digital_registries_BB_Data_API_template-1.3.0.json)
+{% endswagger %}
 
-
-The API is built using representational state transfer ([REST](https://restfulapi.net/)) software architectural style and described in [Open API 3 standard](https://swagger.io/specification/) using [YAML](https://yaml.org/) (a human-readable data-serialization language). Request and response body is in [JSON](https://www.json.org/json-en.html) (lightweight data-interchange format).
+{% swagger src="https://raw.githubusercontent.com/GovStackWorkingGroup/bb-digital-registries/main/api/GovStack_Digital_registries_BB_Data_API_template-1.3.0.json" path="/data/{registryname}/{versionnumber}/read" method="post" %}
+[https://raw.githubusercontent.com/GovStackWorkingGroup/bb-digital-registries/main/api/GovStack_Digital_registries_BB_Data_API_template-1.3.0.json](https://raw.githubusercontent.com/GovStackWorkingGroup/bb-digital-registries/main/api/GovStack_Digital_registries_BB_Data_API_template-1.3.0.json)
+{% endswagger %}

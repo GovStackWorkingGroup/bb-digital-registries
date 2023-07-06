@@ -4,191 +4,255 @@ description: This section lists the technical capabilities of this Building Bloc
 
 # 6 Functional Requirements
 
-Requirements in this chapter are sufficient to deliver all functionality that is listed in the Key Digital Functionalities section. In this chapter the main focus is on the following core functionality:&#x20;
+## 6.1 Administrative/Analyst Functions <a href="#docs-internal-guid-d85f59a4-7fff-1564-6ae2-86d67f36a258" id="docs-internal-guid-d85f59a4-7fff-1564-6ae2-86d67f36a258"></a>
 
-1. Create a registry database in User Interface
-2. Process registry data in User Interface
-3. Process data in API
-4. Create registry database in API
+* DRS-1: Analysts have the option to create a new registry database by filling in the following information (REQUIRED):
+  1. Name of the database;
+  2. A short name;
+  3. Schema of the database (see DRS-3).
+* DRS-2: Analysts can create multiple databases in one system instance. Databases must be linkable with foreign keys. See the foreign key API description example in [Appendix 2](.gitbook/assets/appendix2.json). Analysts can configure which databases and which fields are linked. In this document and foreign key function, we consider databases as database tables that can be linked with one another. See the [example illustration](.gitbook/assets/Database%20Foreign%20key.png). User story: As a user, I can browse database content (Data) in the user interface and when databases are linked, then I can click and move from one database/table to another where the corresponding linked data will open in the user interface. In the Digital Registries Data user interface, it should be possible to open another database by clicking on the record ID in one database and all corresponding records from the other Database will open. It is required to have at least two levels of IDs (database ID and field ID) to link the databases. See the example API in[ Appendix 2](.gitbook/assets/appendix2.json). Example: In one registry database we store information about Mother and Child records. In the second registry database, we store information about payments made for the mother. The system must enable a foreign key link between the payment database to the Mother and child record database. Users can click in the payment database record user interface to the Mother ID field and the system user interface should open the corresponding record in the Mother and Child database. (REQUIRED)
+*   DRS-3: Analysts have the option to add fields to the database schema. Fields of the database must contain at least the following elements (REQUIRED):
 
-## 6.1 User Story 1 - Create registry database in user interface <a href="#docs-internal-guid-51953ef5-7fff-4062-e282-1719dbc98029" id="docs-internal-guid-51953ef5-7fff-4062-e282-1719dbc98029"></a>
+    1. Field name;
+    2. Field type, at least with the following types:
+       1. Text;
+       2. Number;
+       3. Boolean;
+       4. Date/time;
+       5. Date;
+       6. Time;
+       7. File (pdf, doc, etc.). File extensions/types must be configurable;
+       8. List/Array/Edit grid (sub-table/array of values inside a field);
+       9. Block container (optional, to group fields visually);
+       10. List of Values/Catalog (holding value and key).
 
-As an Administrator/Analyst I want to use a web user interface to create a register database (example registry use case - social security program) so that I can configure and launch the registry database instantly to be used by internet users and client systems (e.g. Registration Building Block, Information Mediator Building Block) via web interface and API.
+    3\. Field properties (see more in DRS-33)
+* DRS-4:  Analysts have the option to publish the database. Publishing will reveal the database to users. (REQUIRED)
+  * Publish uses versioning. Each publish creates a new version of the database schema and API services;
+  * Old database schemas must be available to the users;
+  * Data stored in the old database versions must be usable in old versions and in new versions;
+  * Analysts can delete database schema versions. Same version API services must be deleted at the same time.
+* DRS-5: Analysts must be able to configure the API services per registry database. (REQUIRED)
+  * The system automatically creates API services to:
+    * create data;
+    * read data;
+    * update data;
+    * delete data;
+    * validate data (if exists);
+    * update or create data.
+  * Analysts can hide/disable API services;
+  * Analysts can delete API services;
+  * Analysts can copy API services;
+  * Analysts can create custom API services;
+  * The system generates the API data structure from the dynamic database structure automatically each time a publish is done.
+*   DRS-6: Authorization to (REQUIRED)
 
-**Actors**: Analyst - An administrator user who is creating/changing the registry database schema. The main actor/user in these requirements is the Analyst.
+    1. create and manage databases;
+    2. API usage per service, per record, per data field;
+    3. access to DATA.
 
-**Preconditions**:
+    Analysts have the option to manage user rights of a database and data via API and via a user interface.
 
-1. User is authenticated;
-2. User is authorized as an admin;
-3. User interface is a web interface;
-4. User has internet;
-5. System has electricity.
+    * "Any logged-in user" role must be available;
+    * "Anonymous" user role must be available;
+    * Attribute Based Access Control (ABAC) logic could be used (API, Schema, data fields, record filter, users);
+    * Per user, per group of users option must be available.
+      * Group is a set of users in a role.
+      * Role is a set of rights.
+* DRS-7: The system must log all data processing in the database. (REQUIRED)
+  * Schema changes must be logged;
+  * Data processing (Create, Read, Update, Delete) must be logged;
+  * Logs must be visible and searchable to the Analyst via the User Interface;
+  * Every data owner (e.g. physical person) has the option to see who has processed his/her data (PersonalData). The function is a standard function for all registries ([DRS-14 API example](../api/GovStack\_Digital\_registries\_BB\_Data\_API\_template-1.3.0.json)).
+  * Change logs are protected with the highest level of integrity (chaining of logs)
+  * Database logs could be logged with an external blockchain for additional security (optional).
+*   DRS-8: Personal Data usage. (REQUIRED)
 
-**Process:**
+    System must automatically store all data read requests and store these in the log table.
 
-1. Create a new registry database project.
-2. Define the database fields.
-3. Publish the database.
-4. Validate/configure the API services.
-5. Manage user rights to access the database and APIs.
-6. Create a new registry database project.
-7. Define the database fields.
-8. Publish the database.
-9. Validate/configure the API services.
-10. Manage user rights to access the database and APIs.
+    * Covers data read events via User Interface and via APIs.&#x20;
+    * Personal Data logs are stored with PersonalData data tag, storing at least the following information.
+      * Log ID;
+      * Data record ID;
+      * Field ID;
+      * PersonalDataID (unique and unchangeable identifier of a person);
+      * Reader ID- who read the data;
+      * Reader name- name or initial of a person;
+      * When- the moment when the Personal Data was read.
+    * The Personal Data report is visible only for Analysts to see all data read logs and Data Owners (physical persons) to see their own personal data usage log. Input is PersonalDataID field.
+    * PersonalData report is usable as an API service (read)
+    * System has API for PersonalData reports. API is per registry(database)
+    * System must log Personal Data log read events to the log table.
+* DRS-9: Analysts must be able to create views of a database. (OPTIONAL)
+  * View is a selection of data from a database;
+  * View can be opened as OPEN DATA (anonymous user);
+  * View can be created and it can be as a base for an API service (Custom API);
+  * View is not for changing or deleting data, only for reading;
+  * View rights are managed by the user rights management system.
+* DRS-10: The option export database schema to JSON file, (optional: XLS file format). (REQUIRED)
+* DRS-11: The option to import database schema from JSON file. (REQUIRED); The option to import database schema from XLS file. (OPTIONAL)
+* DRS-12: Service usage statistics (OPTIONAL)
+  * System must record all API service usage information.
+  * System must record all searches made in the Registry User Interface and via APIs.
+* DRS-13: An analyst must be able to mark a field as PersonalData log object (This field contains personal data). (OPTIONAL)
+* DRS-14: An analyst must be able to mark a field as PersonalDataID. This is the data owner’s ID. (OPTIONAL)
+*   DRS-15: An analyst must be able to mark a field as secret- This field contains secret data (credit card number). E.g. secret data (card data) must be encrypted while at REST.
 
-**Postconditions:**
+    Information in transit between the Building Blocks is secured with encryption. Information in Transit is described and governed by Information Mediator Building Block. (REQUIRED)
+* DRS-16: Analyst has the option to read database schema in the web User Interface. (REQUIRED)
+*   DRS-33: Analyst has capabilities to configure database field properties (REQUIRED)
 
-1. System contains a database that is ready to process new data.
-2. System has API services to CRUD (Create, Read, Update, Delete) data (and API to validate if data exist).
-3. User can enter data to the registry via web user interface (UI).
-4. User can see log information in the UI.
-5. User can see statistics in the UI.
-6. User can give authorization to use the database and process data.
-7. System contains a database that is ready to process new data.
-8. System has API services to CRUD data (and API to validate if data exist).
-9. User can enter data to the registry via web UI.
-10. User can see log information in the UI.
-11. User can see statistics in the UI.
-12. User can give authorization to use the database and process data.
+    1\. API-related field properties:&#x20;
 
-| REQ-#  | Requirement                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 | Type/ Use Case                       |
-| ------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------ |
-| DRS-1  | <p>Analysts have the option to create a new registry database by filling in the following information:</p><ol><li>Name of the database;</li><li>A short name;</li><li>Schema of the database (see DRS-3).</li></ol>                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         | <p>Required</p><p><br></p><p>UC1</p> |
-| DRS-2  | <p>Analysts can create multiple databases in one system instance.</p><p>Databases must be linkable with foreign keys. See the foreign key API description example in Appendix 2. Analysts can configure which databases and which fields are linked in the user interface.</p><p>In this document and foreign key function, we consider databases as database tables that can be linked with one another. See the <a href=".gitbook/assets/Database%20Foreign%20key.png">example illustration</a>.</p><p>User story: As a user, I can browse database content (Data) in the user interface and when databases are linked, then I can click and move from one database to another where the corresponding linked data will open in the user interface.</p><p>In the Digital Registries Data user interface, it must be possible to open another database by clicking on the record ID in one database and all corresponding records from the other Database will open.</p><p>It is required to have at least two levels of IDs (database ID and field ID) to link the databases. See the example API below in Appendix 2.</p><p>Example: In one registry database we store information about Mother and Child records. In the second registry database, we store information about payments made for the mother. The system must enable a foreign key link between the payment database to the Mother and child record database. Users can click in the payment database record user interface to the Mother ID field and the system user interface must open the corresponding record in the Mother and Child database.</p> | <p>Required</p><p><br></p>           |
-| DRS-3  | <p>Analysts have the option to add fields to the database schema.<br><br>Fields of the database must contain at least the following elements:</p><ol><li>Field name;</li><li><p>Field type, at least with the following types:</p><ol><li>Text;</li><li>Number;</li><li>Boolean;</li><li>Date/time;</li><li>Date;</li><li>Time;</li><li>File (pdf, doc, etc.). File extensions/types must be configurable;</li><li>List/Array/Edit grid (sub-table/array of values inside a field);</li><li>Block container (optional, to group fields visually);</li><li>List of Values/Catalog (holding value and key).</li></ol></li></ol><p>3. Field properties (see more in DRS-33)</p>                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                | <p>Required</p><p><br></p><p>UC1</p> |
-| DRS-4  | <p>Analysts have the option to publish the database. Publishing will reveal the database to users.</p><ul><li>Publish uses versioning. Each publish creates a new version of the database schema and API services;</li><li>Old database schemas must be available to the users;</li><li>Data stored in the old database versions must be usable in old versions and in new versions;</li><li>Analysts can delete database schema versions. Same version API services must be deleted at the same time.</li></ul>                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            | Required                             |
-| DRS-5  | <p>Analysts must be able to configure the API services per registry database.</p><ul><li><p>The system automatically creates API services to:</p><ul><li>create data;</li><li>read data;</li><li>update data;</li><li>delete data;</li><li>validate data (if exists);</li><li>update or create data.</li></ul></li></ul><ul><li>Analysts can hide/disable API services;</li><li>Analysts can delete API services;</li><li>Analysts can copy API services;</li><li>Analysts can create custom API services;</li><li>The system generates the API data structure from the dynamic database structure automatically each time a publish is done.</li></ul><p><img src=".gitbook/assets/APIs.PNG" alt="" data-size="original"></p>                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              | Required                             |
-| DRS-6  | <p>Authorization to:</p><ol><li>create and manage databases;</li><li>API usage per service, per record, per data field;</li><li>access to DATA.</li></ol><p>Analysts have the option to manage user rights of a database and data via API and via a user interface.</p><ul><li>Any logged-in user role must be available;</li><li>Anonymous user role must be available;</li><li>Attribute Based Access Control (ABAC) logic could be used (API, Schema, data fields, record filter, users);</li><li><p>Per user, per group of users option must be available.</p><ul><li>Group is a set of users in a role.</li><li>Role is a set of rights.</li></ul></li></ul>                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           | Required                             |
-| DRS-7  | <p>The system must log all data processing in the database.</p><ul><li>Schema changes must be logged;</li><li>Data processing (Create, Read, Update, Delete) must be logged;</li><li>Logs must be visible and searchable to the Analyst via the User Interface;</li><li>Every data owner (e.g. physical person) has the option to see who has processed his/her data (PersonalData). The function is a standard function for all registries (<a href="https://github.com/GovStackWorkingGroup/BuildingBlockAPI/blob/main/DigitalRegistriesBB/GovStack_Digital_registries_BB_Data_API_template-1.2.0.json">See more in the DRS-14 API example</a>).</li><li>Change logs are protected with the highest level of integrity (chaining of logs)</li><li>Database logs could be logged with external blockchain for additional security (optional).</li></ul>                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    | <p>Required</p><p><br></p><p>UC3</p> |
-| DRS-8  | <p>Personal Data usage.</p><p>System must automatically store all data read requests and store these in the ser log table.</p><ul><li>Covers data read events via User Interface and via APIs. </li><li><p>Personal Data logs are stored with PersonalData data tag, storing at least the following information.</p><ul><li>Log ID;</li><li>Data record ID;</li><li>Field ID;</li><li>PersonalDataID (unique and unchangeable identifier of a person);</li><li>Reader ID- who read the data;</li><li>Reader name- name or initial of a person;</li><li>When- the moment when the Personal Data was read.</li></ul></li><li>The Personal Data report is visible only for Analysts to see all data read logs and Data Owners (physical persons) to see their own personal data usage log. Input is PersonalDataID field.</li><li>PersonalData report is usable as an API service (read)</li><li>System has API for PersonalData reports. API is per registry(database)</li><li>System must log Personal Data log read events to the log table.</li></ul>                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      | <p>Required</p><p>UC3</p>            |
-| DRS-9  | <p>Analysts must be able to create views of a database.</p><ul><li>View is a selection of data from a database;</li><li>View can be opened as OPEN DATA (anonymous user);</li><li>View can be created and it can be as a base for an API service (Custom API);</li><li>View is not for changing or deleting data, only for reading;</li><li>View rights are managed by the user rights management system.</li></ul>                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         | Optional                             |
-| DRS-10 | The option export database schema to JSON file, (optional: XLS file format).                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                | Required                             |
-| DRS-11 | <p>The option to import database schema from JSON file; </p><p>The option to import database schema from XLS file.</p>                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      | Optional                             |
-| DRS-12 | <p>Service usage statistics</p><ul><li>System must record all API service usage information.</li><li>System must record all searches made in the Registry User Interface and via APIs.</li></ul>                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            | Optional                             |
-| DRS-13 | An analyst must be able to mark a field as PersonalData log object (This field contains personal data).                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     | <p>Optional</p><p>UC3</p>            |
-| DRS-14 | An analyst must be able to mark a field as PersonalDataID. This is the data owner’s ID.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     | <p>Optional </p><p>UC3</p>           |
-| DRS-15 | <p>An analyst must be able to mark a field as secret- This field contains secret data (credit card number). E.g. secret data (card data) must be encrypted while at REST.</p><p>Information in transit between the Building Blocks is secured with encryption. Information in Transit is described and governed by Information Mediator Building Block.</p>                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 | Required                             |
-| DRS-16 | Analyst has the option to read database schema in the web User Interface.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   | Required                             |
-| DRS-33 | <p>Analyst has capabilities to configure database field properties: </p><p>1. API-related field properties: </p><ul><li>Validation options: required, unique, max, min. </li><li>blinded/encrypted (DRS-15, DRS-18); </li></ul><p>2. User Interface related field properties: </p><ul><li>field mask, format, </li><li>read-only, </li><li>personal data, </li><li>enum list selection; </li><li>blinded/encrypted (DRS-18); </li><li><p>multiple value/array. User can add more values (e.g. multi select from catalog list) to the same field. Multiple values are:</p><ul><li>array type field;</li><li>validation options- Required, Unique, max, min.</li><li>Foreign keys (to link other databases in the same ecosystem). See the example schema in Appendix 2. </li></ul></li><li><p>Triggers to automate field content-related actions: </p><ul><li>create IDs, </li><li>merge fields, </li><li>add prefix, </li><li>suffix, </li><li>conditional logic, </li><li>trigger will be activated if certain condition(s) are true,</li><li>transform-upper/lower case/ javascript); </li><li>Triggers are automated when a record is created/changed. A trigger is a record-level automation. </li></ul></li></ul>                                                                                                                                                                                                                                                                                                                                                                                                      |                                      |
-| DRS-34 | <p>Analyst has the capability to add an encryption key per database. </p><ul><li>Encryption key is used to encrypt and decrypt data (DRS-17). </li><li>Encryption key can be used by applications to read encrypted data. Each database has a unique encryption key defined by the analyst. </li><li>Encryption key is blinded in the User Interface. </li></ul><p>If applications want to read encrypted data via API they must know the encryption key. Data is decrypted in the user interface.</p>                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      | Required                             |
-| DRS-35 | <p>Analyst has the capabilities to automate data exchange between databases internally and externally via API.</p><ul><li>Automation is triggered automatically after a pre-configured time interval as a loop (finishes when all corresponding records have been processed). </li><li>Automation processes one record at a time. </li><li>Automation has configurable conditions (business rules in Rules Engine). E.g. IF field A = 123 then true. Conditions can be grouped with AND and OR operators.</li><li><p>Automation is configured by mapping (input, output) registry data fields to: </p><ul><li>another database in the same instance. </li><li>API in an external database.</li></ul><p>Mapping involves: </p></li><li>query part (input) </li><li>answer part (output) </li></ul><p>Mapping can be done from many to one and one to many. Mapping may have a transformation option to convert data to another format. E.g. est->EST;<br>Expected outcome: Automation can be activated automatically when certain conditions are true and the system sends data to another database or to an external API.</p>                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               | Required                             |
-| DRS-36 | <p>Analyst may have capabilities to use database schema templates so that the registry creation is faster. </p><ul><li>Schema templates can be shared in the same instance (internal marketplace). </li><li>Schema templates can be shared in a marketplace. </li><li>Schema templates can be imported and exported.</li></ul>                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              | Optional                             |
+    * Validation options: required, unique, max, min.&#x20;
+    * blinded/encrypted (DRS-15, DRS-18);&#x20;
 
-## 6.2 User Story 2 - Process registry data in User Interface <a href="#docs-internal-guid-31701a28-7fff-8c98-6f59-06d5eed22cd9" id="docs-internal-guid-31701a28-7fff-8c98-6f59-06d5eed22cd9"></a>
+    2\. User Interface related field properties:&#x20;
 
-As an Administrator/Analyst, I want to process (Create, Read, Update, Delete) registry data so that I do not have to know the query language.
+    * field mask, format,&#x20;
+    * read-only,&#x20;
+    * personal data,&#x20;
+    * enum list selection;&#x20;
+    * blinded/encrypted (DRS-18);&#x20;
+    * multiple value/array. User can add more values (e.g. multi select from catalog list) to the same field. Multiple values are:
+      * array type field;
+      * validation options- Required, Unique, max, min.
+      * Foreign keys (to link other databases in the same ecosystem). See the example schema in [Appendix 2](.gitbook/assets/appendix2.json).&#x20;
+    * Triggers to automate field content-related actions:&#x20;
+      * create IDs,&#x20;
+      * merge fields,&#x20;
+      * add prefix,&#x20;
+      * suffix,&#x20;
+      * conditional logic,&#x20;
+      * trigger will be activated if certain condition(s) are true,
+      * transform-upper/lower case/ javascript);&#x20;
+      * Triggers are automated when a record is created/changed. A trigger is a record-level automation.
+*   DRS-34: Analyst has the capability to add an encryption key per database. (REQUIRED)
 
-**Actors**
+    * Encryption key is used to encrypt and decrypt data (DRS-17).&#x20;
+    * Encryption key can be used by applications to read encrypted data. Each database has a unique encryption key defined by the analyst.&#x20;
+    * Encryption key is blinded in the User Interface.&#x20;
 
-* Analyst: the main actor in these requirements is the Analyst/Administrator.
-* Data owner: a physical person whose personal data is stored in the registry.
+    If applications want to read encrypted data via API they must know the encryption key. Data is decrypted in the user interface.
+*   DRS-35: Analyst has the capabilities to automate data exchange between databases internally and externally via API. (REQUIRED)
 
-**Preconditions:**
+    * Automation is triggered automatically after a pre-configured time interval as a loop (finishes when all corresponding records have been processed).&#x20;
+    * Automation processes one record at a time.&#x20;
+    * Automation has configurable conditions (business rules in Rules Engine). E.g. IF field A = 123 then true. Conditions can be grouped with AND and OR operators.
+    *   Automation is configured by mapping (input, output) registry data fields to:&#x20;
 
-1. Analyst is authenticated and authorized to use the Building Block and process data in the database;
-2. The user interface is a web interface;
-3. User has internet;
-4. System has electricity.
+        * another database in the same instance.&#x20;
+        * API in an external database.
 
-**Process**:
+        Mapping involves:&#x20;
+    * query part (input)&#x20;
+    * answer part (output)&#x20;
 
-1. Analyst searches a record via search or filter function;
-2. Analyst selects a record;
-3. Analyst processes a record;
-4. System stores changes to the Change Log database.
+    Mapping can be done from many to one and one to many. Mapping may have a transformation option to convert data to another format. E.g. est->EST;\
+    Expected outcome: Automation can be activated automatically when certain conditions are true and the system sends data to another database or to an external API.
+* DRS-36: Analyst may have capabilities to use database schema templates so that the registry creation is faster. (OPTIONAL)
+  * Schema templates can be shared in the same instance (internal marketplace).&#x20;
+  * Schema templates can be shared in a marketplace.&#x20;
+  * Schema templates can be imported and exported.
+*   DRS-17: Analyst has a view to see all data in the registry. (REQUIRED)
 
-**Post conditions**:
+    Two main views:
 
-Processing changes by Analyst are done and log for change is created.
+    * Main registry records grid view.
+    * Record detail view.
+      * See data;
+      * See documents(open if image, download if other type);
+      * Data log view (changes (create, update, delete). Data before and after).
+      * Data read view (information about who has looked at/exported the data). Data and data reader information is stored in the log registry.
+* DRS-18: Analyst has a view to edit data in the registry. (REQUIRED) Two main views:
+  * Main grid (inline editing).
+  *   Detail record edit view:
 
-| REQ-#  | Requirement                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     | Type                                           |
-| ------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------- |
-| DRS-17 | <p>Analyst has a view to see all data in the registry.</p><p>Two main views:</p><ul><li>Main registry records grid view.</li><li><p>Record detail view.</p><ul><li>See data;</li><li>See documents(open if image, download if other type);</li><li>Data log view (changes (create, update, delete). Data before and after).</li><li>Data read view (information about who has looked at/exported the data). Data and data reader information is stored in the log registry.</li></ul></li></ul>                                                                                                                                                                                                                                                                                                                                                                                                                                                 | <p>Required</p><p><br></p><p>UC2</p><p>UC3</p> |
-| DRS-18 | <ol><li><p>Analyst has a view to edit data in the registry. Two main views:</p><ul><li>Main grid (inline editing).</li><li><p>Detail record edit view:</p><ul><li>Edit data;</li><li>Remove/add documents (upload).</li></ul><p>All data changes are logged.</p></li></ul></li><li>Analyst has option to delete data in the registry.</li></ol><p>             All data changes are logged.</p>                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 | Required                                       |
-| DRS-19 | <p>Analyst can use additional functions to simplify data searching:</p><ul><li>Filtering by search criteria by field content.</li><li>Full-text data search.</li><li>Order by each data field.</li></ul>                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        | <p>Required</p><p><br></p><p>UC2</p>           |
-| DRS-20 | <p>Import data to the registry.</p><p>Analyst has the option to import information into the database. Import formats are: JSON, CSV, XLS.</p>                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   | Required                                       |
-| DRS-21 | <p>Export data from the registry.</p><p>Analyst has the option to export selected/filtered data from a registry to CSV/XLS, JSON.</p>                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           | <p>Required</p><p>UC2</p>                      |
-| DRS-22 | <p>Statistical queries.</p><p>The system should have the ability to:</p><ol><li><p>Produce standard statistical reports</p><ul><li><p>System must show statistics of all registered items in the registry, with various criteria for filtering. For example:</p><ul><li>Details of registered people</li><li>Details of registered services</li><li>Time series: Change in registration of people/services over time</li><li>Details of change to data elements (audit logs)</li></ul></li><li>Generate customizable reports based on the fields registered in the registry.</li></ul></li><li><p>Allow the analyst/user to analyze data collected in the system in various ways:</p><ul><li>(Option) Develop functionality to allow custom dashboards for analysts to analyze data within databases.</li><li>Provide APIs for extracting data from databases to analyze in external data analytics systems (e.g. Tableau).</li></ul></li></ol> | Required                                       |
-| DRS-33 | <p>Users can share data with other users.</p><p>Share data with other users via e-mail, or via a unique and secure URL. Sharing must be at a record level and field level.</p><p>Data sharing can be turned off in the authorization module.</p><p>Data can be shared with anonymous users. The data shared with anonymous users is Open Data.</p>                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              | Optional                                       |
+      * Edit data;
+      * Remove/add documents (upload).
 
-## 6.3 User Story 3 - Process data in API
+      All data changes are logged.
+  * Analyst has option to delete data in the registry.
+    * All data changes are logged.
+* DRS-19: Analyst can use additional functions to simplify data searching (REQUIRED)
+  * Filtering by search criteria by field content.
+  * Full-text data search.
+  * Order by each data field.
+* DRS-20: Import data to the registry. Analyst has the option to import information into the database. Import formats are: JSON, CSV, XLS. (REQUIRED)
+* DRS-21: Export data from the registry. Analyst has the option to export selected/filtered data from a registry to CSV/XLS, JSON. (REQUIRED)
+* DRS-22: Statistical queries. The system should have the ability to (REQUIRED):
+  1. Produce standard statistical reports
+     * System must show statistics of all registered items in the registry, with various criteria for filtering. For example:
+       * Details of registered people
+       * Details of registered services
+       * Time series: Change in registration of people/services over time
+       * Details of change to data elements (audit logs)
+     * Generate customizable reports based on the fields registered in the registry.
+  2. Allow the analyst/user to analyze data collected in the system in various ways:
+     * (Option) Develop functionality to allow custom dashboards for analysts to analyze data within databases.
+     * Provide APIs for extracting data from databases to analyze in external data analytics systems (e.g. Tableau).
+* DRS-33: Users can share data with other users. Share data with other users via e-mail, or via a unique and secure URL. Sharing must be at a record level and field level. Data sharing can be turned off in the authorization module. Data can be shared with anonymous users. The data shared with anonymous users is Open Data. (REQUIRED)
+* DRS-28: Developer has the option to create a new registry database by sending data via API (REQUIRED). Developer is a user who is using API interface.&#x20;
+  1. Name of the database;
+  2. A short name;
+  3. Schema of the database (see DRS-3).
+* DRS-29: Developer can create multiple registry databases into one system instance. (REQUIRED)
+* DRS-30: Developer has the option to publish the database. Publishing will reveal the database to users. (REQUIRED)
+* DRS-31: Developer must be able to modify API services per registry database. (REQUIRED)
+  * The system generates the API data structure from the dynamic database structure automatically each time a publish is done.
+  * The system automatically creates API services to:
+    * create data;
+    * read data;
+    * update data;
+    * delete data;
+    * validate data (if exists);
+    * update or create data.
+  * Developer can hide API services;
+  * Developer can delete API services;
+  * Developer can copy API services;
+  * Developer can create custom API services.
+* DRS-32: Developer has the option to read database schema via API. Developer has the option to read the list API services available per Database. (REQUIRED)
 
-As an Applicant, I want to process CRUD (Create, Read, Update, Delete) data in the registry database.
+## 6.2 Applicant Functions <a href="#docs-internal-guid-d85f59a4-7fff-1564-6ae2-86d67f36a258" id="docs-internal-guid-d85f59a4-7fff-1564-6ae2-86d67f36a258"></a>
 
-**Actors**:
+*   DRS-23: Building Block must enable client systems to process (CRUD) the database records via Open API services. (REQUIRED)
 
-* Applicant - The main actor in these requirements is an applicant via the client system. In this use case applicant is any user who is using a client system (Registration Building Block). For example, a Health Care worker is an applicant in this user story; a mother, using the Registration Building Block. An example client system in this document is Registration Building Block.
+    * Applicant can search data;
+    * Applicant can create data;
+    * Applicant can read data;
+    * Applicant can update data;
+    * Applicant can delete data;
+    * Applicant can create or update data.
 
-**Preconditions**:
+    Building Block authorizes client systems and users to process data.
+*   DRS-24: Building Block has the Open API service list (Swagger) to visualize all API services and API service versions. (REQUIRED)
 
-1. Applicant is using client system (e.g. Registration Building Block) that is connected to Information Mediator Building Block;
-2. Client system has been given authorization to access Registry to process (CRUD) information;
-3. Applicant has been given authorization to access Registry to process (CRUD) information;
-4. Applicants are registered in the system and able to use authentication. Applicant is Authenticated by client system or Security Building Block (Authentication).
-5. Applicant has internet;
-6. System has electricity.
 
-**Process**:
 
-1. Applicant uses a client system to process data in the registry
-   * Applicant can create data;
-   * Applicant can read data;
-   * Applicant can update data;
-   * Applicant can delete data;
-   * Applicant can create or update data;
-   * Applicant can validate data.
-2. System logs all processing events in the dedicated audit registry.
+    Client systems must be able to see all API service descriptions including:
 
-**Post conditions**:
+    * Description of each field.
+    * Example data of each field.
 
-1. When Applicant is authenticated by a client system (e.g. Registration Building Block) the registry allows processing (CRUD) information from the registry. All users who are authenticated can read data.
-2. When a user is not authenticated in the system, the system allows processing (CRUD) data from all databases where an anonymous user has been allowed to process data.
-3. When a user has no authorization, one can not process (CRUD) any information in the registry.
+    If possible then the example must be real so that whoever is looking at the API specifications can test the example data in the service (try it).
+* DRS-25: System has an API for PersonalData usage report. (REQUIRED)
+  * API input must be configurable by the analyst. Input must be a unique identifier of the data owner(e.g. personal identification number).
+  * If the registry database schema is designed to store personal data then the analyst must be able to link the personal data to the owner of personal data (e.g. citizen).
+* DRS-26: Statistical queries via API. (OPTIONAL)
+  * System should make data accessible through the API:
+    * Registration Data;
+    * Program Data.
+  * API should allow querying data with multiple parameters:
+    * Date, time ranges;
+    * Registered Program.
+  * Only authorized data should be available through the API.
+* DRS-27: Using viewing event logs- every data owner has the right to see who has looked at their personal data. (REQUIRED)
+  * Data owner is a physical person whose personal data is stored in the registry.
+  * Data owner has the right to access data reading/processing event logs of the personal data they own. Personal data in a registry is marked accordingly (PersonalData) by the analyst.
+  * PersonalData logs are visible via API or via User Interface (PersonalData report).
 
-| REQ-#  | Requirement                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            | Type                                     |
-| ------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ---------------------------------------- |
-| DRS-23 | <p>Building Block must enable client systems to process (CRUD) the database records via Open API services.</p><ul><li>Applicant can search data;</li><li>Applicant can create data;</li><li>Applicant can read data;</li><li>Applicant can update data;</li><li>Applicant can delete data;</li><li>Applicant can create or update data.</li></ul><p>Building Block authorizes client systems and users to process data.</p>                                                                            | <p>Required</p><p><br></p><p>UC1;UC2</p> |
-| DRS-24 | <p>Building Block has the Open API service list (Swagger) to visualize all API services and API service versions.</p><p></p><p>Client systems must be able to see all API service descriptions including:</p><ul><li>Description of each field.</li><li>Example data of each field.</li></ul><p>If possible then the example must be real so that whoever is looking at the API specifications can test the example data in the service (try it).</p>                                                  | <p>Required</p><p><br></p>               |
-| DRS-25 | <p>System has an API for PersonalData usage report.</p><ul><li>API input must be configurable by the analyst. Input must be a unique identifier of the data owner(e.g. personal identification number).</li><li>If the registry database schema is designed to store personal data then the analyst must be able to link the personal data to the owner of personal data (e.g. citizen).</li></ul>                                                                                                     | <p>Required</p><p>UC3</p>                |
-| DRS-26 | <p>Statistical queries via API.</p><ul><li><p>System should make data accessible through the API:</p><ul><li>Registration Data;</li><li>Program Data.</li></ul></li><li><p>API should allow querying data with multiple parameters:</p><ul><li>Date, time ranges;</li><li>Registered Program.</li></ul></li><li>Only authorized data should be available through the API.</li></ul>                                                                                                                    | Optional                                 |
-| DRS-27 | <p>Using viewing event logs- every data owner has the right to see who has looked at their personal data.</p><ul><li>Data owner is a physical person whose personal data is stored in the registry.</li><li>Data owner has the right to access data reading/processing event logs of the personal data they own. Personal data in a registry is marked accordingly (PersonalData) by the analyst.</li><li>PersonalData logs are visible via API or via User Interface (PersonalData report).</li></ul> | <p>Required</p><p><br></p><p>UC3</p>     |
+## Building Block Components
 
-## 6.4 User Story 4- Create registry database in API <a href="#docs-internal-guid-49b62261-7fff-0ca4-5ac9-2267b594ffc6" id="docs-internal-guid-49b62261-7fff-0ca4-5ac9-2267b594ffc6"></a>
+The Building Block has a user interface to query and consult the registry data but in most cases, the Applicants are using the end client applications like Registration Building Block to access the registry. Any Building Block can query data from Digital Registries Building Block via APIs if authorization is given.
 
-As an IT developer, I want to Create/update/delete registry database schema via API services.
-
-**Actors**
-
-* IT developer (Developer): Main actor in these requirements is planning to open a new business program and web form to capture applicants' data. Captured data must be registered in the registry. In this use case, a Developer is any user who is using API services to create and manage registries database.
-
-**Preconditions**:
-
-1. Developer is using API with a client system or a script that is connected to Information Mediator Building Block. Client system is any Building Block that is using API services via Information Mediator;
-2. IT Developer (Information Mediator organization) has been given authorization to Create/update/delete database schemas via API services.
-3. Developer has internet;
-4. System has electricity.
-
-**Process**:
-
-1. Developer uses a client system to edit the registry database in the Building Block. Developer can:
-   1. Create database schema;
-   2. Read database schema;
-   3. Modify database schema;
-   4. Delete database schema and all data in it.
-
-**Postconditions**:
-
-1. When Developer is authorized to use Building Block API then the Digital Registries Building Block allows processing CRUD (Create, Read, Update, Delete) schema of a registry, and all authorized users can;
-2. When Developer is not authorized to process/CRUD the database schema, the system allows to process schema of all databases where an anonymous user has been allowed to edit the database schema (simplification for GovStack Sandbox instance);
-3. When a user has no authorization, one can not create nor change (CRUD) any schema in the Building Block.
-
-| REQ-#  | Requirement                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          | Type                           |
-| ------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------ |
-| DRS-28 | <p>Developer has the option to create a new registry database by sending data via API:</p><ol><li>Name of the database;</li><li>A short name;</li><li>Schema of the database (see DRS-3).</li></ol>                                                                                                                                                                                                                                                                                                                                                                                                                                  | Required                       |
-| DRS-29 | Developer can create multiple registry databases into one system instance.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           | Required                       |
-| DRS-30 | Developer has the option to publish the database. Publishing will reveal the database to users.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      | Required                       |
-| DRS-31 | <p>Developer must be able to modify API services per registry database.</p><ul><li>The system generates the API data structure from the dynamic database structure automatically each time a publish is done.</li><li><p>The system automatically creates API services to:</p><ul><li>create data;</li><li>read data;</li><li>update data;</li><li>delete data;</li><li>validate data (if exists);</li><li>update or create data.</li></ul></li><li>Developer can hide API services;</li><li>Developer can delete API services;</li><li>Developer can copy API services;</li><li>Developer can create custom API services.</li></ul> | <p>Required</p><p><br></p>     |
-| DRS-32 | <p>Developer has the option to read database schema via API.</p><p>Developer has the option to read the list API services available per Database.</p>                                                                                                                                                                                                                                                                                                                                                                                                                                                                                | <p>Required</p><p><br><br></p> |
-
+![Digital registries functional components](<.gitbook/assets/image3 (1) (1).png>)
