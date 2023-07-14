@@ -1,3 +1,8 @@
+function replaceKeyWithValueFromJson(key) {
+  let processedKey = key.replace('${', '').replace('}', '');
+  return jsonData[processedKey] || key;
+}
+
 module.exports = {
   localhost: 'http://localhost:3333/',
   contentTypeHeader: {
@@ -369,4 +374,5 @@ module.exports = {
     },
     required: ['ID', 'FirstName', 'LastName', 'BirthCertificateID'],
   },
+  replaceKeyWithValueFromJson
 };
