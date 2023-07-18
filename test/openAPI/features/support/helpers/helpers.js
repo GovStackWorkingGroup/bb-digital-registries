@@ -1,19 +1,3 @@
-function replaceKeyWithValueFromJson(key) {
-  let processedKey = key.replace('${', '').replace('}', '');
-  return jsonData[processedKey] || key;
-}
-
-function readJsonFile(fileName) {
-  const fs = require('fs');
-  try {
-    let rawData = fs.readFileSync(fileName);
-    return JSON.parse(rawData);
-  } catch (error) {
-    console.log(`Failed to read ${fileName}, returning null.`);
-    return null;
-  }
-}
-
 module.exports = {
   localhost: 'http://localhost:3333/',
   contentTypeHeader: {
@@ -388,3 +372,21 @@ module.exports = {
   replaceKeyWithValueFromJson,
   readJsonFile,
 };
+
+const fs = require('fs');
+let jsonData = readJsonFile('testCustomParameters.json') || readJsonFile('testDefaultParameters.json');
+
+function replaceKeyWithValueFromJson(key) {
+  let processedKey = key.replace('${', '').replace('}', '');
+  return jsonData[processedKey] || key;
+}
+
+function readJsonFile(fileName) {
+  try {
+    let rawData = fs.readFileSync(fileName);
+    return JSON.parse(rawData);
+  } catch (error) {
+    console.log(`Failed to read ${fileName}, returning null.`);
+    return null;
+  }
+}

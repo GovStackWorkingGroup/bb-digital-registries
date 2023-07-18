@@ -10,7 +10,6 @@ const {
   contentTypeHeader,
   dataCreateResponseSchema,
   replaceKeyWithValueFromJson,
-  readJsonFile,
 } = require('./helpers/helpers');
 
 chai.use(require('chai-json-schema'));
@@ -18,7 +17,6 @@ chai.use(require('chai-json-schema'));
 let specDataCreate;
 const baseUrl = localhost + dataCreateEndpoint;
 const endpointTag = { tags: `@endpoint=/${dataCreateEndpoint}` };
-let jsonData = readJsonFile('testCustomParameters.json') || readJsonFile('testDefaultParameters.json');
 
 Before(endpointTag, () => {
   specDataCreate = pactum.spec();
