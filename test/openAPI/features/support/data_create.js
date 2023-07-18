@@ -53,17 +53,6 @@ When(
     });
   }
 );
-When(
-  'User provides body with parameters: {string} as ID, {string} as Firstname, {string} as LastName, {string} BirthCertificateID',
-  function (ID, Firstname, LastName, BirthCertificateID) {
-    return specDataCreate.withBody({
-      ID: replaceKeyWithValueFromJson(ID),
-      Firstname: replaceKeyWithValueFromJson(Firstname),
-      LastName: replaceKeyWithValueFromJson(LastName),
-      BirthCertificateID: replaceKeyWithValueFromJson(BirthCertificateID),
-    });
-  }
-);
 
 Then(
   'User receives a response from the POST \\/data\\/\\{registryname}\\/\\{versionnumber}\\/create endpoint',
