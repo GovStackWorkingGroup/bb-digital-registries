@@ -6,7 +6,7 @@ Feature: API endpoint that allows users to create a new record in the database.
 
     Given The user wants to create a new record in the database
     When User sends POST request with given Information-Mediator-Client header, body, "registryname" as registryname and "111" as versionnumber
-    And User provides body with parameters: "${ID_1}" as ID, "Anna" as Firstname, "Stock" as LastName, "RR-1234567993" BirthCertificateID
+    And User provides body with parameters: "${ID_1}" as ID, "Anna" as Firstname, "Stock" as LastName, "RR-1234567999" as BirthCertificateID
     Then User receives a response from the POST /data/{registryname}/{versionnumber}/create endpoint
     And The POST /data/{registryname}/{versionnumber}/create endpoint response should be returned in a timely manner 15000ms
     And The POST /data/{registryname}/{versionnumber}/create endpoint response should have status 200
@@ -18,7 +18,7 @@ Feature: API endpoint that allows users to create a new record in the database.
 
     Given The user wants to create a new record in the database
     When User sends POST request with given Information-Mediator-Client header, body, "registryname" as registryname and "111" as versionnumber
-    And User provides body with parameters: "<ID>" as ID, "<Firstname>" as Firstname, "<LastName>" as LastName, "<BirthCertificateID>" BirthCertificateID
+    And User provides body with parameters: "<ID>" as ID, "<Firstname>" as Firstname, "<LastName>" as LastName, "<BirthCertificateID>" as BirthCertificateID
     Then User receives a response from the POST /data/{registryname}/{versionnumber}/create endpoint
     And The POST /data/{registryname}/{versionnumber}/create endpoint response should be returned in a timely manner 15000ms
     And The POST /data/{registryname}/{versionnumber}/create endpoint response should have status 200
