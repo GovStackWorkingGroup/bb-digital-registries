@@ -56,13 +56,11 @@ When(
 When(
   'User provides body with parameters: {string} as ID, {string} as Firstname, {string} as LastName, {string} BirthCertificateID',
   function (ID, Firstname, LastName, BirthCertificateID) {
-    let key = ID.replace('${', '').replace('}', '');
-    let actualID = jsonData[key] || ID;
     return specDataCreate.withBody({
-      ID: actualID,
-      Firstname: Firstname,
-      LastName: LastName,
-      BirthCertificateID: BirthCertificateID,
+      ID: replaceKeyWithValueFromJson(ID),
+      Firstname: replaceKeyWithValueFromJson(Firstname),
+      LastName: replaceKeyWithValueFromJson(LastName),
+      BirthCertificateID: replaceKeyWithValueFromJson(BirthCertificateID),
     });
   }
 );
