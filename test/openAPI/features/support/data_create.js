@@ -9,6 +9,8 @@ const {
   defaultExpectedResponseTime,
   contentTypeHeader,
   dataCreateResponseSchema,
+  replaceKeyWithValueFromJson,
+  readJsonFile,
 } = require('./helpers/helpers');
 
 chai.use(require('chai-json-schema'));
@@ -16,16 +18,7 @@ chai.use(require('chai-json-schema'));
 let specDataCreate;
 const baseUrl = localhost + dataCreateEndpoint;
 const endpointTag = { tags: `@endpoint=/${dataCreateEndpoint}` };
-const fs = require('fs');
-let jsonData;
-try {
-  let rawData = fs.readFileSync('testCustomParameters.json');
-  jsonData = JSON.parse(rawData);
-} catch (error) {
-  console.log('Failed to read testCustomParameters.json, attempting to read testDefaultParameters.json');
-  let rawData = fs.readFileSync('testDefaultParameters.json');
-  jsonData = JSON.parse(rawData);
-}
+let jsonData = readJsonFile('testCustomParameters.json') || readJsonFile('testDefaultParameters.json');
 
 Before(endpointTag, () => {
   specDataCreate = pactum.spec();
