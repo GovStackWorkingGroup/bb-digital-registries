@@ -10,11 +10,13 @@ if [ -f $CUSTOM_JSON_PATH ] && [ -f $DEFAULT_JSON_PATH ]; then
   CUSTOM_KEYS=$(jq -r 'keys[]' $CUSTOM_JSON_PATH | sort)
   DEFAULT_KEYS=$(jq -r 'keys[]' $DEFAULT_JSON_PATH | sort)
 
+  # Check if keys in custom and default json file match
   if [ "$CUSTOM_KEYS" != "$DEFAULT_KEYS" ]; then
     echo "Keys in $CUSTOM_JSON_PATH and $DEFAULT_JSON_PATH do not match. Exiting."
     exit 1
   fi
 
+  # If keys match then use custom json file
   PARAMETERS_PATH="$CUSTOM_JSON_PATH"
 elif [ -f $DEFAULT_JSON_PATH ]; then 
   # Only default parameters file exists, use it for substitution
@@ -24,6 +26,7 @@ else
   PARAMETERS_PATH=""
 fi
 
+# Replcae ${key} with values from selected json file in generated report file
 if [ ! -z $PARAMETERS_PATH ]; then
   echo "Replacing placeholders in $REPORT_PATH using $PARAMETERS_PATH."
   export TMPDIR=/tmp

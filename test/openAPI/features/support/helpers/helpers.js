@@ -378,7 +378,10 @@ let jsonData = readJsonFile('testCustomParameters.json') || readJsonFile('testDe
 
 function replaceKeyWithValueFromJson(key) {
   let processedKey = key.replace('${', '').replace('}', '');
-  return jsonData[processedKey] || key;
+  if (!jsonData.hasOwnProperty(processedKey)) {
+    throw new Error(`Key ${processedKey} not found in jsonData`);
+  }
+  return jsonData[processedKey];
 }
 
 function readJsonFile(fileName) {
