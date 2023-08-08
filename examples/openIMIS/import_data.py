@@ -11,9 +11,6 @@ from insuree.models import Insuree, Family, Gender
 from django.db import IntegrityError
 
 
-def load_django_settings():
-    pass
-
 def load_json_data(file_path):
     with open(file_path, 'r') as file:
         return json.load(file)
