@@ -9,12 +9,12 @@ const {
   defaultExpectedResponseTime,
   contentTypeHeader,
   dataCreateResponseSchema,
+  replaceKeyWithValueFromJson,
 } = require('./helpers/helpers');
 
 chai.use(require('chai-json-schema'));
 
 let specDataCreate;
-
 const baseUrl = localhost + dataCreateEndpoint;
 const endpointTag = { tags: `@endpoint=/${dataCreateEndpoint}` };
 
@@ -41,14 +41,15 @@ When(
 );
 
 When(
-  'User provides body with parameters: {string} as ID, {string} as Firstname, {string} as LastName, {string} BirthCertificateID',
-  (ID, Firstname, LastName, BirthCertificateID) =>
-    specDataCreate.withBody({
-      ID: ID,
-      Firstname: Firstname,
-      LastName: LastName,
-      BirthCertificateID: BirthCertificateID,
-    })
+  'User provides body with parameters: {string} as ID, {string} as Firstname, {string} as LastName, {string} as BirthCertificateID',
+  function (ID, Firstname, LastName, BirthCertificateID) {
+    return specDataCreate.withBody({
+      ID: replaceKeyWithValueFromJson(ID),
+      Firstname: replaceKeyWithValueFromJson(Firstname),
+      LastName: replaceKeyWithValueFromJson(LastName),
+      BirthCertificateID: replaceKeyWithValueFromJson(BirthCertificateID),
+    });
+  }
 );
 
 Then(

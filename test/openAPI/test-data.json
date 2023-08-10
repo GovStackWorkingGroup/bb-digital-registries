@@ -134,7 +134,7 @@
         ]
       },
       {
-        "uuid": "80bcb084-fa17-11ed-be56-0242ac120002",
+        "uuid": "80bcb084-fa17-11ed-be56-0242ac120003",
         "id": "EE378129277266",
         "FirstName": "John",
         "LastName": "Bon",
@@ -204,7 +204,7 @@
         "PersonalData": []
       },
       {
-        "uuid": "4784f9c5-c5d7-40ce-9e19-88c1a1a8a8908",
+        "uuid": "4784f9c5-c5d7-40ce-9e19-88c1a1a8a890",
         "id": "EE65346467865",
         "FirstName": "Alina",
         "LastName": "Soft",
@@ -235,7 +235,6 @@
         "BirthCertificateID": "RR-1112223331",
         "PersonalData": []
       },
-      "//records below have to be deleted in the test - don't use it to update etc.",
       {
         "uuid": "80bcb804-fa17-11ed-be56-0242ac120002",
         "id": "EE378627348834",
