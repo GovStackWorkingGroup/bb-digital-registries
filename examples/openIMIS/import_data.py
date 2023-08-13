@@ -73,7 +73,7 @@ def create_gender(user, data):
 
 def create_default_registry(registry_name=None, version=None, class_name=None, model=None,
                             fields_mapping=None, special_fields=None, default_values=None,
-                            mutations=None, queries=None):
+                            mutations=None, queries=None, id_field=None):
     default_args = {
         "registry_name": 'registryname',
         "version": '111',
@@ -89,7 +89,8 @@ def create_default_registry(registry_name=None, version=None, class_name=None, m
             "card_issued": "cardIssued: false"
         },
         "mutations": {"create": "createInsuree", "delete": "deleteInsurees", "update": "updateInsuree"},
-        "queries": {"get": "insurees"}
+        "queries": {"get": "insurees"},
+        "id_field": "chfId",
     }
 
     registry = Registry.objects.create(
@@ -101,7 +102,8 @@ def create_default_registry(registry_name=None, version=None, class_name=None, m
         special_fields=special_fields if special_fields is not None else default_args["special_fields"],
         default_values=default_values if default_values is not None else default_args["default_values"],
         mutations=mutations if mutations is not None else default_args["mutations"],
-        queries=queries if queries is not None else default_args["queries"]
+        queries=queries if queries is not None else default_args["queries"],
+        id_field=id_field if id_field is not None else default_args["id_field"]
     )
     registry.save()
     print("Registry has been successfully saved to the database")
