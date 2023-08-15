@@ -48,6 +48,7 @@ services:
     ports:
       - 3333:8000
 
+
 networks:
   openimis-net:
 volumes:
