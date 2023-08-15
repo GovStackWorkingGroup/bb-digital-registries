@@ -14,9 +14,6 @@ if [ $SECONDS -gt $timeout ]; then
 fi
 
 
-docker-compose exec backend chmod +x /check_service_availability.sh
-docker-compose exec backend bash /check_service_availability.sh
-
 docker-compose exec backend python /createTestCustomParameters.py
 container_id=$(docker-compose ps -q backend)
 docker cp $container_id:/openimis-be/openIMIS/testCustomParameters.json ./testCustomParameters.json

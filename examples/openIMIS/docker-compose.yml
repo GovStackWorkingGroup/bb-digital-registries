@@ -17,7 +17,7 @@ services:
     networks:
       openimis-net:
     ports:
-      - 5433:5432
+      - 5436:5432
 
   backend:
     container_name: ${PROJECT_NAME:-openimis}-api
@@ -26,7 +26,6 @@ services:
     volumes:
       - ./import_data.py:/import_data.py
       - ./createTestCustomParameters.py:/createTestCustomParameters.py
-      - ./check_service_availability.sh:/check_service_availability.sh
       - ../../test/openAPI/test-data.json:/test-data.json
     environment: &backend-env
       - DB_HOST=${DB_HOST}
@@ -39,7 +38,6 @@ services:
       - DEBUG=True
       - DJANGO_LOG_LEVEL=DEBUG
       - SITE_URL=${NEW_OPENIMIS_HOST}
-      - CELERY_BROKER_URL=amqp://rabbitmq
     depends_on:  
       db:
         condition: service_healthy
