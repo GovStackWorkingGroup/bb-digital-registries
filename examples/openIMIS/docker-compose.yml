@@ -21,10 +21,8 @@ services:
 
   backend:
     container_name: ${PROJECT_NAME:-openimis}-api
-    image: openimis/backend:${PROJECT_NAME:-local}
+    image: ghcr.io/openimis/openimis-be:govstack-api-test
     command: start
-    build:
-      context: https://github.com/openimis/openimis-be_py.git#govstack-testing-setup
     volumes:
       - ./import_data.py:/import_data.py
       - ./createTestCustomParameters.py:/createTestCustomParameters.py
