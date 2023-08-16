@@ -35,7 +35,6 @@ services:
       - DB_ENGINE=${DB_ENGINE}
       - DB_PASSWORD=${DB_PASSWORD}
       - SITE_ROOT=api
-      - DEBUG=True
       - DJANGO_LOG_LEVEL=DEBUG
       - SITE_URL=${NEW_OPENIMIS_HOST}
     depends_on:  
