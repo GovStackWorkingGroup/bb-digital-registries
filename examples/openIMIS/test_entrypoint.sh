@@ -25,4 +25,4 @@ docker-compose exec backend python /createTestCustomParameters.py
 container_id=$(docker-compose ps -q backend)
 docker cp $container_id:/openimis-be/openIMIS/testCustomParameters.json ./testCustomParameters.json
 
-# docker-compose exec backend python /import_data.py
+docker-compose exec backend python /import_data.py
