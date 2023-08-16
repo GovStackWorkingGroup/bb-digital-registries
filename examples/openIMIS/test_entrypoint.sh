@@ -19,11 +19,11 @@ fi
 
 docker-compose exec backend chmod +x /check_service_availability.sh
 sleep 60
-docker-compose exec backend bash /check_service_availability.sh
+#  docker-compose exec backend bash /check_service_availability.sh
 
 docker-compose logs backend
 docker-compose exec backend python /createTestCustomParameters.py
 container_id=$(docker-compose ps -q backend)
 docker cp $container_id:/openimis-be/openIMIS/testCustomParameters.json ./testCustomParameters.json
 
-docker-compose exec backend python /import_data.py
+# docker-compose exec backend python /import_data.py
