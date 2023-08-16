@@ -64,8 +64,7 @@ if __name__ == "__main__":
         param_manager.add_params(first_name_parameters)
         param_manager.add_params(last_name_parameters)
         param_manager.add_params(birth_certificate_id)
-        self.params["csrf_token"] = response_data["csrf_token"]
-        self.params["jwt_token"] = response_data["jwt_token"]
+        param_manager.add_params(request)
         param_manager.save_to_file()
         print("Custom parameters created.")
     except Exception as e: 
