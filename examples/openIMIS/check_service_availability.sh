@@ -1,4 +1,6 @@
 #!/bin/bash
+set -euxo pipefail
+
 apt-get install -y netcat
 
 check_service() {
