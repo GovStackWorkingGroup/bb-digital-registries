@@ -8,6 +8,7 @@ healthcheckApiCall() {
     if [ $RETURN -ne 0 ];
     then
       echo "Api healthcheck call failed"
+      docker-compose logs backend
       return 1
     fi
     echo "-----"
