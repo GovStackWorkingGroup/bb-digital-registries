@@ -2,7 +2,7 @@
 set -e
 
 docker-compose build --no-cache db backend
-docker-compose run backend manage migrate
+# docker-compose run backend manage migrate
 
 docker-compose up -d db backend
 
@@ -17,7 +17,7 @@ if [ $SECONDS -gt $timeout ]; then
     exit 1
 fi
 
-docker-compose exec backend chmod +x /check_service_availability.sh
+chmod +x /check_service_availability.sh
 docker-compose exec backend bash /check_service_availability.sh
 
 docker-compose logs backend
