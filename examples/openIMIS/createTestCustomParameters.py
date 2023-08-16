@@ -56,15 +56,10 @@ if __name__ == "__main__":
             {"BirthCertificateID_4": "RR-8534567781"},
         ]
 
-        request = {
-            "csrf_token": "D2222",
-            "jwt_token": "D2223",
-        }
         param_manager.add_params(id_parameters)
         param_manager.add_params(first_name_parameters)
         param_manager.add_params(last_name_parameters)
         param_manager.add_params(birth_certificate_id)
-        param_manager.add_params(request)
         param_manager.save_to_file()
         print("Custom parameters created.")
     except Exception as e: 
