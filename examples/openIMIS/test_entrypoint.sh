@@ -1,6 +1,8 @@
 #!/bin/bash
 set -e
 
+# Ensure new version is used
+docker pull ghcr.io/openimis/openimis-be:govstack-api-test
 docker-compose build --no-cache db backend
 docker-compose run backend manage migrate
 
