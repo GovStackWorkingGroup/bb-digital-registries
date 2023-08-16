@@ -71,6 +71,33 @@ def create_gender(user, data):
     update_or_create_gender(data, user)
 
 
+def create_interactive_user_from_data(
+        ser_uuid="3213-d33d-ds22-d11d-d55d", last_name='ADMIN', other_names='IMIS'
+):
+    username = os.getenv('login_openIMIS')
+    password = os.getenv('password_openIMIS')
+
+    if roles is None:
+        roles = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
+    if username is None:
+        username = other_names
+
+    i_user = InteractiveUser.objects.create(
+        **{
+            "language_id": "en",
+            "uuid": user_uuid,
+            "last_name": last_name,
+            "other_names": other_names,
+            "login_name": username,
+            "audit_user_id": -1,
+            "role_id": roles[0]
+        }
+    )
+    i_user.set_password(password)
+    i_user.save()
+    create_or_update_user_roles(i_user, roles, audit_user_id=1)
+    return User.objects.create(username=username, i_user=i_user)
+
 def create_default_registry(registry_name=None, version=None, class_name=None, model=None,
                             fields_mapping=None, special_fields=None, default_values=None,
                             mutations=None, queries=None, id_field=None):

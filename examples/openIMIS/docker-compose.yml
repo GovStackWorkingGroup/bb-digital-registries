@@ -41,6 +41,7 @@ services:
       - SITE_URL=${NEW_OPENIMIS_HOST}
       - login_openIMIS=Admin
       - password_openIMIS=admin123
+      - IM_CLIENT=eGovStack/GOV/90000009/digitalregistries
     depends_on:  
       db:
         condition: service_healthy
