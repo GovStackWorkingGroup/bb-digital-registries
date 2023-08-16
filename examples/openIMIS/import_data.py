@@ -74,7 +74,7 @@ def create_gender(user, data):
 
 
 def create_interactive_user_from_data(
-    user_uuid="3213-d33d-ds22-d11d-d55d", last_name='ADMIN', other_names='IMIS'
+    user_uuid="3213-d33d-ds22-d11d-d55d", last_name='ADMIN', other_names='IMIS', roles=None
 ):
     username = os.getenv('login_openIMIS')
     password = os.getenv('password_openIMIS')
