@@ -27,6 +27,7 @@ services:
       - ./import_data.py:/import_data.py
       - ./createTestCustomParameters.py:/createTestCustomParameters.py
       - ../../test/openAPI/test-data.json:/test-data.json
+      - ./check_service_availability.sh:/check_service_availability.sh
     environment: &backend-env
       - DB_HOST=${DB_HOST}
       - DB_PORT=5432
