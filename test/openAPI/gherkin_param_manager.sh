@@ -12,6 +12,7 @@ if [ -f $CUSTOM_JSON_PATH ] && [ -f $DEFAULT_JSON_PATH ]; then
 
   # Check if keys in custom and default json file match
   if [ "$CUSTOM_KEYS" != "$DEFAULT_KEYS" ]; then
+    # TODO: This should be executed before the tests
     echo "Keys in $CUSTOM_JSON_PATH and $DEFAULT_JSON_PATH do not match. Exiting."
     exit 1
   fi

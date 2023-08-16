@@ -72,7 +72,7 @@ def create_gender(user, data):
 
 
 def create_interactive_user_from_data(
-        ser_uuid="3213-d33d-ds22-d11d-d55d", last_name='ADMIN', other_names='IMIS'
+    user_uuid="3213-d33d-ds22-d11d-d55d", last_name='ADMIN', other_names='IMIS'
 ):
     username = os.getenv('login_openIMIS')
     password = os.getenv('password_openIMIS')
@@ -138,6 +138,7 @@ def create_default_registry(registry_name=None, version=None, class_name=None, m
 
 if __name__ == "__main__":
     test_data = load_json_data("../../test-data.json")
+    create_interactive_user_from_data()
     create_default_registry()
     id_data = load_parameter_from_custom_parameters(file_path="testCustomParameters.json", parameter="ID")
     for index, record in enumerate(test_data["registries"]["records"]):
