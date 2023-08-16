@@ -18,8 +18,8 @@ healthcheckApiCall() {
 
 waitForAPI() {
     echo "Testing API availability..."
-    retries=10
-    interval=20
+    retries=30
+    interval=10
     notAvailable=1
     while [ $retries -ge 0 ] && [ $notAvailable -ne 0 ]
     do
