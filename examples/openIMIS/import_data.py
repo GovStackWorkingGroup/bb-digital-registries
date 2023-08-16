@@ -10,6 +10,8 @@ from govstack_api.models import Registry
 from insuree.models import Insuree, Family, Gender
 from django.db import IntegrityError
 
+from core.models import InteractiveUser, User
+from core.services import create_or_update_user_roles
 
 def load_json_data(file_path):
     with open(file_path, 'r') as file:
