@@ -15,8 +15,8 @@ check_service() {
       echo "$service is up!"
       return 0
     else
-      echo "Waiting for $service..."
-      sleep 20
+      echo "Waiting for $service ($try)... "
+      sleep 30
     fi
 
     try=$((try + 1))
