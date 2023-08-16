@@ -13,7 +13,7 @@ if [ $SECONDS -gt $timeout ]; then
     exit 1
 fi
 
-
+docker-compose logs backend
 docker-compose exec backend python /createTestCustomParameters.py
 container_id=$(docker-compose ps -q backend)
 docker cp $container_id:/openimis-be/openIMIS/testCustomParameters.json ./testCustomParameters.json
