@@ -1,5 +1,6 @@
 #!/bin/bash
 docker-compose build --no-cache db backend
+docker-compose exec backend manage migrate
 docker-compose up -d db backend
 
 
