@@ -17,6 +17,9 @@ if [ $SECONDS -gt $timeout ]; then
     exit 1
 fi
 
+docker-compose exec backend chmod +x /check_service_availability.sh
+docker-compose exec backend bash /check_service_availability.sh
+
 docker-compose logs backend
 docker-compose exec backend python /createTestCustomParameters.py
 container_id=$(docker-compose ps -q backend)
