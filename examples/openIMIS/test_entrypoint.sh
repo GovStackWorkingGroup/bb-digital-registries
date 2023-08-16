@@ -1,6 +1,9 @@
 #!/bin/bash
+set -e
+
 docker-compose build --no-cache db backend
-docker-compose exec backend test
+docker-compose run backend manage migrate
+
 docker-compose up -d db backend
 
 
