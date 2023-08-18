@@ -1,29 +1,44 @@
 #!/bin/bash
-apt-get install -y netcat
 
-check_service() {
-  local service=$1
-  local port=$2
-  local max_retries=10
-  local try=0
-
-  while [ $try -lt $max_retries ]; do
-    nc -z $service $port
-    result=$?
-
-    if [ $result -eq 0 ]; then
-      echo "$service is up!"
-      return 0
-    else
-      echo "Waiting for $service..."
-      sleep 50
+healthcheckApiCall() {
+    echo "Sending test request, result:"
+    echo "-----"
+    curl localhost:3333 > /dev/null
+    RETURN=$?
+    if [ $RETURN -ne 0 ];
+    then
+      echo "Api healthcheck call failed"
+      docker-compose logs backend
+      return 1
     fi
-
-    try=$((try + 1))
-  done
-
-  echo "$service failed to start in time."
-  return 1
+    echo "-----"
+    echo "Success in calling healtcheck API endpoint"
+    return 0
 }
 
-check_service backend 8000
+waitForAPI() {
+    echo "Testing API availability..."
+    retries=30
+    interval=10
+    notAvailable=1
+    while [ $retries -ge 0 ] && [ $notAvailable -ne 0 ]
+    do
+      healthcheckApiCall
+      notAvailable=$?
+      retries=$(( $retries - 1 ))
+      if [ $retries -ne 5 ]
+      then 
+         sleep 1
+      fi
+    done
+
+    if [ $notAvailable -eq 1 ]
+    then
+      echo "Gherkin tests will not be executed as API is not available."
+      exit 1
+    fi
+    echo "API Available."
+    return 0
+}
+
+waitForAPI

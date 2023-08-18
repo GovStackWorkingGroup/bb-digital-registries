@@ -21,13 +21,13 @@ services:
 
   backend:
     container_name: ${PROJECT_NAME:-openimis}-api
-    image: openimis/backend:${PROJECT_NAME:-local}
-    restart: always
+    image: ghcr.io/openimis/openimis-be:govstack-api-test
     command: start
-    build:
-      context: https://github.com/openimis/openimis-be_py.git#govstack-testing-setup
+    mem_limit: 2g
     volumes:
       - ./import_data.py:/import_data.py
+      - ./createTestCustomParameters.py:/createTestCustomParameters.py
+      - ../../test/openAPI/test-data.json:/test-data.json
       - ./check_service_availability.sh:/check_service_availability.sh
     environment: &backend-env
       - DB_HOST=${DB_HOST}
@@ -37,10 +37,11 @@ services:
       - DB_ENGINE=${DB_ENGINE}
       - DB_PASSWORD=${DB_PASSWORD}
       - SITE_ROOT=api
-      - DEBUG=True
       - DJANGO_LOG_LEVEL=DEBUG
       - SITE_URL=${NEW_OPENIMIS_HOST}
-      - CELERY_BROKER_URL=amqp://rabbitmq
+      - login_openIMIS=Admin
+      - password_openIMIS=admin123
+      - IM_CLIENT=eGovStack/GOV/90000009/digitalregistries
     depends_on:  
       db:
         condition: service_healthy
