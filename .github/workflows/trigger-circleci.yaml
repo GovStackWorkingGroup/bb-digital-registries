@@ -1,0 +1,25 @@
+name: Trigger CircleCI on PR merge
+
+on:
+  pull_request:
+    types:
+      - closed
+
+jobs:
+  trigger-circleci:
+    runs-on: ubuntu-latest
+    if: github.event.pull_request.merged == true
+    steps:
+    - name: Trigger CircleCI Workflow
+      run: |
+        curl -u ${CIRCLECI_API_TOKEN}: -X POST \
+        --header "Content-Type: application/json" \
+        -d '{
+          "branch": "${{ github.head_ref }}",
+          "parameters": {
+            "run_workflow": true
+          }
+        }' \
+        https://circleci.com/api/v2/project/gh/${{ github.repository }}/pipeline
+      env:
+        CIRCLECI_API_TOKEN: ${{ secrets.CIRCLECI_API_TOKEN }}
