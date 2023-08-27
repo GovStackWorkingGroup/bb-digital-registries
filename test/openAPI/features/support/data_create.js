@@ -44,6 +44,21 @@ When(
   'User provides body with parameters: {string} as ID, {string} as Firstname, {string} as LastName, {string} as BirthCertificateID',
   function (ID, Firstname, LastName, BirthCertificateID) {
     return specDataCreate.withBody({
+      write: {
+        content: { ID: replaceKeyWithValueFromJson(ID),
+      Firstname: replaceKeyWithValueFromJson(Firstname),
+      LastName: replaceKeyWithValueFromJson(LastName),
+      BirthCertificateID: replaceKeyWithValueFromJson(BirthCertificateID),
+        }
+      }
+    });
+  }
+);
+
+When(
+  'User provides parameters: {string} as ID, {string} as Firstname, {string} as LastName, {string} as BirthCertificateID',
+  function (ID, Firstname, LastName, BirthCertificateID) {
+    return specDataCreate.withBody({
       ID: replaceKeyWithValueFromJson(ID),
       Firstname: replaceKeyWithValueFromJson(Firstname),
       LastName: replaceKeyWithValueFromJson(LastName),
