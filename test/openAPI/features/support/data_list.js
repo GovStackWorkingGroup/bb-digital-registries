@@ -54,11 +54,11 @@ Then(
   status => specDataList.response().to.have.status(status)
 );
 Then(
-  /^the response from \/data\/\{registryname\}\/\{versionnumber\} should have content\-type: application\/json header$/,
-  () =>
+  /^the response from \/data\/\{registryname\}\/\{versionnumber\} should have content\-type: "([^"]*)" as ContentType$/,
+  (ContentType) =>
     specDataList
       .response()
-      .should.have.header(contentTypeHeader.key, contentTypeHeader.value)
+      .should.have.header(contentTypeHeader.key, ContentType)
 );
 Then(
   /^the response from \/data\/\{registryname\}\/\{versionnumber\} should match json schema$/,
