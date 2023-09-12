@@ -28,7 +28,7 @@ Given(
 );
 
 When(
-  /^send POST request to check if the record exist in the database is sent with given path params "([^"]*)" as registryname and "([^"]*)" as versionnumber$/,
+  /^send POST request to check if the record exist in the database is sent with given path Information\-Mediator\-Client header and params "([^"]*)" as registryname and "([^"]*)" as versionnumber$/,
   (registryName, versionNumber) =>
     specDataExist
       .post(baseUrl)
@@ -71,11 +71,11 @@ Then(
 );
 
 Then(
-  /^the response from \/data\/\{registryname\}\/\{versionnumber\}\/exists should have content\-type: application\/json header$/,
-  () =>
+  /^the response from \/data\/\{registryname\}\/\{versionnumber\}\/exists should have content-type: {string} as contentType$/,
+  (contentType) =>
     specDataExist
       .response()
-      .should.have.header(contentTypeHeader.key, contentTypeHeader.value)
+      .should.have.header(contentTypeHeader.key, contentType)
 );
 
 Then(
