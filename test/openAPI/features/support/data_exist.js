@@ -71,12 +71,12 @@ Then(
 );
 
 Then(
-  /^the response from \/data\/\{registryname\}\/\{versionnumber\}\/exists should have content-type: {string} as contentType$/,
-  (contentType) =>
+  /^the response from \/data\/\{registryname\}\/\{versionnumber\}\/exists should have content-type: {string} as ContentType$/,
+  (ContentType) =>
     specDataExist
       .response()
       .should.have.header(contentTypeHeader.key)
-      .and.include(contentType)
+      .and.include(ContentType)
 );
 
 Then(

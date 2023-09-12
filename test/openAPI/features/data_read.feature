@@ -8,7 +8,7 @@ Feature: API endpoint that allows users to search for a record in the database.
     Then User receives a response from the /data/{registryname}/{versionnumber}/read endpoint
     And The /data/{registryname}/{versionnumber}/read endpoint response should be returned in a timely manner 15000ms
     And The /data/{registryname}/{versionnumber}/read endpoint response should have status 200
-    And The /data/{registryname}/{versionnumber}/read endpoint response should have content-type: application/json header
+    And The /data/{registryname}/{versionnumber}/read endpoint response should have content-type: "application/json" as ContentType
     And The /data/{registryname}/{versionnumber}/read endpoint response should match json schema
 
   @unit @positive 
@@ -18,7 +18,7 @@ Feature: API endpoint that allows users to search for a record in the database.
     Then User receives a response from the /data/{registryname}/{versionnumber}/read endpoint
     And The /data/{registryname}/{versionnumber}/read endpoint response should be returned in a timely manner 15000ms
     And The /data/{registryname}/{versionnumber}/read endpoint response should have status 200
-    And The /data/{registryname}/{versionnumber}/read endpoint response should have content-type: application/json header
+    And The /data/{registryname}/{versionnumber}/read endpoint response should have content-type: "application/json" as ContentType
     And The /data/{registryname}/{versionnumber}/read endpoint response should match json schema
     And The /data/{registryname}/{versionnumber}/read response should contain "<body_parameter>" property equals "<parameter_value>"
 
@@ -36,7 +36,7 @@ Feature: API endpoint that allows users to search for a record in the database.
     Then User receives a response from the /data/{registryname}/{versionnumber}/read endpoint
     And The /data/{registryname}/{versionnumber}/read endpoint response should be returned in a timely manner 15000ms
     And The /data/{registryname}/{versionnumber}/read endpoint response should have status 200
-    And The /data/{registryname}/{versionnumber}/read endpoint response should have content-type: application/json header
+    And The /data/{registryname}/{versionnumber}/read endpoint response should have content-type: "application/json" as ContentType
     And The /data/{registryname}/{versionnumber}/read endpoint response should match json schema
     And The /data/{registryname}/{versionnumber}/read response should contain "FirstName" property equals "<FirstName>"
     And The /data/{registryname}/{versionnumber}/read response should contain "LastName" property equals "<LastName>"
@@ -54,5 +54,5 @@ Feature: API endpoint that allows users to search for a record in the database.
     Then User receives a response from the /data/{registryname}/{versionnumber}/read endpoint
     And The /data/{registryname}/{versionnumber}/read endpoint response should be returned in a timely manner 15000ms
     And The /data/{registryname}/{versionnumber}/read endpoint response should have status 404
-    And The /data/{registryname}/{versionnumber}/read endpoint response should have content-type: application/json header
+    And The /data/{registryname}/{versionnumber}/read endpoint response should have content-type: "application/json" as ContentType
     And The /data/{registryname}/{versionnumber}/read endpoint response should match json schema with error message
