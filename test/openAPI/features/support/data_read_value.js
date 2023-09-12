@@ -62,11 +62,13 @@ Then(
 );
 
 Then(
-  'The GET \\/data\\/\\{registryname}\\/\\{versionnumber}\\/\\{uuid}\\/read-value\\/\\{field}.\\{ext} endpoint response should have content-type: application\\/json header',
-  () =>
+  'The GET \\/data\\/\\{registryname}\\/\\{versionnumber}\\/\\{uuid}\\/read-value\\/\\{field}.\\{ext} endpoint response should have content-type: {string} as ContentType',
+  function (ContentType) {
     specDataReadValue
       .response()
-      .should.have.header(contentTypeHeader.key, contentTypeHeader.value)
+      .should.have.header(contentTypeHeader.key)
+      .and.include(ContentType)
+  }
 );
 
 Then(
