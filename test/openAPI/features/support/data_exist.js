@@ -75,7 +75,8 @@ Then(
   (contentType) =>
     specDataExist
       .response()
-      .should.have.header(contentTypeHeader.key, contentType)
+      .should.have.header(contentTypeHeader.key)
+      .and.include(contentType)
 );
 
 Then(

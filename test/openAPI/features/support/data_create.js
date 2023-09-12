@@ -93,8 +93,9 @@ Then(
 Then(
   'The POST \\/data\\/\\{registryname}\\/\\{versionnumber}\\/create endpoint response should have content-type: {string} as ContentType',
   function (ContentType) {
-    const actualContentType = specDataCreate.response().headers[contentTypeHeader.key];
-    chai.expect(actualContentType).to.include(ContentType);
+    specDataCreate.response()
+      .should.have.header(contentTypeHeader.key)
+      .and.include(ContentType)
   }
 );
 

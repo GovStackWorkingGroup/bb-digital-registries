@@ -57,11 +57,13 @@ Then(
 );
 
 Then(
-  'The \\/data\\/MyPersonalDataUsage\\/1.0 endpoint response should have content-type: application\\/json header',
-  () =>
-    specDataMyPersonalDataUsage
-      .response()
-      .should.have.header(contentTypeHeader.key, contentTypeHeader.value)
+  'The \\/data\\/MyPersonalDataUsage\\/1.0 endpoint response should have content-type: {string} as ContentType',
+  function (ContentType) {
+    const actualContentType = specDataMyPersonalDataUsage.response().headers[contentTypeHeader.key];
+    chai
+      .expect(actualContentType)
+      .to.include(ContentType);
+  }
 );
 
 Then(

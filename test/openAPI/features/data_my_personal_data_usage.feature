@@ -11,7 +11,7 @@ data usage transparent by showing who has looked at personal data of the user.
     Then User receives a response from the /data/MyPersonalDataUsage/1.0 endpoint
     And The /data/MyPersonalDataUsage/1.0 endpoint response should be returned in a timely manner 15000ms
     And The /data/MyPersonalDataUsage/1.0 endpoint response should have status 200
-    And The /data/MyPersonalDataUsage/1.0 endpoint response should have content-type: application/json header
+    And The /data/MyPersonalDataUsage/1.0 endpoint response should have content-type: "application/json" as ContentType
     And The /data/MyPersonalDataUsage/1.0 endpoint response should match json schema
 
   @unit @positive
@@ -21,7 +21,7 @@ data usage transparent by showing who has looked at personal data of the user.
     Then User receives a response from the /data/MyPersonalDataUsage/1.0 endpoint
     And The /data/MyPersonalDataUsage/1.0 endpoint response should be returned in a timely manner 15000ms
     And The /data/MyPersonalDataUsage/1.0 endpoint response should have status 200
-    And The /data/MyPersonalDataUsage/1.0 endpoint response should have content-type: application/json header
+    And The /data/MyPersonalDataUsage/1.0 endpoint response should have content-type: "application/json" as ContentType
     And The /data/MyPersonalDataUsage/1.0 endpoint response should match json schema
 
     Examples:
