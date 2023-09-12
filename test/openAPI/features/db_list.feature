@@ -8,5 +8,5 @@ Feature: API endpoint that allows user to get information about all databases.
       Then User receives a response from the /databases endpoint
       And The /databases endpoint response should be returned in a timely manner 15000ms
       And The /databases endpoint response should have status 200
-      And The /databases endpoint response should have content-type: application/json header
+      And The /databases endpoint response should have content-type: "application/json" as ContentType
       And The /databases endpoint response should match json schema
