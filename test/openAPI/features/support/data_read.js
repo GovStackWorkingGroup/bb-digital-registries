@@ -68,7 +68,7 @@ Then(
   function (ContentType) {
     specDataRead
       .response()
-      .should.have.header(contentTypeHeader.key)
+      .to.have.header(contentTypeHeader.key)
       .and.include(ContentType)
   }
 );
