@@ -71,7 +71,7 @@ Then(
 );
 
 Then(
-  /^the response from \/data\/\{registryname\}\/\{versionnumber\}\/exists response should have {string}: {string} header$/,
+  /^the response from \/data\/\{registryname\}\/\{versionnumber\}\/exists response should have "([^"]*)": "([^"]*)" header$/,
   (key, value) =>
     specDataExist
       .response()

@@ -54,7 +54,7 @@ Then(
   status => specDataList.response().to.have.status(status)
 );
 Then(
-  /^the response from \/data\/\{registryname\}\/\{versionnumber\} response should have {string}: {string} header$/,
+  /^the response from \/data\/\{registryname\}\/\{versionnumber\} response should have "([^"]*)": "([^"]*)" header$/,
   (key, value) =>
     specDataList
       .response()
