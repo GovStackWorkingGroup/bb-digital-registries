@@ -8,7 +8,7 @@ Feature: API endpoint that allows user to delete database schema
       Then User receives a response from the DELETE /database/id endpoint
       And The DELETE /database/id endpoint response should be returned in a timely manner 15000ms
       And The DELETE /database/id endpoint response should have status 200
-      And The DELETE /database/id endpoint response should have content-type: "application/json" as ContentType
+      And The DELETE /database/id response should have "content-type": "application/json" header
       And The DELETE /database/id endpoint response should match json schema
 
   @positive @unit
@@ -17,7 +17,7 @@ Feature: API endpoint that allows user to delete database schema
       When The DELETE request with given Information-Mediator-Client header and "<id>" as id is sent
       Then User receives a response from the DELETE /database/id endpoint
       And The DELETE /database/id endpoint response should be returned in a timely manner 15000ms
-      And The DELETE /database/id endpoint response should have content-type: "application/json" as ContentType
+      And The DELETE /database/id response should have "content-type": "application/json" header
       And The DELETE /database/id endpoint response should match json schema
       And The DELETE /database/id endpoint response should have body "Success"
 

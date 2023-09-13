@@ -9,7 +9,7 @@ Feature: API endpoint that updates existing record that matches with request bod
     Then User receives a response from the /data/{registryname}/{versionnumber}/update-or-create endpoint
     And The /data/{registryname}/{versionnumber}/update-or-create response should be returned in a timely manner 15000ms
     And The /data/{registryname}/{versionnumber}/update-or-create response should have status 200
-    And The /data/{registryname}/{versionnumber}/update-or-create response should have content-type: "application/json" as ContentType
+    And The /data/{registryname}/{versionnumber}/update-or-create response should have "content-type": "application/json" header
     And The /data/{registryname}/{versionnumber}/update-or-create response should match json schema
 
     Examples:
@@ -26,7 +26,7 @@ Feature: API endpoint that updates existing record that matches with request bod
     Then User receives a response from the /data/{registryname}/{versionnumber}/update-or-create endpoint
     And The /data/{registryname}/{versionnumber}/update-or-create response should be returned in a timely manner 15000ms
     And The /data/{registryname}/{versionnumber}/update-or-create response should have status 200
-    And The /data/{registryname}/{versionnumber}/update-or-create response should have content-type: "application/json" as ContentType
+    And The /data/{registryname}/{versionnumber}/update-or-create response should have "content-type": "application/json" header
     And The /data/{registryname}/{versionnumber}/update-or-create response should match json schema
     And The /data/{registryname}/{versionnumber}/update-or-create response should contain "ID" property equals "<UpdatedID>"
     And The /data/{registryname}/{versionnumber}/update-or-create response should contain "FirstName" property equals "<UpdatedFirstName>"

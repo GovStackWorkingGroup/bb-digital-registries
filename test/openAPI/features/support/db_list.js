@@ -50,12 +50,11 @@ Then('The \\/databases endpoint response should have status 200', () =>
 );
 
 Then(
-  'The \\/databases endpoint response should have content-type: {string} as ContentType',
-  (ContentType) =>
+  'The \\/databases response should have {string}: {string} header',
+  (key, value) =>
     specDatabaseList
       .response()
-      .should.have.header(contentTypeHeader.key)
-      .and.include(ContentType)
+      .should.have.headerContains(key, value)
 );
 
 Then('The \\/databases endpoint response should match json schema', () =>

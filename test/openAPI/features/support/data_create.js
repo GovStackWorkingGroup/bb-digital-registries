@@ -91,11 +91,11 @@ Then(
 );
 
 Then(
-  'The POST \\/data\\/\\{registryname}\\/\\{versionnumber}\\/create endpoint response should have content-type: {string} as ContentType',
-  function (ContentType) {
-    specDataCreate.response()
-      .should.have.header(contentTypeHeader.key)
-      .and.include(ContentType)
+  'The POST \\/data\\/\\{registryname}\\/\\{versionnumber}\\/create response should have {string}: {string} header',
+  function (key, value) {
+    specDataCreate
+      .response()
+      .should.have.headerContains(key, value);
   }
 );
 

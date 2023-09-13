@@ -10,7 +10,7 @@ Feature: API endpoint that allows users to create a new record in the database.
     Then User receives a response from the POST /data/{registryname}/{versionnumber}/create endpoint
     And The POST /data/{registryname}/{versionnumber}/create endpoint response should be returned in a timely manner 15000ms
     And The POST /data/{registryname}/{versionnumber}/create endpoint response should have status 200
-    And The POST /data/{registryname}/{versionnumber}/create endpoint response should have content-type: "application/json" as ContentType
+    And The POST /data/{registryname}/{versionnumber}/create response should have "content-type": "application/json" header
     And The POST /data/{registryname}/{versionnumber}/create endpoint response should match json schema
 
   @positive @unit
@@ -22,7 +22,7 @@ Feature: API endpoint that allows users to create a new record in the database.
     Then User receives a response from the POST /data/{registryname}/{versionnumber}/create endpoint
     And The POST /data/{registryname}/{versionnumber}/create endpoint response should be returned in a timely manner 15000ms
     And The POST /data/{registryname}/{versionnumber}/create endpoint response should have status 200
-    And The POST /data/{registryname}/{versionnumber}/create endpoint response should have content-type: "application/json" as ContentType
+    And The POST /data/{registryname}/{versionnumber}/create response should have "content-type": "application/json" header
     And The POST /data/{registryname}/{versionnumber}/create endpoint response should match json schema
 
     Examples: Valid data

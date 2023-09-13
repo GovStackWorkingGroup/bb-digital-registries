@@ -9,7 +9,7 @@ Feature: API endpoint that allows users to check if an entry exists in the datab
       Then the response from /data/{registryname}/{versionnumber}/exist is received
       And the response from /data/{registryname}/{versionnumber}/exists should be returned in a timely manner 15000ms
       And the response from /data/{registryname}/{versionnumber}/exists should have status 200
-      And the response from /data/{registryname}/{versionnumber}/exists should have content-type: "application/json" as ContentType
+      And the response from /data/{registryname}/{versionnumber}/exists response should have "content-type": "application/json" header
       And the response from /data/{registryname}/{versionnumber}/exists should match json schema
       And the response from /data/{registryname}/{versionnumber}/exists should return status true for existing record
 
@@ -21,7 +21,7 @@ Feature: API endpoint that allows users to check if an entry exists in the datab
       Then the response from /data/{registryname}/{versionnumber}/exist is received
       And the response from /data/{registryname}/{versionnumber}/exists should be returned in a timely manner 15000ms
       And the response from /data/{registryname}/{versionnumber}/exists should have status 200
-      And the response from /data/{registryname}/{versionnumber}/exists should have content-type: "application/json" as ContentType
+      And the response from /data/{registryname}/{versionnumber}/exists response should have "content-type": "application/json" header
       And the response from /data/{registryname}/{versionnumber}/exists should match json schema
       And the response from /data/{registryname}/{versionnumber}/exists should return status false for non-existing record
 

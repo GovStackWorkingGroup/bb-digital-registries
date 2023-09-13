@@ -8,5 +8,5 @@ Feature: API endpoint that allows users to search for the field value of a recor
     Then User receives a response from the GET /data/{registryname}/{versionnumber}/{uuid}/read-value/{field}.{ext} endpoint
     And The GET /data/{registryname}/{versionnumber}/{uuid}/read-value/{field}.{ext} endpoint response should be returned in a timely manner 15000ms
     And The GET /data/{registryname}/{versionnumber}/{uuid}/read-value/{field}.{ext} endpoint response should have status 200
-    And The GET /data/{registryname}/{versionnumber}/{uuid}/read-value/{field}.{ext} endpoint response should have content-type: "application/json" as ContentType
+    And The GET /data/{registryname}/{versionnumber}/{uuid}/read-value/{field}.{ext} response should have "content-type": "application/json" header
     And The GET /data/{registryname}/{versionnumber}/{uuid}/read-value/{field}.{ext} endpoint response should match json schema

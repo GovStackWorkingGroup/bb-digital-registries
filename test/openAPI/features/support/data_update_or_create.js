@@ -81,12 +81,11 @@ Then(
 );
 
 Then(
-  /^The \/data\/{registryname}\/{versionnumber}\/update-or-create response should have content-type: {string} as ContentType$/,
-  (ContentType) =>
+  /^The \/data\/{registryname}\/{versionnumber}\/update-or-create response should have "([^"]*)": "([^"]*)" header$/,
+  (key, value) =>
     specDataUpdateOrCreate
       .response()
-      .should.have.header(contentTypeHeader.key)
-      .and.include(ContentType)
+      .should.have.headerContains(key, value)
 );
 
 Then(
