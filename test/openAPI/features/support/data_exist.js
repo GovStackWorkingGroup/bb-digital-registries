@@ -28,7 +28,7 @@ Given(
 );
 
 When(
-  /^send POST request to check if the record exist in the database is sent with given path Information\-Mediator\-Client header and params "([^"]*)" as registryname and "([^"]*)" as versionnumber$/,
+  /^send POST request to check if the record exist in the database is sent with given Information-Mediator-Client header and path params "([^"]*)" as registryname and "([^"]*)" as versionnumber$/,
   (registryName, versionNumber) =>
     specDataExist
       .post(baseUrl)
