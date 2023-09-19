@@ -24,7 +24,7 @@ Given(
 );
 
 When(
-  /^PUT request to update a record in the database is sent with given path params "([^"]*)" as registryname and "([^"]*)" as versionnumber$/,
+  /^PUT request to update a record in the database is sent with given Information-Mediator-Client header and path params "([^"]*)" as registryname and "([^"]*)" as versionnumber$/,
   (registryName, versionNumber) =>
     specDataUpdate
       .put(baseUrl)

@@ -8,7 +8,7 @@ Feature: API endpoint that allows user to get database information with database
     Then User receives a response from the GET /database/id endpoint
     And The GET /database/id endpoint response should be returned in a timely manner 15000ms
     And The GET /database/id endpoint response should have status 200
-    And The GET /database/id endpoint response should have content-type: application/json header
+    And The GET /database/id response should have "content-type": "application/json" header
     And The GET /database/id endpoint response should match json schema
 
   @unit @positive 
@@ -18,7 +18,7 @@ Feature: API endpoint that allows user to get database information with database
     Then User receives a response from the GET /database/id endpoint
     And The GET /database/id endpoint response should be returned in a timely manner 15000ms
     And The GET /database/id endpoint response should have status 200
-    And The GET /database/id endpoint response should have content-type: application/json header
+    And The GET /database/id response should have "content-type": "application/json" header
     And The GET /database/id endpoint response should match json schema
 
     Examples: Valid data

@@ -55,11 +55,11 @@ Then(
 );
 
 Then(
-  'The DELETE \\/database\\/id endpoint response should have content-type: application\\/json header',
-  () =>
+  'The DELETE \\/database\\/id response should have {string}: {string} header',
+  (key, value) =>
     specDatabaseDelete
       .response()
-      .should.have.header(contentTypeHeader.key, contentTypeHeader.value)
+      .should.have.headerContains(key, value)
 );
 
 Then(

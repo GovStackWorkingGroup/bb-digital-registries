@@ -17,7 +17,7 @@ services:
     networks:
       openimis-net:
     ports:
-      - 5433:5432
+      - 5444:5432
 
   backend:
     container_name: ${PROJECT_NAME:-openimis}-api

@@ -8,7 +8,7 @@ Feature: API endpoint that allows to search multiple records in the database.
     Then receive a response from the GET /data/{registryname}/{versionnumber} endpoint
     And the response from /data/{registryname}/{versionnumber} should be returned in a timely manner 15000ms
     And the response from /data/{registryname}/{versionnumber} should have status 200
-    And the response from /data/{registryname}/{versionnumber} should have content-type: application/json header
+    And the response from /data/{registryname}/{versionnumber} response should have "content-type": "application/json" header
     And the response from /data/{registryname}/{versionnumber} should match json schema
     And results array length is consistent with count field value
 
@@ -20,7 +20,7 @@ Feature: API endpoint that allows to search multiple records in the database.
     Then receive a response from the GET /data/{registryname}/{versionnumber} endpoint
     And the response from /data/{registryname}/{versionnumber} should be returned in a timely manner 15000ms
     And the response from /data/{registryname}/{versionnumber} should have status 200
-    And the response from /data/{registryname}/{versionnumber} should have content-type: application/json header
+    And the response from /data/{registryname}/{versionnumber} response should have "content-type": "application/json" header
     And the response from /data/{registryname}/{versionnumber} should match json schema
     And the response from /data/{registryname}/{versionnumber} is filtered by "<search>" and "<filter>" provided in the query parameter
     And results array length is consistent with count field value
@@ -39,7 +39,7 @@ Feature: API endpoint that allows to search multiple records in the database.
     Then receive a response from the GET /data/{registryname}/{versionnumber} endpoint
     And the response from /data/{registryname}/{versionnumber} should be returned in a timely manner 15000ms
     And the response from /data/{registryname}/{versionnumber} should have status 200
-    And the response from /data/{registryname}/{versionnumber} should have content-type: application/json header
+    And the response from /data/{registryname}/{versionnumber} response should have "content-type": "application/json" header
     And the response from /data/{registryname}/{versionnumber} should match json schema
     And results field should be an empty array
     And results array length is consistent with count field value

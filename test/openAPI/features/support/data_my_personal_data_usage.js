@@ -57,11 +57,12 @@ Then(
 );
 
 Then(
-  'The \\/data\\/MyPersonalDataUsage\\/1.0 endpoint response should have content-type: application\\/json header',
-  () =>
+  'The \\/data\\/MyPersonalDataUsage\\/1.0 response should have {string}: {string} header',
+  (key, value) => {
     specDataMyPersonalDataUsage
       .response()
-      .should.have.header(contentTypeHeader.key, contentTypeHeader.value)
+      .should.have.headerContains(key, value);
+  }
 );
 
 Then(

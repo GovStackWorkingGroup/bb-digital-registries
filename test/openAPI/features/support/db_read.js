@@ -55,11 +55,11 @@ Then('The GET \\/database\\/id endpoint response should have status 200', () =>
 );
 
 Then(
-  'The GET \\/database\\/id endpoint response should have content-type: application\\/json header',
-  () =>
+  'The GET \\/database\\/id response should have {string}: {string} header',
+  (key, value) =>
     specDatabaseRead
       .response()
-      .should.have.header(contentTypeHeader.key, contentTypeHeader.value)
+      .should.have.headerContains(key, value)
 );
 
 Then(

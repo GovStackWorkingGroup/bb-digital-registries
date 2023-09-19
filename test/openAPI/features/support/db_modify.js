@@ -55,11 +55,11 @@ Then('The \\/database\\/modify endpoint response should have status 200', () =>
 );
 
 Then(
-  'The \\/database\\/modify endpoint response should have content-type: application\\/json header',
-  () =>
+  'The \\/database\\/modify response should have {string}: {string} header',
+  (key, value) =>
     specDatabaseModify
       .response()
-      .should.have.header(contentTypeHeader.key, contentTypeHeader.value)
+      .should.have.headerContains(key, value)
 );
 
 Then(

@@ -41,12 +41,13 @@ When(
 );
 
 When(
-  'User provides body with parameters: {string} as ID, {string} as Firstname, {string} as LastName, {string} as BirthCertificateID',
-  function (ID, Firstname, LastName, BirthCertificateID) {
+  'User provides body with parameters: {string} as ID, {string} as FirstName, {string} as LastName, {string} as BirthCertificateID',
+  function (ID, FirstName, LastName, BirthCertificateID) {
     return specDataCreate.withBody({
       write: {
-        content: { ID: replaceKeyWithValueFromJson(ID),
-          Firstname: replaceKeyWithValueFromJson(Firstname),
+        content: {
+          ID: replaceKeyWithValueFromJson(ID),
+          FirstName: replaceKeyWithValueFromJson(FirstName),
           LastName: replaceKeyWithValueFromJson(LastName),
           BirthCertificateID: replaceKeyWithValueFromJson(BirthCertificateID),
         }
@@ -56,13 +57,13 @@ When(
 );
 
 When(
-  'User provides parameters: {string} as ID, {string} as Firstname, {string} as LastName, {string} as BirthCertificateID',
-  function (ID, Firstname, LastName, BirthCertificateID) {
+  'User provides parameters: {string} as ID, {string} as FirstName, {string} as LastName, {string} as BirthCertificateID',
+  function (ID, FirstName, LastName, BirthCertificateID) {
     return specDataCreate.withBody({
       write: {
         content: {
           ID: replaceKeyWithValueFromJson(ID),
-          Firstname: replaceKeyWithValueFromJson(Firstname),
+          FirstName: replaceKeyWithValueFromJson(FirstName),
           LastName: replaceKeyWithValueFromJson(LastName),
           BirthCertificateID: replaceKeyWithValueFromJson(BirthCertificateID),
         }
@@ -90,11 +91,12 @@ Then(
 );
 
 Then(
-  'The POST \\/data\\/\\{registryname}\\/\\{versionnumber}\\/create endpoint response should have content-type: application\\/json header',
-  () =>
+  'The POST \\/data\\/\\{registryname}\\/\\{versionnumber}\\/create response should have {string}: {string} header',
+  function (key, value) {
     specDataCreate
       .response()
-      .should.have.header(contentTypeHeader.key, contentTypeHeader.value)
+      .should.have.headerContains(key, value);
+  }
 );
 
 Then(

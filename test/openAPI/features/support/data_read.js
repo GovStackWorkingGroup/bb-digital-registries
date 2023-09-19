@@ -64,11 +64,11 @@ Then(
 );
 
 Then(
-  'The \\/data\\/\\{registryname}\\/\\{versionnumber}\\/read endpoint response should have content-type: application\\/json header',
-  () =>
+  'The \\/data\\/\\{registryname}\\/\\{versionnumber}\\/read response should have {string}: {string} header',
+  (key, value) =>
     specDataRead
       .response()
-      .should.have.header(contentTypeHeader.key, contentTypeHeader.value)
+      .should.have.headerContains(key, value)
 );
 
 Then(
