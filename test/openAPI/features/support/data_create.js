@@ -43,7 +43,7 @@ When(
 When(
   'User provides body with parameters: {string} as ID, {string} as FirstName, {string} as LastName, {string} as BirthCertificateID',
   function (ID, FirstName, LastName, BirthCertificateID) {
-    return specDataCreate.withBody({
+    specDataCreate.withBody({
       write: {
         content: {
           ID: replaceKeyWithValueFromJson(ID),
@@ -59,7 +59,7 @@ When(
 When(
   'User provides parameters: {string} as ID, {string} as FirstName, {string} as LastName, {string} as BirthCertificateID',
   function (ID, FirstName, LastName, BirthCertificateID) {
-    return specDataCreate.withBody({
+    specDataCreate.withBody({
       write: {
         content: {
           ID: replaceKeyWithValueFromJson(ID),
