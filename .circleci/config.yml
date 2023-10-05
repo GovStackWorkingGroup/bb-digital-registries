@@ -2,7 +2,7 @@ version: 2.1
 setup: true
 
 orbs:
-  testutils: govstack-working-group/testutils@dev:alpha
+  testutils: govstack-working-group/testutils@1.0.4
 
 workflows:
   test_everything:
