@@ -6,9 +6,9 @@ description: >-
 
 # 8 Service APIs
 
-The APIs defined here establish a blueprint for how the Building Block will interact with other Building Blocks. Additional APIs may be implemented by the Building Block, but the listed APIs define a minimal set of functionality that should be provided by any implementation of this Building Block.&#x20;
+The APIs defined here establish a blueprint for how the Building Block will interact with other Building Blocks. Additional APIs may be implemented by the Building Block, but the listed APIs define a minimal set of functionality that should be provided by any implementation of this Building Block.
 
-The [GovStack non-functional requirements document](https://govstack.gitbook.io/specification/v/1.0/architecture-and-nonfunctional-requirements/6-onboarding) provides additional information on how 'adaptors' may be used to translate an existing API to the patterns described here. This section also provides guidance on how candidate products are tested and how GovStack validates a product's API against the API specifications defined here.&#x20;
+The [GovStack non-functional requirements document](https://govstack.gitbook.io/specification/v/1.0/architecture-and-nonfunctional-requirements/6-onboarding) provides additional information on how 'adaptors' may be used to translate an existing API to the patterns described here. This section also provides guidance on how candidate products are tested and how GovStack validates a product's API against the API specifications defined here.
 
 The tests for the Digital Registries Building Block can be found in [this GitHub repository](https://github.com/GovStackWorkingGroup/bb-digital-registries/tree/main/test/openAPI).
 
@@ -34,72 +34,68 @@ The API is built using a representational state transfer ([REST](https://restful
 
 ## 8.1 Administrative/Analyst Functions <a href="#docs-internal-guid-d85f59a4-7fff-1564-6ae2-86d67f36a258" id="docs-internal-guid-d85f59a4-7fff-1564-6ae2-86d67f36a258"></a>
 
-{% swagger src="https://raw.githubusercontent.com/GovStackWorkingGroup/bb-digital-registries/main/api/GovStack_Digital_registries_BB_Data_API_template-1.3.0.yaml" path="/data/{registryname}/{versionnumber}" method="get" %}
-[https://raw.githubusercontent.com/GovStackWorkingGroup/bb-digital-registries/main/api/GovStack_Digital_registries_BB_Data_API_template-1.3.0.yaml](https://raw.githubusercontent.com/GovStackWorkingGroup/bb-digital-registries/main/api/GovStack_Digital_registries_BB_Data_API_template-1.3.0.yaml)
+{% swagger src=".gitbook/assets/GovStack_Digital_registries_BB_Data_API_template-1.3.0.json" path="/data/{registryName}/{versionNumber}" method="get" %}
+[GovStack_Digital_registries_BB_Data_API_template-1.3.0.json](.gitbook/assets/GovStack_Digital_registries_BB_Data_API_template-1.3.0.json)
 {% endswagger %}
 
-{% swagger src="https://raw.githubusercontent.com/GovStackWorkingGroup/bb-digital-registries/main/api/GovStack_Digital_registries_BB_Data_API_template-1.3.0.json" path="/data/{registryname}/{versionnumber}/update" method="put" %}
-[https://raw.githubusercontent.com/GovStackWorkingGroup/bb-digital-registries/main/api/GovStack_Digital_registries_BB_Data_API_template-1.3.0.json](https://raw.githubusercontent.com/GovStackWorkingGroup/bb-digital-registries/main/api/GovStack_Digital_registries_BB_Data_API_template-1.3.0.json)
+{% swagger src=".gitbook/assets/GovStack_Digital_registries_BB_Data_API_template-1.3.0.json" path="/data/{registryName}/{versionNumber}/read" method="post" %}
+[GovStack_Digital_registries_BB_Data_API_template-1.3.0.json](.gitbook/assets/GovStack_Digital_registries_BB_Data_API_template-1.3.0.json)
 {% endswagger %}
 
-{% swagger src="https://raw.githubusercontent.com/GovStackWorkingGroup/bb-digital-registries/main/api/GovStack_Digital_registries_BB_Data_API_template-1.3.0.json" path="/data/{registryname}/{versionnumber}/update-or-create" method="post" %}
-[https://raw.githubusercontent.com/GovStackWorkingGroup/bb-digital-registries/main/api/GovStack_Digital_registries_BB_Data_API_template-1.3.0.json](https://raw.githubusercontent.com/GovStackWorkingGroup/bb-digital-registries/main/api/GovStack_Digital_registries_BB_Data_API_template-1.3.0.json)
+{% swagger src=".gitbook/assets/GovStack_Digital_registries_BB_Data_API_template-1.3.0.json" path="/data/{registryName}/{versionNumber}/update" method="put" %}
+[GovStack_Digital_registries_BB_Data_API_template-1.3.0.json](.gitbook/assets/GovStack_Digital_registries_BB_Data_API_template-1.3.0.json)
 {% endswagger %}
 
-{% swagger src="https://raw.githubusercontent.com/GovStackWorkingGroup/bb-digital-registries/main/api/GovStack_Digital_registries_BB_Data_API_template-1.3.0.json" path="/data/{registryname}/{versionnumber}/update-entries" method="put" %}
-[https://raw.githubusercontent.com/GovStackWorkingGroup/bb-digital-registries/main/api/GovStack_Digital_registries_BB_Data_API_template-1.3.0.json](https://raw.githubusercontent.com/GovStackWorkingGroup/bb-digital-registries/main/api/GovStack_Digital_registries_BB_Data_API_template-1.3.0.json)
+{% swagger src=".gitbook/assets/GovStack_Digital_registries_BB_Data_API_template-1.3.0.json" path="/data/{registryName}/{versionNumber}/updateEntries" method="put" %}
+[GovStack_Digital_registries_BB_Data_API_template-1.3.0.json](.gitbook/assets/GovStack_Digital_registries_BB_Data_API_template-1.3.0.json)
 {% endswagger %}
 
-{% swagger src="https://raw.githubusercontent.com/GovStackWorkingGroup/bb-digital-registries/main/api/GovStack_Digital_registries_BB_Data_API_template-1.3.0.json" path="/data/{registryname}/{versionnumber}" method="get" %}
-[https://raw.githubusercontent.com/GovStackWorkingGroup/bb-digital-registries/main/api/GovStack_Digital_registries_BB_Data_API_template-1.3.0.json](https://raw.githubusercontent.com/GovStackWorkingGroup/bb-digital-registries/main/api/GovStack_Digital_registries_BB_Data_API_template-1.3.0.json)
-{% endswagger %}
-
-{% swagger src="https://raw.githubusercontent.com/GovStackWorkingGroup/bb-digital-registries/main/api/GovStack_Digital_registries_BB_Data_API_template-1.3.0.json" path="/data/{registryname}/{versionnumber}/read" method="post" %}
-[https://raw.githubusercontent.com/GovStackWorkingGroup/bb-digital-registries/main/api/GovStack_Digital_registries_BB_Data_API_template-1.3.0.json](https://raw.githubusercontent.com/GovStackWorkingGroup/bb-digital-registries/main/api/GovStack_Digital_registries_BB_Data_API_template-1.3.0.json)
+{% swagger src=".gitbook/assets/GovStack_Digital_registries_BB_Data_API_template-1.3.0.json" path="/data/{registryName}/{versionNumber}/updateOrCreate" method="post" %}
+[GovStack_Digital_registries_BB_Data_API_template-1.3.0.json](.gitbook/assets/GovStack_Digital_registries_BB_Data_API_template-1.3.0.json)
 {% endswagger %}
 
 ## 8.2 Applicant Functions <a href="#docs-internal-guid-d85f59a4-7fff-1564-6ae2-86d67f36a258" id="docs-internal-guid-d85f59a4-7fff-1564-6ae2-86d67f36a258"></a>
 
-{% swagger src="https://raw.githubusercontent.com/GovStackWorkingGroup/bb-digital-registries/main/api/GovStack_Digital_registries_BB_Data_API_template-1.3.0.json" path="/data/{registryname}/{versionnumber}/{uuid}/read-value/{field}.{ext}" method="get" %}
-[https://raw.githubusercontent.com/GovStackWorkingGroup/bb-digital-registries/main/api/GovStack_Digital_registries_BB_Data_API_template-1.3.0.json](https://raw.githubusercontent.com/GovStackWorkingGroup/bb-digital-registries/main/api/GovStack_Digital_registries_BB_Data_API_template-1.3.0.json)
+{% swagger src=".gitbook/assets/GovStack_Digital_registries_BB_Data_API_template-1.3.0.json" path="/data/{registryName}/{versionNumber}/exists" method="post" %}
+[GovStack_Digital_registries_BB_Data_API_template-1.3.0.json](.gitbook/assets/GovStack_Digital_registries_BB_Data_API_template-1.3.0.json)
 {% endswagger %}
 
-{% swagger src="https://raw.githubusercontent.com/GovStackWorkingGroup/bb-digital-registries/main/api/GovStack_Digital_registries_BB_Data_API_template-1.3.0.json" path="/data/{registryname}/{versionnumber}/exists" method="post" %}
-[https://raw.githubusercontent.com/GovStackWorkingGroup/bb-digital-registries/main/api/GovStack_Digital_registries_BB_Data_API_template-1.3.0.json](https://raw.githubusercontent.com/GovStackWorkingGroup/bb-digital-registries/main/api/GovStack_Digital_registries_BB_Data_API_template-1.3.0.json)
+{% swagger src=".gitbook/assets/GovStack_Digital_registries_BB_Data_API_template-1.3.0.json" path="/data/{registryName}/{versionNumber}/{id}/delete" method="delete" %}
+[GovStack_Digital_registries_BB_Data_API_template-1.3.0.json](.gitbook/assets/GovStack_Digital_registries_BB_Data_API_template-1.3.0.json)
 {% endswagger %}
 
-{% swagger src="https://raw.githubusercontent.com/GovStackWorkingGroup/bb-digital-registries/main/api/GovStack_Digital_registries_BB_Data_API_template-1.3.0.json" path="/data/{registryname}/{versionnumber}/{ID}/delete" method="delete" %}
-[https://raw.githubusercontent.com/GovStackWorkingGroup/bb-digital-registries/main/api/GovStack_Digital_registries_BB_Data_API_template-1.3.0.json](https://raw.githubusercontent.com/GovStackWorkingGroup/bb-digital-registries/main/api/GovStack_Digital_registries_BB_Data_API_template-1.3.0.json)
+{% swagger src=".gitbook/assets/GovStack_Digital_registries_BB_Data_API_template-1.3.0.json" path="/data/{registryName}/{versionNumber}/{uuid}/readValue/{field}.{ext}" method="get" %}
+[GovStack_Digital_registries_BB_Data_API_template-1.3.0.json](.gitbook/assets/GovStack_Digital_registries_BB_Data_API_template-1.3.0.json)
 {% endswagger %}
 
-{% swagger src="https://raw.githubusercontent.com/GovStackWorkingGroup/bb-digital-registries/main/api/GovStack_Digital_registries_BB_Data_API_template-1.3.0.json" path="/data/MyPersonalDataUsage/1.0" method="get" %}
-[https://raw.githubusercontent.com/GovStackWorkingGroup/bb-digital-registries/main/api/GovStack_Digital_registries_BB_Data_API_template-1.3.0.json](https://raw.githubusercontent.com/GovStackWorkingGroup/bb-digital-registries/main/api/GovStack_Digital_registries_BB_Data_API_template-1.3.0.json)
+{% swagger src=".gitbook/assets/GovStack_Digital_registries_BB_Data_API_template-1.3.0.json" path="/data/mypersonalDataUsage" method="get" %}
+[GovStack_Digital_registries_BB_Data_API_template-1.3.0.json](.gitbook/assets/GovStack_Digital_registries_BB_Data_API_template-1.3.0.json)
 {% endswagger %}
 
-{% swagger src="https://raw.githubusercontent.com/GovStackWorkingGroup/bb-digital-registries/main/api/GovStack_Digital_registries_BB_Database_API_template-1.3.0.json" path="/database/{id}" method="get" %}
-[https://raw.githubusercontent.com/GovStackWorkingGroup/bb-digital-registries/main/api/GovStack_Digital_registries_BB_Database_API_template-1.3.0.json](https://raw.githubusercontent.com/GovStackWorkingGroup/bb-digital-registries/main/api/GovStack_Digital_registries_BB_Database_API_template-1.3.0.json)
+{% swagger src=".gitbook/assets/GovStack_Digital_registries_BB_Database_API_template-1.3.0.yaml" path="/database/{id}" method="get" %}
+[GovStack_Digital_registries_BB_Database_API_template-1.3.0.yaml](.gitbook/assets/GovStack_Digital_registries_BB_Database_API_template-1.3.0.yaml)
 {% endswagger %}
 
-{% swagger src="https://raw.githubusercontent.com/GovStackWorkingGroup/bb-digital-registries/main/api/GovStack_Digital_registries_BB_Database_API_template-1.3.0.json" path="/database/modify" method="post" %}
-[https://raw.githubusercontent.com/GovStackWorkingGroup/bb-digital-registries/main/api/GovStack_Digital_registries_BB_Database_API_template-1.3.0.json](https://raw.githubusercontent.com/GovStackWorkingGroup/bb-digital-registries/main/api/GovStack_Digital_registries_BB_Database_API_template-1.3.0.json)
+{% swagger src=".gitbook/assets/GovStack_Digital_registries_BB_Database_API_template-1.3.0.yaml" path="/database/{id}" method="delete" %}
+[GovStack_Digital_registries_BB_Database_API_template-1.3.0.yaml](.gitbook/assets/GovStack_Digital_registries_BB_Database_API_template-1.3.0.yaml)
 {% endswagger %}
 
-{% swagger src="https://raw.githubusercontent.com/GovStackWorkingGroup/bb-digital-registries/main/api/GovStack_Digital_registries_BB_Database_API_template-1.3.0.json" path="/database/{id}" method="delete" %}
-[https://raw.githubusercontent.com/GovStackWorkingGroup/bb-digital-registries/main/api/GovStack_Digital_registries_BB_Database_API_template-1.3.0.json](https://raw.githubusercontent.com/GovStackWorkingGroup/bb-digital-registries/main/api/GovStack_Digital_registries_BB_Database_API_template-1.3.0.json)
+{% swagger src=".gitbook/assets/GovStack_Digital_registries_BB_Database_API_template-1.3.0.yaml" path="/database/modify" method="post" %}
+[GovStack_Digital_registries_BB_Database_API_template-1.3.0.yaml](.gitbook/assets/GovStack_Digital_registries_BB_Database_API_template-1.3.0.yaml)
 {% endswagger %}
 
-{% swagger src="https://raw.githubusercontent.com/GovStackWorkingGroup/bb-digital-registries/main/api/GovStack_Digital_registries_BB_Database_API_template-1.3.0.json" path="/databases" method="get" %}
-[https://raw.githubusercontent.com/GovStackWorkingGroup/bb-digital-registries/main/api/GovStack_Digital_registries_BB_Database_API_template-1.3.0.json](https://raw.githubusercontent.com/GovStackWorkingGroup/bb-digital-registries/main/api/GovStack_Digital_registries_BB_Database_API_template-1.3.0.json)
+{% swagger src=".gitbook/assets/GovStack_Digital_registries_BB_Database_API_template-1.3.0.yaml" path="/databases" method="get" %}
+[GovStack_Digital_registries_BB_Database_API_template-1.3.0.yaml](.gitbook/assets/GovStack_Digital_registries_BB_Database_API_template-1.3.0.yaml)
 {% endswagger %}
 
-{% swagger src="https://raw.githubusercontent.com/GovStackWorkingGroup/bb-digital-registries/main/api/GovStack_Digital_registries_BB_Data_API_template-1.3.0.json" path="/data/mcts/1.4/create-entries" method="post" %}
-[https://raw.githubusercontent.com/GovStackWorkingGroup/bb-digital-registries/main/api/GovStack_Digital_registries_BB_Data_API_template-1.3.0.json](https://raw.githubusercontent.com/GovStackWorkingGroup/bb-digital-registries/main/api/GovStack_Digital_registries_BB_Data_API_template-1.3.0.json)
+{% swagger src=".gitbook/assets/GovStack_Digital_registries_BB_Data_API_template-1.3.0.json" path="/data/{registryName}/{versionNumber}" method="get" %}
+[GovStack_Digital_registries_BB_Data_API_template-1.3.0.json](.gitbook/assets/GovStack_Digital_registries_BB_Data_API_template-1.3.0.json)
 {% endswagger %}
 
-{% swagger src="https://raw.githubusercontent.com/GovStackWorkingGroup/bb-digital-registries/main/api/GovStack_Digital_registries_BB_Data_API_template-1.3.0.json" path="/data/{registryname}/{versionnumber}" method="get" %}
-[https://raw.githubusercontent.com/GovStackWorkingGroup/bb-digital-registries/main/api/GovStack_Digital_registries_BB_Data_API_template-1.3.0.json](https://raw.githubusercontent.com/GovStackWorkingGroup/bb-digital-registries/main/api/GovStack_Digital_registries_BB_Data_API_template-1.3.0.json)
+{% swagger src=".gitbook/assets/GovStack_Digital_registries_BB_Data_API_template-1.3.0.json" path="/data/mcts/createEntries" method="post" %}
+[GovStack_Digital_registries_BB_Data_API_template-1.3.0.json](.gitbook/assets/GovStack_Digital_registries_BB_Data_API_template-1.3.0.json)
 {% endswagger %}
 
-{% swagger src="https://raw.githubusercontent.com/GovStackWorkingGroup/bb-digital-registries/main/api/GovStack_Digital_registries_BB_Data_API_template-1.3.0.json" path="/data/{registryname}/{versionnumber}/read" method="post" %}
-[https://raw.githubusercontent.com/GovStackWorkingGroup/bb-digital-registries/main/api/GovStack_Digital_registries_BB_Data_API_template-1.3.0.json](https://raw.githubusercontent.com/GovStackWorkingGroup/bb-digital-registries/main/api/GovStack_Digital_registries_BB_Data_API_template-1.3.0.json)
+{% swagger src=".gitbook/assets/GovStack_Digital_registries_BB_Data_API_template-1.3.0.json" path="/data/{registryName}/{versionNumber}/read" method="post" %}
+[GovStack_Digital_registries_BB_Data_API_template-1.3.0.json](.gitbook/assets/GovStack_Digital_registries_BB_Data_API_template-1.3.0.json)
 {% endswagger %}
