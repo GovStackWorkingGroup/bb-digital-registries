@@ -13,12 +13,6 @@
       "url": "http://www.apache.org/licenses/LICENSE-2.0.html"
     }
   },
-  "servers": [
-    {
-      "description": "Eregistrations API",
-      "url": "http://ss2.egovstack.net/r1/eGovStack/COM/11222456/swaggerhub/creg/"
-    }
-  ],
   "tags": [
     {
       "name": "Database API",
@@ -120,12 +114,12 @@
               "schema": {
                 "type": "object",
                 "properties": {
-                  "group_name": {
+                  "groupName": {
                     "type": "string",
                     "description": "Group name where this schema is located",
                     "example": "Test"
                   },
-                  "catalog_name": {
+                  "catalogName": {
                     "type": "string",
                     "description": "Catalog name where this schema is located",
                     "example": "Mother and Child"
@@ -240,7 +234,7 @@
             "description": "Owner of the database (institution)",
             "example": "Ministry of Social Affairs"
           },
-          "number_format": {
+          "numberFormat": {
             "type": "string",
             "description": "Number format in database",
             "example": "{code}{indexNoByCode}"
@@ -248,7 +242,7 @@
           "schema": {
             "$ref": "#/components/schemas/DatabaseSchema"
           },
-          "schema_tags": {
+          "schemaTags": {
             "type": "array",
             "description": "List of different schema tags that are related to the database",
             "items": {
@@ -262,14 +256,14 @@
                   "type": "string",
                   "example": "/Child/Citizenship"
                 },
-                "is_fulltext": {
+                "isFulltext": {
                   "type": "boolean",
                   "example": true
                 }
               }
             }
           },
-          "schema_flags": {
+          "schemaFlags": {
             "type": "array",
             "description": "List of different schema flags that are related to the database",
             "items": {
@@ -286,7 +280,7 @@
               }
             }
           },
-          "fields_uniques": {
+          "fieldsUniques": {
             "type": "array",
             "items": {
               "type": "array",
@@ -296,53 +290,53 @@
               }
             }
           },
-          "is_draft": {
+          "isDraft": {
             "type": "boolean",
             "description": "Shows database draft status (is draft true/false)",
             "example": false
           },
-          "is_disabled": {
+          "isDisabled": {
             "type": "boolean",
             "description": "Shows if database is disabled or not",
             "example": false
           },
-          "is_archived": {
+          "isArchived": {
             "type": "boolean",
             "description": "Shows if database is archived or not",
             "example": false
           },
-          "modified_at": {
+          "modifiedAt": {
             "type": "string",
             "description": "Shows database last modification time",
             "example": "2021-10-03T08:35:01.775915Z"
           },
-          "by_user_name": {
+          "byUserName": {
             "type": "string",
             "description": "Shows user name of a person who created the database",
             "example": "ingmar.dev"
           },
-          "by_user_auth_id": {
+          "byUserAuthId": {
             "type": "integer",
             "description": "Shows id of a person who created the database",
             "example": 1
           },
-          "by_on_behalf_of_user_auth_id": {
+          "byOnBehalfOfUserAuthId": {
             "type": "integer",
             "description": "Shows user id whose behalf was this database created",
             "example": 0
           },
-          "by_on_behalf_of_user_name": {
+          "byOnBehalfOfUserName": {
             "type": "string",
             "description": "Shows user name whose behalf was this database created",
             "example": null
           },
-          "generic_services": {
+          "generic_Services": {
             "type": "array",
             "description": "List of possible API services for this database",
             "items": {
               "type": "object",
               "properties": {
-                "service_id": {
+                "serviceId": {
                   "type": "integer",
                   "example": 1
                 },
@@ -350,23 +344,23 @@
                   "type": "string",
                   "example": "data-create"
                 },
-                "is_visible": {
+                "isVisible": {
                   "type": "boolean",
                   "example": true
                 },
-                "used_count": {
+                "usedCount": {
                   "type": "integer",
                   "example": 0
                 }
               }
             }
           },
-          "data_index_increment": {
+          "dataIndexIncrement": {
             "type": "integer",
             "description": "Shows database increment",
             "example": 0
           },
-          "has_logo": {
+          "hasLogo": {
             "type": "boolean",
             "description": "Shows if this database has logo or not",
             "example": false
@@ -461,7 +455,7 @@
                   }
                 }
               },
-              "Child": {
+              "child": {
                 "type": "object",
                 "properties": {
                   "type": {
@@ -471,7 +465,7 @@
                   "properties": {
                     "type": "object",
                     "properties": {
-                      "ID": {
+                      "id": {
                         "type": "object",
                         "properties": {
                           "type": {
@@ -511,7 +505,7 @@
           }
         }
       },
-      "DatabasesSchema": {
+      "databasesSchema": {
         "type": "object",
         "description": "Example of databases API request response body",
         "properties": {
@@ -537,7 +531,7 @@
               "$ref": "#/components/schemas/DatabaseInfo"
             }
           },
-          "group_id": {
+          "groupId": {
             "type": "integer",
             "description": "ID of databases group",
             "example": 10
@@ -547,7 +541,7 @@
             "description": "Order number of databases group",
             "example": 76
           },
-          "data_index_increment": {
+          "dataIndexIncrement": {
             "type": "integer",
             "description": "Data index increment of databases group",
             "example": 3

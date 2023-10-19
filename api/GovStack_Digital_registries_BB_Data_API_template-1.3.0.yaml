@@ -12,14 +12,11 @@ info:
   license:
     name: Apache 2.0
     url: http://www.apache.org/licenses/LICENSE-2.0.html
-servers:
-  - description: Information Mediator BB Security server
-    url: http://ss2.egovstack.net/r1/eGovStack/COM/11222456/RegistrationBB/creg/
 tags:
   - name: Registry data query API
     description: Registry data query API
 paths:
-  /data/{registryname}/{versionnumber}:
+  /data/{registryName}/{versionNumber}:
     get:
       tags:
         - Registry data query API
@@ -30,8 +27,8 @@ paths:
       summary: list
       parameters:
         - $ref: '#/components/parameters/Information-Mediator-Client'
-        - $ref: '#/components/parameters/registryname'
-        - $ref: '#/components/parameters/versionnumber'
+        - $ref: '#/components/parameters/registryName'
+        - $ref: '#/components/parameters/versionNumber'
         - name: search
           in: query
           description: Field for searching random string type data from database
@@ -45,7 +42,7 @@ paths:
           required: false
           schema:
             type: string
-            example: FirstName
+            example: firstName
         - name: ordering
           in: query
           description: How user wishes to order the data
@@ -60,14 +57,14 @@ paths:
           schema:
             type: integer
             example: 1
-        - name: page_size
+        - name: pageSize
           in: query
           description: Number of results on one page
           required: false
           schema:
             type: integer
             example: 10
-        - name: query.<fieldname>
+        - name: query.<fieldName>
           in: query
           description:
             Example of searchable database field. If more searchable fields are
@@ -109,7 +106,7 @@ paths:
                   - results
       security:
         - apiKey: []
-  /data/{registryname}/{versionnumber}/create:
+  /data/{registryName}/{versionNumber}/create:
     post:
       tags:
         - Registry data query API
@@ -118,8 +115,8 @@ paths:
       summary: create
       parameters:
         - $ref: '#/components/parameters/Information-Mediator-Client'
-        - $ref: '#/components/parameters/registryname'
-        - $ref: '#/components/parameters/versionnumber'
+        - $ref: '#/components/parameters/registryName'
+        - $ref: '#/components/parameters/versionNumber'
       requestBody:
         description: ''
         required: true
@@ -149,7 +146,7 @@ paths:
                     $ref: '#/components/schemas/Example'
       security:
         - apiKey: []
-  /data/{registryname}/{versionnumber}/exists:
+  /data/{registryName}/{versionNumber}/exists:
     post:
       tags:
         - Registry data query API
@@ -160,8 +157,8 @@ paths:
       summary: exists
       parameters:
         - $ref: '#/components/parameters/Information-Mediator-Client'
-        - $ref: '#/components/parameters/registryname'
-        - $ref: '#/components/parameters/versionnumber'
+        - $ref: '#/components/parameters/registryName'
+        - $ref: '#/components/parameters/versionNumber'
       requestBody:
         description: ''
         required: true
@@ -204,7 +201,7 @@ paths:
                   - answer
       security:
         - apiKey: []
-  /data/{registryname}/{versionnumber}/read:
+  /data/{registryName}/{versionNumber}/read:
     post:
       tags:
         - Registry data query API
@@ -213,8 +210,8 @@ paths:
       summary: read
       parameters:
         - $ref: '#/components/parameters/Information-Mediator-Client'
-        - $ref: '#/components/parameters/registryname'
-        - $ref: '#/components/parameters/versionnumber'
+        - $ref: '#/components/parameters/registryName'
+        - $ref: '#/components/parameters/versionNumber'
       requestBody:
         description: ''
         required: true
@@ -254,7 +251,7 @@ paths:
                     enum: ['no record found']
       security:
         - apiKey: []
-  /data/{registryname}/{versionnumber}/update:
+  /data/{registryName}/{versionNumber}/update:
     put:
       tags:
         - Registry data query API
@@ -263,8 +260,8 @@ paths:
       summary: update
       parameters:
         - $ref: '#/components/parameters/Information-Mediator-Client'
-        - $ref: '#/components/parameters/registryname'
-        - $ref: '#/components/parameters/versionnumber'
+        - $ref: '#/components/parameters/registryName'
+        - $ref: '#/components/parameters/versionNumber'
       requestBody:
         description: ''
         required: true
@@ -296,19 +293,19 @@ paths:
           description: ''
       security:
         - apiKey: []
-  /data/{registryname}/{versionnumber}/update-entries:
+  /data/{registryName}/{versionNumber}/updateEntries:
     put:
       tags:
         - Registry data query API
       description:
         Updates multiple records in the registry database that match the input
         query.
-      operationId: update-entries
-      summary: update-entries
+      operationId: updateEntries
+      summary: updateEntries
       parameters:
         - $ref: '#/components/parameters/Information-Mediator-Client'
-        - $ref: '#/components/parameters/registryname'
-        - $ref: '#/components/parameters/versionnumber'
+        - $ref: '#/components/parameters/registryName'
+        - $ref: '#/components/parameters/versionNumber'
       requestBody:
         description: ''
         required: true
@@ -340,19 +337,19 @@ paths:
           description: ''
       security:
         - apiKey: []
-  /data/{registryname}/{versionnumber}/update-or-create:
+  /data/{registryName}/{versionNumber}/updateOrCreate:
     post:
       tags:
         - Registry data query API
       description:
         'API updates existing record if matching with input parameters is
         successful. If record is not found the API will create a new record. '
-      operationId: update-or-create
-      summary: update-or-create
+      operationId: updateOrCreate
+      summary: updateOrCreate
       parameters:
         - $ref: '#/components/parameters/Information-Mediator-Client'
-        - $ref: '#/components/parameters/registryname'
-        - $ref: '#/components/parameters/versionnumber'
+        - $ref: '#/components/parameters/registryName'
+        - $ref: '#/components/parameters/versionNumber'
       requestBody:
         description: ''
         required: true
@@ -395,7 +392,7 @@ paths:
                     $ref: '#/components/schemas/Example'
       security:
         - apiKey: []
-  /data/{registryname}/{versionnumber}/{ID}/delete:
+  /data/{registryName}/{versionNumber}/{ID}/delete:
     delete:
       tags:
         - Registry data query API
@@ -404,8 +401,8 @@ paths:
       summary: delete
       parameters:
         - $ref: '#/components/parameters/Information-Mediator-Client'
-        - $ref: '#/components/parameters/registryname'
-        - $ref: '#/components/parameters/versionnumber'
+        - $ref: '#/components/parameters/registryName'
+        - $ref: '#/components/parameters/versionNumber'
         - name: ID
           in: path
           required: true
@@ -420,17 +417,17 @@ paths:
           description: ''
       security:
         - apiKey: []
-  /data/{registryname}/{versionnumber}/{uuid}/read-value/{field}.{ext}:
+  /data/{registryName}/{versionNumber}/{uuid}/readValue/{field}.{ext}:
     get:
       tags:
         - Registry data query API
       description: Searches and returns one record’s one field value.
-      operationId: read-value
-      summary: read-value
+      operationId: readValue
+      summary: readValue
       parameters:
         - $ref: '#/components/parameters/Information-Mediator-Client'
-        - $ref: '#/components/parameters/registryname'
-        - $ref: '#/components/parameters/versionnumber'
+        - $ref: '#/components/parameters/registryName'
+        - $ref: '#/components/parameters/versionNumber'
         - name: uuid
           in: path
           required: true
@@ -483,7 +480,7 @@ paths:
                           - type: string
       security:
         - apiKey: []
-  /data/MyPersonalDataUsage/1.0:
+  /data/myPersonalDataUsage:
     get:
       tags:
         - MyPersonalDataUsage API
@@ -491,7 +488,7 @@ paths:
       operationId: DPU
       parameters:
         - $ref: '#/components/parameters/Information-Mediator-Client'
-        - name: userID
+        - name: userId
           in: query
           description: User's personal unique identifier
           required: true
@@ -499,7 +496,7 @@ paths:
           schema:
             type: string
             example: EE378129277266
-        - name: DatabaseID
+        - name: databaseId
           in: query
           description: Database acronym
           required: true
@@ -536,15 +533,15 @@ components:
       schema:
         type: string
       required: true
-    registryname:
+    registryName:
       in: path
-      name: registryname
+      name: registryName
       schema:
         type: string
       required: true
-    versionnumber:
+    versionNumber:
       in: path
-      name: versionnumber
+      name: versionNumber
       schema:
         type: string
       required: true
@@ -552,51 +549,51 @@ components:
     MCC:
       type: object
       properties:
-        ID:
+        id:
           type: string
           description: Object ID in the database
           example: MCTS1
-        Child:
+        child:
           $ref: '#/components/schemas/Child'
-        Registraion date:
+        registraionDate:
           type: string
           format: date
           description: Date of registration
           example: '2021-01-30'
-        Expiry date:
+        expiryDate:
           type: string
           format: date
           description: The expiry date of the registration
           example: '2021-01-30'
-        Caretaker:
+        caretaker:
           $ref: '#/components/schemas/Caretaker'
     Child:
       type: object
       properties:
-        ID:
+        id:
           type: string
           description: Child's identifier
           example: xyz-12345678910
-        Firstname:
+        firstName:
           type: string
           description: Child's first name
           example: Usha
-        Lastname:
+        lastName:
           type: string
           description: Child's last name
           example: Bajaj
-        Birthdate:
+        birthdate:
           type: string
           format: date
           description: Child's birth date
           example: '2021-01-30'
-        Address:
+        address:
           type: string
           description: Child's address
           example: Longroad 123, Big Village
-        Birth_certificate:
-          $ref: '#/components/schemas/Birth_certificate'
-    Birth_certificate:
+        birthCertificate:
+          $ref: '#/components/schemas/BirthCertificate'
+    BirthCertificate:
       anyOf:
         - type: object
           description: Birth certificate file
@@ -638,35 +635,35 @@ components:
     Caretaker:
       type: object
       properties:
-        ID:
+        id:
           type: string
           description: Caretaker's identifier
           example: EL129983773663
-        Firstname:
+        firstName:
           type: string
           description: Caretaker's first name
           example: John
-        Lastname:
+        lastName:
           type: string
           description: Caretaker's last name
           example: Smith
-        Birthdate:
+        birthdate:
           type: string
           format: date
           description: Caretaker's birth date
           example: '1980-01-30'
-        Phone:
+        phone:
           type: string
           description: Caretaker's phone number
           example: '+37258000000'
-        Email:
+        email:
           type: string
           description: Caretaker's email
           example: jonh.smith@email.com
-        Picture:
+        picture:
           $ref: '#/components/schemas/Picture'
-        Document ID:
-          $ref: '#/components/schemas/Document_ID'
+        documentId:
+          $ref: '#/components/schemas/DocumentId'
     Picture:
       anyOf:
         - type: object
@@ -706,7 +703,7 @@ components:
               type: number
           required:
             - $documentId
-    Document_ID:
+    DocumentId:
       anyOf:
         - type: object
           description: Caretaker's identification document
@@ -748,36 +745,36 @@ components:
     PersonalDataUsage:
       type: object
       properties:
-        ID:
+        id:
           type: string
           description: Log record ID
           example: '1234567'
-        ReaderID:
+        readerId:
           type: string
           description: Identifier of a reader who looked at personal data
           example: EE37819285773
-        ReaderInitials:
+        readerInitials:
           type: string
           description: Reader's initials
           example: JD
-        ReaderInstitutionID:
+        readerInstitutionId:
           type: string
           description: Reader's instituition ID
           example: EE70049837
-        ReaderInstitutionName:
+        readerInstitutionName:
           type: string
           description: Reader's institution name
           example: East Hospital
-        ReaderApplicationName:
+        readerApplicationName:
           type: string
           description: Reader's institution system name
           example: East Hospital healthcare back office
-        SearchDateTime:
+        searchDateTime:
           type: string
           format: date-time
           description: Date and time of registration
           example: '2017-07-21T17:32:28Z'
-        Refrences:
+        refrences:
           type: array
           description: Personal Data reference
           items:
@@ -789,19 +786,19 @@ components:
     Example:
       type: object
       properties:
-        ID:
+        id:
           type: string
           description: Citizen's identifier
           example: EE378627348834
-        FirstName:
+        firstName:
           type: string
           description: Citizen's first name
           example: John Helmut
-        LastName:
+        lastName:
           type: string
           description: Citizen's last name
           example: Smith Carry
-        BirthCertificateID:
+        birthCertificateId:
           type: string
           description: Birth certificate ID in CR
           example: RR-1234567889

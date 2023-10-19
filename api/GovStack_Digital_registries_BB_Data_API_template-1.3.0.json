@@ -13,12 +13,6 @@
       "url": "http://www.apache.org/licenses/LICENSE-2.0.html"
     }
   },
-  "servers": [
-    {
-      "description": "Information Mediator BB Security server",
-      "url": "http://ss2.egovstack.net/r1/eGovStack/COM/11222456/RegistrationBB/creg/"
-    }
-  ],
   "tags": [
     {
       "name": "Registry data query API",
@@ -26,7 +20,7 @@
     }
   ],
   "paths": {
-    "/data/{registryname}/{versionnumber}": {
+    "/data/{registryName}/{versionNumber}": {
       "get": {
         "tags": ["Registry data query API"],
         "description": "Searches (Regex supported) and returns multiple records as an array-list. ",
@@ -37,10 +31,10 @@
             "$ref": "#/components/parameters/Information-Mediator-Client"
           },
           {
-            "$ref": "#/components/parameters/registryname"
+            "$ref": "#/components/parameters/registryName"
           },
           {
-            "$ref": "#/components/parameters/versionnumber"
+            "$ref": "#/components/parameters/versionNumber"
           },
           {
             "name": "search",
@@ -83,7 +77,7 @@
             }
           },
           {
-            "name": "page_size",
+            "name": "pageSize",
             "in": "query",
             "description": "Number of results on one page",
             "required": false,
@@ -93,7 +87,7 @@
             }
           },
           {
-            "name": "query.<fieldname>",
+            "name": "query.<fieldName>",
             "in": "query",
             "description": "Example of searchable database field. If more searchable fields are in DB, then more similar fields will follow in input",
             "required": false,
@@ -149,7 +143,7 @@
         ]
       }
     },
-    "/data/{registryname}/{versionnumber}/create": {
+    "/data/{registryName}/{versionNumber}/create": {
       "post": {
         "tags": ["Registry data query API"],
         "description": "Creates a new record in the registry database.",
@@ -160,10 +154,10 @@
             "$ref": "#/components/parameters/Information-Mediator-Client"
           },
           {
-            "$ref": "#/components/parameters/registryname"
+            "$ref": "#/components/parameters/registryName"
           },
           {
-            "$ref": "#/components/parameters/versionnumber"
+            "$ref": "#/components/parameters/versionNumber"
           }
         ],
         "requestBody": {
@@ -213,9 +207,9 @@
         ]
       }
     },
-    "/data/mcts/1.4/create-entries": {
+    "/data/mcts/createEntries": {
       "post": {
-        "operationId": "GDB-MCTS(1.4)-create-entries",
+        "operationId": "GDB-MCTS-create-entries",
         "description": "",
         "parameters": [
           {
@@ -237,123 +231,123 @@
                         "content": {
                           "type": "object",
                           "properties": {
-                            "ID": {
+                            "id": {
                               "type": "string",
                               "readOnly": true,
                               "description": "Registration ID",
                               "example": "MCTS31"
                             },
-                            "Start": {
+                            "start": {
                               "type": "string",
                               "format": "date",
                               "description": "Record registration date",
                               "example": "2021-10-03T07:03:36Z"
                             },
-                            "Expiry": {
+                            "expiry": {
                               "type": "string",
                               "format": "date",
                               "description": "Record expiry date",
                               "example": "2021-10-03T07:03:36Z"
                             },
-                            "Child": {
+                            "child": {
                               "type": "object",
                               "properties": {
-                                "Citizen ID": {
+                                "citizenId": {
                                   "type": "string",
                                   "description": "Child ID",
                                   "example": "ID2"
                                 },
-                                "First names": {
+                                "firstName": {
                                   "type": "string",
                                   "description": "Child first name",
                                   "example": "Usha"
                                 },
-                                "Last names": {
+                                "lastNames": {
                                   "type": "string",
                                   "description": "Child last name",
                                   "example": "Bajaj"
                                 },
-                                "Birthdate": {
+                                "birthdate": {
                                   "type": "string",
                                   "format": "date",
                                   "description": "Child data of birth",
                                   "example": "2021-10-03T07:03:36Z"
                                 },
-                                "Address": {
+                                "address": {
                                   "type": "string",
                                   "description": "Child's address",
                                   "example": "Longroad 123, Welltown, Ethiopia"
                                 },
-                                "Nationality": {
+                                "nationality": {
                                   "type": "string",
                                   "description": "Child is a citizen of this country. ISO 3166-1 encoding list",
                                   "example": "ET"
                                 },
-                                "Birth certificate": {
+                                "birthCertificate": {
                                   "$ref": "#/components/schemas/FieldFileType"
                                 },
-                                "Gender": {
+                                "gender": {
                                   "type": "string",
                                   "enum": ["Male", "Female"]
                                 }
                               },
                               "description": "Child object data that is queried from database"
                             },
-                            "Caretaker": {
+                            "caretaker": {
                               "type": "object",
                               "properties": {
-                                "Citizen ID": {
+                                "citizenId": {
                                   "type": "string",
                                   "description": "Caretaker's ID",
                                   "example": "ID1"
                                 },
-                                "Firstnames": {
+                                "firstName": {
                                   "type": "string",
                                   "description": "Caretaker's first name",
                                   "example": "Sowmya"
                                 },
-                                "Lastnames": {
+                                "lastNames": {
                                   "type": "string",
                                   "description": "Caretaker's last name",
                                   "example": "Bajaj"
                                 },
-                                "Birthdate": {
+                                "birthdate": {
                                   "type": "string",
                                   "format": "date",
                                   "description": "Caretaker's birth date",
                                   "example": "2021-10-03T07:03:36Z"
                                 },
-                                "Phone": {
+                                "phone": {
                                   "type": "string",
                                   "description": "Caretaker's phone number",
                                   "example": "+3725278511"
                                 },
-                                "Email": {
+                                "email": {
                                   "type": "string",
                                   "description": "Caretaker's email",
                                   "example": "test@test.et"
                                 },
-                                "Picture": {
+                                "picture": {
                                   "$ref": "#/components/schemas/FieldFileType"
                                 },
-                                "Citizen ID doc": {
+                                "citizenIdDoc": {
                                   "$ref": "#/components/schemas/FieldFileType"
                                 }
                               },
                               "description": "Caretaker's information"
                             },
-                            "Payment ID": {
+                            "paymentId": {
                               "type": "string"
                             }
                           },
                           "required": ["ID"]
                         },
-                        "created_at": {
+                        "createdAt": {
                           "type": "string",
                           "format": "date-time",
                           "readOnly": true
                         },
-                        "modified_at": {
+                        "modifiedAt": {
                           "type": "string",
                           "format": "date-time",
                           "readOnly": true
@@ -366,8 +360,8 @@
                       },
                       "required": [
                         "content",
-                        "created_at",
-                        "modified_at",
+                        "createdAt",
+                        "modifiedAt",
                         "uuid"
                       ]
                     }
@@ -404,123 +398,123 @@
                           "content": {
                             "type": "object",
                             "properties": {
-                              "ID": {
+                              "id": {
                                 "type": "string",
                                 "readOnly": true,
                                 "description": "Registration ID",
                                 "example": "MCTS31"
                               },
-                              "Start": {
+                              "start": {
                                 "type": "string",
                                 "format": "date",
                                 "description": "Record registration date",
                                 "example": "2021-10-03T07:03:36Z"
                               },
-                              "Expiry": {
+                              "expiry": {
                                 "type": "string",
                                 "format": "date",
                                 "description": "Record expiry date",
                                 "example": "2021-10-03T07:03:36Z"
                               },
-                              "Child": {
+                              "child": {
                                 "type": "object",
                                 "properties": {
-                                  "Citizen ID": {
+                                  "citizenId": {
                                     "type": "string",
                                     "description": "Child ID",
                                     "example": "ID2"
                                   },
-                                  "First names": {
+                                  "firstName": {
                                     "type": "string",
                                     "description": "Child first name",
                                     "example": "Usha"
                                   },
-                                  "Last names": {
+                                  "lastNames": {
                                     "type": "string",
                                     "description": "Child last name",
                                     "example": "Bajaj"
                                   },
-                                  "Birthdate": {
+                                  "birthdate": {
                                     "type": "string",
                                     "format": "date",
                                     "description": "Child data of birth",
                                     "example": "2021-10-03T07:03:36Z"
                                   },
-                                  "Address": {
+                                  "address": {
                                     "type": "string",
                                     "description": "Child's address",
                                     "example": "Longroad 123, Welltown, Ethiopia"
                                   },
-                                  "Nationality": {
+                                  "nationality": {
                                     "type": "string",
                                     "description": "Child is a citizen of this country. ISO 3166-1 encoding list",
                                     "example": "ET"
                                   },
-                                  "Birth certificate": {
+                                  "birthCertificate": {
                                     "$ref": "#/components/schemas/FieldFileType"
                                   },
-                                  "Gender": {
+                                  "gender": {
                                     "type": "string",
                                     "enum": ["Male", "Female"]
                                   }
                                 },
                                 "description": "Child object data that is queried from database"
                               },
-                              "Caretaker": {
+                              "caretaker": {
                                 "type": "object",
                                 "properties": {
-                                  "Citizen ID": {
+                                  "citizenId": {
                                     "type": "string",
                                     "description": "Caretaker's ID",
                                     "example": "ID1"
                                   },
-                                  "Firstnames": {
+                                  "firstName": {
                                     "type": "string",
                                     "description": "Caretaker's first name",
                                     "example": "Sowmya"
                                   },
-                                  "Lastnames": {
+                                  "lastNames": {
                                     "type": "string",
                                     "description": "Caretaker's last name",
                                     "example": "Bajaj"
                                   },
-                                  "Birthdate": {
+                                  "birthdate": {
                                     "type": "string",
                                     "format": "date",
                                     "description": "Caretaker's birth date",
                                     "example": "2021-10-03T07:03:36Z"
                                   },
-                                  "Phone": {
+                                  "phone": {
                                     "type": "string",
                                     "description": "Caretaker's phone number",
                                     "example": "+3725278511"
                                   },
-                                  "Email": {
+                                  "email": {
                                     "type": "string",
                                     "description": "Caretaker's email",
                                     "example": "test@test.et"
                                   },
-                                  "Picture": {
+                                  "picture": {
                                     "$ref": "#/components/schemas/FieldFileType"
                                   },
-                                  "Citizen ID doc": {
+                                  "citizenIdDoc": {
                                     "$ref": "#/components/schemas/FieldFileType"
                                   }
                                 },
                                 "description": "Caretaker's information"
                               },
-                              "Payment ID": {
+                              "paymentId": {
                                 "type": "string"
                               }
                             },
                             "required": ["ID"]
                           },
-                          "created_at": {
+                          "createdAt": {
                             "type": "string",
                             "format": "date-time",
                             "readOnly": true
                           },
-                          "modified_at": {
+                          "modifiedAt": {
                             "type": "string",
                             "format": "date-time",
                             "readOnly": true
@@ -533,8 +527,8 @@
                         },
                         "required": [
                           "content",
-                          "created_at",
-                          "modified_at",
+                          "createdAt",
+                          "modifiedAt",
                           "uuid"
                         ]
                       }
@@ -546,15 +540,10 @@
             },
             "description": ""
           }
-        },
-        "servers": [
-          {
-            "url": "http://securityserver/r1/egovstack/GOV/7001/DigitalRegistries/mcts11"
-          }
-        ]
+        }
       }
     },
-    "/data/{registryname}/{versionnumber}/exists": {
+    "/data/{registryName}/{versionNumber}/exists": {
       "post": {
         "tags": ["Registry data query API"],
         "description": "Searches records based on input parameters and returns boolean answer (true/false).",
@@ -565,10 +554,10 @@
             "$ref": "#/components/parameters/Information-Mediator-Client"
           },
           {
-            "$ref": "#/components/parameters/registryname"
+            "$ref": "#/components/parameters/registryName"
           },
           {
-            "$ref": "#/components/parameters/versionnumber"
+            "$ref": "#/components/parameters/versionNumber"
           }
         ],
         "requestBody": {
@@ -632,7 +621,7 @@
         ]
       }
     },
-    "/data/{registryname}/{versionnumber}/read": {
+    "/data/{registryName}/{versionNumber}/read": {
       "post": {
         "tags": ["Registry data query API"],
         "description": "Searches and returns one record.",
@@ -643,10 +632,10 @@
             "$ref": "#/components/parameters/Information-Mediator-Client"
           },
           {
-            "$ref": "#/components/parameters/registryname"
+            "$ref": "#/components/parameters/registryName"
           },
           {
-            "$ref": "#/components/parameters/versionnumber"
+            "$ref": "#/components/parameters/versionNumber"
           }
         ],
         "requestBody": {
@@ -712,7 +701,7 @@
         ]
       }
     },
-    "/data/{registryname}/{versionnumber}/update": {
+    "/data/{registryName}/{versionNumber}/update": {
       "put": {
         "tags": ["Registry data query API"],
         "description": "Updates one existing record in the registry database.",
@@ -723,10 +712,10 @@
             "$ref": "#/components/parameters/Information-Mediator-Client"
           },
           {
-            "$ref": "#/components/parameters/registryname"
+            "$ref": "#/components/parameters/registryName"
           },
           {
-            "$ref": "#/components/parameters/versionnumber"
+            "$ref": "#/components/parameters/versionNumber"
           }
         ],
         "requestBody": {
@@ -775,21 +764,21 @@
         ]
       }
     },
-    "/data/{registryname}/{versionnumber}/update-entries": {
+    "/data/{registryName}/{versionNumber}/updateEntries": {
       "put": {
         "tags": ["Registry data query API"],
         "description": "Updates multiple records in the registry database that match the input query.",
-        "operationId": "update-entries",
-        "summary": "update-entries",
+        "operationId": "updateEntries",
+        "summary": "updateEntries",
         "parameters": [
           {
             "$ref": "#/components/parameters/Information-Mediator-Client"
           },
           {
-            "$ref": "#/components/parameters/registryname"
+            "$ref": "#/components/parameters/registryName"
           },
           {
-            "$ref": "#/components/parameters/versionnumber"
+            "$ref": "#/components/parameters/versionNumber"
           }
         ],
         "requestBody": {
@@ -838,7 +827,7 @@
         ]
       }
     },
-    "/data/{registryname}/{versionnumber}/update-or-create": {
+    "/data/{registryName}/{versionNumber}/updateOrCreate": {
       "post": {
         "tags": ["Registry data query API"],
         "description": "API updates existing record if matching with input parameters is successful. If record is not found the API will create a new record. ",
@@ -849,10 +838,10 @@
             "$ref": "#/components/parameters/Information-Mediator-Client"
           },
           {
-            "$ref": "#/components/parameters/registryname"
+            "$ref": "#/components/parameters/registryName"
           },
           {
-            "$ref": "#/components/parameters/versionnumber"
+            "$ref": "#/components/parameters/versionNumber"
           }
         ],
         "requestBody": {
@@ -913,7 +902,7 @@
         ]
       }
     },
-    "/data/{registryname}/{versionnumber}/{ID}/delete": {
+    "/data/{registryName}/{versionNumber}/{id}/delete": {
       "delete": {
         "tags": ["Registry data query API"],
         "description": "Delete record.",
@@ -924,13 +913,13 @@
             "$ref": "#/components/parameters/Information-Mediator-Client"
           },
           {
-            "$ref": "#/components/parameters/registryname"
+            "$ref": "#/components/parameters/registryName"
           },
           {
-            "$ref": "#/components/parameters/versionnumber"
+            "$ref": "#/components/parameters/versionNumber"
           },
           {
-            "name": "ID",
+            "name": "id",
             "in": "path",
             "required": true,
             "schema": {
@@ -952,21 +941,21 @@
         ]
       }
     },
-    "/data/{registryname}/{versionnumber}/{uuid}/read-value/{field}.{ext}": {
+    "/data/{registryName}/{versionNumber}/{uuid}/readValue/{field}.{ext}": {
       "get": {
         "tags": ["Registry data query API"],
         "description": "Searches and returns one record’s one field value.",
-        "operationId": "read-value",
-        "summary": "read-value",
+        "operationId": "readValue",
+        "summary": "readValue",
         "parameters": [
           {
             "$ref": "#/components/parameters/Information-Mediator-Client"
           },
           {
-            "$ref": "#/components/parameters/registryname"
+            "$ref": "#/components/parameters/registryName"
           },
           {
-            "$ref": "#/components/parameters/versionnumber"
+            "$ref": "#/components/parameters/versionNumber"
           },
           {
             "name": "uuid",
@@ -1068,9 +1057,9 @@
         ]
       }
     },
-    "/data/MyPersonalDataUsage/1.0": {
+    "/data/mypersonalDataUsage": {
       "get": {
-        "tags": ["MyPersonalDataUsage API"],
+        "tags": ["MypersonalDataUsage API"],
         "description": "Allows a user to see who has read their personal data.",
         "operationId": "DPU",
         "parameters": [
@@ -1078,7 +1067,7 @@
             "$ref": "#/components/parameters/Information-Mediator-Client"
           },
           {
-            "name": "userID",
+            "name": "userId",
             "in": "query",
             "description": "User's personal unique identifier",
             "required": true,
@@ -1089,7 +1078,7 @@
             }
           },
           {
-            "name": "DatabaseID",
+            "name": "databaseId",
             "in": "query",
             "description": "Database acronym",
             "required": true,
@@ -1109,7 +1098,7 @@
                   "type": "array",
                   "description": "Array of found data processign logs",
                   "items": {
-                    "$ref": "#/components/schemas/PersonalDataUsage"
+                    "$ref": "#/components/schemas/personalDataUsage"
                   }
                 }
               }
@@ -1144,17 +1133,17 @@
         },
         "required": true
       },
-      "registryname": {
+      "registryName": {
         "in": "path",
-        "name": "registryname",
+        "name": "registryName",
         "schema": {
           "type": "string"
         },
         "required": true
       },
-      "versionnumber": {
+      "versionNumber": {
         "in": "path",
-        "name": "versionnumber",
+        "name": "versionNumber",
         "schema": {
           "type": "string"
         },
@@ -1165,66 +1154,66 @@
       "MCC": {
         "type": "object",
         "properties": {
-          "ID": {
+          "id": {
             "type": "string",
             "description": "Object ID in the database",
             "example": "MCTS1"
           },
-          "Child": {
-            "$ref": "#/components/schemas/Child"
+          "child": {
+            "$ref": "#/components/schemas/child"
           },
-          "Registraion date": {
+          "registraionDate": {
             "type": "string",
             "format": "date",
             "description": "Date of registration",
             "example": "2021-01-30"
           },
-          "Expiry date": {
+          "expiryDate": {
             "type": "string",
             "format": "date",
             "description": "The expiry date of the registration",
             "example": "2021-01-30"
           },
-          "Caretaker": {
-            "$ref": "#/components/schemas/Caretaker"
+          "caretaker": {
+            "$ref": "#/components/schemas/caretaker"
           }
         }
       },
-      "Child": {
+      "child": {
         "type": "object",
         "properties": {
-          "ID": {
+          "id": {
             "type": "string",
             "description": "Child's identifier",
             "example": "xyz-12345678910"
           },
-          "Firstname": {
+          "firstName": {
             "type": "string",
             "description": "Child's first name",
             "example": "Usha"
           },
-          "Lastname": {
+          "lastName": {
             "type": "string",
             "description": "Child's last name",
             "example": "Bajaj"
           },
-          "Birthdate": {
+          "birthdate": {
             "type": "string",
             "format": "date",
             "description": "Child's birth date",
             "example": "2021-01-30"
           },
-          "Address": {
+          "address": {
             "type": "string",
             "description": "Child's address",
             "example": "Longroad 123, Big Village"
           },
-          "Birth_certificate": {
-            "$ref": "#/components/schemas/Birth_certificate"
+          "birthCertificate": {
+            "$ref": "#/components/schemas/birthCertificate"
           }
         }
       },
-      "Birth_certificate": {
+      "birthCertificate": {
         "anyOf": [
           {
             "type": "object",
@@ -1272,49 +1261,49 @@
           }
         ]
       },
-      "Caretaker": {
+      "caretaker": {
         "type": "object",
         "properties": {
-          "ID": {
+          "id": {
             "type": "string",
             "description": "Caretaker's identifier",
             "example": "EL129983773663"
           },
-          "Firstname": {
+          "firstName": {
             "type": "string",
             "description": "Caretaker's first name",
             "example": "John"
           },
-          "Lastname": {
+          "lastName": {
             "type": "string",
             "description": "Caretaker's last name",
             "example": "Smith"
           },
-          "Birthdate": {
+          "birthdate": {
             "type": "string",
             "format": "date",
             "description": "Caretaker's birth date",
             "example": "1980-01-30"
           },
-          "Phone": {
+          "phone": {
             "type": "string",
             "description": "Caretaker's phone number",
             "example": "+37258000000"
           },
-          "Email": {
+          "email": {
             "type": "string",
             "description": "Caretaker's email",
             "example": "jonh.smith@email.com"
           },
-          "Picture": {
-            "$ref": "#/components/schemas/Picture"
+          "picture": {
+            "$ref": "#/components/schemas/picture"
           },
-          "Document ID": {
-            "$ref": "#/components/schemas/Document_ID"
+          "documentId": {
+            "$ref": "#/components/schemas/documentId"
           }
         }
       },
-      "Picture": {
+      "picture": {
         "anyOf": [
           {
             "type": "object",
@@ -1362,7 +1351,7 @@
           }
         ]
       },
-      "Document_ID": {
+      "documentId": {
         "anyOf": [
           {
             "type": "object",
@@ -1410,51 +1399,51 @@
           }
         ]
       },
-      "PersonalDataUsage": {
+      "personalDataUsage": {
         "type": "object",
         "properties": {
-          "ID": {
+          "id": {
             "type": "string",
             "description": "Log record ID",
             "example": "1234567"
           },
-          "ReaderID": {
+          "readerId": {
             "type": "string",
             "description": "Identifier of a reader who looked at personal data",
             "example": "EE37819285773"
           },
-          "ReaderInitials": {
+          "readerInitials": {
             "type": "string",
             "description": "Reader's initials",
             "example": "JD"
           },
-          "ReaderInstitutionID": {
+          "readerInstitutionId": {
             "type": "string",
             "description": "Reader's instituition ID",
             "example": "EE70049837"
           },
-          "ReaderInstitutionName": {
+          "readerInstitutionName": {
             "type": "string",
             "description": "Reader's institution name",
             "example": "East Hospital"
           },
-          "ReaderApplicationName": {
+          "readerApplicationName": {
             "type": "string",
             "description": "Reader's institution system name",
             "example": "East Hospital healthcare back office"
           },
-          "SearchDateTime": {
+          "searchDateTime": {
             "type": "string",
             "format": "date-time",
             "description": "Date and time of registration",
             "example": "2017-07-21T17:32:28Z"
           },
-          "Refrences": {
+          "refrences": {
             "type": "array",
             "description": "Personal Data reference",
             "items": {
               "properties": {
-                "ReferenceID": {
+                "ReferenceId": {
                   "type": "string",
                   "description": "Registration ID",
                   "example": "MCTS31"
@@ -1467,22 +1456,22 @@
       "Example": {
         "type": "object",
         "properties": {
-          "ID": {
+          "id": {
             "type": "string",
             "description": "Citizen's identifier",
             "example": "EE378627348834"
           },
-          "FirstName": {
+          "firstName": {
             "type": "string",
             "description": "Citizen's first name",
             "example": "John Helmut"
           },
-          "LastName": {
+          "lastName": {
             "type": "string",
             "description": "Citizen's last name",
             "example": "Smith Carry"
           },
-          "BirthCertificateID": {
+          "birthCertificateId": {
             "type": "string",
             "description": "Birth certificate ID in CR",
             "example": "RR-1234567889"
@@ -1535,12 +1524,12 @@
           "content": {
             "type": "object"
           },
-          "created_at": {
+          "createdAt": {
             "type": "string",
             "format": "date-time",
             "readOnly": true
           },
-          "modified_at": {
+          "modifiedAt": {
             "type": "string",
             "format": "date-time",
             "readOnly": true
@@ -1551,7 +1540,7 @@
             "readOnly": true
           }
         },
-        "required": ["content", "created_at", "modified_at", "uuid"]
+        "required": ["content", "createdAt", "modifiedAt", "uuid"]
       }
     }
   }
