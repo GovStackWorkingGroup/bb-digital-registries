@@ -1,0 +1,11 @@
+before: 
+  steps:
+  - run:
+      name: Print Hello World
+      command: echo "Hello World"
+
+after: 
+  steps:
+  - run:
+      name: Print Hello World 2
+      command: echo "Hello World 2"
