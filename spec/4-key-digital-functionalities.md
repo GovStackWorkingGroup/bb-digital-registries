@@ -18,19 +18,30 @@ The first user of the Building Block is an **Administrator/Analyst** who is buil
 
 The key functions of the Building Block for Analysts are:
 
-1. Create a new register/database (via API or Web user interface);
-2. Create and configure the schema of the register (API or Web user interface);
-3. Change schema configuration and publish the new version of the database and API services (API or Web user interface);
-4. Enter data to the register (API or Web user interface);
-5. View data records in the register (API or Web user interface);
-6. Update data in the register (API or Web user interface);
-7. Import/export data from/to external files;
-8. Import/export registry database schema;
-9. Create API services;
-10. View statistics (API or Web user interface);
-11. Inspect transaction log of registry data operations (API or Web user interface);
-12. Manage access to registry data. Authorize users to see and edit registry records or data fields (Attribute-Based Access Control management);
-13. Share data with other users via e-mail, or via a unique and secure Uniform Resource Locator (URL) sharing can be field level or record level.
+### Registry lifecycle management
+1. Create a new registry/database (via API or Web UI).
+2. Publish, deprecate, or archive registry versions.
+3. Support soft deletion and archival of records.
+4. Create and configure the schema of the register and publish (API or Web UI);
+5. Modify schema and publish a new schema/API version with backward-compatibility guidance.
+6. Define validation rules, deduplication, and data quality controls.
+7. Import/export registry database schema;
+
+### Data management
+8. Enter, view, and update records (via API or Web UI).
+9. Bulk import/export of data from/to external files.
+10. Policy-based masking and redaction for sensitive attributes.
+11. Share data with other users via e-mail, or via a unique and secure Uniform Resource Locator (URL) sharing can be field level or record level.
+
+### Interoperability
+12. Auto-generate REST/GraphQL/OpenAPI services per registry.
+13. Integrate with external systems through the Information Mediator BB.
+14. Emit domain events (create/update/delete) via Pub/Sub for downstream consumers.
+
+### Monitoring and analytics
+15. View statistics on registry usage, performance, and data quality.
+16. Generate dashboards and administrative reports.
+17. Inspect transaction log of registry data operations (API or Web user interface);
 
 ## 4.2 Applicant Functions <a href="#docs-internal-guid-d85f59a4-7fff-1564-6ae2-86d67f36a258" id="docs-internal-guid-d85f59a4-7fff-1564-6ae2-86d67f36a258"></a>
 
