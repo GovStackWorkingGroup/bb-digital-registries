@@ -32,4 +32,6 @@ The Digital Registries BB works in close coordination with other GovStack compon
 
 The Digital Registries Building Block is an optional Building Block for other GovStack Building Blocks that have the need to store information. Any traditional database platform could be used alone or in combination with Digital Registries Building Block. The Digital Registries Building Block can operate as a standalone service and could be implemented as one centralized instance per domain, containing multiple registries in one instance, or many instances per domain, each database in its own server.
 
-![Illustration 1- Digital Registries Building Block in GovStack sandbox](<.gitbook/assets/Illustration 1- Digital Registries BB in GovStack sandbox.png>)
+<!--![Illustration 1- Digital Registries Building Block in GovStack sandbox](<.gitbook/assets/Illustration 1- Digital Registries BB in GovStack sandbox.png>)-->
+
+![Digital Registry Usage Diagram](https://mydomain.atlassian.net/wiki/download/attachments/1438318594/image-20250829-173259.png)
