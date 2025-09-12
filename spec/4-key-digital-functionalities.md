@@ -6,9 +6,11 @@ description: >-
 
 # 4 Key Digital Functionalities
 
-The Digital Registries Building Block is an application meant to offer fast and intuitive database management functionalities to entities without the need for database experts. The Digital Registries Building Block is simple to use like online Excel with advanced data management and connectivity options for advanced users. Digital Registries Building Block is a multi-tenant platform where users can create and manage new registry databases. Each registry database created in the system will have automatically REST services generated. &#x20;
+“The Digital Registries Building Block (BB) provides foundational capabilities to create and manage authoritative registries in a domain-agnostic way”. It enables storage, management, and governance of records about entities (persons, organisations, places, assets, events) with standardised CRUD operations, schema and record versioning (audit trails), and interoperability.
 
-The Digital Registries Building Block no-code development platform uses graphical wizards to create and build software, unlike the traditional approach which uses computer programming languages. It is simple to use, similar to online Excel with advanced data management, log, and connectivity options for advanced users. Each register created in the system has a simple User Interface to see and edit data and an API connector with automatically created Open API services for machine-to-machine communication. The Digital Registry System does not contain data capturing and workﬂow functionality, however, if a user interface and data processing is needed then Digital Registries can be combined with other GovStack building blocks (e.g. the [Registration Building Block](https://github.com/GovStackWorkingGroup/bb-registration/tree/1.0-QA)) as a plug-and-play.
+Digital Registries Building Block is a multi-tenant platform where users can create and manage new registry databases. Each registry created within the system automatically generates OpenAPI-compliant services for interoperability.
+
+The Digital Registry System does not contain data capturing and workﬂow functionality, however, if a user interface for creating the new register and data storage & processing is needed then Digital Registries can be combined with other GovStack building blocks (e.g. the [Registration Building Block](https://github.com/GovStackWorkingGroup/bb-registration/tree/1.0-QA)) as a plug-and-play.
 
 ## 4.1 Administrative/Analyst Functions <a href="#docs-internal-guid-d85f59a4-7fff-1564-6ae2-86d67f36a258" id="docs-internal-guid-d85f59a4-7fff-1564-6ae2-86d67f36a258"></a>
 
