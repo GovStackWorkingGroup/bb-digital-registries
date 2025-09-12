@@ -34,4 +34,4 @@ The Digital Registries Building Block is an optional Building Block for other Go
 
 <!--![Illustration 1- Digital Registries Building Block in GovStack sandbox](<.gitbook/assets/Illustration 1- Digital Registries BB in GovStack sandbox.png>)-->
 
-![Digital Registry Usage Diagram](https://mydomain.atlassian.net/wiki/download/attachments/1438318594/image-20250829-173259.png)
+![Digital Registry Usage Diagram](blob:https://govstack-global.atlassian.net/d1f9bdf2-d48c-4cbe-91ab-5cea4030fc2f#media-blob-url=true&id=875ef979-c2a2-4bfe-bf78-0d944fb7c6ee&contextId=1438318594&collection=contentId-1438318594)
