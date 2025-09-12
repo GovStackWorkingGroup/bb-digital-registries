@@ -45,14 +45,18 @@ The key functions of the Building Block for Analysts are:
 
 ## 4.2 Applicant Functions <a href="#docs-internal-guid-d85f59a4-7fff-1564-6ae2-86d67f36a258" id="docs-internal-guid-d85f59a4-7fff-1564-6ae2-86d67f36a258"></a>
 
-The second main user is an **Applicant** who is consuming registry data via other Building Block (e.g. Registration Building Block) screen flow or via Information Mediator Building Block API services.&#x20;
+Applicants do not access the Registry BB directly. They interact via sectoral applications or other GovStack BBs:
+
+- Registration BB (UI for data capture, modification, validation).
+- Workflow BB (approvals/authorisations).
+- Information Mediator BB (secure API mediation).
+- Security & Consent BB (authentication, authorisation, consent).
 
 The key functions of the Building Block for Applicants are:
 
-1. Search data from the register;
-2. Read data from the register;
-3. Create data in the register;
-4. Update data in the register;
-5. Delete data in the register;
-6. Validate if given content exists in specified register;
-7. Read statistics.
+1. Search and query data from the register;
+2. Read authoritative records (with policy-driven masking).
+3. Request creation, update, or deletion of records where allowed; mediated services invoke Registry APIs on their behalf.
+4. Validate record existence in a specified registry (e.g., verify an identifier or ownership).
+5. Access statistics when exposed to external users.
+6. Subscribe to registry events via mediated services (e.g., External or cross-domain consumers must subscribe to registry events via mediated services exposed through the Information Mediator BB (or an IM-managed Event Gateway); internal consumers within the same trust boundary may subscribe directly to the internal event bus, subject to RBAC/ABAC policy, tenant isolation, and audit).
