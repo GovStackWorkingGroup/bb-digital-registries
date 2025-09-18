@@ -6,7 +6,7 @@ description: This section provides context for this Building Block.
 
 The Digital Registries Building Block provides services to other Building Blocks and to external systems, to store and manage data/claims on any entity (persons, places, and things) in forms of uniquely identiﬁable records in a database.
 
-The Digital Registries Building Block (BB) is a trusted, authoritative service that stores, manages, and provides access to uniquely identifiable records about entities such as persons, organizations, places, assets, and events. It is designed to act as the single source of truth within the GovStack ecosystem, ensuring consistency, reliability, and accountability in the use of registry data.
+The Digital Registries Building Block (BB) is a trusted, authoritative service that stores, manages, and provides access to uniquely identifiable records about entities such as persons, organisations, places, assets, and events. It is designed to act as the single source of truth within the GovStack ecosystem, ensuring consistency, reliability, and accountability in the use of registry data.
 
 A registry is not limited to a database table but can be viewed as a document, logically assembled from one or multiple underlying databases or sources. This document-centric view allows the registry to be queried to provide authoritative answers, ensuring interoperability and consistency across systems.
 
@@ -31,7 +31,5 @@ The Digital Registries BB works in close coordination with other GovStack compon
 * Information Mediator / Consent & Authorisation – for secure, policy-driven data exchange across organisations.
 
 The Digital Registries Building Block is an optional Building Block for other GovStack Building Blocks that have the need to store information. Any traditional database platform could be used alone or in combination with Digital Registries Building Block. The Digital Registries Building Block can operate as a standalone service and could be implemented as one centralized instance per domain, containing multiple registries in one instance, or many instances per domain, each database in its own server.
-
-<!--![Illustration 1- Digital Registries Building Block in GovStack sandbox](<.gitbook/assets/Illustration 1- Digital Registries BB in GovStack sandbox.png>)--> 
 
 ![Digital Registry Usage Diagram](.gitbook/assets/govstack-digital-registries-rectangles2.0.drawio.png)
