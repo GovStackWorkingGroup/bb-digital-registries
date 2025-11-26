@@ -6,10 +6,10 @@ description: This section lists the technical capabilities of this Building Bloc
 
 ## 6.1 Administrative/Analyst Functions <a href="#docs-internal-guid-d85f59a4-7fff-1564-6ae2-86d67f36a258" id="docs-internal-guid-d85f59a4-7fff-1564-6ae2-86d67f36a258"></a>
 
-* DRS-1: Analysts have the option to create a new registry database by filling in the following information (REQUIRED):
-  1. Name of the database;
-  2. A short name;
-  3. Schema of the database (see DRS-3).
+* DRS-Admin-1: Create New Registry Schema: The Digital Registry BB shall enable authorised  administrator or administrative users to create new **registry schemas**, each identified by:
+  1. A unique schema name;
+  2. A unique short code / name;
+  3. a structured schema definition as specified in (see DRS-3).
 * DRS-2: Analysts can create multiple databases in one system instance. Databases must be linkable with foreign keys. See the foreign key API description example in [Appendix 2](.gitbook/assets/appendix2.json). Analysts can configure which databases and which fields are linked. In this document and foreign key function, we consider databases as database tables that can be linked with one another. See the [example illustration](.gitbook/assets/Database%20Foreign%20key.png). User story: As a user, I can browse database content (Data) in the user interface and when databases are linked, then I can click and move from one database/table to another where the corresponding linked data will open in the user interface. In the Digital Registries Data user interface, it should be possible to open another database by clicking on the record ID in one database and all corresponding records from the other Database will open. It is required to have at least two levels of IDs (database ID and field ID) to link the databases. See the example API in[ Appendix 2](.gitbook/assets/appendix2.json). Example: In one registry database we store information about Mother and Child records. In the second registry database, we store information about payments made for the mother. The system must enable a foreign key link between the payment database to the Mother and child record database. Users can click in the payment database record user interface to the Mother ID field and the system user interface should open the corresponding record in the Mother and Child database. (REQUIRED)
 *   DRS-3: Analysts have the option to add fields to the database schema. Fields of the database must contain at least the following elements (REQUIRED):
 
@@ -27,7 +27,7 @@ description: This section lists the technical capabilities of this Building Bloc
        10. List of Values/Catalog (holding value and key).
 
     3\. Field properties (see more in DRS-33)
-* DRS-4:  Analysts have the option to publish the database. Publishing will reveal the database to users. (REQUIRED)
+* DRS-4: Analysts have the option to publish the database. Publishing will reveal the database to users. (REQUIRED)
   * Publish uses versioning. Each publish creates a new version of the database schema and API services;
   * Old database schemas must be available to the users;
   * Data stored in the old database versions must be usable in old versions and in new versions;
@@ -63,14 +63,14 @@ description: This section lists the technical capabilities of this Building Bloc
   * Schema changes must be logged;
   * Data processing (Create, Read, Update, Delete) must be logged;
   * Logs must be visible and searchable to the Analyst via the User Interface;
-  * Every data owner (e.g. physical person) has the option to see who has processed his/her data (PersonalData). The function is a standard function for all registries ([DRS-14 API example](../api/GovStack\_Digital\_registries\_BB\_Data\_API\_template-1.3.0.json)).
+  * Every data owner (e.g. physical person) has the option to see who has processed his/her data (PersonalData). The function is a standard function for all registries ([DRS-14 API example](../api/GovStack_Digital_registries_BB_Data_API_template-1.3.0.json)).
   * Change logs are protected with the highest level of integrity (chaining of logs)
   * Database logs could be logged with an external blockchain for additional security (optional).
 *   DRS-8: Personal Data usage. (REQUIRED)
 
     System must automatically store all data read requests and store these in the log table.
 
-    * Covers data read events via User Interface and via APIs.&#x20;
+    * Covers data read events via User Interface and via APIs.
     * Personal Data logs are stored with PersonalData data tag, storing at least the following information.
       * Log ID;
       * Data record ID;
@@ -102,57 +102,57 @@ description: This section lists the technical capabilities of this Building Bloc
 * DRS-16: Analyst has the option to read database schema in the web User Interface. (REQUIRED)
 *   DRS-33: Analyst has capabilities to configure database field properties (REQUIRED)
 
-    1\. API-related field properties:&#x20;
+    1\. API-related field properties:
 
-    * Validation options: required, unique, max, min.&#x20;
-    * blinded/encrypted (DRS-15, DRS-18);&#x20;
+    * Validation options: required, unique, max, min.
+    * blinded/encrypted (DRS-15, DRS-18);
 
-    2\. User Interface related field properties:&#x20;
+    2\. User Interface related field properties:
 
-    * field mask, format,&#x20;
-    * read-only,&#x20;
-    * personal data,&#x20;
-    * enum list selection;&#x20;
-    * blinded/encrypted (DRS-18);&#x20;
+    * field mask, format,
+    * read-only,
+    * personal data,
+    * enum list selection;
+    * blinded/encrypted (DRS-18);
     * multiple value/array. User can add more values (e.g. multi select from catalog list) to the same field. Multiple values are:
       * array type field;
       * validation options- Required, Unique, max, min.
-      * Foreign keys (to link other databases in the same ecosystem). See the example schema in [Appendix 2](.gitbook/assets/appendix2.json).&#x20;
-    * Triggers to automate field content-related actions:&#x20;
-      * create IDs,&#x20;
-      * merge fields,&#x20;
-      * add prefix,&#x20;
-      * suffix,&#x20;
-      * conditional logic,&#x20;
+      * Foreign keys (to link other databases in the same ecosystem). See the example schema in [Appendix 2](.gitbook/assets/appendix2.json).
+    * Triggers to automate field content-related actions:
+      * create IDs,
+      * merge fields,
+      * add prefix,
+      * suffix,
+      * conditional logic,
       * trigger will be activated if certain condition(s) are true,
-      * transform-upper/lower case/ javascript);&#x20;
+      * transform-upper/lower case/ javascript);
       * Triggers are automated when a record is created/changed. A trigger is a record-level automation.
 *   DRS-34: Analyst has the capability to add an encryption key per database. (REQUIRED)
 
-    * Encryption key is used to encrypt and decrypt data (DRS-17).&#x20;
-    * Encryption key can be used by applications to read encrypted data. Each database has a unique encryption key defined by the analyst.&#x20;
-    * Encryption key is blinded in the User Interface.&#x20;
+    * Encryption key is used to encrypt and decrypt data (DRS-17).
+    * Encryption key can be used by applications to read encrypted data. Each database has a unique encryption key defined by the analyst.
+    * Encryption key is blinded in the User Interface.
 
     If applications want to read encrypted data via API they must know the encryption key. Data is decrypted in the user interface.
 *   DRS-35: Analyst has the capabilities to automate data exchange between databases internally and externally via API. (REQUIRED)
 
-    * Automation is triggered automatically after a pre-configured time interval as a loop (finishes when all corresponding records have been processed).&#x20;
-    * Automation processes one record at a time.&#x20;
+    * Automation is triggered automatically after a pre-configured time interval as a loop (finishes when all corresponding records have been processed).
+    * Automation processes one record at a time.
     * Automation has configurable conditions (business rules in Rules Engine). E.g. IF field A = 123 then true. Conditions can be grouped with AND and OR operators.
-    *   Automation is configured by mapping (input, output) registry data fields to:&#x20;
+    *   Automation is configured by mapping (input, output) registry data fields to:
 
-        * another database in the same instance.&#x20;
+        * another database in the same instance.
         * API in an external database.
 
-        Mapping involves:&#x20;
-    * query part (input)&#x20;
-    * answer part (output)&#x20;
+        Mapping involves:
+    * query part (input)
+    * answer part (output)
 
     Mapping can be done from many to one and one to many. Mapping may have a transformation option to convert data to another format. E.g. est->EST;\
     Expected outcome: Automation can be activated automatically when certain conditions are true and the system sends data to another database or to an external API.
 * DRS-36: Analyst may have capabilities to use database schema templates so that the registry creation is faster. (OPTIONAL)
-  * Schema templates can be shared in the same instance (internal marketplace).&#x20;
-  * Schema templates can be shared in a marketplace.&#x20;
+  * Schema templates can be shared in the same instance (internal marketplace).
+  * Schema templates can be shared in a marketplace.
   * Schema templates can be imported and exported.
 *   DRS-17: Analyst has a view to see all data in the registry. (REQUIRED)
 
@@ -192,7 +192,7 @@ description: This section lists the technical capabilities of this Building Bloc
      * (Option) Develop functionality to allow custom dashboards for analysts to analyze data within databases.
      * Provide APIs for extracting data from databases to analyze in external data analytics systems (e.g. Tableau).
 * DRS-33: Users can share data with other users. Share data with other users via e-mail, or via a unique and secure URL. Sharing must be at a record level and field level. Data sharing can be turned off in the authorization module. Data can be shared with anonymous users. The data shared with anonymous users is Open Data. (REQUIRED)
-* DRS-28: Developer has the option to create a new registry database by sending data via API (REQUIRED). Developer is a user who is using API interface.&#x20;
+* DRS-28: Developer has the option to create a new registry database by sending data via API (REQUIRED). Developer is a user who is using API interface.
   1. Name of the database;
   2. A short name;
   3. Schema of the database (see DRS-3).
@@ -226,8 +226,6 @@ description: This section lists the technical capabilities of this Building Bloc
 
     Building Block authorizes client systems and users to process data.
 *   DRS-24: Building Block has the Open API service list (Swagger) to visualize all API services and API service versions. (REQUIRED)
-
-
 
     Client systems must be able to see all API service descriptions including:
 
