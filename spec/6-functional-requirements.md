@@ -6,7 +6,7 @@ description: This section lists the technical capabilities of this Building Bloc
 
 ## 6.1 Administrative/Analyst Functions <a href="#docs-internal-guid-d85f59a4-7fff-1564-6ae2-86d67f36a258" id="docs-internal-guid-d85f59a4-7fff-1564-6ae2-86d67f36a258"></a>
 
-* DRS-Admin-1: Create New Registry Schema: The Digital Registry BB shall enable authorised  administrator or administrative users to create new **registry schemas**, each identified by:
+* DRS-1: Admin: Create New Registry Schema: The Digital Registry BB shall enable authorised  administrator or administrative users to create new **registry schemas**, each identified by:
   1. A unique schema name;
   2. A unique short code / name;
   3. a structured schema definition as specified in (see DRS-3).
