@@ -14,186 +14,194 @@ In short, this list describes what a **Digital Registry** must be able to _do_. 
 
 ## 6.1 Administrative/Analyst Functions <a href="#docs-internal-guid-d85f59a4-7fff-1564-6ae2-86d67f36a258" id="docs-internal-guid-d85f59a4-7fff-1564-6ae2-86d67f36a258"></a>
 
-1. **DRS-1:** **Create Registries** - The Digital Registry BB shall enable authorised users to create new registry schemas, each identified by: (REQUIRED):
-   1. Name of the database;
-   2. A unique short code / name;
-   3. A structured schema definition as specified in (see DRS-3).
-   4. Registry metadata (domain, owner department, retention policy, classification Open/Restricted/Confidential)
-   5. Lifecycle state: Draft-> Published ->Archived
-   6. Default indexing & Storage profile (row store / column store / document store)
-2. **DRS-2: Multiple Databases**
-   * Analysts can create multiple databases in one system instance.&#x20;
-     * Links can be:
-       * **Foreign key** (Strict)
-       * **Soft link** (UUID reference; no FK constraint)
-       * **Graph relationship** (NEW: parent-child, many-to-many edges)
-   * Analysts can configure which databases and which fields are linked. In this document and foreign key function, we consider databases as database tables that can be linked with one another. See the [example illustration](https://github.com/GovStackWorkingGroup/bb-digital-registries/blob/23Q4/spec/.gitbook/assets/Database%20Foreign%20key.png).
-     * **User story**: As a user, I can browse database content (Data) in the user interface and when databases are linked, then I can click and move from one database/table to another where the corresponding linked data will open in the user interface.
-   * In the Digital Registries Data user interface, it should be possible to open another database by clicking on the record ID in one database and all corresponding records from the other Database will open.
-   * It is required to have at least two levels of IDs (database ID and field ID) to link the databases. See the example API in [Appendix 2](https://github.com/GovStackWorkingGroup/bb-digital-registries/blob/23Q4/spec/.gitbook/assets/appendix2.json).
-     * **Example**: In one registry database we store information about Mother and Child records. In the second registry database, we store information about payments made for the mother. The system must enable a foreign key link between the payment database to the Mother and child record database. Users can click in the payment database record user interface to the Mother ID field and the system user interface should open the corresponding record in the Mother and Child database. (REQUIRED)
-   * **Reference Integrity Rules**:
-     * Cascade delete
-     * Restrict delete
-     * Orphan tolerance
-3. **DRS-3: Database Schema**
-   *   Analysts have the option to add fields to the database schema. Fields of the database must contain at least the following elements (REQUIRED):
+#### **DRS-1:** **Create Registries**
 
-       1. Field name;
-       2. Field type, at least with the following types:
-          1. Text;
-          2. Number;
-          3. Boolean;
-          4. Date/time;
-          5. Date;
-          6. Time;
-          7. File (pdf, doc, etc.). File extensions/types must be configurable;
-          8. List/Array/Edit grid (sub-table/array of values inside a field);
-          9. JSON object / Block container (optional, to group fields visually);
-          10. List of Values/Catalog (holding value and key).
-          11. Database/Cluster encoding UTF-8 for multi language support (Optional)
-          12. GeoPoint (lat/long) (optional)
-          13. GeoShape (polygon, boundary)(optional)
+The Digital Registry BB shall enable authorised users to create new registry schemas, each identified by: (REQUIRED):
 
-       3\. Field properties (see more in DRS-17)
-4. **DRS-4:** **Publishing and Versioning**
-   * Analysts have the option to publish the database. Publishing will reveal the database to users. (REQUIRED)
-   * Publish uses versioning. Each publish request creates a new version of the database schema and API services.
-   * Old database schemas must be made available to the users.
-   * Data stored in the old database versions must be usable in old versions and in new versions.
-   * Analysts can delete database schema versions. Same version API services must be deleted at the same time.
-   * Change impact analysis:
-     * Breaking changes identified automatically
-     * Warnings shown to analyst
-5. **DRS-5: APIs**
-   * Analysts must be able to configure the API services per registry database. (REQUIRED)
-     * The system automatically creates API services to:
-       * create data.
-       * read data.
-       * update data.
-       * delete data.
-       * Bulk operations (batch create/update/delete)
-       * validate data (if exists).
-       * update or create data.
-       * archive data
-       * Schema Introspection (replies with the schema (tables/fields/types/relations) in a machine-readable form)
-   * Analysts can hide/disable API services.
-   * Analysts can delete API services.
-   * Analysts can copy API services.
-   * Analysts can create view (Read data) custom API services.
-   * Field-level masking applied dynamically (Optional) (DRS-9)
-   * Subscription API (event-based)
-   * An analyst must be able to mark a field as secret (DRS-15)
-   * An analyst must be able to mark a field as PersonalDataID (DRS-14)
-   * The system generates the API data structure from the dynamic database structure automatically each time a publish is done.
-6. **DRS-6: Authorization and Access Control**
-   *   Authorization to (REQUIRED)
+1. Name of the database;
+2. A unique short code / name;
+3. A structured schema definition as specified in (see DRS-3).
+4. Registry metadata (domain, owner department, retention policy, classification Open/Restricted/Confidential)
+5. Lifecycle state: Draft-> Published ->Archived
+6. Default indexing & Storage profile (row store / column store / document store)
 
-       1. create and manage databases.
-       2. API usage per service, per record, per data field.
-       3. access to DATA.
+#### **DRS-2: Multiple Databases**
 
-       Analysts have the option to manage user rights of a database and data via API and via a user interface.
-   * RBAC (roles)
-   * ABAC (attributes)
-   * PBAC (policy-based access control)
-   * Consent-based access
-   * **Delegated access** (guardian, parent, representative)
-   * **Cross-registry access templates**
-   * **Data minimization rules** (only minimum required fields returned)
-   * **Condition-based dynamic restrictions** Example: Show fields only if “CaseStatus=APPROVED”
-   * "Any logged-in user" role must be available
-   * "Anonymous" user role must be available
-   * Attribute Based Access Control (ABAC) logic could be used (API, Schema, data fields, record filter, users)
-   * Per user, per group of users option must be available.
-     * Group is a set of users in a role
-     * Role is a set of rights
-7. **DRS-7: Logging and Auditing**
-   1. The system must log all data processing in the database. (REQUIRED)
-      1. Schema changes must be logged
-      2. Data processing (Create, Read, Update, Delete) must be logged
-      3. Logs must be visible and searchable to the Analyst via the User Interface
-      4. Every data owner (e.g. physical person) has the option to see who has processed his/her data (PersonalData). The function is a standard function for all registries ([DRS-14 API example](https://github.com/GovStackWorkingGroup/bb-digital-registries/blob/23Q4/api/GovStack_Digital_registries_BB_Data_API_template-1.3.0.json))
-   2. Change logs are protected with the highest level of integrity (chaining of logs)
-   3. Database logs could be logged with an external blockchain for additional security (optional)
-8. **DRS-8: Personal Data usage. (REQUIRED)**
-   1. The System must automatically store all data read requests and store these in the log table.
-      * Covers data read events via User Interface and via APIs
-      * Personal Data logs are stored with PersonalData data tag, storing at least the following information.
-        * Log ID
-        * Data record ID
-        * Field ID
-        * PersonalDataID (unique and unchangeable identifier of a person)
-        * Reader ID- who read the data
-        * Reader name- name or initial of a person
-        * When - the moment when the Personal Data was read
-      * The Personal Data report is visible only for Analysts to see all data read logs and Data Owners (physical persons) to see their own personal data usage log. Input is PersonalDataID field
-      * PersonalData report is usable as an API service (read)
-      * System has API for PersonalData reports. API is per registry(database)
-      * System must log Personal Data log read events to the log table.
-      * Legal justification (if required by law)
-      * Consent reference (if applicable)
-      * Data viewer’s role, org, location, Device fingerprint (optional)
-9. **DRS-9: Analysts must be able to create views of a database. (OPTIONAL)**
-   * View is a selection of data from a database
-   * View can be opened as OPEN DATA (anonymous user)
-   * View can be created, and it can be as a base for an API service (Custom API)
-   * View is not for changing or deleting data, only for reading
-   * View rights are managed by the user rights management system
-10. **DRS-10:** The option export database schema to JSON/YAML file, (optional: XLS file format) (REQUIRED)
-11. **DRS-11:** The option to import database schema from JSON/YAML file. (REQUIRED); The option to import database schema from XLS file. (OPTIONAL)
-12. **DRS-12:** Service usage statistics (OPTIONAL)
-    * System must record all API service usage information.
-    * System must record all searches made in the Registry User Interface and via APIs.
-13. **DRS-13:** An analyst must be able to mark a field as PersonalData log object (This field contains personal data). (OPTIONAL)
-14. **DRS-14:** An analyst must be able to mark a field as PersonalDataID. This is the data owner’s ID. (OPTIONAL)
-    * Multiple identifiers (national ID, passport, local ID)
-    * Identifier validation rules
-    * Identifier linking to external registries
-    * Immutable identifier enforcement
-15. **DRS-15:** An analyst must be able to mark a field as secret
-    * This field contains secret data (credit card number). E.g. secret data (card data) must be encrypted while at REST.
-    * Information in transit between the Building Blocks is secured with encryption. Information in Transit is described and governed by Information Mediator Building Block. (REQUIRED)
-16. **DRS-16:** Analyst has the option to read database schema in the web User Interface. (REQUIRED)
-17. **DRS-17:** Analyst has capabilities to configure database field properties (REQUIRED)
-    1. API-related field properties
-       1. Validation options: required, unique, max, min
-       2. blinded/encrypted (DRS-15, DRS-22)
-    2. User Interface related field properties:
-       * field mask, format
-       * read-only
-       * personal data
-       * enum list selection
-       * blinded/encrypted (DRS-22)
-       * multiple value/array. User can add more values (e.g. multi select from catalog list) to the same field. Multiple values are
-         * array type field
-         * validation options- Required, Unique, max, min
-         * Foreign keys (to link other databases in the same ecosystem). See the example schema in [Appendix 2](https://github.com/GovStackWorkingGroup/bb-digital-registries/blob/23Q4/spec/.gitbook/assets/appendix2.json)
-       * Triggers to automate field content-related actions
-         * create IDs
-         * merge fields
-         * add prefix
-         * suffix
-         * conditional logic
-         * trigger will be activated if certain condition(s) are true
-         * transform-upper/lower case/ javascript)
-         * Triggers are automated when a record is created/changed. A trigger is a record-level automation
-18. **DRS-18:** Analyst has the capability to add an encryption key per database. (REQUIRED)
-    * Encryption key is used to encrypt and decrypt data (DRS-17).
-    * Encryption key can be used by applications to read encrypted data. Each database has a unique encryption key defined by the analyst.
-    * Encryption key is blinded in the User Interface.
-    * If applications want to read encrypted data via API they must know the encryption key. Data is decrypted in the user interface.
-19. **DRS-19:** Analyst has the capabilities to automate data exchange between databases internally and externally via API. (REQUIRED)
-    1. Automation is triggered automatically after a pre-configured time interval as a loop (finishes when all corresponding records have been processed).
-    2. Automation processes one record at a time.
-    3. Automation has configurable conditions (business rules in Rules Engine). E.g. IF field A = 123 then true. Conditions can be grouped with AND and OR operators.
-    4. Automation is configured by mapping (input, output) registry data fields to:
-       1. another database in the same instance.
-       2. API in an external database.
-    5. Mapping involves:
-       1. query part (input)
-       2. answer part (output)
-    6. Webhook triggers (Multi-Registry Orchestration )
+* Analysts can create multiple databases in one system instance.&#x20;
+  * Links can be:
+    * **Foreign key** (Strict)
+    * **Soft link** (UUID reference; no FK constraint)
+    * **Graph relationship** (NEW: parent-child, many-to-many edges)
+* Analysts can configure which databases and which fields are linked. In this document and foreign key function, we consider databases as database tables that can be linked with one another. See the [example illustration](https://github.com/GovStackWorkingGroup/bb-digital-registries/blob/23Q4/spec/.gitbook/assets/Database%20Foreign%20key.png).
+  * **User story**: As a user, I can browse database content (Data) in the user interface and when databases are linked, then I can click and move from one database/table to another where the corresponding linked data will open in the user interface.
+* In the Digital Registries Data user interface, it should be possible to open another database by clicking on the record ID in one database and all corresponding records from the other Database will open.
+* It is required to have at least two levels of IDs (database ID and field ID) to link the databases. See the example API in [Appendix 2](https://github.com/GovStackWorkingGroup/bb-digital-registries/blob/23Q4/spec/.gitbook/assets/appendix2.json).
+  * **Example**: In one registry database we store information about Mother and Child records. In the second registry database, we store information about payments made for the mother. The system must enable a foreign key link between the payment database to the Mother and child record database. Users can click in the payment database record user interface to the Mother ID field and the system user interface should open the corresponding record in the Mother and Child database. (REQUIRED)
+* **Reference Integrity Rules**:
+  * Cascade delete
+  * Restrict delete
+  * Orphan tolerance
+
+
+
+* **DRS-3: Database Schema**
+  *   Analysts have the option to add fields to the database schema. Fields of the database must contain at least the following elements (REQUIRED):
+
+      1. Field name;
+      2. Field type, at least with the following types:
+         1. Text;
+         2. Number;
+         3. Boolean;
+         4. Date/time;
+         5. Date;
+         6. Time;
+         7. File (pdf, doc, etc.). File extensions/types must be configurable;
+         8. List/Array/Edit grid (sub-table/array of values inside a field);
+         9. JSON object / Block container (optional, to group fields visually);
+         10. List of Values/Catalog (holding value and key).
+         11. Database/Cluster encoding UTF-8 for multi language support (Optional)
+         12. GeoPoint (lat/long) (optional)
+         13. GeoShape (polygon, boundary)(optional)
+
+      3\. Field properties (see more in DRS-17)
+* **DRS-4:** **Publishing and Versioning**
+  * Analysts have the option to publish the database. Publishing will reveal the database to users. (REQUIRED)
+  * Publish uses versioning. Each publish request creates a new version of the database schema and API services.
+  * Old database schemas must be made available to the users.
+  * Data stored in the old database versions must be usable in old versions and in new versions.
+  * Analysts can delete database schema versions. Same version API services must be deleted at the same time.
+  * Change impact analysis:
+    * Breaking changes identified automatically
+    * Warnings shown to analyst
+* **DRS-5: APIs**
+  * Analysts must be able to configure the API services per registry database. (REQUIRED)
+    * The system automatically creates API services to:
+      * create data.
+      * read data.
+      * update data.
+      * delete data.
+      * Bulk operations (batch create/update/delete)
+      * validate data (if exists).
+      * update or create data.
+      * archive data
+      * Schema Introspection (replies with the schema (tables/fields/types/relations) in a machine-readable form)
+  * Analysts can hide/disable API services.
+  * Analysts can delete API services.
+  * Analysts can copy API services.
+  * Analysts can create view (Read data) custom API services.
+  * Field-level masking applied dynamically (Optional) (DRS-9)
+  * Subscription API (event-based)
+  * An analyst must be able to mark a field as secret (DRS-15)
+  * An analyst must be able to mark a field as PersonalDataID (DRS-14)
+  * The system generates the API data structure from the dynamic database structure automatically each time a publish is done.
+* **DRS-6: Authorization and Access Control**
+  *   Authorization to (REQUIRED)
+
+      1. create and manage databases.
+      2. API usage per service, per record, per data field.
+      3. access to DATA.
+
+      Analysts have the option to manage user rights of a database and data via API and via a user interface.
+  * RBAC (roles)
+  * ABAC (attributes)
+  * PBAC (policy-based access control)
+  * Consent-based access
+  * **Delegated access** (guardian, parent, representative)
+  * **Cross-registry access templates**
+  * **Data minimization rules** (only minimum required fields returned)
+  * **Condition-based dynamic restrictions** Example: Show fields only if “CaseStatus=APPROVED”
+  * "Any logged-in user" role must be available
+  * "Anonymous" user role must be available
+  * Attribute Based Access Control (ABAC) logic could be used (API, Schema, data fields, record filter, users)
+  * Per user, per group of users option must be available.
+    * Group is a set of users in a role
+    * Role is a set of rights
+* **DRS-7: Logging and Auditing**
+  1. The system must log all data processing in the database. (REQUIRED)
+     1. Schema changes must be logged
+     2. Data processing (Create, Read, Update, Delete) must be logged
+     3. Logs must be visible and searchable to the Analyst via the User Interface
+     4. Every data owner (e.g. physical person) has the option to see who has processed his/her data (PersonalData). The function is a standard function for all registries ([DRS-14 API example](https://github.com/GovStackWorkingGroup/bb-digital-registries/blob/23Q4/api/GovStack_Digital_registries_BB_Data_API_template-1.3.0.json))
+  2. Change logs are protected with the highest level of integrity (chaining of logs)
+  3. Database logs could be logged with an external blockchain for additional security (optional)
+* **DRS-8: Personal Data usage. (REQUIRED)**
+  1. The System must automatically store all data read requests and store these in the log table.
+     * Covers data read events via User Interface and via APIs
+     * Personal Data logs are stored with PersonalData data tag, storing at least the following information.
+       * Log ID
+       * Data record ID
+       * Field ID
+       * PersonalDataID (unique and unchangeable identifier of a person)
+       * Reader ID- who read the data
+       * Reader name- name or initial of a person
+       * When - the moment when the Personal Data was read
+     * The Personal Data report is visible only for Analysts to see all data read logs and Data Owners (physical persons) to see their own personal data usage log. Input is PersonalDataID field
+     * PersonalData report is usable as an API service (read)
+     * System has API for PersonalData reports. API is per registry(database)
+     * System must log Personal Data log read events to the log table.
+     * Legal justification (if required by law)
+     * Consent reference (if applicable)
+     * Data viewer’s role, org, location, Device fingerprint (optional)
+* **DRS-9: Analysts must be able to create views of a database. (OPTIONAL)**
+  * View is a selection of data from a database
+  * View can be opened as OPEN DATA (anonymous user)
+  * View can be created, and it can be as a base for an API service (Custom API)
+  * View is not for changing or deleting data, only for reading
+  * View rights are managed by the user rights management system
+* **DRS-10:** The option export database schema to JSON/YAML file, (optional: XLS file format) (REQUIRED)
+* **DRS-11:** The option to import database schema from JSON/YAML file. (REQUIRED); The option to import database schema from XLS file. (OPTIONAL)
+* **DRS-12:** Service usage statistics (OPTIONAL)
+  * System must record all API service usage information.
+  * System must record all searches made in the Registry User Interface and via APIs.
+* **DRS-13:** An analyst must be able to mark a field as PersonalData log object (This field contains personal data). (OPTIONAL)
+* **DRS-14:** An analyst must be able to mark a field as PersonalDataID. This is the data owner’s ID. (OPTIONAL)
+  * Multiple identifiers (national ID, passport, local ID)
+  * Identifier validation rules
+  * Identifier linking to external registries
+  * Immutable identifier enforcement
+* **DRS-15:** An analyst must be able to mark a field as secret
+  * This field contains secret data (credit card number). E.g. secret data (card data) must be encrypted while at REST.
+  * Information in transit between the Building Blocks is secured with encryption. Information in Transit is described and governed by Information Mediator Building Block. (REQUIRED)
+* **DRS-16:** Analyst has the option to read database schema in the web User Interface. (REQUIRED)
+* **DRS-17:** Analyst has capabilities to configure database field properties (REQUIRED)
+  1. API-related field properties
+     1. Validation options: required, unique, max, min
+     2. blinded/encrypted (DRS-15, DRS-22)
+  2. User Interface related field properties:
+     * field mask, format
+     * read-only
+     * personal data
+     * enum list selection
+     * blinded/encrypted (DRS-22)
+     * multiple value/array. User can add more values (e.g. multi select from catalog list) to the same field. Multiple values are
+       * array type field
+       * validation options- Required, Unique, max, min
+       * Foreign keys (to link other databases in the same ecosystem). See the example schema in [Appendix 2](https://github.com/GovStackWorkingGroup/bb-digital-registries/blob/23Q4/spec/.gitbook/assets/appendix2.json)
+     * Triggers to automate field content-related actions
+       * create IDs
+       * merge fields
+       * add prefix
+       * suffix
+       * conditional logic
+       * trigger will be activated if certain condition(s) are true
+       * transform-upper/lower case/ javascript)
+       * Triggers are automated when a record is created/changed. A trigger is a record-level automation
+* **DRS-18:** Analyst has the capability to add an encryption key per database. (REQUIRED)
+  * Encryption key is used to encrypt and decrypt data (DRS-17).
+  * Encryption key can be used by applications to read encrypted data. Each database has a unique encryption key defined by the analyst.
+  * Encryption key is blinded in the User Interface.
+  * If applications want to read encrypted data via API they must know the encryption key. Data is decrypted in the user interface.
+* **DRS-19:** Analyst has the capabilities to automate data exchange between databases internally and externally via API. (REQUIRED)
+  1. Automation is triggered automatically after a pre-configured time interval as a loop (finishes when all corresponding records have been processed).
+  2. Automation processes one record at a time.
+  3. Automation has configurable conditions (business rules in Rules Engine). E.g. IF field A = 123 then true. Conditions can be grouped with AND and OR operators.
+  4. Automation is configured by mapping (input, output) registry data fields to:
+     1. another database in the same instance.
+     2. API in an external database.
+  5. Mapping involves:
+     1. query part (input)
+     2. answer part (output)
+  6. Webhook triggers (Multi-Registry Orchestration )
 
 Mapping can be done from many to one and one to many. Mapping may have a transformation option to convert data to another format. E.g. est->EST; Expected outcome: Automation can be activated automatically when certain conditions are true and the system sends data to another database or to an external API.
 
