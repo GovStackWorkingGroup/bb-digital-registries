@@ -1,20 +1,52 @@
 ---
-description: Terminology used within this specification.
+description: 'Terminology used within this specification:'
 ---
 
 # 3 Terminology
 
-| Term                      | Description                                                                                                                        |
-| ------------------------- | ---------------------------------------------------------------------------------------------------------------------------------- |
-| **Registry**              | A paper-based or electronic database (centralized or decentralized, i.e. blockchain) where claims are stored and can be consulted. |
-| **Registration**          | Process through which an entity gets claims recorded in a registry.                                                                |
-| **Entity**                | A thing with distinct and independent existence, such as a person, organization, or device.                                        |
-| **Claim**                 | An attribute asserted by an entity, about itself or another entity.                                                                |
-| **Asserter**              | An entity that asserts a claim.                                                                                                    |
-| **Registrar**             | An entity that is authorized to register, in a registry, claims submitted by an applicant.                                         |
-| **Applicant**             | Entity that requests the registration of claims in a registry.                                                                     |
-| **Operator**              | A registrar or a staff of a registrar who is processing the request of an applicant.                                               |
-| **Administrator/Analyst** | A registrar or a staff of a registrar who is building a new registry.                                                              |
-| **Rules engine**          | A tool transforming business rules relating to a registry, defined by a human analyst, into machine-readable statements.           |
-| **Automation**            | A database-level data movement.                                                                                                    |
-| **Trigger**               | A record-level automation.                                                                                                         |
+**Administrator/Analyst**
+
+The administrator/analyst is responsible for designing, configuring, or modifying the registry, its rules, schemas, workflows, or policies.
+
+**Asserter**
+
+An entity that asserts a claim. The asserter provides information or statements that are to be recorded, verified, or trusted.
+
+**Applicant**
+
+An entity (person, organization, or system) that requests the registration of claims in a registry. The applicant is not yet registered, they are in the process of applying.
+
+**Automation**
+
+A background, database-level process that moves or transforms data within the registry system (e.g., copying, synchronizing, recalculating fields) without direct human intervention.
+
+**Claim**
+
+An attribute or statement asserted by an entity about itself or another entity.
+
+**Entity**
+
+A thing with distinct and independent existence, such as a person, organization, or device.If a claim is made about an entity, it is described as a subject.
+
+**Operator**
+
+A registrar or staff of a registrar that processes, reviews, and handles the applicant’s submission. The operator carries out the procedural and system steps.
+
+**Registrar**
+
+An entity (or authority) authorized by the registry governance to receive, validate, and record claims submitted by applicants.
+
+**Registry**
+
+A paper-based or electronic database (centralized or decentralized) where claims are stored and can be consulted.
+
+**Rules engine**&#x20;
+
+A tool transforming business rules relating to a registry, defined by a human analyst, into machine-readable statements.&#x20;
+
+**Trigger**
+
+A record-level automation. When a trigger event occurs on a record (e.g., insert, update, delete), this trigger logic runs a specified action (validation, notification, field update) automatically.
+
+A list of Common Terminology for reference: [https://govstack-global.atlassian.net/wiki/spaces/GH/pages/1338540034/Common+Terminology](https://govstack-global.atlassian.net/wiki/spaces/GH/pages/1338540034/Common+Terminology)&#x20;
+
