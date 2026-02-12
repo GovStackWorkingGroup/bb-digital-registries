@@ -24,16 +24,6 @@ Cancel mandatory requirement: "Right to be forgotten: everything must be deletab
 
 Cancel mandatory requirement: "Cloud-native, i.e. Docker and Kubernetes". Digital Registries must have also an on-site installation option.
 
-### 5.2.3 Robust (RECOMMENDED)
-
-Operates in low-resource environments
-
-Cancel mandatory requirement: "Occasional power". In Digital Registries not possible, thus should be optional. This can be solved with backup power resources (UPS) and a generator that keeps the systems running without interruptions.
-
-Cancel mandatory requirement: "Low-reliability connectivity". Client-server systems are not reliable in this situation, instead additional hand held connection-less data capturing devices should be used and data reentered/uploaded to the servers when connection is restored (not covered in this version scope).
-
-###
-
 ## 5.3 Standards
 
 The following standards are applicable to data structures in the Digital Registries Building Block:
