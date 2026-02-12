@@ -32,9 +32,7 @@ Cancel mandatory requirement: "Occasional power". In Digital Registries not poss
 
 Cancel mandatory requirement: "Low-reliability connectivity". Client-server systems are not reliable in this situation, instead additional hand held connection-less data capturing devices should be used and data reentered/uploaded to the servers when connection is restored (not covered in this version scope).
 
-### 5.2.4 Databases must not include business logic (RECOMMENDED)
-
-Cancel mandatory requirement. "no triggers/stored procedures shall be used". Some stored procedures may be needed for database record ID generation.
+###
 
 ## 5.3 Standards
 
