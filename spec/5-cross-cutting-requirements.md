@@ -1,33 +1,29 @@
----
-description: >-
-  This section will highlight important requirements or describe any additional
-  cross-cutting requirements that apply to this Building Block.
----
+# 5 Cross Functional Requirements
 
-# 5 Cross-Cutting Requirements
+## **5.1 Requirements** <a href="#id-5.1-requirements.2" id="id-5.1-requirements.2"></a>
 
-## 5.1 Requirements
+The Cross Functional Requirements described in this section are an extension of the Cross Functional Requirements defined in the govstack-cfr-architecture-2-1 [Architecture specification](https://govstack.gitbook.io/specification/v/1-0/architecture-and-nonfunctional-requirements) and govstack-cfr-security-2-1 [Security requirements](https://govstack.gitbook.io/specification/v/1-0/security-requirements).&#x20;
 
-The Cross-cutting requirements described in this section are an extension of the cross-cutting requirements defined in the [Architecture specification](https://govstack.gitbook.io/specification/v/1-0/architecture-and-nonfunctional-requirements) and [Security requirements](https://govstack.gitbook.io/specification/v/1-0/security-requirements). This section highlights cross-functional requirements for the Digital Registries Building Block and in addition, describes any deviation to the Architecture Building Block cross-cutting requirements.
+This section highlights cross-functional requirements for the Digital Registries Building Block and in addition, describes any supplementary cross cutting to the Architecture Building Block cross-cutting requirements.
 
-### 5.1.1 Privacy and protection of user data (REQUIRED)
+## **5.2 Supplementary/Elevated Cross Cutting Requirements** <a href="#id-5.2-supplementary-elevated-cross-cutting-requirements" id="id-5.2-supplementary-elevated-cross-cutting-requirements"></a>
 
-Add mandatory requirement. The following requirement should be added to other Building Blocks' cross-cutting requirements: Each owner of the personal data (e.g. citizen) must be able to see who has looked at their personal data in the registry. All captured personal user data must be marked as “personal data”. Users can make requests to see the information/logs of accessing personal information. API must be available for authenticated users to see their own personal data audit logs.
+### Comply with high quality data protection principles&#x20;
 
-## 5.2 Exceptions to Architectural Cross-Cutting Specifications
+`govstack-bb-registries-cfr-data#req-4`
 
-### 5.2.1 Citizen-Centric (RECOMMENDED)
+[Govstack-cfr-data#req-4](https://specs.govstack.global/architecture/6-cross-functional-requirements/6.6-data#id-4-comply-with-high-quality-data-protection-principles-recommended-extensible-auditable-previously-5). From **\[RECOMMENDED EXTENSIBLE AUDITABLE]** to **\[REQUIRED EXTENSIBLE AUDITABLE].** This was updated due to the level of data being held in Registries mandating this control.
 
-Cancel mandatory requirement: "Right to be forgotten: everything must be deletable". This is not a good practice for government registries.
+### Deleting records preserves logical records unless hard deletion is mandated by law&#x20;
 
-### 5.2.2 Open (RECOMMENDED)
+`govstack-bb-registries-cfr-data#req-7`
 
-Cancel mandatory requirement: "Cloud-native, i.e. Docker and Kubernetes". Digital Registries must have also an on-site installation option.
+[Govstack-cfr-data#req-7](https://specs.govstack.global/architecture/6-cross-functional-requirements/6.6-data#id-7-deleting-records-preserves-logical-records-unless-hard-deletion-is-mandated-by-law-recommended-rep). From **\[RECOMMENDED REPLACEABLE AUDITABLE]** to **\[REQUIRED REPLACEABLE AUDITABLE].** This was updated due to the level of data being held in Registries mandating this control.
 
-## 5.3 Standards
+&#x20;&#x20;
 
-The following standards are applicable to data structures in the Digital Registries Building Block:
+{% hint style="info" %}
+There are a number of standards that are especially relevant to Digital Registries that should be considered in an implementation our guidance on these can be found [here](10-other-resources/10.5-cross-functional-security-and-interoperability-standards.md).
+{% endhint %}
 
-### 5.3.1 OpenAPI
-
-OpenAPI Version [3.0.0](https://spec.openapis.org/oas/v3.0.0), [3.0.1](https://spec.openapis.org/oas/v3.0.1), [3.1.0](https://spec.openapis.org/oas/v3.1.0).
+&#x20;
