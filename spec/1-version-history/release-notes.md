@@ -1,14 +1,22 @@
 # Release Notes
 
-## Version <mark style="background-color:$warning;">NEXT</mark> <a href="#version-3" id="version-3"></a>
+## Version 3 <a href="#version-3" id="version-3"></a>
 
 ***
 
-### **v?.?.? (next release)** <a href="#v3.0.0" id="v3.0.0"></a>
+### **v3.0.0-alpha** <a href="#v3.0.0" id="v3.0.0"></a>
 
-_Release date: TBC_
+_Release date: June 2025_
+
+_Authors: David Higgins, Ali González_
 
 #### **Release Overview:**
+
+This release is the result of the consolidation of a new Registries and Registration Working Group that worked between July 2025 and February 2026; The team discussed terminology and scope of the Registries Building Block and reviewed the current BB structure to reflect GovSpecs 2.0 Architecture. Since February, the team have discussed a re-scope of both the Registries and Registration BB and [opened articles for public comment](https://govstack.global/news/how-to-define-digital-registries-and-registration-in-the-govstack-context/). \
+\
+This early release represents the direction in which the Working Group will take the Registries and Registration solutions' space.&#x20;
+
+Changelog per section is as follows:
 
 | Section                                                            | Title                         | Change Level                                                           |
 | ------------------------------------------------------------------ | ----------------------------- | ---------------------------------------------------------------------- |
@@ -41,9 +49,7 @@ Updated to point to GovStack General Terminology this has removed the following 
 
 #### Section 5: Cross-Cutting Requirements
 
-Significant change. This section has changed to now be refered to as Cross Functional Requirements in line with  GovSpecs Architecture 2.1.  All Cross Cutting requirements have been reviewed on this basis and the text is completely re-drafted including all requirements
-
-
+Significant change. This section has changed to now be referred to as Cross Functional Requirements in line with  GovSpecs Architecture 2.1.  All Cross Cutting requirements have been reviewed on this basis and the text is completely re-drafted including all requirements
 
 
 

@@ -1,6 +1,6 @@
 # Table of contents
 
-* [Digital Registries](README.md)
+* [Digital Registries Building Block Specification](README.md)
 * [1 Version History](1-version-history/README.md)
   * [Release Notes](1-version-history/release-notes.md)
 * [2 Description](2-description.md)
