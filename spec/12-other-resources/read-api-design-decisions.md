@@ -88,4 +88,4 @@ These general refinements belong to guide and ruleset `0.2.0-draft`; the guide's
 
 ## Verification and follow-up boundary
 
-[Testing](../11-testing.md) separates artifact validation from deployed implementation evidence. The [concrete OpenAPI examples](../../api/examples/README.md) support contract review. Implementing selected operations over breg and a registry with a different source model will provide evidence about mapping effort, schema publication, and bounded continuation.
+[Testing](../11-testing.md) separates artifact validation from deployed implementation evidence. The [concrete OpenAPI examples](../../api/examples/README.md) support contract review. Implementation trials over registries with different source models will provide evidence about mapping effort, schema publication, and bounded continuation.

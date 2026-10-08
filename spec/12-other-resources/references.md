@@ -18,7 +18,6 @@ These references inform the capability direction. Only the requirements and cano
 - [JSON Schema Draft 2020-12](https://json-schema.org/draft/2020-12)
 - [Schema.org data model](https://schema.org/docs/datamodel.html)
 - [EU SEMIC Core Vocabularies](https://interoperable-europe.ec.europa.eu/collection/semic-support-centre/solution/core-vocabularies)
-- [PublicSchema](https://publicschema.org/about/) and its [published schema formats](https://publicschema.org/docs/jsonld-vc-guide/)
 - [RFC 9110: HTTP Semantics](https://www.rfc-editor.org/rfc/rfc9110.html)
 - [RFC 9457: Problem Details for HTTP APIs](https://www.rfc-editor.org/rfc/rfc9457.html)
 - [RFC 10008: The HTTP QUERY Method](https://www.rfc-editor.org/rfc/rfc10008.html), considered for a future binding
