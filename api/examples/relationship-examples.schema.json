@@ -1,0 +1,187 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Illustrative household and birth-registration relationship views",
+  "description": "Typed Household and Birth Registration Record views with embedded components, related Record references and recorded snapshots. Array bounds belong to these example profiles. Each response contains the complete permitted view within its declared bounds.",
+  "oneOf": [
+    {"$ref": "#/$defs/HouseholdRecord"},
+    {"$ref": "#/$defs/BirthRegistrationRecord"}
+  ],
+  "$defs": {
+    "IndividualReference": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "Related Record in the fixed target Registry https://registry.example/registries/individuals. registryId may be omitted; an explicit value must match that target. This illustrative field binding resolves through the individuals collection: operation retrieveIndividual in https://registry.example/contracts/1.0.0-draft/examples/individual-registry.openapi.yaml, GET https://registry.example/v1/individuals/{recordId}. Supply the referenced recordId as the path parameter, encoded as one segment. The illustrative target contract is not included in these artifacts; target access is evaluated separately.",
+      "allOf": [{"$ref": "../openapi.yaml#/components/schemas/RecordReference"}],
+      "properties": {
+        "recordId": {"$ref": "../openapi.yaml#/components/schemas/RecordId"},
+        "registryId": {
+          "type": "string",
+          "const": "https://registry.example/registries/individuals",
+          "description": "The same target Registry already fixed by this field's schema."
+        }
+      },
+      "examples": [
+        {"recordId": "person_42"},
+        {"recordId": "person_42", "registryId": "https://registry.example/registries/individuals"}
+      ]
+    },
+    "UnscopedRecordReference": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "Reference field with an explicit target Registry. Both registryId and recordId are required because the field context leaves the target open.",
+      "allOf": [{"$ref": "../openapi.yaml#/components/schemas/RecordReference"}],
+      "required": ["registryId"],
+      "properties": {
+        "recordId": {"$ref": "../openapi.yaml#/components/schemas/RecordId"},
+        "registryId": {
+          "type": "string",
+          "format": "iri",
+          "description": "Explicit absolute IRI of the target Registry; it need not be a retrieval endpoint."
+        }
+      },
+      "examples": [
+        {"recordId": "person_42", "registryId": "https://registry.example/registries/individuals"},
+        {"recordId": "r_7", "registryId": "urn:example:registry:external"}
+      ]
+    },
+    "Address": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "Current address embedded in and owned by the household Record.",
+      "required": ["addressLines", "locality"],
+      "properties": {
+        "addressLines": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 3,
+          "description": "Complete ordered address lines, bounded to three in this profile.",
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200,
+            "description": "One non-empty address line."
+          }
+        },
+        "locality": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 200,
+          "description": "Locality label recorded for this household address."
+        },
+        "postalCode": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 32,
+          "description": "Postal code as a string; leading zeroes are retained. Omitted when not recorded for this view."
+        }
+      },
+      "examples": [{"addressLines": ["12 Example Street"], "locality": "Example Town", "postalCode": "00120"}]
+    },
+    "HouseholdMembership": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "Household-owned membership component. membershipId identifies it within the household; role describes the relationship to the referenced individual.",
+      "required": ["membershipId", "role", "individualRef"],
+      "properties": {
+        "membershipId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 64,
+          "description": "Stable component identifier unique within its household."
+        },
+        "role": {
+          "type": "string",
+          "enum": ["REFERENCE_PERSON", "MEMBER"],
+          "description": "REFERENCE_PERSON identifies the administrative reference person; MEMBER identifies another recorded member. This profile uses a closed vocabulary."
+        },
+        "individualRef": {"$ref": "#/$defs/IndividualReference"}
+      },
+      "examples": [{"membershipId": "membership_1", "role": "REFERENCE_PERSON", "individualRef": {"recordId": "person_42"}}]
+    },
+    "HouseholdData": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "Current household view with an embedded address and complete permitted membership components. Individual identities are carried as references.",
+      "required": ["address", "memberships"],
+      "properties": {
+        "address": {"$ref": "#/$defs/Address"},
+        "memberships": {
+          "type": "array",
+          "maxItems": 20,
+          "description": "Complete permitted memberships ordered by membershipId in Unicode scalar order. This profile accepts up to 20 components; overflow fails the read.",
+          "items": {"$ref": "#/$defs/HouseholdMembership"}
+        }
+      },
+      "examples": [{"address": {"addressLines": ["12 Example Street"], "locality": "Example Town"}, "memberships": [{"membershipId": "membership_1", "role": "REFERENCE_PERSON", "individualRef": {"recordId": "person_42"}}]}]
+    },
+    "HouseholdRecord": {
+      "description": "Record in https://registry.example/registries/households with the typed household view and an extensible envelope.",
+      "allOf": [
+        {"$ref": "../openapi.yaml#/components/schemas/Record"},
+        {
+          "type": "object",
+          "description": "Concrete household data binding.",
+          "properties": {"data": {"$ref": "#/$defs/HouseholdData"}}
+        }
+      ],
+      "examples": [{"recordId": "household_8", "data": {"address": {"addressLines": ["12 Example Street"], "locality": "Example Town"}, "memberships": [{"membershipId": "membership_1", "role": "REFERENCE_PERSON", "individualRef": {"recordId": "person_42"}}]}}]
+    },
+    "ParentAtRegistration": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "Parent details captured by the birth registration. nameAtRegistration retains its recorded meaning. individualRef is optional and supplies related Record identity when available.",
+      "required": ["nameAtRegistration"],
+      "properties": {
+        "nameAtRegistration": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 300,
+          "description": "Parent name captured at registration, preserved as a historical fact."
+        },
+        "individualRef": {"$ref": "#/$defs/IndividualReference"}
+      },
+      "examples": [
+        {"nameAtRegistration": "Alex Example"},
+        {"nameAtRegistration": "Robin Example", "individualRef": {"recordId": "person_57"}}
+      ]
+    },
+    "BirthRegistrationData": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "Recorded birth event and parent details in the fixed registration view.",
+      "required": ["dateOfBirth", "placeOfBirth", "parents"],
+      "properties": {
+        "dateOfBirth": {
+          "type": "string",
+          "format": "date",
+          "description": "Calendar date of birth as recorded by this registration."
+        },
+        "placeOfBirth": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 300,
+          "description": "Place of birth label captured by the registration."
+        },
+        "parents": {
+          "type": "array",
+          "maxItems": 4,
+          "description": "Complete permitted parent components in source registration order. This profile accepts up to four components; overflow fails the read.",
+          "items": {"$ref": "#/$defs/ParentAtRegistration"}
+        }
+      },
+      "examples": [{"dateOfBirth": "2020-06-12", "placeOfBirth": "Example Town", "parents": [{"nameAtRegistration": "Alex Example"}, {"nameAtRegistration": "Robin Example", "individualRef": {"recordId": "person_57"}}]}]
+    },
+    "BirthRegistrationRecord": {
+      "description": "Record in https://registry.example/registries/birth-registrations with recorded parent data and optional related Record references.",
+      "allOf": [
+        {"$ref": "../openapi.yaml#/components/schemas/Record"},
+        {
+          "type": "object",
+          "description": "Concrete birth-registration data binding.",
+          "properties": {"data": {"$ref": "#/$defs/BirthRegistrationData"}}
+        }
+      ],
+      "examples": [{"recordId": "birth_19", "data": {"dateOfBirth": "2020-06-12", "placeOfBirth": "Example Town", "parents": [{"nameAtRegistration": "Alex Example"}, {"nameAtRegistration": "Robin Example", "individualRef": {"recordId": "person_57"}}]}}]
+    }
+  }
+}

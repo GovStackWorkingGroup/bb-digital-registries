@@ -1,0 +1,52 @@
+{
+  "description": "Illustrative exchanges for the concrete business binding. Tokens are opaque example strings, not usable live continuations.",
+  "exchanges": [
+    {
+      "name": "retrieve",
+      "operationId": "retrieveBusiness",
+      "status": 200,
+      "response": {"recordId": "r_42", "data": {"legalName": "Example Ltd", "registrationStatus": "DISSOLVED"}}
+    },
+    {
+      "name": "lookup",
+      "operationId": "lookupBusiness",
+      "request": {"selector": "byRegistrationNumber", "values": {"registrationNumber": "BR-000042"}},
+      "status": 200,
+      "response": {"recordId": "r_42", "data": {"legalName": "Example Ltd", "registrationStatus": "DISSOLVED"}}
+    },
+    {
+      "name": "compositeLookup",
+      "operationId": "lookupBusiness",
+      "request": {"selector": "byJurisdictionNumber", "values": {"jurisdictionCode": "AA", "localNumber": "00000042"}},
+      "status": 200,
+      "response": {"recordId": "r_42", "data": {"legalName": "Example Ltd", "registrationStatus": "DISSOLVED"}}
+    },
+    {
+      "name": "emptySearchContinuation",
+      "operationId": "searchBusinesses",
+      "request": {"search": "byRegistrationStatus", "criteria": {"registrationStatus": "DISSOLVED"}, "pageSize": 20},
+      "status": 200,
+      "response": {"items": [], "pageInfo": {"nextCursor": "pgn_7JpQ9m2W4xK8fR3cT6vN1"}}
+    },
+    {
+      "name": "finalSearchPage",
+      "operationId": "searchBusinesses",
+      "request": {"search": "byRegistrationStatus", "criteria": {"registrationStatus": "DISSOLVED"}, "cursor": "pgn_7JpQ9m2W4xK8fR3cT6vN1"},
+      "status": 200,
+      "response": {"items": [{"recordId": "r_42", "data": {"legalName": "Example Ltd", "registrationStatus": "DISSOLVED"}}], "pageInfo": {"nextCursor": null}}
+    },
+    {
+      "name": "emptyList",
+      "operationId": "listBusinesses",
+      "status": 200,
+      "response": {"items": [], "pageInfo": {"nextCursor": null, "total": 0}}
+    },
+    {
+      "name": "recordNotAvailable",
+      "operationId": "lookupBusiness",
+      "request": {"selector": "byRegistrationNumber", "values": {"registrationNumber": "BR-999999"}},
+      "status": 404,
+      "response": {"type": "https://govstack.global/problems/digital-registries/record-not-available", "title": "Record not available", "status": 404, "traceId": "6f1c3f0e2a9b4c8d7e6f5a4b3c2d1e0f"}
+    }
+  ]
+}

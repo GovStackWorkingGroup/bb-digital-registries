@@ -1,0 +1,49 @@
+version: 1
+# Review-only draft mappings do not establish certification or promote maturity.
+requirements: []
+draftRequirements:
+  - id: govstack-bb-digital-registries-fr-core#req-1
+    disposition: non-api
+    rationale: Review the published registry profile and metadata, outside individual read response bodies.
+  - id: govstack-bb-digital-registries-fr-core#req-2
+    disposition: operation
+    operations: [retrieveRecord, lookupRecord, listRecords, searchRecords]
+  - id: govstack-bb-digital-registries-fr-core#req-3
+    disposition: non-api
+    rationale: Audit source identifier stability, reuse and migration policy across time and services.
+  - id: govstack-bb-digital-registries-fr-core#req-4
+    disposition: operation
+    operations: [retrieveRecord, lookupRecord, listRecords, searchRecords]
+  - id: govstack-bb-digital-registries-fr-core#req-5
+    disposition: non-api
+    rationale: Review any claimed revision and lifecycle metadata against the source; the minimal read binding claims none.
+  - id: govstack-bb-digital-registries-fr-core#req-6
+    disposition: non-api
+    rationale: Review any provided provenance against source evidence and declared semantics; the minimal read binding requires no provenance enrichment.
+  - id: govstack-bb-digital-registries-fr-core#req-7
+    disposition: operation
+    operations: [getApiCatalog, headApiCatalog]
+  - id: govstack-bb-digital-registries-fr-core#req-8
+    disposition: operation
+    operations: [retrieveRecord, lookupRecord, listRecords, searchRecords]
+  - id: govstack-bb-digital-registries-fr-consultation#req-1
+    disposition: operation
+    operations: [retrieveRecord]
+  - id: govstack-bb-digital-registries-fr-consultation#req-2
+    disposition: operation
+    operations: [retrieveRecord, lookupRecord, listRecords, searchRecords]
+  - id: govstack-bb-digital-registries-fr-consultation#req-3
+    disposition: operation
+    operations: [retrieveRecord, lookupRecord]
+  - id: govstack-bb-digital-registries-fr-consultation#req-4
+    disposition: operation
+    operations: [lookupRecord]
+  - id: govstack-bb-digital-registries-fr-consultation#req-5
+    disposition: operation
+    operations: [listRecords]
+  - id: govstack-bb-digital-registries-fr-consultation#req-6
+    disposition: operation
+    operations: [searchRecords]
+  - id: govstack-bb-digital-registries-fr-consultation#req-7
+    disposition: operation
+    operations: [listRecords, searchRecords]

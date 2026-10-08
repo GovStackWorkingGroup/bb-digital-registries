@@ -1,0 +1,122 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Registry metadata document",
+  "description": "Shape of a Registry metadata document compacted with the Digital Registries JSON-LD context version 1. The document is a named graph of catalogue, Registry, agent, dataset and Data Service nodes. Every govreg:Registry node carries the minimal metadata required by Registry Core and every dcat:DataService node carries the service discovery metadata.",
+  "type": "object",
+  "required": ["@context", "@graph"],
+  "properties": {
+    "@context": {
+      "const": "https://vocab.govstack.global/digital-registries/context/v1"
+    },
+    "@graph": {
+      "type": "array",
+      "minItems": 1,
+      "items": {"$ref": "#/$defs/node"},
+      "contains": {"$ref": "#/$defs/registry"}
+    }
+  },
+  "$defs": {
+    "iri": {"type": "string", "format": "iri"},
+    "iris": {
+      "anyOf": [
+        {"$ref": "#/$defs/iri"},
+        {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/iri"}}
+      ]
+    },
+    "text": {
+      "description": "A plain string or a JSON-LD language map keyed by BCP 47 language tag.",
+      "anyOf": [
+        {"type": "string", "minLength": 1},
+        {
+          "type": "object",
+          "minProperties": 1,
+          "additionalProperties": {"type": "string", "minLength": 1}
+        }
+      ]
+    },
+    "types": {
+      "anyOf": [
+        {"type": "string"},
+        {"type": "array", "minItems": 1, "items": {"type": "string"}}
+      ]
+    },
+    "node": {
+      "type": "object",
+      "required": ["@id", "@type"],
+      "properties": {
+        "@id": {"$ref": "#/$defs/iri"},
+        "@type": {"$ref": "#/$defs/types"}
+      },
+      "allOf": [
+        {
+          "if": {"properties": {"@type": {"$ref": "#/$defs/hasRegistryType"}}},
+          "then": {"$ref": "#/$defs/registry"}
+        },
+        {
+          "if": {"properties": {"@type": {"$ref": "#/$defs/hasDataServiceType"}}},
+          "then": {"$ref": "#/$defs/dataService"}
+        }
+      ]
+    },
+    "hasRegistryType": {
+      "anyOf": [
+        {"const": "govreg:Registry"},
+        {"type": "array", "contains": {"const": "govreg:Registry"}}
+      ]
+    },
+    "hasDataServiceType": {
+      "anyOf": [
+        {"const": "dcat:DataService"},
+        {"type": "array", "contains": {"const": "dcat:DataService"}}
+      ]
+    },
+    "registry": {
+      "description": "Minimal Registry metadata: identifier, name, authority, specification reference, scope description and one Data Service per exposed service.",
+      "type": "object",
+      "required": ["@id", "@type", "title", "description", "authority", "specification", "dataService"],
+      "properties": {
+        "@type": {"$ref": "#/$defs/hasRegistryType"},
+        "title": {"$ref": "#/$defs/text"},
+        "description": {"$ref": "#/$defs/text"},
+        "authority": {"$ref": "#/$defs/iris"},
+        "specification": {"$ref": "#/$defs/iri"},
+        "conformsTo": {"$ref": "#/$defs/iris"},
+        "governedDataset": {"$ref": "#/$defs/iris"},
+        "dataService": {"$ref": "#/$defs/iris"}
+      }
+    },
+    "dataService": {
+      "description": "Service discovery metadata: identifier, API families, endpoint and machine-readable contract.",
+      "type": "object",
+      "required": ["@id", "@type", "title", "serviceType", "endpointURL", "endpointDescription"],
+      "properties": {
+        "@type": {"$ref": "#/$defs/hasDataServiceType"},
+        "title": {"$ref": "#/$defs/text"},
+        "description": {"$ref": "#/$defs/text"},
+        "serviceType": {
+          "anyOf": [
+            {"$ref": "#/$defs/apiFamily"},
+            {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/apiFamily"}}
+          ]
+        },
+        "servesDataset": {"$ref": "#/$defs/iris"},
+        "endpointURL": {"$ref": "#/$defs/iri"},
+        "endpointDescription": {"$ref": "#/$defs/iri"}
+      }
+    },
+    "apiFamily": {
+      "description": "A concept of the Digital Registries API Families scheme, compacted with the apif prefix.",
+      "type": "string",
+      "enum": [
+        "apif:consultation",
+        "apif:provisioning",
+        "apif:evidence",
+        "apif:write",
+        "apif:notification",
+        "apif:aggregate-data",
+        "apif:access-transparency",
+        "apif:identity-federation"
+      ]
+    }
+  }
+}

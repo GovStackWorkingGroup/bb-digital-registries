@@ -1,0 +1,256 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 780"
+     font-family="'IBM Plex Sans', 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif">
+
+  <!-- GovStack-style palette
+       Navy (ink):       #11186A
+       Mint (accent):    #3DD7AB
+       White (page):     #FFFFFF
+       Soft grey:        #E8ECF4
+       Pastel yellow:    #FFD23F
+       Pastel mint:      #A4E8C5
+       Pastel coral:     #F4A8A8
+       Pastel lilac:     #B5C8F0
+       Pastel grey:      #DDE2EC
+  -->
+
+  <rect width="1000" height="780" fill="#FFFFFF"/>
+
+  <!-- Title block -->
+  <text x="500" y="56" text-anchor="middle" fill="#11186A"
+        font-size="22" font-weight="600">
+    The Digital Registries Building Block
+  </text>
+  <text x="500" y="82" text-anchor="middle" fill="#11186A" fill-opacity="0.7"
+        font-size="14" font-weight="400">
+    Eight optional capability families with illustrative protocol options
+  </text>
+
+  <!-- Spokes: mint dotted lines from hub perimeter to nearest card edge -->
+  <g stroke="#3DD7AB" stroke-width="1.6" fill="none" stroke-dasharray="2 5"
+     stroke-linecap="round">
+    <line x1="460" y1="358" x2="430" y2="225"/>      <!-- P1 Provisioning -->
+    <line x1="540" y1="358" x2="570" y2="225"/>      <!-- P2 Consultation -->
+    <line x1="582" y1="395" x2="690" y2="365"/>      <!-- P3 Evidence -->
+    <line x1="540" y1="522" x2="590" y2="626"/>      <!-- P4 Write -->
+    <line x1="460" y1="522" x2="410" y2="626"/>      <!-- P5 Notification -->
+    <line x1="418" y1="485" x2="310" y2="515"/>      <!-- P6 Aggregate Data -->
+    <line x1="418" y1="395" x2="310" y2="365"/>      <!-- P7 Access Transparency -->
+    <line x1="582" y1="485" x2="690" y2="515"/>      <!-- P8 Identity Federation -->
+  </g>
+  <g fill="#3DD7AB">
+    <!-- hub-side endpoint dots -->
+    <circle cx="460" cy="358" r="3.5"/>
+    <circle cx="540" cy="358" r="3.5"/>
+    <circle cx="582" cy="395" r="3.5"/>
+    <circle cx="540" cy="522" r="3.5"/>
+    <circle cx="460" cy="522" r="3.5"/>
+    <circle cx="418" cy="485" r="3.5"/>
+    <circle cx="418" cy="395" r="3.5"/>
+    <circle cx="582" cy="485" r="3.5"/>
+    <!-- card-side endpoint dots -->
+    <circle cx="430" cy="225" r="3.5"/>
+    <circle cx="570" cy="225" r="3.5"/>
+    <circle cx="690" cy="365" r="3.5"/>
+    <circle cx="590" cy="626" r="3.5"/>
+    <circle cx="410" cy="626" r="3.5"/>
+    <circle cx="310" cy="515" r="3.5"/>
+    <circle cx="310" cy="365" r="3.5"/>
+    <circle cx="690" cy="515" r="3.5"/>
+  </g>
+
+  <!-- Central hub: navy rounded square with white text -->
+  <rect x="418" y="358" width="164" height="164" rx="6"
+        fill="#11186A"/>
+  <text x="500" y="425" text-anchor="middle" fill="#FFFFFF"
+        font-size="14" font-weight="600" letter-spacing="2.5">DIGITAL</text>
+  <text x="500" y="448" text-anchor="middle" fill="#FFFFFF"
+        font-size="14" font-weight="600" letter-spacing="2.5">REGISTRIES</text>
+  <line x1="465" y1="462" x2="535" y2="462" stroke="#3DD7AB" stroke-width="1.2"/>
+  <text x="500" y="484" text-anchor="middle" fill="#3DD7AB"
+        font-size="11" font-weight="500" letter-spacing="2">BUILDING BLOCK</text>
+
+  <!-- Card template (200 × 110)
+       Card top-left = (cx − 100, cy − 55)
+       Layout (cx, cy):
+         P1 Provisioning        (360, 170)
+         P2 Consultation        (640, 170)
+         P3 Evidence            (790, 330)
+         P4 Write               (640, 681)
+         P5 Notification        (360, 681)
+         P6 Aggregate Data      (210, 550)
+         P7 Access Transp.      (210, 330)
+         P8 Identity Federation (790, 550)
+  -->
+
+  <!-- ===== I. PROVISIONING ===== -->
+  <g transform="translate(260, 115)">
+    <rect width="200" height="110" fill="#FFFFFF" stroke="#11186A" stroke-width="1.5"/>
+    <rect x="0" y="0" width="6" height="110" rx="0" fill="#FFD23F"/>
+    <text x="100" y="34" text-anchor="middle" fill="#11186A"
+          font-size="13" font-weight="600" letter-spacing="1.5">PROVISIONING</text>
+    <text x="100" y="56" text-anchor="middle" fill="#11186A" fill-opacity="0.7"
+          font-size="11">registry as a system</text>
+    <g transform="translate(73, 72)">
+      <rect width="54" height="20" rx="10" fill="#FFFFFF"
+            stroke="#11186A" stroke-width="1"/>
+      <text x="27" y="14" text-anchor="middle" fill="#11186A"
+            font-size="10" font-weight="500"
+            font-family="'IBM Plex Mono', ui-monospace, 'SF Mono', Menlo, monospace">OpenAPI</text>
+    </g>
+  </g>
+
+  <!-- ===== II. CONSULTATION ===== -->
+  <g transform="translate(540, 115)">
+    <rect width="200" height="110" fill="#FFFFFF" stroke="#11186A" stroke-width="1.5"/>
+    <rect x="0" y="0" width="6" height="110" rx="0" fill="#A4E8C5"/>
+    <text x="100" y="34" text-anchor="middle" fill="#11186A"
+          font-size="13" font-weight="600" letter-spacing="1.5">CONSULTATION</text>
+    <text x="100" y="56" text-anchor="middle" fill="#11186A" fill-opacity="0.7"
+          font-size="11">records, read</text>
+    <g transform="translate(43, 72)">
+      <rect width="54" height="20" rx="10" fill="#FFFFFF"
+            stroke="#11186A" stroke-width="1"/>
+      <text x="27" y="14" text-anchor="middle" fill="#11186A"
+            font-size="10" font-weight="500"
+            font-family="'IBM Plex Mono', ui-monospace, 'SF Mono', Menlo, monospace">OpenAPI</text>
+    </g>
+    <g transform="translate(103, 72)">
+      <rect width="54" height="20" rx="10" fill="#FFFFFF"
+            stroke="#11186A" stroke-width="1"/>
+      <text x="27" y="14" text-anchor="middle" fill="#11186A"
+            font-size="10" font-weight="500"
+            font-family="'IBM Plex Mono', ui-monospace, 'SF Mono', Menlo, monospace">OGC API</text>
+    </g>
+  </g>
+
+  <!-- ===== III. EVIDENCE ===== -->
+  <g transform="translate(690, 275)">
+    <rect width="200" height="110" fill="#FFFFFF" stroke="#11186A" stroke-width="1.5"/>
+    <rect x="0" y="0" width="6" height="110" rx="0" fill="#F4A8A8"/>
+    <text x="100" y="34" text-anchor="middle" fill="#11186A"
+          font-size="13" font-weight="600" letter-spacing="1.5">EVIDENCE</text>
+    <text x="100" y="56" text-anchor="middle" fill="#11186A" fill-opacity="0.7"
+          font-size="11">signed attestations, S2S or wallet</text>
+    <g transform="translate(33, 72)">
+      <rect width="60" height="20" rx="10" fill="#FFFFFF"
+            stroke="#11186A" stroke-width="1"/>
+      <text x="30" y="14" text-anchor="middle" fill="#11186A"
+            font-size="10" font-weight="500"
+            font-family="'IBM Plex Mono', ui-monospace, 'SF Mono', Menlo, monospace">OpenID4VC</text>
+    </g>
+    <g transform="translate(99, 72)">
+      <rect width="72" height="20" rx="10" fill="#FFFFFF"
+            stroke="#11186A" stroke-width="1"/>
+      <text x="36" y="14" text-anchor="middle" fill="#11186A"
+            font-size="10" font-weight="500"
+            font-family="'IBM Plex Mono', ui-monospace, 'SF Mono', Menlo, monospace">OpenAPI</text>
+    </g>
+  </g>
+
+  <!-- ===== IV. WRITE ===== -->
+  <g transform="translate(540, 626)">
+    <rect width="200" height="110" fill="#FFFFFF" stroke="#11186A" stroke-width="1.5"/>
+    <rect x="0" y="0" width="6" height="110" rx="0" fill="#B5C8F0"/>
+    <text x="100" y="34" text-anchor="middle" fill="#11186A"
+          font-size="13" font-weight="600" letter-spacing="1.5">WRITE</text>
+    <text x="100" y="56" text-anchor="middle" fill="#11186A" fill-opacity="0.7"
+          font-size="11">records, direct or governed</text>
+    <g transform="translate(73, 72)">
+      <rect width="54" height="20" rx="10" fill="#FFFFFF"
+            stroke="#11186A" stroke-width="1"/>
+      <text x="27" y="14" text-anchor="middle" fill="#11186A"
+            font-size="10" font-weight="500"
+            font-family="'IBM Plex Mono', ui-monospace, 'SF Mono', Menlo, monospace">OpenAPI</text>
+    </g>
+  </g>
+
+  <!-- ===== V. NOTIFICATION ===== -->
+  <g transform="translate(260, 626)">
+    <rect width="200" height="110" fill="#FFFFFF" stroke="#11186A" stroke-width="1.5"/>
+    <rect x="0" y="0" width="6" height="110" rx="0" fill="#FFD23F"/>
+    <text x="100" y="34" text-anchor="middle" fill="#11186A"
+          font-size="13" font-weight="600" letter-spacing="1.5">NOTIFICATION</text>
+    <text x="100" y="56" text-anchor="middle" fill="#11186A" fill-opacity="0.7"
+          font-size="11">change events, subscribe, deliver</text>
+    <g transform="translate(40, 72)">
+      <rect width="54" height="20" rx="10" fill="#FFFFFF"
+            stroke="#11186A" stroke-width="1"/>
+      <text x="27" y="14" text-anchor="middle" fill="#11186A"
+            font-size="10" font-weight="500"
+            font-family="'IBM Plex Mono', ui-monospace, 'SF Mono', Menlo, monospace">OpenAPI</text>
+    </g>
+    <g transform="translate(100, 72)">
+      <rect width="60" height="20" rx="10" fill="#FFFFFF"
+            stroke="#11186A" stroke-width="1"/>
+      <text x="30" y="14" text-anchor="middle" fill="#11186A"
+            font-size="10" font-weight="500"
+            font-family="'IBM Plex Mono', ui-monospace, 'SF Mono', Menlo, monospace">AsyncAPI</text>
+    </g>
+  </g>
+
+  <!-- ===== VI. AGGREGATE DATA ===== -->
+  <g transform="translate(110, 495)">
+    <rect width="200" height="110" fill="#FFFFFF" stroke="#11186A" stroke-width="1.5"/>
+    <rect x="0" y="0" width="6" height="110" rx="0" fill="#A4E8C5"/>
+    <text x="100" y="34" text-anchor="middle" fill="#11186A"
+          font-size="12.5" font-weight="600" letter-spacing="1.2">AGGREGATE DATA</text>
+    <text x="100" y="56" text-anchor="middle" fill="#11186A" fill-opacity="0.7"
+          font-size="11">statistics over records</text>
+    <g transform="translate(43, 72)">
+      <rect width="54" height="20" rx="10" fill="#FFFFFF"
+            stroke="#11186A" stroke-width="1"/>
+      <text x="27" y="14" text-anchor="middle" fill="#11186A"
+            font-size="10" font-weight="500"
+            font-family="'IBM Plex Mono', ui-monospace, 'SF Mono', Menlo, monospace">OpenAPI</text>
+    </g>
+    <g transform="translate(103, 72)">
+      <rect width="54" height="20" rx="10" fill="#FFFFFF"
+            stroke="#11186A" stroke-width="1"/>
+      <text x="27" y="14" text-anchor="middle" fill="#11186A"
+            font-size="10" font-weight="500"
+            font-family="'IBM Plex Mono', ui-monospace, 'SF Mono', Menlo, monospace">SDMX</text>
+    </g>
+  </g>
+
+  <!-- ===== VII. ACCESS TRANSPARENCY ===== -->
+  <g transform="translate(110, 275)">
+    <rect width="200" height="110" fill="#FFFFFF" stroke="#11186A" stroke-width="1.5"/>
+    <rect x="0" y="0" width="6" height="110" rx="0" fill="#DDE2EC"/>
+    <text x="100" y="34" text-anchor="middle" fill="#11186A"
+          font-size="12.5" font-weight="600" letter-spacing="1.2">ACCESS TRANSPARENCY</text>
+    <text x="100" y="56" text-anchor="middle" fill="#11186A" fill-opacity="0.7"
+          font-size="11">access log to principal</text>
+    <g transform="translate(73, 72)">
+      <rect width="54" height="20" rx="10" fill="#FFFFFF"
+            stroke="#11186A" stroke-width="1"/>
+      <text x="27" y="14" text-anchor="middle" fill="#11186A"
+            font-size="10" font-weight="500"
+            font-family="'IBM Plex Mono', ui-monospace, 'SF Mono', Menlo, monospace">OpenAPI</text>
+    </g>
+  </g>
+
+  <!-- ===== VIII. IDENTITY FEDERATION ===== -->
+  <g transform="translate(690, 495)">
+    <rect width="200" height="110" fill="#FFFFFF" stroke="#11186A" stroke-width="1.5"/>
+    <rect x="0" y="0" width="6" height="110" rx="0" fill="#F4A8A8"/>
+    <text x="100" y="34" text-anchor="middle" fill="#11186A"
+          font-size="12.5" font-weight="600" letter-spacing="1.2">IDENTITY FEDERATION</text>
+    <text x="100" y="56" text-anchor="middle" fill="#11186A" fill-opacity="0.7"
+          font-size="11">sectoral user authentication</text>
+    <g transform="translate(49, 72)">
+      <rect width="102" height="20" rx="10" fill="#FFFFFF"
+            stroke="#11186A" stroke-width="1"/>
+      <text x="51" y="14" text-anchor="middle" fill="#11186A"
+            font-size="9.5" font-weight="500"
+            font-family="'IBM Plex Mono', ui-monospace, 'SF Mono', Menlo, monospace">OWNERSHIP TBD</text>
+    </g>
+  </g>
+
+  <!-- Caption -->
+  <text x="500" y="760" text-anchor="middle" fill="#11186A" fill-opacity="0.7"
+        font-size="12">
+    Conformance combines Registry Core with at least one selected capability.
+  </text>
+
+</svg>

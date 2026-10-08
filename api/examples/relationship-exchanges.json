@@ -1,0 +1,45 @@
+{
+  "description": "Household and Birth Registration Retrieve responses, each linked to its operation contract, plus a reference with an explicit target Registry.",
+  "examples": [
+    {
+      "name": "householdWithEmbeddedMemberships",
+      "contract": "household-registry.openapi.yaml",
+      "operationId": "retrieveHousehold",
+      "status": 200,
+      "schema": "HouseholdRecord",
+      "value": {
+        "recordId": "household_8",
+        "data": {
+          "address": {"addressLines": ["12 Example Street"], "locality": "Example Town", "postalCode": "00120"},
+          "memberships": [
+            {"membershipId": "membership_1", "role": "REFERENCE_PERSON", "individualRef": {"recordId": "person_42"}},
+            {"membershipId": "membership_2", "role": "MEMBER", "individualRef": {"recordId": "person_57", "registryId": "https://registry.example/registries/individuals"}}
+          ]
+        }
+      }
+    },
+    {
+      "name": "birthRegistrationWithParentSnapshots",
+      "contract": "birth-registration.openapi.yaml",
+      "operationId": "retrieveBirthRegistration",
+      "status": 200,
+      "schema": "BirthRegistrationRecord",
+      "value": {
+        "recordId": "birth_19",
+        "data": {
+          "dateOfBirth": "2020-06-12",
+          "placeOfBirth": "Example Town",
+          "parents": [
+            {"nameAtRegistration": "Alex Example"},
+            {"nameAtRegistration": "Robin Example", "individualRef": {"recordId": "person_57"}}
+          ]
+        }
+      }
+    },
+    {
+      "name": "referenceWithoutFixedTargetContext",
+      "schema": "UnscopedRecordReference",
+      "value": {"recordId": "r_7", "registryId": "urn:example:registry:external"}
+    }
+  ]
+}

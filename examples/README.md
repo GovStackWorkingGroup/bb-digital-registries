@@ -1,11 +1,19 @@
-# Software applications that fulfill the behaviours specified by this building block
+# Historical implementation examples
 
-List of products:
-# 1. Generic Database Builder 
-License: proprietary license with one time support fee by UNCTAD https://digitalgovernment.world/online-single-windows/ 
-Test the example BB in Govstack Sandbox here: https://gdb.er4.ext.egovstack.net/ 
-Register as a user and apply for authorization here: https://er4.ext.egovstack.net/en/services-new/2c92808f83cd620801841e55dc010000
+The examples in this directory demonstrate products and test environments developed against earlier Digital Registries requirements and generated CRUD APIs.
 
+They are retained for migration and implementation research. They do not demonstrate conformance with the 3.0.0-alpha.2 Base Registry Profile.
 
+## Preserved implementation context
 
-NB! Should you know any products that fulfill fully or partly the requirements of this BB, please leave a comment here: https://solutions.dial.community/govstack/issue
+### UNCTAD Generic Database Builder (eRegistrations)
+
+Earlier Digital Registries releases identified the UNCTAD Generic Database Builder, also known as eRegistrations, as an implementation of the generated CRUD and no-code Registry model. The original repository description characterised it as proprietary software available with a one-time UNCTAD support fee.
+
+The files under [eRegistrations](eRegistrations/README.md) preserve example requests and documentation from that integration. Previously listed GovStack sandbox and authorisation endpoints are no longer presented as active services.
+
+### Mockoon API mock
+
+The [Mockoon example](mockoon/README.md) preserves a local mock of the previous OpenAPI surface for development and migration analysis.
+
+Any future example intended as conformance evidence needs to identify the specification and capability profile it implements and be verified by the corresponding conformance tests.

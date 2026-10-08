@@ -1,0 +1,31 @@
+{
+  "linkset": [
+    {
+      "anchor": "https://registry.example/",
+      "service-desc": [
+        {
+          "href": "https://registry.example/contracts/1.0.0-draft/examples/business-registry.openapi.yaml",
+          "type": "application/vnd.oai.openapi",
+          "title": "Business Registry Consultation API"
+        },
+        {
+          "href": "https://registry.example/contracts/business-write.openapi.json",
+          "type": "application/vnd.oai.openapi+json",
+          "title": "Business Registry Write API"
+        },
+        {
+          "href": "https://registry.example/contracts/business-evidence.openapi.json",
+          "type": "application/vnd.oai.openapi+json",
+          "title": "Business Registry Evidence API"
+        }
+      ],
+      "service-meta": [
+        {
+          "href": "https://registry.example/catalog",
+          "type": "application/ld+json",
+          "title": "Registry metadata for the Business Registry"
+        }
+      ]
+    }
+  ]
+}

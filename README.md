@@ -1,84 +1,27 @@
-# GovStack Building Block Template
+# GovStack Digital Registries Building Block
 
-This template is intended to be used by the various GovStack building block
-repos. Each building block repo will have at least 4 main sections, outlined in
-the directory structure below.
+This repository contains the Digital Registries Building Block specification and supporting API, test, and implementation material.
 
-## Gitbook and the published "Building Block Specifications" document
+## Specification status
 
-Note that pushes to the `main` branch will automatically trigger a Gitbook build
-and deployment from the `/spec` directory.
+The `3.0.0-alpha.2` specification defines a mandatory, domain-neutral Registry Core with machine-readable metadata and discovery, plus at least one declared capability. All capability families are optional.
 
-## Repo Structure
+The current draft defines four independently optional Consultation capabilities: Retrieve, Lookup, List, and Search. A [canonical OpenAPI contract](api/openapi.yaml) describes their HTTP binding. This draft does not establish an implementation conformance claim.
 
-```sh
-README.md
-/spec # the markdown files which are used to build the specification in GitBook
-/api # the openapi specification
-/test # the test plan and tests
-  plan.md
-/examples # examples for deploying, configuring, and testing applications which implement the behaviors specified by this building block
-  /application-a
-    README.md # instructions for deployment/testing
-    docker-compose.yaml # example deployment file
-      db
-      web
-      adaptor
-      security-server
-    Caddyfile # example config for "adaptor"
-    Dockerfile # dockerfile to build "adaptor"
-  /application-b
-  /application-c
-```
+The [illustrative business Registry contract](api/examples/business-registry.openapi.yaml), [business schema](api/examples/business-registry.schema.json), and [request/response fixtures](api/examples/consultation-exchanges.json) show a concrete adopter mapping.
 
-## Test data
+Start with the [Digital Registries Building Block Specification](spec/README.md). See [Requirement Maturity](spec/04-conformance.md#41-requirement-maturity) for conformance status and [Coverage and Limitations](spec/12-other-resources.md#121-coverage-and-limitations) for published material and open work.
 
-In order to properly call the tests, a file with input data has been created.
+## Repository structure
 
-The data must exist in tested software before running the tests.
+| Path | Contents | Current status |
+|---|---|---|
+| `spec/` | Human-readable specification published through GitBook | 3.0.0-alpha.2 draft |
+| `api/` | Machine-readable service contracts | DRAFT Consultation OpenAPI contract and concrete adopter example; previous generated CRUD contracts retained as legacy |
+| `tools/` | Draft artifact validation | Contract and example checks; does not exercise a Registry implementation |
+| `test/` | Legacy interface tests | Previous generated CRUD tests retained as legacy; draft implementation scenarios are documented in `spec/11-testing.md` |
+| `examples/` | Product and integration examples | Historical examples; not evidence of 3.0.0-alpha.2 conformance |
 
-This data are compatible with the data used in the tests and they are stored in
-the `openAPI` folder in the `test-data.json`.
+## Publication
 
-## Run Cucumber tests
-
-Cucumber-js is used to execute test harness to check compability of application
-api with BB test definitions.
-
-### Mock server
-
-Launch the mock server from examples/mock folder. The instruction is located in
-'examples/mock' folder in file README.md
-
-### Cucumber tests
-
-To install project's dependencies, navigate to folder 'test' and execute the
-following command:
-
-```
-yarn install
-```
-
-Then to execute all tests scenarios use the following command:
-
-```
-yarn test
-```
-
-or
-
-```
-npx cucumber-js
-```
-
-To execute specific test scenario use the following command:
-
-```
-npx cucumber-js features/<file_name>
-```
-
-example:
-
-```
-npx cucumber-js features/data_update_or_create.feature
-```
+GitBook publishes content from the `spec/` directory according to `.gitbook.yaml`. The navigation source is [spec/SUMMARY.md](spec/SUMMARY.md).

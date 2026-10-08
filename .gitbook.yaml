@@ -1,5 +1,27 @@
 root: ./spec/
 
-​structure:  
-    readme: README.md  
-    summary: SUMMARY.md​
+structure:
+  readme: README.md
+  summary: SUMMARY.md
+
+redirects:
+  1-version-history: 01-version-history.md
+  1-version-history/release-notes: 01-version-history/release-notes.md
+  2-description-and-scope: 02-description-and-scope.md
+  3-terminology: 03-terminology.md
+  4-conformance: 04-conformance.md
+  5-key-functionalities: 05-key-functionalities.md
+  5-api-families/access-transparency: 05-api-families/access-transparency.md
+  5-api-families/aggregate-data: 05-api-families/aggregate-data.md
+  5-api-families/consultation: 05-api-families/consultation.md
+  5-api-families/evidence: 05-api-families/evidence.md
+  5-api-families/identity-federation: 05-api-families/identity-federation.md
+  5-api-families/notification: 05-api-families/notification.md
+  5-api-families/provisioning: 05-api-families/provisioning.md
+  5-api-families/write: 05-api-families/write.md
+  6-functional-requirements: 05-key-functionalities.md
+  7-cross-functional-requirements: 04-conformance.md
+  8-data-structures: 05-api-families/registry-core.md
+  9-service-interfaces: 09-service-interfaces.md
+  12-other-resources/historical/future-considerations: 12-other-resources.md
+  12-other-resources/historical/key-decision-log: 12-other-resources/migration-from-3.0.md

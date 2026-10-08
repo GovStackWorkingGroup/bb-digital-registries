@@ -1,0 +1,30 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "x-govstack-digital-registries",
+  "description": "Registry context declared on the OpenAPI Operation Object of every Consultation operation. The values bind the operation to the Registry Identifier published in Registry metadata, to the collection it serves, to its capability and to the single Record view it returns.",
+  "type": "object",
+  "required": ["registry", "collection", "capability", "view"],
+  "additionalProperties": false,
+  "properties": {
+    "registry": {
+      "description": "Registry Identifier of the Registry whose Records the operation returns. It equals the @id of a govreg:Registry in the published Registry metadata.",
+      "type": "string",
+      "format": "iri"
+    },
+    "collection": {
+      "description": "Collection name. It equals the collection segment of the operation path.",
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9-]*$"
+    },
+    "capability": {
+      "description": "Capability implemented by the operation.",
+      "type": "string",
+      "enum": ["retrieve", "lookup", "list", "search"]
+    },
+    "view": {
+      "description": "Name of the Record view the operation returns. Operations of one collection that share a view name return the same Record schema.",
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9-]*$"
+    }
+  }
+}

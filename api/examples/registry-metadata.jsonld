@@ -1,0 +1,76 @@
+{
+  "@context": "https://vocab.govstack.global/digital-registries/context/v1",
+  "@graph": [
+    {
+      "@id": "https://registry.example/catalog",
+      "@type": "dcat:Catalog",
+      "title": "Business Registry catalogue",
+      "description": "Discovery metadata for the Business Registry, its dataset, and its APIs.",
+      "publisher": "https://registry.example/organisations/business-authority",
+      "catalogResource": "https://registry.example/registries/business",
+      "catalogDataset": "https://registry.example/datasets/business-records",
+      "catalogService": [
+        "https://registry.example/services/business-consultation",
+        "https://registry.example/services/business-write",
+        "https://registry.example/services/business-evidence"
+      ]
+    },
+    {
+      "@id": "https://registry.example/registries/business",
+      "@type": [
+        "govreg:Registry",
+        "dcat:Resource"
+      ],
+      "title": "Business Registry",
+      "description": "Authoritative business registrations in Example Jurisdiction, including registered names and registration status. Tax status is outside this Registry's scope.",
+      "specification": "https://specs.govstack.example/digital-registries/3.0.0-alpha.2",
+      "authority": "https://registry.example/organisations/business-authority",
+      "governedDataset": "https://registry.example/datasets/business-records",
+      "dataService": [
+        "https://registry.example/services/business-consultation",
+        "https://registry.example/services/business-write",
+        "https://registry.example/services/business-evidence"
+      ]
+    },
+    {
+      "@id": "https://registry.example/organisations/business-authority",
+      "@type": "prov:Organization",
+      "title": "Business Registration Authority"
+    },
+    {
+      "@id": "https://registry.example/datasets/business-records",
+      "@type": "dcat:Dataset",
+      "title": "Business registration records dataset",
+      "description": "Governed collection of business registration Records.",
+      "publisher": "https://registry.example/organisations/business-authority"
+    },
+    {
+      "@id": "https://registry.example/services/business-consultation",
+      "@type": "dcat:DataService",
+      "title": "Business Registry Consultation API",
+      "description": "Retrieves, looks up, lists, and searches permitted business Records.",
+      "serviceType": "apif:consultation",
+      "servesDataset": "https://registry.example/datasets/business-records",
+      "endpointURL": "https://registry.example",
+      "endpointDescription": "https://registry.example/contracts/1.0.0-draft/examples/business-registry.openapi.yaml"
+    },
+    {
+      "@id": "https://registry.example/services/business-write",
+      "@type": "dcat:DataService",
+      "title": "Business Registry Write API",
+      "description": "Accepts governed requests to create or revise business Records.",
+      "serviceType": "apif:write",
+      "endpointURL": "https://registry.example",
+      "endpointDescription": "https://registry.example/contracts/business-write.openapi.json"
+    },
+    {
+      "@id": "https://registry.example/services/business-evidence",
+      "@type": "dcat:DataService",
+      "title": "Business Registry Evidence API",
+      "description": "Produces signed assertions derived from permitted business registration information.",
+      "serviceType": "apif:evidence",
+      "endpointURL": "https://registry.example",
+      "endpointDescription": "https://registry.example/contracts/business-evidence.openapi.json"
+    }
+  ]
+}

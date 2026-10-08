@@ -1,0 +1,8 @@
+# Exact tool versions used to validate the draft Consultation artifacts.
+openapi-spec-validator==0.9.0
+jsonschema==4.26.0
+PyYAML==6.0.3
+referencing==0.37.0
+# Enables JSON Schema's IRI format assertion instead of silently skipping it.
+rfc3987-syntax==1.1.0
+PyLD==2.0.4

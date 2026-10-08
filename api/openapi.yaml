@@ -1,0 +1,981 @@
+openapi: 3.1.2
+info:
+  title: GovStack Digital Registries Consultation API
+  version: 1.0.0-draft
+  description: >-
+    Read Records through declared collections. Each collection binds a Registry, its member
+    Records, supported operations and declared representation schemas or views. An API can expose
+    several collections. Deployments select at least one capability: Retrieve, Lookup, List or
+    Search. Their contracts declare typed data and input schemas, field meanings, source
+    currency, authorization and pagination policy. The records collection and the Registry
+    Identifier https://registry.example/registries/records are generic reference values;
+    deployed contracts publish concrete collection paths and schemas, and declare the Registry
+    Identifier from their Registry metadata.
+    Registry Core metadata identifies the Registry, its name, authority, authoritative scope and
+    specification version, and associates the service with its Registry, supported API
+    families, endpoint and deployed OpenAPI contract. The API origin serves the RFC 9727
+    /.well-known/api-catalog linkset, which links the deployed contract and the metadata
+    document. An external catalogue can repeat the metadata but does not replace the linkset.
+    Each read applies the caller’s permitted view. Public operations declare security: [].
+    Transport uses TLS 1.3 or later. The /v1 paths identify this API compatibility line;
+    info.version versions the draft HTTP contract.
+  contact:
+    name: GovStack Digital Registries Working Group
+    url: https://github.com/GovStackWorkingGroup/bb-digital-registries
+  x-govstack-api-guide:
+    version: 0.2.0-draft
+    rulesetVersion: 0.2.0-draft
+servers:
+  - url: https://{gatewayHost}
+    description: >-
+      Deployment root; registry.example is non-production. A deployment may add a stable
+      routing prefix, such as /registry, before the versioned resource paths. Each collection's
+      contract supplies its Registry association and selected view; callers do not repeat
+      registryId on each request. API-family labels classify operations independently of paths.
+    variables:
+      gatewayHost:
+        default: registry.example
+        description: Deployment gateway hostname; registry.example is non-production.
+security:
+  - citizenOAuth: [bb:digital-registries:record:read]
+  - serviceOAuth: [bb:digital-registries:record:read]
+tags:
+  - name: Consultation
+    description: Read authorized Records from declared collections and their associated Registries.
+  - name: Health
+    description: Bounded operational liveness without registry information.
+  - name: Discovery
+    description: Locate the origin's API contracts and Registry metadata through the RFC 9727 API catalog.
+paths:
+  /health:
+    get:
+      operationId: getHealth
+      summary: Check service liveness
+      description: >-
+        Return HTTP 200 when the service can accept work and 503 otherwise. This bounded,
+        unauthenticated check exposes only a public service label. Dependency checks are
+        limited to those that determine service availability.
+      tags: [Health]
+      security: []
+      parameters:
+        - $ref: '#/components/parameters/Traceparent'
+      responses:
+        '200':
+          description: The service is healthy and able to accept work.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Health'
+        '500':
+          $ref: '#/components/responses/InternalError'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
+  /.well-known/api-catalog:
+    servers:
+      - url: https://{gatewayHost}
+        description: >-
+          Origin root. RFC 8615 fixes well-known URIs at the origin, so a deployment routing
+          prefix does not apply to this path.
+        variables:
+          gatewayHost:
+            default: registry.example
+            description: Deployment gateway hostname; registry.example is non-production.
+    get:
+      operationId: getApiCatalog
+      summary: Get the API catalog
+      description: >-
+        Return the RFC 9727 API catalog for this origin as an RFC 9264 linkset. For each
+        Digital Registries API at the origin, a service-desc link targets its OpenAPI contract
+        and a service-meta link, typed application/ld+json, targets the Registry metadata
+        document. A deployment that restricts the catalog to an intended audience declares
+        that access requirement instead of security: [].
+      tags: [Discovery]
+      security: []
+      parameters:
+        - $ref: '#/components/parameters/Traceparent'
+        - $ref: '#/components/parameters/IfNoneMatch'
+      responses:
+        '200':
+          $ref: '#/components/responses/ApiCatalog'
+        '304':
+          $ref: '#/components/responses/ApiCatalogNotModified'
+        '500':
+          $ref: '#/components/responses/InternalError'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
+    head:
+      operationId: headApiCatalog
+      summary: Check the API catalog
+      description: >-
+        Return the API catalog response headers without a body, including the Link header
+        with the api-catalog relation that RFC 9727 requires for HEAD requests.
+      tags: [Discovery]
+      security: []
+      parameters:
+        - $ref: '#/components/parameters/Traceparent'
+      responses:
+        '200':
+          $ref: '#/components/responses/ApiCatalogHeaders'
+  /v1/records/{recordId}:
+    get:
+      operationId: retrieveRecord
+      summary: Retrieve one record by its stable identifier
+      description: >-
+        Return the permitted Record view for a stable identifier within this collection's
+        declared membership. Encode recordId as one path segment. Absent Records, Records
+        outside the collection and protected existence share the 404 response. Conditional
+        retrieval uses the representation’s ETag after authorization.
+      tags: [Consultation]
+      x-govstack-digital-registries:
+        registry: https://registry.example/registries/records
+        collection: records
+        capability: retrieve
+        view: record-public
+      parameters:
+        - $ref: '#/components/parameters/RecordId'
+        - $ref: '#/components/parameters/Traceparent'
+        - $ref: '#/components/parameters/IfNoneMatch'
+      responses:
+        '200':
+          $ref: '#/components/responses/Record'
+        '304':
+          $ref: '#/components/responses/NotModified'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/RecordNotAvailable'
+        '406':
+          $ref: '#/components/responses/NotAcceptable'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalError'
+        '502':
+          $ref: '#/components/responses/BadGateway'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
+        '504':
+          $ref: '#/components/responses/GatewayTimeout'
+  /v1/records:
+    get:
+      operationId: listRecords
+      summary: List an authorized page of records
+      description: >-
+        Return permitted Records from this collection in the deployment’s deterministic
+        default order with a unique tie-breaker. Deployments offering sort declare its allowed fields and directions. Each
+        declared equality filter is one query parameter for a non-personal field; a field named
+        pageSize, cursor or sort uses another declared parameter name. Each
+        request is authorized; unsupported query parameters return 400. Continuations follow
+        the Cursor and PageSize rules.
+      tags: [Consultation]
+      x-govstack-digital-registries:
+        registry: https://registry.example/registries/records
+        collection: records
+        capability: list
+        view: record-public
+      parameters:
+        - $ref: '#/components/parameters/Traceparent'
+        - $ref: '#/components/parameters/PageSize'
+        - $ref: '#/components/parameters/Cursor'
+        - $ref: '#/components/parameters/Sort'
+      responses:
+        '200':
+          $ref: '#/components/responses/RecordPage'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '406':
+          $ref: '#/components/responses/NotAcceptable'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalError'
+        '502':
+          $ref: '#/components/responses/BadGateway'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
+        '504':
+          $ref: '#/components/responses/GatewayTimeout'
+  /v1/records:lookup:
+    post:
+      operationId: lookupRecord
+      summary: Look up one record using a declared exact selector
+      description: >-
+        Resolve one declared exact selector to a permitted Record in this collection. Each
+        selector specifies typed key fields, normalization, uniqueness scope and permitted
+        callers. Matching respects the declared collection membership and uniqueness scope.
+        Keys may be composite or derived from declared verified caller context. A missing
+        releasable match uses 404; a uniqueness violation uses generic 500, subject to
+        protected-existence policy. Malformed or structurally invalid input uses 400.
+        Structurally valid input with an unknown selector or invalid domain values uses 422.
+        This synchronous read is
+        retryable without an Idempotency-Key. Selector values remain confined to the request
+        body.
+      tags: [Consultation]
+      x-govstack-digital-registries:
+        registry: https://registry.example/registries/records
+        collection: records
+        capability: lookup
+        view: record-public
+      parameters:
+        - $ref: '#/components/parameters/Traceparent'
+      requestBody:
+        required: true
+        description: One published exact selector and all its typed key values.
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LookupRequest'
+            examples:
+              byRegistrationNumber:
+                summary: Illustrative declared selector from the business binding
+                value:
+                  selector: byRegistrationNumber
+                  values:
+                    registrationNumber: BR-000042
+      responses:
+        '200':
+          $ref: '#/components/responses/Record'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/RecordNotAvailable'
+        '406':
+          $ref: '#/components/responses/NotAcceptable'
+        '413':
+          $ref: '#/components/responses/ContentTooLarge'
+        '415':
+          $ref: '#/components/responses/UnsupportedMediaType'
+        '422':
+          $ref: '#/components/responses/InvalidField'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalError'
+        '502':
+          $ref: '#/components/responses/BadGateway'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
+        '504':
+          $ref: '#/components/responses/GatewayTimeout'
+  /v1/records:search:
+    post:
+      operationId: searchRecords
+      summary: Execute one declared search and return a page
+      description: >-
+        Run one declared typed search within this collection and return a RecordPage. Continue
+        by POSTing the same search, criteria and any sort values with the returned cursor.
+        Criteria equality follows declared type semantics, independent of JSON property order. Malformed or
+        structurally invalid input and invalid pagination controls use 400. Structurally valid
+        input with an unknown search or invalid domain values uses 422. Invalid continuations
+        use 400 invalid-cursor. This synchronous read is retryable without an Idempotency-Key.
+        Search values remain confined to the request body.
+      tags: [Consultation]
+      x-govstack-digital-registries:
+        registry: https://registry.example/registries/records
+        collection: records
+        capability: search
+        view: record-public
+      parameters:
+        - $ref: '#/components/parameters/Traceparent'
+      requestBody:
+        required: true
+        description: One declared search with criteria and body-carried pagination controls.
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SearchRequest'
+            examples:
+              byRegistrationStatus:
+                summary: First page using the business binding's status search
+                value:
+                  search: byRegistrationStatus
+                  criteria:
+                    registrationStatus: DISSOLVED
+                  pageSize: 20
+      responses:
+        '200':
+          $ref: '#/components/responses/RecordPage'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '406':
+          $ref: '#/components/responses/NotAcceptable'
+        '413':
+          $ref: '#/components/responses/ContentTooLarge'
+        '415':
+          $ref: '#/components/responses/UnsupportedMediaType'
+        '422':
+          $ref: '#/components/responses/InvalidField'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalError'
+        '502':
+          $ref: '#/components/responses/BadGateway'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
+        '504':
+          $ref: '#/components/responses/GatewayTimeout'
+components:
+  securitySchemes:
+    citizenOAuth:
+      type: oauth2
+      description: >-
+        Citizen access-token authorization backed by OpenID Connect. Authorization-code
+        clients use PKCE S256. Deployments publish their issuer and audience, replacing these
+        non-production endpoints. ID Tokens are rejected. The read scope is evaluated with
+        Record and field disclosure rules.
+      flows:
+        authorizationCode:
+          authorizationUrl: https://identity.example/authorize
+          tokenUrl: https://identity.example/token
+          scopes:
+            bb:digital-registries:record:read: Attempt authorized Consultation reads.
+    serviceOAuth:
+      type: oauth2
+      description: >-
+        Inter-BB client-credentials authorization with confidential-client authentication.
+        Access tokens are restricted to the service audience and operation scope;
+        sender-constrained tokens are recommended. Deployments replace the non-production
+        endpoint and authorize each page’s released data.
+      flows:
+        clientCredentials:
+          tokenUrl: https://identity.example/token
+          scopes:
+            bb:digital-registries:record:read: Attempt authorized Consultation reads.
+  parameters:
+    RecordId:
+      name: recordId
+      in: path
+      required: true
+      description: Stable opaque identifier within the selected registry, encoded as one path segment.
+      schema:
+        $ref: '#/components/schemas/RecordId'
+    Traceparent:
+      name: traceparent
+      in: header
+      required: false
+      description: >-
+        W3C Trace Context. Propagate valid context; create context when absent or invalid.
+        Problem traceId is the effective trace-id. Trace metadata excludes personal data.
+      schema:
+        type: string
+    IfNoneMatch:
+      name: If-None-Match
+      in: header
+      required: false
+      description: >-
+        Conditional request against the selected representation's ETag. Authorization
+        precedes evaluation of the validator.
+      schema:
+        type: string
+    PageSize:
+      name: pageSize
+      in: query
+      required: false
+      description: >-
+        Maximum items in this page, default 20 on the first request. With a
+        cursor, omission reuses its bound size; a supplied value must equal it.
+      schema:
+        $ref: '#/components/schemas/PageSize'
+    Cursor:
+      name: cursor
+      in: query
+      required: false
+      description: Omit for the first page; otherwise return the previous page's opaque nextCursor unchanged.
+      schema:
+        $ref: '#/components/schemas/Cursor'
+    Sort:
+      name: sort
+      in: query
+      required: false
+      description: >-
+        Declare this parameter when caller-selected sorting is supported. Publish allowed
+        fields, directions and a unique tie-breaker. Omission uses the default order;
+        continuation preserves the original sort input.
+      schema:
+        $ref: '#/components/schemas/Sort'
+  headers:
+    CacheControl:
+      description: >-
+        Protected reads and errors use no-store. Deployments may publish another caching
+        policy for public or properly isolated representations while preserving authorization.
+      schema:
+        type: string
+        const: no-store
+    ETag:
+      description: HTTP validator for the caller-selected representation, returned by Retrieve and the API catalog; not a source revision identifier.
+      schema:
+        type: string
+      example: 'W/"representation-7fa9"'
+    ApiCatalogLink:
+      description: >-
+        Web Link with the api-catalog relation. Its target is this well-known URI or the
+        publisher's API catalog document location.
+      required: true
+      schema:
+        type: string
+        pattern: ';\s*rel\s*=\s*(?:api-catalog|"(?:[^"]*\s)?api-catalog(?:\s[^"]*)?")\s*(?:[;,]|(?![\s\S]))'
+      example: '</.well-known/api-catalog>; rel="api-catalog"'
+    RetryAfter:
+      description: Delay in seconds or HTTP-date before retrying; authoritative over any advisory quota fields.
+      schema:
+        type: string
+      example: '30'
+    WwwAuthenticate:
+      description: Bearer authentication challenge, with no record-specific facts.
+      schema:
+        type: string
+      example: Bearer
+  schemas:
+    RecordId:
+      type: string
+      minLength: 1
+      description: >-
+        Stable opaque identifier unique across all collections in the selected Registry,
+        unchanged throughout the Record's lifecycle and never reassigned to a different Record.
+        The same Record retains its identifier across collections and views. Suitable source
+        identifiers are retained. Exposed identifiers are non-personal and safe for URL
+        references.
+      examples: [r_42]
+    Record:
+      type: object
+      description: >-
+        Record identity and its typed, permitted domain view. Registry identity, data schema
+        and field meanings are supplied by the collection and operation binding. data may include
+        nested objects, embedded relationship components, references and predefined
+        related-data views with declared ownership and temporal semantics. Optional revision,
+        lifecycle and provenance fields are source-backed. Readers accept additive envelope
+        fields.
+      required: [recordId, data]
+      properties:
+        recordId:
+          $ref: '#/components/schemas/RecordId'
+        data:
+          type: object
+          description: >-
+            Fixed caller-authorized domain view. Deployments should reuse suitable established
+            domain schemas and vocabularies, including national or sector schemas. The contract
+            identifies adopted models and versions and binds their concepts to a concrete JSON
+            Schema, documenting mappings, local constraints and extensions. The view may contain
+            typed nested structures and relationships.
+      examples:
+        - recordId: r_42
+          data:
+            legalName: Example Ltd
+            registrationStatus: DISSOLVED
+    RecordReference:
+      type: object
+      description: >-
+        Identity of a related Record. The field or deployment schema fixes the target
+        Registry; otherwise registryId is required. An explicit registryId must agree with the
+        fixed target. Concrete fields encode these constraints. When a target read is
+        offered, the field binding identifies the target collection, contract and operation,
+        and maps the referenced identifier to its input. Target reads follow the target
+        Registry's published capabilities and access policy. Profiles declare any
+        referential-integrity guarantees. Adopted domain reference forms may be used with
+        declared target semantics.
+      required: [recordId]
+      properties:
+        recordId:
+          $ref: '#/components/schemas/RecordId'
+        registryId:
+          type: string
+          format: iri
+          minLength: 1
+          pattern: '^[A-Za-z][A-Za-z0-9+.-]*:'
+          description: >-
+            Stable absolute IRI of the target Registry; service endpoints are discovered
+            separately.
+      examples:
+        - recordId: person_42
+          registryId: https://registry.example/registries/individuals
+    RecordPage:
+      type: object
+      description: >-
+        Bounded live page in the declared deterministic order. Concurrent changes can cause
+        omissions or repeats. A completed traversal over unchanged data and access conditions
+        contains each permitted matching Record once. Work per page is bounded and
+        continuations advance. Page boundaries and progress patterns follow disclosure policy.
+        A short or empty page may continue; nextCursor null ends traversal. total, when present, is exact for the
+        full permitted query at this page's evaluation, before applying the continuation boundary.
+      required: [items, pageInfo]
+      properties:
+        items:
+          type: array
+          maxItems: 100
+          description: Authorized records in the deployment's declared deterministic order.
+          items:
+            $ref: '#/components/schemas/Record'
+        pageInfo:
+          $ref: '#/components/schemas/PageInfo'
+      examples:
+        - items: []
+          pageInfo:
+            nextCursor: null
+    PageSize:
+      type: integer
+      minimum: 1
+      maximum: 100
+      default: 20
+      description: >-
+        Maximum returned items. The first request defaults to 20. Values outside the declared
+        bounds return 400 bad-request. A continuation may omit pageSize to retain its bound
+        effective value or repeat that value; a change returns 400 invalid-cursor.
+      examples: [20]
+    PageInfo:
+      description: >-
+        Continuation metadata. Returned cursors satisfy the Cursor input constraints. Optional
+        total is exact for the full permitted query at the current page's evaluation,
+        before applying the continuation boundary.
+      allOf:
+        - $ref: './common/govstack-openapi-common.yaml#/components/schemas/PageInfo'
+        - type: object
+          description: The continuation obeys the same length and alphabet constraints as the request cursor.
+          properties:
+            nextCursor:
+              description: Opaque continuation accepted by the next request, or null on the final page.
+              anyOf:
+                - $ref: '#/components/schemas/Cursor'
+                - type: 'null'
+                  description: No continuation remains for this traversal.
+      examples:
+        - nextCursor: null
+        - nextCursor: pgn_7JpQ9m2W4xK8fR3cT6vN1
+    Cursor:
+      type: string
+      minLength: 1
+      maxLength: 4096
+      pattern: '^[A-Za-z0-9_-]+(?![\s\S])'
+      description: >-
+        URL-safe, opaque, integrity-protected continuation, excluding personal data. Bind it
+        to the service, Registry, collection, selected view, applicable access context, operation,
+        search name, criteria, ordering and effective pageSize. Return it unchanged and
+        authorize every request. Deployments publish expiry. Malformed, expired or
+        mismatched continuations return 400 invalid-cursor.
+      examples: [pgn_7JpQ9m2W4xK8fR3cT6vN1]
+    Sort:
+      type: string
+      minLength: 1
+      pattern: '^-?[A-Za-z][A-Za-z0-9_]*(\.[A-Za-z][A-Za-z0-9_]*)*(,-?[A-Za-z][A-Za-z0-9_]*(\.[A-Za-z][A-Za-z0-9_]*)*)*(?![\s\S])'
+      description: >-
+        Optional declared field names separated by commas; a minus prefix means
+        descending. Field names keep the spelling of the declared schema, and a dot
+        separates nested object fields. A deployment narrows this schema to its supported
+        fields and directions, or omits this input when it only provides default ordering.
+      examples: [recordId]
+    LookupRequest:
+      type: object
+      additionalProperties: false
+      description: >-
+        One declared exact selector with its typed key values. Deployments bind each selector
+        name to a closed values schema, such as oneOf branches with const names. Context-only
+        selectors use an empty values object; other selectors require their declared
+        client-supplied fields.
+      required: [selector, values]
+      properties:
+        selector:
+          type: string
+          minLength: 1
+          description: Name of a deployment-declared exact key selector.
+        values:
+          type: object
+          description: All declared client-supplied key fields, or an empty object for a context-only selector.
+      examples:
+        - selector: byRegistrationNumber
+          values:
+            registrationNumber: BR-000042
+    SearchRequest:
+      type: object
+      additionalProperties: false
+      description: >-
+        One declared search with typed criteria and continuation controls. Deployments bind
+        each name to a closed criteria schema and declare sort when supported.
+      required: [search, criteria]
+      properties:
+        search:
+          type: string
+          minLength: 1
+          description: Name of a deployment-declared search.
+        criteria:
+          type: object
+          description: The closed typed criteria for this search, repeated on continuation.
+        pageSize:
+          $ref: '#/components/schemas/PageSize'
+        cursor:
+          $ref: '#/components/schemas/Cursor'
+        sort:
+          $ref: '#/components/schemas/Sort'
+      examples:
+        - search: byRegistrationStatus
+          criteria:
+            registrationStatus: DISSOLVED
+          pageSize: 20
+    Problem:
+      $ref: './common/govstack-openapi-common.yaml#/components/schemas/Problem'
+    ValidationProblem:
+      $ref: './common/govstack-openapi-common.yaml#/components/schemas/ValidationProblem'
+    ApiCatalog:
+      type: object
+      description: >-
+        RFC 9264 linkset listing the APIs at this origin. Each Digital Registries API has a
+        service-desc link to its OpenAPI contract and a service-meta link to its Registry
+        metadata document.
+      required: [linkset]
+      properties:
+        linkset:
+          type: array
+          minItems: 1
+          description: Link context objects, such as one per API anchor.
+          items:
+            $ref: '#/components/schemas/LinkContext'
+    LinkContext:
+      type: object
+      description: >-
+        One RFC 9264 link context. Members other than anchor are link relation types, such
+        as item, service-desc and service-meta.
+      properties:
+        anchor:
+          type: string
+          format: uri-reference
+          description: The link context URI.
+      additionalProperties:
+        type: array
+        minItems: 1
+        description: Target links for one relation type.
+        items:
+          $ref: '#/components/schemas/LinkTarget'
+    LinkTarget:
+      type: object
+      description: One RFC 9264 target link; further target attributes follow RFC 9264.
+      required: [href]
+      properties:
+        href:
+          type: string
+          format: uri-reference
+          description: The target URI.
+        type:
+          type: string
+          description: Media type hint for the target.
+        title:
+          type: string
+          description: Human-readable target label.
+    Health:
+      type: object
+      description: Optional informational body; only the HTTP status determines liveness.
+      properties:
+        description:
+          type: string
+          description: Public human-readable service label with no internal details.
+      examples:
+        - description: Digital Registries Consultation
+  responses:
+    ApiCatalog:
+      description: >-
+        The API catalog linkset. RFC 9727 recommends the Content-Type profile parameter
+        "https://www.rfc-editor.org/info/rfc9727".
+      headers:
+        Link:
+          $ref: '#/components/headers/ApiCatalogLink'
+        ETag:
+          $ref: '#/components/headers/ETag'
+      content:
+        application/linkset+json:
+          schema:
+            $ref: '#/components/schemas/ApiCatalog'
+          example:
+            linkset:
+              - anchor: https://registry.example/
+                service-desc:
+                  - href: https://registry.example/contracts/1.0.0-draft/openapi.yaml
+                    type: application/vnd.oai.openapi
+                    title: Digital Registries Consultation API
+                service-meta:
+                  - href: https://registry.example/catalog
+                    type: application/ld+json
+                    title: Registry metadata for the records Registry
+    ApiCatalogHeaders:
+      description: The API catalog response headers, without a body.
+      headers:
+        Link:
+          $ref: '#/components/headers/ApiCatalogLink'
+        ETag:
+          $ref: '#/components/headers/ETag'
+    ApiCatalogNotModified:
+      description: The API catalog validator matches; the response is bodyless.
+      headers:
+        ETag:
+          $ref: '#/components/headers/ETag'
+    Record:
+      description: >-
+        One permitted Record in the published fixed view. Retrieve and Lookup share this
+        envelope.
+      headers:
+        Cache-Control:
+          $ref: '#/components/headers/CacheControl'
+        ETag:
+          $ref: '#/components/headers/ETag'
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Record'
+    RecordPage:
+      description: One bounded page, which may be empty and still have a continuation cursor.
+      headers:
+        Cache-Control:
+          $ref: '#/components/headers/CacheControl'
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/RecordPage'
+    NotModified:
+      description: >-
+        Conditional Retrieve validator matches after authorization; the response is bodyless.
+      headers:
+        ETag:
+          $ref: '#/components/headers/ETag'
+        Cache-Control:
+          $ref: '#/components/headers/CacheControl'
+    BadRequest:
+      description: >-
+        bad-request identifies malformed or structurally invalid input, including malformed
+        JSON, missing or undeclared body members and incorrect JSON types. It also identifies
+        invalid/unsupported query parameters or invalid pagination controls, such as an
+        out-of-range pageSize.
+        invalid-cursor identifies a malformed, expired or mismatched continuation, including
+        changed effective pageSize.
+      headers:
+        Cache-Control:
+          $ref: '#/components/headers/CacheControl'
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/Problem'
+          examples:
+            malformed:
+              value:
+                type: https://govstack.global/problems/digital-registries/bad-request
+                title: Invalid request
+                status: 400
+                traceId: 6f1c3f0e2a9b4c8d7e6f5a4b3c2d1e0f
+            structure:
+              summary: A required request member is missing
+              value:
+                type: https://govstack.global/problems/digital-registries/bad-request
+                title: Invalid request
+                status: 400
+                detail: The request is missing a required member.
+                traceId: 6f1c3f0e2a9b4c8d7e6f5a4b3c2d1e0f
+            cursor:
+              value:
+                type: https://govstack.global/problems/digital-registries/invalid-cursor
+                title: Invalid continuation
+                status: 400
+                traceId: 6f1c3f0e2a9b4c8d7e6f5a4b3c2d1e0f
+    Unauthorized:
+      description: Missing or invalid access token; the problem reveals no record existence.
+      headers:
+        WWW-Authenticate:
+          $ref: '#/components/headers/WwwAuthenticate'
+        Cache-Control:
+          $ref: '#/components/headers/CacheControl'
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/Problem'
+          example:
+            type: https://govstack.global/problems/digital-registries/unauthorized
+            title: Authentication required
+            status: 401
+            traceId: 6f1c3f0e2a9b4c8d7e6f5a4b3c2d1e0f
+    Forbidden:
+      description: >-
+        Access to the operation or view is denied. Protected Record existence uses the 404
+        response.
+      headers:
+        Cache-Control:
+          $ref: '#/components/headers/CacheControl'
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/Problem'
+          example:
+            type: https://govstack.global/problems/digital-registries/forbidden
+            title: Operation not permitted
+            status: 403
+            traceId: 6f1c3f0e2a9b4c8d7e6f5a4b3c2d1e0f
+    RecordNotAvailable:
+      description: >-
+        Absent Records, Records outside the declared collection and protected existence return
+        the same status, problem type and public detail. Record-specific counts and hints are
+        withheld.
+      headers:
+        Cache-Control:
+          $ref: '#/components/headers/CacheControl'
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/Problem'
+          example:
+            type: https://govstack.global/problems/digital-registries/record-not-available
+            title: Record not available
+            status: 404
+            traceId: 6f1c3f0e2a9b4c8d7e6f5a4b3c2d1e0f
+    NotAcceptable:
+      description: The requested response media type is not supported.
+      headers:
+        Cache-Control:
+          $ref: '#/components/headers/CacheControl'
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/Problem'
+          example:
+            type: https://govstack.global/problems/digital-registries/not-acceptable
+            title: Response media type not supported
+            status: 406
+            traceId: 6f1c3f0e2a9b4c8d7e6f5a4b3c2d1e0f
+    ContentTooLarge:
+      description: The request exceeds the deployment's published body-size limit.
+      headers:
+        Cache-Control:
+          $ref: '#/components/headers/CacheControl'
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/Problem'
+          example:
+            type: https://govstack.global/problems/digital-registries/content-too-large
+            title: Request body too large
+            status: 413
+            traceId: 6f1c3f0e2a9b4c8d7e6f5a4b3c2d1e0f
+    UnsupportedMediaType:
+      description: This read operation accepts application/json request bodies only.
+      headers:
+        Cache-Control:
+          $ref: '#/components/headers/CacheControl'
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/Problem'
+          example:
+            type: https://govstack.global/problems/digital-registries/unsupported-media-type
+            title: Request media type not supported
+            status: 415
+            traceId: 6f1c3f0e2a9b4c8d7e6f5a4b3c2d1e0f
+    InvalidField:
+      description: >-
+        A structurally valid Lookup or Search body names an unknown selector or search, or
+        supplies domain values that violate declared format, enumeration or semantic
+        constraints. Structural input and pagination-control errors use 400. Field errors use
+        JSON Pointers and messages that exclude submitted values and internal details.
+      headers:
+        Cache-Control:
+          $ref: '#/components/headers/CacheControl'
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/ValidationProblem'
+          example:
+            type: https://govstack.global/problems/digital-registries/invalid-field
+            title: Request validation failed
+            status: 422
+            traceId: 6f1c3f0e2a9b4c8d7e6f5a4b3c2d1e0f
+            errors:
+              - pointer: /values/registrationNumber
+                message: The registration number does not match the declared format.
+    TooManyRequests:
+      description: >-
+        The gateway enforces its published quota scope and supplies Retry-After. Advisory
+        RateLimit headers are gateway-owned.
+      headers:
+        Retry-After:
+          $ref: '#/components/headers/RetryAfter'
+        Cache-Control:
+          $ref: '#/components/headers/CacheControl'
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/Problem'
+          example:
+            type: https://govstack.global/problems/digital-registries/too-many-requests
+            title: Request rate exceeded
+            status: 429
+            traceId: 6f1c3f0e2a9b4c8d7e6f5a4b3c2d1e0f
+    InternalError:
+      description: >-
+        Request failure, including a source contract violation. Protected-existence policy
+        precedes Record-specific diagnostics. Problem text excludes personal data, source
+        counts and internal details; type is the sole machine identifier, with code and
+        timestamp omitted.
+      headers:
+        Cache-Control:
+          $ref: '#/components/headers/CacheControl'
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/Problem'
+          example:
+            type: https://govstack.global/problems/digital-registries/internal-error
+            title: Request could not be completed
+            status: 500
+            traceId: 6f1c3f0e2a9b4c8d7e6f5a4b3c2d1e0f
+    BadGateway:
+      description: The registry adapter received an unusable upstream response; no upstream details are exposed.
+      headers:
+        Cache-Control:
+          $ref: '#/components/headers/CacheControl'
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/Problem'
+          example:
+            type: https://govstack.global/problems/digital-registries/bad-gateway
+            title: Upstream request failed
+            status: 502
+            traceId: 6f1c3f0e2a9b4c8d7e6f5a4b3c2d1e0f
+    ServiceUnavailable:
+      description: The service temporarily cannot accept work; no dependency topology is exposed.
+      headers:
+        Retry-After:
+          $ref: '#/components/headers/RetryAfter'
+        Cache-Control:
+          $ref: '#/components/headers/CacheControl'
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/Problem'
+          example:
+            type: https://govstack.global/problems/digital-registries/service-unavailable
+            title: Service temporarily unavailable
+            status: 503
+            traceId: 6f1c3f0e2a9b4c8d7e6f5a4b3c2d1e0f
+    GatewayTimeout:
+      description: The upstream read exceeded its time budget; no partial or fabricated record is returned.
+      headers:
+        Cache-Control:
+          $ref: '#/components/headers/CacheControl'
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/Problem'
+          example:
+            type: https://govstack.global/problems/digital-registries/gateway-timeout
+            title: Upstream request timed out
+            status: 504
+            traceId: 6f1c3f0e2a9b4c8d7e6f5a4b3c2d1e0f

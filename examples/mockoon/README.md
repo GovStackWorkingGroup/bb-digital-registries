@@ -1,5 +1,8 @@
-# Mockoon API
-This is a mock application which performs the whole OpenAPI spec for Digital Registries BB 
+# Mockoon legacy API
+
+> This mock targets the previous generated CRUD OpenAPI files. It is not a 3.0.0-alpha.2 Registry mock or conformance target.
+
+This is a mock application for the legacy Digital Registries OpenAPI surface.
 
 
 ## Setup

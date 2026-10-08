@@ -1,0 +1,105 @@
+openapi: 3.1.0
+info:
+  title: GovStack OpenAPI Common Schemas
+  version: 0.1.0-draft
+  description: >-
+    Minimal cross-BB schemas for HTTP problem details, field validation, and
+    cursor pagination. Each BB owns its operations, security, parameters,
+    headers, responses, and examples.
+  contact:
+    name: GovStack API Working Group
+    url: https://www.govstack.global/
+paths: {}
+x-govstack-components-version: 0.1.0-draft
+components:
+  schemas:
+    Problem:
+      type: object
+      description: >-
+        RFC 9457 problem details with one stable machine identifier in type and
+        a trace identifier for correlation. Error text contains no personal
+        data or system-internal detail.
+      required:
+        - type
+        - title
+        - status
+        - traceId
+      properties:
+        type:
+          type: string
+          format: uri
+          pattern: '^https://govstack\.global/problems/[a-z][a-z0-9-]{1,30}/[a-z][a-z0-9]*(?:-[a-z0-9]+)*$'
+          description: >-
+            Stable GovStack problem-type URI and machine identifier in the form
+            https://govstack.global/problems/{bb-code}/{problem-slug}, where the
+            problem slug uses kebab-case.
+        title:
+          type: string
+          minLength: 1
+          description: Short human-readable summary of the problem type.
+        status:
+          type: integer
+          minimum: 400
+          maximum: 599
+          description: HTTP status code for this occurrence.
+        detail:
+          type: string
+          description: Human-readable explanation specific to this occurrence.
+        instance:
+          type: string
+          format: uri-reference
+          description: URI reference identifying this problem occurrence.
+        traceId:
+          type: string
+          pattern: '^(?!0{32}$)[\da-f]{32}$'
+          description: The 32-hex-digit trace-id component of the effective request traceparent.
+    ValidationProblem:
+      description: Problem details for a request containing one or more invalid fields.
+      allOf:
+        - $ref: '#/components/schemas/Problem'
+        - type: object
+          description: Field-level validation details.
+          required:
+            - errors
+          properties:
+            errors:
+              type: array
+              minItems: 1
+              description: One entry for each request field that failed validation.
+              items:
+                $ref: '#/components/schemas/FieldError'
+    FieldError:
+      type: object
+      description: Human-readable failure associated with one request field.
+      required:
+        - pointer
+        - message
+      properties:
+        pointer:
+          type: string
+          format: json-pointer
+          description: JSON Pointer identifying the invalid request field.
+        message:
+          type: string
+          minLength: 1
+          description: Human-readable explanation of the field failure.
+    PageInfo:
+      type: object
+      description: Cursor metadata for a bounded collection response.
+      required:
+        - nextCursor
+      properties:
+        nextCursor:
+          type:
+            - string
+            - 'null'
+          minLength: 1
+          description: Opaque non-empty cursor for the next page, or null on the final page.
+        total:
+          type: integer
+          minimum: 0
+          description: >-
+            Optional total number of matching resources when inexpensive to
+            compute. Each BB use must document whether the value is exact or
+            estimated and whether it describes the current collection or the
+            snapshot used to produce the first page.
