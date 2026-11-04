@@ -388,12 +388,13 @@ requirements:
     interaction: PROTOCOL
     contract: resources/write-binding.md#http-outcomes
     applies_when: [write-create, write-update, write-transition, write-change-requests]
-    statement: A selected Write operation returns `201 Created` only when it creates the identified resource, including a newly submitted Change Request, and returns `202 Accepted` only when it accepts separately identifiable asynchronous work whose Operation status can be retrieved without implying a committed Record change or approved request.
+    statement: A selected Write operation returns `201 Created` only when it creates the identified resource, including a newly submitted Change Request, and, when that operation offers asynchronous execution, returns `202 Accepted` only for separately identifiable background work whose Operation status can be retrieved without implying a committed Record change, review decision, or applied request.
     documentation: |
       Purpose: A consumer can distinguish a created resource from queued work and from an authoritative commit.
-      Prerequisite: Every asynchronous path publishes an Operation representation, status retrieval, terminal outcomes, and retention policy.
-      Constraint: A `202` acknowledgement is not success of the requested mutation. A Change Request created synchronously uses `201` even though its later review or application can be asynchronous. A direct Write can use a synchronous successful outcome defined by its contract when the authoritative commit is complete.
-      Verification: Exercise synchronous creation, Change Request submission, asynchronous acceptance, processing success, processing failure, and status expiry. Correlate each response with the resource or Operation and authoritative state.
+      Condition: Asynchronous execution is optional for each selected operation independently of whether the deployment selects direct Write, Change Requests, or both.
+      Prerequisite: Every offered asynchronous path publishes an Operation representation, status retrieval, terminal outcomes, and retention policy.
+      Constraint: A synchronous-only operation omits `202`. A deployment with no asynchronous Write path need not expose `getOperation`. A `202` acknowledgement is not success of the requested mutation. Completed Change Request creation uses `201` and waiting for manual review is not background processing. Review-only approval returns the declared Change Request success response, such as `200` with approved and application not started, rather than `202`; an Operation cannot replace the Change Request's review or application state. A review operation uses `202` only when it also accepts actual background application work.
+      Verification: Exercise a synchronous-only deployment with no `202` response or Operation endpoint, synchronous Record creation and commit, Change Request submission awaiting review, review-only approval, and, where offered, asynchronous acceptance, processing success, processing failure, and status expiry. Correlate each response with its Record, Change Request, or Operation and authoritative state.
     test: resources/write-testing.md#write-18
   - id:
     status: DRAFT

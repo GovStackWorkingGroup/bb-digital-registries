@@ -568,6 +568,11 @@ def validate_request_local_mappings(
 
     if not isinstance(response_body, dict):
         return
+    if exchange.get("response", {}).get("status") == 202 or "operationId" in path:
+        # Queued, running, and failed work has no authoritative result to map.
+        # Polling supplies no original command against which to bind its result.
+        if response_body["status"] != "succeeded" or not isinstance(request_body, dict):
+            return
     result = response_body.get("result", response_body)
     if not isinstance(result, dict):
         return

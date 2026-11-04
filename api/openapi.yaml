@@ -2,33 +2,68 @@ openapi: 3.1.2
 info:
   title: GovStack Digital Registries Consultation API
   version: 1.0.0-draft
-  description: >-
-    Read Records through declared collections. Each collection binds a Registry, its member
-    Records, supported operations and declared representation schemas or views. An API can expose
-    several collections. Deployments select at least one Record capability: Retrieve, Lookup,
-    List, Search, Revision List or Revision Retrieve. Caller discovery is supporting metadata.
-    Their contracts declare typed data and input schemas, field meanings, source
-    currency, authorisation and pagination policy. The records collection and the Registry
-    Identifier https://registry.example/registries/records are generic reference values;
-    deployed contracts publish concrete collection paths and schemas, and declare the Registry
-    Identifier from their Registry metadata.
-    Registry Core metadata identifies the Registry, its name, authority, authoritative scope and
-    specification version, and associates the service with its Registry, supported API
-    families, endpoint and deployed OpenAPI contract. The API origin serves the RFC 9727
-    /.well-known/api-catalog linkset, which links the deployed contract and the metadata
-    document. An external catalogue can repeat the metadata but does not replace the linkset.
-    Each read applies the caller’s permitted view. Operations can additionally declare
-    conditional-read, field-selection, complete-traversal, snapshot-traversal, recorded-time,
-    effective-time or purpose-bound features;
-    omission selects none. This reference contract selects no selectable read features.
-    Ordinary pagination bounds the response and declares resource limits and source
-    consistency; it does not promise exhaustive traversal, a snapshot or bounded database
-    work. Public operations declare security: [].
-    Transport uses TLS 1.3 or later. The /v1 paths identify this API compatibility line;
-    info.version versions the draft HTTP contract.
-    The default response language is English (en). A deployment may select another default
-    or localise Problem title and detail; it then declares that default and follows API
-    Design Guide section 19 for Accept-Language, Content-Language and Vary.
+  description: |-
+    This draft reference describes how clients read Registry Records through declared
+    collections. A deployment selects the operations it supports and publishes its own
+    OpenAPI contract with concrete collection paths and schemas. The `records` collection
+    and `https://registry.example/registries/records` Registry Identifier are generic
+    reference values.
+
+    ### Understand the data
+
+    - A **Registry** holds records for which a named authority accepts responsibility
+      within a declared scope.
+    - A **Record** represents an entity, place, asset, or event within that Registry.
+    - A **Collection** groups Records for API access and declares its Registry, membership,
+      supported operations, and representation schemas or views. It need not correspond
+      to a database table. One API can expose several collections.
+    - A **permitted view** contains the Record data and metadata that the caller is
+      authorised to receive. It can be filtered or redacted.
+
+    Deployments select at least one of these Record capabilities:
+
+    | Capability | Use it to |
+    | --- | --- |
+    | Retrieve | Read one Record by its stable identifier. |
+    | Lookup | Read one Record using a declared exact selector, such as a registration number. |
+    | List | Read a page of Records in a declared order. |
+    | Search | Run a declared typed search and read a page of results. |
+    | Revision List | Read a page of retained source revisions for one Record. |
+    | Revision Retrieve | Read one retained source revision by its identifier. |
+
+    ### Find a deployed API
+
+    Start with `/.well-known/api-catalog` at the API origin (scheme, host, and port, without
+    a path). This RFC 9727 linkset is a document containing links to the deployed OpenAPI
+    contract and Registry Core metadata. The metadata identifies the
+    Registry, its name, authority, authoritative scope, and specification version. It also
+    associates the service with its Registry, supported API families, endpoint, and deployed
+    contract. The contract declares the Registry Identifier from this metadata. An external
+    catalogue can repeat the metadata but does not replace the origin's linkset.
+
+    Use the deployed contract to find typed data and input schemas, field meanings,
+    authorisation, pagination policy, and source currency. Source currency describes how
+    up to date the returned information is, including any material replication or cache
+    delay. Where caller discovery is supported, it provides metadata about collections and
+    operations visible to the authenticated caller. Discovery does not grant access to
+    Records; authorisation is evaluated on every read.
+
+    ### Read within the declared limits
+
+    Each read applies the caller's permitted view. Operations can additionally declare
+    `conditional-read`, `field-selection`, `complete-traversal`, `snapshot-traversal`,
+    `recorded-time`, `effective-time`, or `purpose-bound` features. Omission selects none.
+    This reference contract selects no selectable read features. Ordinary pagination limits
+    the response size, with declared resource limits and source consistency. It does not
+    promise exhaustive traversal, a snapshot, or bounded database work. Public operations
+    declare `security: []`.
+
+    Transport uses TLS 1.3 or later. The `/v1` paths identify this API compatibility line;
+    `info.version` versions the draft HTTP contract.
+
+    The default response language is English (`en`). A deployment may select another default
+    or localise Problem `title` and `detail`. It then declares that default and follows API
+    Design Guide section 19 for `Accept-Language`, `Content-Language`, and `Vary`.
   contact:
     name: GovStack Digital Registries Working Group
     url: https://github.com/GovStackWorkingGroup/bb-digital-registries
@@ -61,10 +96,8 @@ paths:
     get:
       operationId: getHealth
       summary: Check service liveness
-      description: >-
-        Return HTTP 200 when the service can accept work and 503 otherwise. This bounded,
-        unauthenticated check exposes only a public service label. Dependency checks are
-        limited to those that determine service availability.
+      description: |-
+        Returns HTTP `200` when the service can accept work and `503` otherwise. This bounded, unauthenticated check exposes only a public service label. Dependency checks are limited to those that determine service availability.
       tags: [Health]
       security: []
       parameters:
@@ -93,12 +126,14 @@ paths:
     get:
       operationId: getApiCatalog
       summary: Get the API catalog
-      description: >-
-        Return the RFC 9727 API catalog for this origin as an RFC 9264 linkset. For each
-        Digital Registries API at the origin, a service-desc link targets its OpenAPI contract
-        and a service-meta link, typed application/ld+json, targets the Registry metadata
-        document. A deployment that restricts the catalog to an intended audience declares
-        that access requirement instead of security: [].
+      description: |-
+        Returns the RFC 9727 API catalog for this origin as an RFC 9264 linkset. For each
+        Digital Registries API at the origin, a `service-desc` link targets its OpenAPI
+        contract and a `service-meta` link, typed `application/ld+json`, targets the Registry
+        metadata document.
+
+        A deployment that restricts the catalog to an intended audience declares that access
+        requirement instead of `security: []`.
       tags: [Discovery]
       security: []
       parameters:
@@ -116,9 +151,8 @@ paths:
     head:
       operationId: headApiCatalog
       summary: Check the API catalog
-      description: >-
-        Return the API catalog response headers without a body, including the Link header
-        with the api-catalog relation that RFC 9727 requires for HEAD requests.
+      description: |-
+        Returns the API catalog response headers without a body, including the `Link` header with the `api-catalog` relation that RFC 9727 requires for `HEAD` requests.
       tags: [Discovery]
       security: []
       parameters:
@@ -134,20 +168,24 @@ paths:
     get:
       operationId: getCallerCapabilities
       summary: Discover caller-visible Consultation operations
-      description: >-
-        Return only collections and operations discoverable to the authenticated caller. The
-        document links the versioned OpenAPI contract and names operations by operationId. It
-        describes selectable operation-level capabilities, features, and purpose requirements;
-        it never promises access to any particular Record or field. Authorisation is evaluated
-        again on every read. Caller filtering uses the trusted authentication and authorisation
-        context of this discovery request; no purpose value supplied to discovery grants
-        visibility or access. If generated capability metadata exceeds a published bound or
-        contains contradictory collection or operation identities, return 500 InternalError;
-        never truncate or silently deduplicate it. Capability and feature annotations are
-        advisory: clients skip an operation whose capability value they do not recognise and
-        ignore feature values they do not recognise. Neither behaviour grants authority, and
-        current authorisation is still evaluated on every read. The response uses Cache-Control
-        no-store.
+      description: |-
+        Returns only collections and operations discoverable to the authenticated caller.
+        The document links the versioned OpenAPI contract and names operations by
+        `operationId`. It describes selectable operation-level capabilities, features, and
+        purpose requirements; it never promises access to any particular Record or field.
+        Authorisation is evaluated again on every read.
+
+        Caller filtering uses the trusted authentication and authorisation context of this
+        discovery request. No purpose value supplied to discovery grants visibility or access.
+
+        If generated capability metadata exceeds a published bound or contains contradictory
+        collection or operation identities, the operation returns `500 InternalError`. It
+        never truncates or silently deduplicates the metadata.
+
+        Capability and feature annotations are advisory. Clients skip an operation whose
+        capability value they do not recognise and ignore feature values they do not
+        recognise. Neither behaviour grants authority, and current authorisation is still
+        evaluated on every read. The response uses `Cache-Control: no-store`.
       tags: [Discovery]
       parameters:
         - $ref: '#/components/parameters/Traceparent'
@@ -192,12 +230,15 @@ paths:
   /v1/collections/{collectionId}/records/{recordId}:
     get:
       operationId: retrieveRecord
-      summary: Retrieve one record by its stable identifier
-      description: >-
-        Return the permitted Record view for a stable identifier within this collection's
-        declared membership. Encode recordId as one path segment. Absent Records, Records
-        outside the collection and protected existence share the 404 response. This baseline
-        operation selects current state and no selectable temporal feature.
+      summary: Retrieve one Record by its stable identifier
+      description: |-
+        Returns the permitted Record view for a stable identifier within this collection's
+        declared membership. Encode `recordId` as one path segment.
+
+        An absent Record, a Record outside the collection, and a Record whose existence
+        cannot be disclosed to the caller share the same `404` response. The response does
+        not reveal which condition applied. This baseline operation selects current state
+        and no selectable temporal feature.
       tags: [Consultation]
       x-govstack-digital-registries:
         registry: https://registry.example/registries/records
@@ -213,6 +254,8 @@ paths:
           $ref: '#/components/responses/Record'
         '400':
           $ref: '#/components/responses/BadRequest'
+          description: |-
+            `bad-request` identifies malformed or structurally invalid input, including invalid or unsupported query parameters. This operation has no request body or pagination controls.
         '401':
           $ref: '#/components/responses/Unauthorized'
         '403':
@@ -234,14 +277,19 @@ paths:
   /v1/collections/{collectionId}/records:
     get:
       operationId: listRecords
-      summary: List an authorised page of records
-      description: >-
-        Return permitted Records from this collection in the deployment’s deterministic
-        default order with a unique tie-breaker. Deployments offering sort declare its allowed fields and directions. Each
-        declared equality filter is one query parameter for a non-personal field; a field named
-        pageSize, cursor, offset, limit, sort or fields uses another declared parameter name. Each
-        request is authorised; unsupported query parameters return 400. Continuations follow
-        the Cursor and PageSize rules.
+      summary: List an authorised page of Records
+      description: |-
+        Returns permitted Records from this collection in the deployment’s deterministic
+        default order with a unique tie-breaker. Deployments offering `sort` declare its
+        allowed fields and directions.
+
+        Each declared equality filter is one query parameter for a non-personal field.
+        A field named `pageSize`, `cursor`, `offset`, `limit`, `sort`, or `fields` uses another
+        declared parameter name.
+
+        Each request is authorised. Unsupported query parameters return `400`. Continuations
+        follow the Cursor and PageSize rules. Omit `cursor` for the first page. A request
+        sample containing a cursor illustrates a continuation request.
       tags: [Consultation]
       x-govstack-digital-registries:
         registry: https://registry.example/registries/records
@@ -259,6 +307,8 @@ paths:
           $ref: '#/components/responses/RecordPage'
         '400':
           $ref: '#/components/responses/BadRequest'
+          description: |-
+            `bad-request` identifies invalid or unsupported query parameters or invalid pagination controls, including an out-of-range `pageSize`. `invalid-cursor` identifies a malformed, expired, or mismatched continuation. Keep the original path, filters, sort order, and effective `pageSize` when continuing.
         '401':
           $ref: '#/components/responses/Unauthorized'
         '403':
@@ -280,18 +330,20 @@ paths:
   /v1/collections/{collectionId}/lookup:
     post:
       operationId: lookupRecord
-      summary: Look up one record using a declared exact selector
-      description: >-
-        Resolve one declared exact selector to a permitted Record in this collection. Each
-        selector specifies typed key fields, normalisation, uniqueness scope and permitted
+      summary: Look up one Record using a declared exact selector
+      description: |-
+        Resolves one declared exact selector to a permitted Record in this collection. Each
+        selector specifies typed key fields, normalisation, uniqueness scope, and permitted
         callers. Matching respects the declared collection membership and uniqueness scope.
-        Keys may be composite or derived from declared verified caller context. A missing
-        releasable match uses 404; a uniqueness violation uses generic 500, subject to
-        protected-existence policy. Malformed or structurally invalid input uses 400.
-        Structurally valid input with an unknown selector or invalid domain values uses 422.
-        This synchronous read is
-        retryable without an Idempotency-Key. Selector values remain confined to the request
-        body.
+        Keys may be composite or derived from declared verified caller context.
+
+        If no matching Record can be disclosed to the caller, the operation uses `404`.
+        A uniqueness violation uses generic `500`, subject to the policy on disclosing
+        whether a Record exists. Malformed or structurally invalid input uses `400`.
+        Structurally valid input with an unknown selector or invalid domain values uses `422`.
+
+        This synchronous read is retryable without an `Idempotency-Key`. Selector values
+        remain confined to the request body.
       tags: [Consultation]
       x-govstack-digital-registries:
         registry: https://registry.example/registries/records
@@ -320,6 +372,8 @@ paths:
           $ref: '#/components/responses/Record'
         '400':
           $ref: '#/components/responses/BadRequest'
+          description: |-
+            `bad-request` identifies malformed JSON, missing or undeclared body members, incorrect JSON types, or invalid or unsupported query parameters. Structurally valid input with an unknown selector or invalid domain values uses `422` instead.
         '401':
           $ref: '#/components/responses/Unauthorized'
         '403':
@@ -347,15 +401,19 @@ paths:
   /v1/collections/{collectionId}/search:
     post:
       operationId: searchRecords
-      summary: Execute one declared search and return a page
-      description: >-
-        Run one declared typed search within this collection and return a RecordPage. Continue
-        by POSTing the same search, criteria and any sort values with the returned cursor.
-        Criteria equality follows declared type semantics, independent of JSON property order. Malformed or
-        structurally invalid input and invalid pagination controls use 400. Structurally valid
-        input with an unknown search or invalid domain values uses 422. Invalid continuations
-        use 400 invalid-cursor. This synchronous read is retryable without an Idempotency-Key.
-        Search values remain confined to the request body.
+      summary: Run one declared search and return a page
+      description: |-
+        Runs one declared typed search within this collection and returns a RecordPage.
+        Continue with a `POST` request containing the same search, criteria, and any sort
+        values, plus the returned cursor. Criteria equality follows declared type semantics,
+        independent of JSON property order.
+
+        Malformed or structurally invalid input and invalid pagination controls use `400`.
+        Structurally valid input with an unknown search or invalid domain values uses `422`.
+        Invalid continuations use `400 invalid-cursor`.
+
+        This synchronous read is retryable without an `Idempotency-Key`. Search values
+        remain confined to the request body.
       tags: [Consultation]
       x-govstack-digital-registries:
         registry: https://registry.example/registries/records
@@ -385,6 +443,8 @@ paths:
           $ref: '#/components/responses/RecordPage'
         '400':
           $ref: '#/components/responses/BadRequest'
+          description: |-
+            `bad-request` identifies malformed JSON, missing or undeclared body members, incorrect JSON types, invalid or unsupported query parameters, or invalid body-carried pagination controls, including an out-of-range `pageSize`. `invalid-cursor` identifies a malformed, expired, or mismatched continuation. Repeat the original search, criteria, any sort values, and effective `pageSize` when continuing. Structurally valid input with an unknown search or invalid domain values uses `422` instead.
         '401':
           $ref: '#/components/responses/Unauthorized'
         '403':
@@ -412,19 +472,23 @@ paths:
   /v1/collections/{collectionId}/records/{recordId}/revisions:
     get:
       operationId: listRecordRevisions
-      summary: List disclosed retained revisions for one record
-      description: >-
-        Return a bounded page of retained source revisions for the identified Record in the
+      summary: List disclosed retained revisions for one Record
+      description: |-
+        Returns a bounded page of retained source revisions for the identified Record in the
         deployment's declared stable source revision order, newest first, with a documented
-        unique tie-breaker. Clients follow that order without interpreting opaque revisionId
-        values as timestamps or sequence numbers or assuming that recordedAt is always present.
-        Each item is evaluated under current authorisation and disclosure policy. The cursor is
-        bound to this path's parent recordId and every other request selector; replay against a
-        different parent Record or changed selector returns 400 invalid-cursor. The operation neither
-        fabricates history nor implies that revisions absent from the source were retained.
-        An absent parent Record, a Record outside this collection, and protected parent existence
-        use the same generic 404 response. Only after authorisation and protected-existence checks
-        may source inability to return retained history use 409 history-not-available.
+        unique tie-breaker. Clients follow that order without interpreting opaque `revisionId`
+        values as timestamps or sequence numbers, or assuming `recordedAt` is always available.
+
+        Each item is evaluated under current authorisation and disclosure policy. The cursor
+        is bound to this path's parent `recordId` and every other request selector. Replay
+        against a different parent Record or changed selector returns `400 invalid-cursor`.
+        The operation neither fabricates history nor implies that revisions absent from the
+        source were retained.
+
+        An absent parent Record, a Record outside this collection, and a parent Record whose
+        existence cannot be disclosed to the caller use the same generic `404` response.
+        Only after authorisation and checks on whether existence can be disclosed may source
+        inability to return retained history use `409 history-not-available`.
       tags: [Consultation]
       x-govstack-digital-registries:
         registry: https://registry.example/registries/records
@@ -442,6 +506,8 @@ paths:
           $ref: '#/components/responses/RevisionPage'
         '400':
           $ref: '#/components/responses/BadRequest'
+          description: |-
+            `bad-request` identifies invalid or unsupported query parameters or invalid pagination controls, including an out-of-range `pageSize`. `invalid-cursor` identifies a malformed, expired, or mismatched continuation, including reuse under a different parent `recordId`. Keep the original path, request selectors, and effective `pageSize` when continuing.
         '401':
           $ref: '#/components/responses/Unauthorized'
         '403':
@@ -465,15 +531,18 @@ paths:
   /v1/collections/{collectionId}/records/{recordId}/revisions/{revisionId}:
     get:
       operationId: retrieveRecordRevision
-      summary: Retrieve one disclosed retained record revision
-      description: >-
-        Return one retained source revision under current authorisation and disclosure policy.
-        revisionId is opaque and source-backed. An unavailable or protected revision, absent or
-        protected parent Record, or parent Record outside the collection uses the same 404
-        response; the API does not reveal which condition applied. Only after those authorisation
-        and protected-existence checks may source inability to return known retained history use
-        409 history-not-available. The operation never reconstructs or fabricates a missing
-        historical state.
+      summary: Retrieve one disclosed retained Record revision
+      description: |-
+        Returns one retained source revision under current authorisation and disclosure
+        policy. `revisionId` is opaque and source-backed.
+
+        An unavailable or protected revision, absent or protected parent Record, or parent
+        Record outside the collection uses the same `404` response. The API does not reveal
+        which condition applied.
+
+        Only after authorisation and checks on whether existence can be disclosed may source
+        inability to return known retained history use `409 history-not-available`. The
+        operation never reconstructs or fabricates a missing historical state.
       tags: [Consultation]
       x-govstack-digital-registries:
         registry: https://registry.example/registries/records
@@ -490,6 +559,8 @@ paths:
           $ref: '#/components/responses/RecordRevision'
         '400':
           $ref: '#/components/responses/BadRequest'
+          description: |-
+            `bad-request` identifies malformed or structurally invalid input, including invalid or unsupported query parameters. This operation has no request body or pagination controls.
         '401':
           $ref: '#/components/responses/Unauthorized'
         '403':
@@ -542,9 +613,8 @@ components:
       name: collectionId
       in: path
       required: true
-      description: >-
-        Collection selected by this reference catalogue. A deployed contract replaces the
-        enum with its declared literal collection identifiers.
+      description: |-
+        Collection selected by this reference catalogue. A deployed contract replaces the enum with its declared literal collection identifiers. In example URLs such as `/collections/records/records/r_42`, the first `records` is the collection identifier; the second names the Record resource within that collection.
       schema:
         $ref: '#/components/schemas/CollectionId'
     RecordId:
@@ -583,49 +653,41 @@ components:
       name: pageSize
       in: query
       required: false
-      description: >-
-        Maximum items in this page, default 20 on the first request. With a
-        cursor, omission reuses its bound size; a supplied value must equal it.
+      description: |-
+        Maximum number of items returned in a page.
       schema:
         $ref: '#/components/schemas/PageSize'
     Cursor:
       name: cursor
       in: query
       required: false
-      description: >-
-        Omit for the first page; otherwise return the previous page's opaque nextCursor unchanged.
-        A history continuation is bound to its path parent recordId, and cross-Record replay
-        returns 400 invalid-cursor.
+      description: |-
+        Continuation from the previous page. Omit for the first page.
       schema:
         $ref: '#/components/schemas/Cursor'
     RecordedAsOf:
       name: recordedAsOf
       in: query
       required: false
-      description: >-
-        Select source state recorded no later than this RFC 3339 instant. Omission selects the
-        current recorded state unless another temporal coordinate is supplied. Declare only
-        when recorded-time is selected.
+      description: |-
+        Selects source state recorded no later than this RFC 3339 instant. Omission selects the current recorded state unless another temporal coordinate is supplied. Declare only when recorded-time is selected.
       schema:
         $ref: '#/components/schemas/RecordedAsOf'
     EffectiveAt:
       name: effectiveAt
       in: query
       required: false
-      description: >-
-        Select source state applicable at this calendar date or RFC 3339 instant. Omission
-        selects the currently applicable state unless another temporal coordinate is supplied.
-        Declare only when effective-time is selected.
+      description: |-
+        Selects source state applicable at this calendar date or RFC 3339 instant. Omission selects the currently applicable state unless another temporal coordinate is supplied. Declare only when effective-time is selected.
       schema:
         $ref: '#/components/schemas/EffectiveAt'
     Sort:
       name: sort
       in: query
       required: false
-      description: >-
-        Declare this parameter when caller-selected sorting is supported. Publish allowed
-        fields, directions and a unique tie-breaker. Omission uses the default order;
-        continuation preserves the original sort input.
+      description: |-
+        Fields to sort by. Omit to use the deployment's default order; keep the same sort
+        input on continuation requests.
       schema:
         $ref: '#/components/schemas/Sort'
     Fields:
@@ -634,11 +696,8 @@ components:
       required: false
       style: form
       explode: false
-      description: >-
-        Declare only when field-selection is selected. Comma-separated top-level data
-        field names, narrowed to the deployment's supported enum. Omission uses its
-        declared default field set; recordId, data and documented mandatory data fields
-        remain present. Disclosure policy governs every selected field.
+      description: |-
+        Deployments declare this parameter only when `field-selection` is selected. It accepts comma-separated top-level data field names, narrowed to the deployment's supported enum. Omission uses the declared default field set; `recordId`, `data`, and documented mandatory data fields remain present. Disclosure policy governs every selected field.
       schema:
         $ref: '#/components/schemas/FieldSelection'
   headers:
@@ -749,12 +808,14 @@ components:
       additionalProperties: false
       minProperties: 1
       maxProperties: 2
-      description: >-
+      description: |-
         Temporal coordinates, when supplied, for a declared recorded-time or effective-time read.
         At least one coordinate is required when the object is present. Omission selects the
-        operation's documented current state. recordedAsOf alone applies a knowledge cut with
-        no effective-time filter; effectiveAt alone selects the state applicable then using the
-        latest recorded knowledge; both coordinates intersect those selections.
+        operation's documented current state.
+
+        - `recordedAsOf` alone applies a knowledge cut with no effective-time filter.
+        - `effectiveAt` alone selects the state applicable then using the latest recorded knowledge.
+        - Both coordinates intersect those selections.
       properties:
         recordedAsOf:
           $ref: '#/components/schemas/RecordedAsOf'
@@ -901,16 +962,19 @@ components:
           registryId: https://registry.example/registries/individuals
     RecordPage:
       type: object
-      description: >-
+      description: |-
         Response-bounded page in the declared deterministic order. Baseline traversal follows
-        the published source consistency, result limits and resource policy; it does not
-        establish an exhaustive export, snapshot or bound on database work. complete-traversal
-        additionally returns each permitted match once under unchanged data and access;
-        snapshot-traversal fixes source membership, order and data at one evaluation point.
+        the published source consistency, result limits, and resource policy. It does not
+        establish an exhaustive export, snapshot, or bound on database work.
+
+        `complete-traversal` additionally returns each permitted match once under unchanged
+        data and access. `snapshot-traversal` fixes source membership, order, and data at one
+        evaluation point.
+
         Every page applies current authorisation and disclosure. A short or empty page may
-        continue; nextCursor null ends the declared traversal. total, when present, is exact
-        for the full permitted query at its declared evaluation point, before the continuation
-        boundary.
+        continue; `nextCursor` set to `null` ends the declared traversal. When present, `total`
+        is exact for the full permitted query at its declared evaluation point, before the
+        continuation boundary.
       required: [items, pageInfo]
       properties:
         items:
@@ -942,17 +1006,19 @@ components:
       minimum: 1
       maximum: 100
       default: 20
-      description: >-
-        Maximum returned items. The first request defaults to 20. Values outside the declared
-        bounds return 400 bad-request. A continuation may omit pageSize to retain its bound
-        effective value or repeat that value; a change returns 400 invalid-cursor.
+      description: |-
+        Defaults to 20 on the first request. Values outside the declared bounds return
+        `400 bad-request`. With a cursor, omit `pageSize` to keep its bound value or repeat
+        that value; changing it returns `400 invalid-cursor`.
       examples: [20]
     PageInfo:
-      description: >-
-        Continuation metadata. Returned cursors satisfy the Cursor input constraints. When supplied,
-        total is exact for the full permitted query at the declared evaluation point,
-        before applying the continuation boundary: current page evaluation for live reads,
-        or the fixed source snapshot evaluated under current rights for snapshot-traversal.
+      description: |-
+        Continuation metadata. Returned cursors satisfy the Cursor input constraints.
+        When supplied, `total` is exact for the full permitted query at the declared evaluation
+        point, before applying the continuation boundary:
+
+        - Current page evaluation for live reads.
+        - The fixed source snapshot evaluated under current rights for `snapshot-traversal`.
       allOf:
         - $ref: './common/govstack-openapi-common.yaml#/components/schemas/PageInfo'
         - type: object
@@ -972,28 +1038,34 @@ components:
       minLength: 1
       maxLength: 4096
       pattern: '^[A-Za-z0-9_-]+(?![\s\S])'
-      description: >-
-        URL-safe, opaque, integrity-protected continuation, excluding personal data. Bind it
-        to the service, Registry, collection, selected view, applicable access context, operation,
-        every path selector including the parent recordId for revision-list, search name,
-        criteria, ordering, effective field and temporal selection, effective trusted purpose,
-        and pageSize. Continuations repeat the same path and request selectors; a mismatch,
-        including replay against another parent Record, returns 400 invalid-cursor. Every page is
-        reauthorised, and a source-metadata fallback never changes the effective purpose. It can wrap
-        a source offset, page number or continuation token without establishing stronger
-        source guarantees. Return it unchanged and authorise every request; it never grants
-        authority. Deployments publish expiry. Malformed, expired or
-        mismatched continuations return 400 invalid-cursor.
+      description: |-
+        Return this URL-safe, opaque, integrity-protected token unchanged. It contains no
+        personal data and is bound to:
+
+        - Service, Registry, collection, selected view, applicable access context, and operation.
+        - All path selectors, including the parent `recordId` for `revision-list`.
+        - Search name, criteria, ordering, effective field and temporal selection, effective
+          trusted purpose, and `pageSize`.
+
+        Repeat the same path and request selectors. Malformed, expired, or mismatched cursors,
+        including reuse for another parent Record, return `400 invalid-cursor`.
+
+        The service rechecks current authorisation for every page; the cursor grants no authority.
+        Source-metadata
+        fallback never changes the effective purpose. Deployments publish expiry.
+
+        A cursor can wrap a source offset, page number, or token without strengthening the source's
+        guarantees.
       examples: [pgn_7JpQ9m2W4xK8fR3cT6vN1]
     Sort:
       type: string
       minLength: 1
       pattern: '^-?[A-Za-z][A-Za-z0-9_]*(\.[A-Za-z][A-Za-z0-9_]*)*(,-?[A-Za-z][A-Za-z0-9_]*(\.[A-Za-z][A-Za-z0-9_]*)*)*(?![\s\S])'
-      description: >-
-        Declared field names, which may be omitted, separated by commas; a minus prefix means
-        descending. Field names keep the spelling of the declared schema, and a dot
-        separates nested object fields. A deployment narrows this schema to its supported
-        fields and directions, or omits this input when it only provides default ordering.
+      description: |-
+        Comma-separated field names using the schema's spelling; prefix `-` for descending
+        order, and use `.` between nested fields. Deployments narrow this schema to supported
+        fields and directions, publish a unique tie-breaker, and omit the input when only
+        default ordering is available.
       examples: [recordId]
     FieldSelection:
       type: array
@@ -1589,16 +1661,17 @@ components:
         Cache-Control:
           $ref: '#/components/headers/CacheControl'
     BadRequest:
-      description: >-
-        bad-request identifies malformed or structurally invalid input, including malformed
-        JSON, missing or undeclared body members and incorrect JSON types. It also identifies
-        invalid/unsupported query parameters or invalid pagination controls, such as an
-        out-of-range pageSize. When field-selection is selected, empty, duplicate,
-        incorrectly typed or out-of-bounds selections and unsupported fields query values
-        use 400.
-        invalid-cursor identifies a malformed, expired or mismatched continuation, including
-        changed path selectors such as a revision-list parent recordId, request criteria,
-        ordering, effective pageSize, field or temporal selection, or trusted purpose.
+      description: |-
+        `bad-request` identifies malformed or structurally invalid input, including malformed
+        JSON, missing or undeclared body members, and incorrect JSON types. It also identifies
+        invalid or unsupported query parameters or invalid pagination controls, such as an
+        out-of-range `pageSize`. When `field-selection` is selected, empty, duplicate,
+        incorrectly typed or out-of-bounds selections and unsupported `fields` query values
+        use `400`.
+
+        `invalid-cursor` identifies a malformed, expired, or mismatched continuation,
+        including changed path selectors such as a `revision-list` parent `recordId`, request
+        criteria, ordering, effective `pageSize`, field or temporal selection, or trusted purpose.
       headers:
         Cache-Control:
           $ref: '#/components/headers/CacheControl'
@@ -1770,11 +1843,13 @@ components:
             status: 415
             traceId: 6f1c3f0e2a9b4c8d7e6f5a4b3c2d1e0f
     InvalidField:
-      description: >-
+      description: |-
         A structurally valid Lookup or Search body names an unknown selector, search or
         selectable field, or supplies domain values that violate declared format,
-        enumeration or semantic constraints. Structural input and pagination-control errors use 400. Field errors use
-        JSON Pointers and messages that exclude submitted values and internal details.
+        enumeration, or semantic constraints.
+
+        Structural input and pagination-control errors use `400`. Field errors use JSON
+        Pointers and messages that exclude submitted values and internal details.
       headers:
         Cache-Control:
           $ref: '#/components/headers/CacheControl'

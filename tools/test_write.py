@@ -94,6 +94,45 @@ class WriteArtifactTests(unittest.TestCase):
         with self.assertRaises(ValidationError):
             write.validate_contract_fixture(blocked)
 
+    def test_background_execution_fixtures_are_distinct_from_review(self):
+        fixtures = {item["name"]: item for item in write.contract_fixture_items()}
+        names = (
+            "background-create-accepted",
+            "background-create-running",
+            "background-create-succeeded",
+            "background-create-failed",
+        )
+        self.assertTrue(
+            set(names) <= fixtures.keys(),
+            "Canonical fixtures must show actual background execution",
+        )
+        for name in names:
+            write.validate_contract_fixture(fixtures[name])
+        accepted = fixtures[names[0]]["response"]
+        self.assertEqual(accepted["status"], 202)
+        self.assertEqual(accepted["body"]["status"], "pending")
+        proposal = fixtures["governed-update-submission"]["response"]
+        self.assertEqual(proposal["status"], 201)
+        self.assertEqual(proposal["body"]["reviewState"], "pending")
+        self.assertEqual(proposal["body"]["applicationState"], "not-started")
+        with self.assertRaises(ValidationError):
+            write.validate_schema_value(
+                write.WRITE,
+                {"$ref": "#/components/schemas/Operation"},
+                proposal["body"],
+            )
+        wrong = deepcopy(accepted["body"])
+        wrong["status"] = "awaiting-approval"
+        with self.assertRaises(ValidationError):
+            write.validate_schema_value(
+                write.WRITE, {"$ref": "#/components/schemas/Operation"}, wrong
+            )
+        for name, outcome in ((names[2], "result"), (names[3], "error")):
+            wrong = deepcopy(fixtures[name])
+            wrong["response"]["body"].pop(outcome)
+            with self.assertRaises(ValidationError):
+                write.validate_contract_fixture(wrong)
+
     def test_write_capabilities_are_separate_and_normative(self):
         contract = yaml.safe_load(write.WRITE.read_text())
         selected = {
@@ -339,6 +378,14 @@ class WriteContractMutationTests(unittest.TestCase):
     def assert_rejected(self, document):
         with self.assertRaises((ValueError, ValidationError)):
             self.validate_document(document, require_reference_surface=True)
+
+    def test_synchronous_only_profiles_need_no_operation_endpoint(self):
+        synchronous = deepcopy(self.canonical)
+        synchronous["paths"].pop("/v1/operations/{operationId}")
+        for _route, _method, item in write.operations(synchronous):
+            item.get("responses", {}).pop("202", None)
+        self.validate_document(synchronous, require_reference_surface=True)
+        write.validate_openapi(synchronous, base_uri=write.WRITE.as_uri())
 
     def test_direct_only_and_governed_only_profiles_are_valid_selections(self):
         direct = deepcopy(self.canonical)

@@ -6,7 +6,7 @@ description: Applicability, covered functionality, relationships, and exclusions
 
 ## Subject and applicability
 
-This document specifies the Digital Registries Building Block, a software component that publishes governed Registry descriptions and service contracts and provides permitted Registry information through declared external interfaces.
+API consumers need a consistent way to discover Registry services and obtain permitted Registry information without depending on each solution's internal design. This Building Block Specification defines the external behaviour of software that publishes governed Registry descriptions and service contracts and provides that information through declared external interfaces.
 
 It applies to software solutions that expose Registry services over records concerning persons, organisations, places, assets, or events. A solution can operate one Registry or many Registries and can be an adaptor over an existing system. The specification concerns externally observable behaviour and required evidence, not the solution's internal architecture.
 
@@ -18,11 +18,11 @@ All requirements in this alpha draft remain `DRAFT` and unnumbered under the [ag
 
 This specification extends `govstack-cfr-2.1.0`. Every applicable parent requirement retains its original classifier and applicability conditions unless a Digital Registries requirement identifies a permitted extension or replacement.
 
-The Building Block can participate in government services and domain architectures without transferring institutional authority for Registry records to another component. Reference architectures can define its role in those systems without importing additional requirements into this specification.
+A Digital Registries implementation can participate in government services and domain architectures without transferring institutional authority for Registry records to another component. Reference architectures can define the implementation's role in those systems without importing additional requirements into this specification.
 
 ## Covered
 
-The core covers both functionalities below. It defines no extensions.
+The specification's core covers both functionalities below. It defines no extensions.
 
 - **Discover Registry Services:** identify a Registry, its responsible authority and authoritative scope, and locate its exposed services and machine-readable contracts.
 - **Provide Registry Services:** provide at least one approved Registry service through the operations declared by the Registry's published contract.
@@ -51,7 +51,7 @@ The specification also covers:
 - the shared Record envelope, error outcomes, disclosure behaviour, and live cursor pagination contract of the six read operations; and
 - the HTTP binding and publication artifacts for the baseline Consultation interface.
 
-The specification separates operations, common Registry and Record context, domain semantics, and protocol bindings. This separation lets national registries, commercial products, open-source platforms, and adaptors expose the same external contract without sharing an internal architecture.
+The specification separates operations, common Registry and Record context, domain semantics, and protocol bindings. This separation allows national registries, commercial products, open-source platforms, and adaptors to expose the same external contract without sharing an internal architecture.
 
 ## Not covered
 
@@ -79,4 +79,4 @@ The GovStack Registries and Registration Working Group owns this draft. Change r
 
 ## Write scope
 
-The [Write binding](../resources/write-binding.md) specifies independently selected direct creation, direct update, direct named transitions, and approval-based change requests. Registry-managed review concerns the proposed authoritative change; it does not require a general-purpose intake or workflow engine. Institutions define permissions, review policy, accepted transitions, and domain models. Domain data, legal decisions, and household or civil-registration rules are not standardised here. The [Write examples](../api/examples/README.md) remain non-normative and do not select a required domain schema for shared Write.
+The [Write binding](../resources/write-binding.md) specifies independently selected direct creation, direct update, direct named transitions, and approval-based change requests. Registry-managed review concerns the proposed authoritative change; it does not require a general-purpose intake or workflow engine. Adopting institutions define permissions, review policy, accepted transitions, and domain models. Domain data, legal decisions, and household or civil-registration rules are not standardised here. The [Write examples](../api/examples/README.md) remain non-normative and do not select a required domain schema for shared Write.

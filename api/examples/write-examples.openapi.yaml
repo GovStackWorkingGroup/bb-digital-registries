@@ -2,22 +2,22 @@ openapi: 3.1.2
 info:
   title: Registry Write examples
   version: 1.0.0-draft
-  description: >-
-    NON-NORMATIVE deployment profile for birth-registrations, households, and individuals.
-    It specialises the GovStack Digital Registries Write contract without adding domain
-    obligations to the shared contract. These examples use selected PublicSchema domain
-    vocabulary and schemas as references. The Write envelopes, review states, source
-    commands, and request-local identifiers are example-specific conventions.
+  description: |
+    NON-NORMATIVE deployment profile illustrating Write operations for birth registrations,
+    households, and individuals. It specialises the GovStack Digital Registries Write contract
+    without adding shared domain obligations. Selected PublicSchema vocabulary and schemas are
+    references; Write envelopes, review states, source commands, and request-local identifiers are
+    example conventions.
 
-    Birth declaration and correction bodies are source commands. After authoritative commit,
-    the deployment maps accepted command content into its PublicSchema crvs/Birth projection.
-    The command is not itself the read Birth resource or an action log. Pending, rejected, and
-    blocked change requests have no authoritative Record effect.
+    Birth declaration and correction bodies are source commands, not the read Birth resource or an
+    action log. After authoritative commit, accepted Birth content maps into a PublicSchema
+    `crvs/Birth` projection. Pending, rejected, and blocked Change Requests have no authoritative
+    Record effect.
 
     The example source owns one transaction boundary and exposes households and individuals as
-    alternative collection views over that source. It therefore guarantees the explicitly
-    declared compound Household create and add-member profiles atomically. This example does not
-    imply multi-registry transactions, distributed atomicity, or a generic batch-write feature.
+    alternative Collection views. Only its declared compound Household create and add-member
+    profiles carry that cross-Record atomic guarantee. The profile does not imply multi-Registry
+    transactions, distributed atomicity, or a generic batch-write feature.
   contact:
     name: GovStack Digital Registries Working Group
     url: https://github.com/GovStackWorkingGroup/bb-digital-registries
@@ -38,9 +38,9 @@ paths:
       operationId: createBirthRegistration
       summary: Create a birth declaration directly
       description: >-
-        Commit a declaration command and map its accepted Birth content into the authoritative
-        PublicSchema Birth projection. Evidence and reason metadata remain command annotations,
-        not fields on the Birth event.
+        Commits a declaration command and maps accepted Birth content into the authoritative
+        PublicSchema Birth projection. Evidence and reasons remain source-command annotations,
+        not Birth event fields.
       tags: [Direct Write examples]
       security:
         - serviceOAuth: [bb:digital-registries:record:create]
@@ -110,8 +110,9 @@ paths:
       operationId: createHousehold
       summary: Create a Household directly
       description: >-
-        Commit a Household containing existing Person URI references or, only for the declared
-        same-source compound profile, embedded new Person objects with request-local @id values.
+        Commits a Household with existing Person URI references or, only in the declared
+        same-source compound profile, embedded new Persons with request-local `@id` values
+        committed atomically.
       tags: [Direct Write examples]
       security:
         - serviceOAuth: [bb:digital-registries:record:create]
@@ -159,7 +160,7 @@ paths:
     post:
       operationId: createIndividual
       summary: Create a Person directly
-      description: Commit an individual using the native PublicSchema Person field vocabulary.
+      description: Commits an individual using the PublicSchema Person field vocabulary.
       tags: [Direct Write examples]
       security:
         - serviceOAuth: [bb:digital-registries:record:create]
@@ -202,9 +203,9 @@ paths:
       operationId: updateRecord
       summary: Apply a merge patch to a Person directly
       description: >-
-        Apply an RFC 7396 merge patch to the writable Person projection. If-Match is the strong
-        target Record validator; a successful synchronous update is bodyless and returns the new
-        strong ETag.
+        Applies an RFC 7396 JSON Merge Patch to the writable Person projection. Send the target
+        Record's strong validator in `If-Match`. A synchronous commit returns bodyless `204` with
+        the new strong `ETag`.
       tags: [Direct Write examples]
       security:
         - serviceOAuth: [bb:digital-registries:record:update]
@@ -252,10 +253,10 @@ paths:
       operationId: correctBirth
       summary: Apply a birth correction directly
       description: >-
-        Apply the fixed correct-birth transition. If-Match is the strong validator of the
-        authoritative birth-registration Record. parameters.birthPatch names PublicSchema
-        Birth projection fields, while annotation carries source-command reason and evidence.
-        The patch changes the projection only after commit.
+        Applies the fixed `correct-birth` transition. Send the authoritative birth-registration
+        Record's strong validator in `If-Match`.
+        `parameters.birthPatch` names PublicSchema Birth projection fields, while `annotation`
+        carries source-command reasons and evidence. The projection changes only after commit.
       tags: [Direct Write examples]
       security:
         - serviceOAuth: [bb:digital-registries:record:transition]
@@ -324,10 +325,10 @@ paths:
       operationId: addHouseholdMember
       summary: Add an existing or newly declared Person to a Household
       description: >-
-        Apply the fixed add-member transition. An existing Person is an absolute record URI. An
-        embedded Person is accepted only because this profile declares atomic creation in the
-        same source transaction and gives the new Person a request-local @id. This is not a
-        portable multi-registry transaction guarantee.
+        Applies the fixed `add-member` transition. An existing Person uses an absolute Record URI.
+        This profile also accepts an embedded Person with a request-local `@id` under its declared
+        same-source atomic transaction. This is not a portable multi-Registry transaction
+        guarantee.
       tags: [Direct Write examples]
       security:
         - serviceOAuth: [bb:digital-registries:record:transition]
@@ -391,10 +392,10 @@ paths:
       operationId: submitChangeRequest
       summary: Submit a PublicSchema-profile change proposal
       description: >-
-        Create an immutable pending proposal with the exact concrete input used by its direct
-        operation. Submission has no authoritative Record effect. Transition proposals carry a
-        strong baseETag for the target Record; the later review If-Match validates the change
-        request representation and is a different precondition.
+        Creates an immutable pending proposal with the corresponding direct operation's concrete
+        input and no authoritative Record effect. Transition proposals carry the target Record's
+        strong `baseETag`; later review `If-Match` guards the Change Request representation and is
+        a separate precondition.
       tags: [Change request examples]
       security:
         - serviceOAuth: [bb:digital-registries:change-request:submit]
@@ -454,8 +455,8 @@ paths:
   /v1/change-requests/{changeRequestId}:
     get:
       operationId: getChangeRequest
-      summary: Get a PublicSchema-profile change request
-      description: Return the immutable proposal with its independent review and application states.
+      summary: Retrieve a PublicSchema-profile change request
+      description: Returns the immutable proposal with independent review and application states.
       tags: [Change request examples]
       security:
         - serviceOAuth: [bb:digital-registries:change-request:read]
@@ -489,10 +490,9 @@ paths:
       operationId: approveChangeRequest
       summary: Approve the exact PublicSchema-profile proposal version
       description: >-
-        If-Match guards the change-request representation. Approval records the review
-        decision only and returns applicationState not-started. A separately authorised
-        worker may later attempt the authoritative commit, where the stored baseETag
-        independently guards the target Record.
+        `If-Match` guards the Change Request. Approval records only the review decision and returns
+        `applicationState: not-started`. A separately authorised worker may later attempt the
+        authoritative commit, where stored `baseETag` independently guards the target Record.
       tags: [Change request examples]
       security:
         - serviceOAuth: [bb:digital-registries:change-request:review]
@@ -539,7 +539,7 @@ paths:
     post:
       operationId: rejectChangeRequest
       summary: Reject the exact PublicSchema-profile proposal version
-      description: Reject the proposal selected by strong If-Match without changing any Record.
+      description: Rejects the proposal selected by strong `If-Match` without changing any Record.
       tags: [Change request examples]
       security:
         - serviceOAuth: [bb:digital-registries:change-request:review]

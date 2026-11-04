@@ -114,6 +114,115 @@
         "submittedAt": "2026-11-04T08:00:00Z",
         "updatedAt": "2026-11-04T08:04:00Z"
       }
+    },
+    {
+      "name": "background-create-accepted",
+      "operationId": "createRecord",
+      "request": {
+        "path": {
+          "collectionId": "records"
+        },
+        "headers": {
+          "Idempotency-Key": "\"018f47d2-4c42-7ca4-bf47-2bd31f88b925\""
+        },
+        "body": {
+          "data": {
+            "exampleField": "example value"
+          },
+          "source": {
+            "system": "https://source.example/systems/register",
+            "revision": "source-revision-17",
+            "recordedAt": "2026-11-04T08:00:00Z"
+          }
+        }
+      },
+      "response": {
+        "status": 202,
+        "headers": {
+          "Location": "/v1/operations/op_7",
+          "Cache-Control": "no-store"
+        },
+        "body": {
+          "operationId": "op_7",
+          "status": "pending",
+          "createdAt": "2026-11-04T08:00:00Z",
+          "updatedAt": "2026-11-04T08:00:00Z"
+        }
+      }
+    },
+    {
+      "name": "background-create-running",
+      "operationId": "getOperation",
+      "request": {
+        "path": {
+          "operationId": "op_7"
+        }
+      },
+      "response": {
+        "status": 200,
+        "headers": {
+          "Cache-Control": "no-store"
+        },
+        "body": {
+          "operationId": "op_7",
+          "status": "running",
+          "createdAt": "2026-11-04T08:00:00Z",
+          "updatedAt": "2026-11-04T08:00:05Z",
+          "progress": 40
+        }
+      }
+    },
+    {
+      "name": "background-create-succeeded",
+      "operationId": "getOperation",
+      "request": {
+        "path": {
+          "operationId": "op_7"
+        }
+      },
+      "response": {
+        "status": 200,
+        "headers": {
+          "Cache-Control": "no-store"
+        },
+        "body": {
+          "operationId": "op_7",
+          "status": "succeeded",
+          "createdAt": "2026-11-04T08:00:00Z",
+          "updatedAt": "2026-11-04T08:00:05Z",
+          "result": {
+            "collectionId": "records",
+            "recordId": "r_42",
+            "etag": "\"record-7fa9\""
+          }
+        }
+      }
+    },
+    {
+      "name": "background-create-failed",
+      "operationId": "getOperation",
+      "request": {
+        "path": {
+          "operationId": "op_7"
+        }
+      },
+      "response": {
+        "status": 200,
+        "headers": {
+          "Cache-Control": "no-store"
+        },
+        "body": {
+          "operationId": "op_7",
+          "status": "failed",
+          "createdAt": "2026-11-04T08:00:00Z",
+          "updatedAt": "2026-11-04T08:00:05Z",
+          "error": {
+            "type": "https://registry.example/problems/source-unavailable",
+            "title": "Authoritative source unavailable",
+            "traceId": "6f1c3f0e2a9b4c8d7e6f5a4b3c2d1e0f"
+          }
+        }
+      }
     }
   ]
 }

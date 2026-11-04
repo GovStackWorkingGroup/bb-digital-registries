@@ -55,7 +55,7 @@ The operation declares how every accepted field maps to authoritative domain sta
 Direct and governed paths that represent the same mutation publish aligned mutation semantics, even when their transport envelopes and workflow metadata differ.
 Consultation projections can omit, transform, or combine authoritative fields under their separately declared view without changing the Write input contract.
 
-The contract also defines supporting operations for retrieving writable context, reading and listing Change Requests, recording review decisions, withdrawing a request where supported, and retrieving asynchronous Operation status.
+The contract also defines supporting operations for retrieving writable context, reading and listing Change Requests, recording review decisions, withdrawing a request where supported, and retrieving asynchronous Operation status where offered.
 These supporting operations do not become additional options of the `registry-service` variation point.
 They support the selected Write option and retain their own access requirements.
 Application can be performed by a Registry-managed or external worker under a distinct application permission and can invoke a selected direct operation when the deployment exposes one to that trusted component.
@@ -237,16 +237,27 @@ The request's approval decision and application outcome remain separately visibl
 
 ## HTTP outcomes
 
-`201 Created` means that the response identifies the resource created by the request.
-This includes a newly submitted Change Request, even though review or application occurs later.
-It can also describe a synchronously created authoritative Record when the commit is complete.
+Asynchronous execution is optional for each operation and is independent of selecting direct Write, Change Requests, or both.
+A synchronous-only deployment omits `202` from its selected operations and, when no Write operation runs asynchronously, need not expose `getOperation`.
+The specification defines no separate asynchronous capability flag.
 
-`202 Accepted` means that separately identifiable asynchronous work was accepted.
-The response identifies an Operation whose status can be retrieved through `getOperation`, including terminal success or failure and the declared retention period.
-It does not mean that a Record was committed, a request was approved, or an approved proposal was applied.
+| Situation | Response | Identified resource | Meaning |
+|---|---|---|---|
+| Authoritative Record created synchronously | `201 Created` | Record | The Record commit completed. |
+| Update or Transition committed synchronously | Contract-defined `200` or `204` | Target URI and any declared validator or representation | The authoritative change completed. |
+| Change Request submitted for later review | `201 Created` | Change Request | One non-authoritative proposal was created. Waiting for review is not background processing. |
+| Review-only approval | `200 OK` | Change Request with approved review and application not started | The decision was recorded; no application work was accepted or completed. |
+| Background execution accepted | `202 Accepted` | Operation identified by `Location` | Processing was accepted, but commit, approval, and application remain unproven. |
 
+Every offered `202` path publishes an Operation representation retrievable through `getOperation`, terminal success and failure outcomes, and a retention policy.
+An Operation reports execution status only.
+It does not replace the Change Request, carry its review authority, or become the source of its review and application state.
+The Change Request remains the workflow resource before, during, and after any background application.
+
+A review operation can return `202` only when it also accepts actual background application work.
+A review-only decision does not return `202` merely because application might happen later.
+An accepted background job can be queued for a worker or scheduled execution and still correctly return `202`.
 Update and Transition use their contract-defined synchronous success only after authoritative commit.
-Any selected primary operation can use `202` when its declared asynchronous path returns an Operation rather than a completed resource result.
 
 <a id="change-request-listing"></a>
 

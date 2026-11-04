@@ -2,18 +2,27 @@ openapi: 3.1.2
 info:
   title: GovStack Digital Registries Write API
   version: 1.0.0-draft
-  description: >-
-    Domain-neutral mutation contracts for Digital Registries. Deployments independently select
-    direct create, direct update, named transition, and governed change-request capabilities.
-    Direct and governed write paths are alternatives that may coexist; selecting either does not
-    imply support for the other. A submitted change request is immutable, creates no Record side
-    effect while pending, and authorises no action by itself. Approval is bound to the exact
-    proposal representation selected with If-Match. Authorisation, trusted purpose, source
-    preconditions, and current grants are re-evaluated when an authoritative commit is attempted.
-    Approval records a governance decision but does not imply that application completed.
-    All protected representations and errors use Cache-Control: no-store. Implementations publish
-    concrete domain schemas by narrowing the data and transition parameter schemas in this
-    reference contract; this contract does not define domain fields or require event sourcing.
+  description: |
+    This draft defines domain-neutral mutation contracts for Digital Registries. A deployment
+    independently selects direct Create, direct Update, named Transition, and governed Change
+    Requests. Direct and governed paths can coexist; selecting one selects no other.
+
+    A submitted Change Request is immutable and non-authoritative, has no Record side effect while
+    pending, and grants no authority. `If-Match` binds approval to the exact proposal. Approval
+    records a governance decision, not a commit. At commit, the service re-evaluates current
+    authentication, authorisation, grants, trusted purpose, source preconditions, input validity,
+    and transition policy as applicable. For a Change Request, only acknowledged successful
+    application changes Registry state.
+
+    Background processing is optional per operation and independent of the selected Write paths. A
+    synchronous-only deployment omits `202` and the Operation endpoint. Completed Change Request
+    creation returns `201`; waiting for review is not background execution. Only accepted queued
+    or running work returns `202` and identifies an Operation, whose status never replaces Change
+    Request review or application state.
+
+    All protected representations and errors use `Cache-Control: no-store`. Deployments narrow this
+    reference contract's `data` and transition-parameter schemas. It defines no domain fields and
+    does not require event sourcing.
   contact:
     name: GovStack Digital Registries Working Group
     url: https://github.com/GovStackWorkingGroup/bb-digital-registries
@@ -36,21 +45,18 @@ tags:
   - name: Change Requests
     description: Immutable proposals, review decisions, and separately observable application state.
   - name: Operations
-    description: Polling resources used only when authoritative work continues asynchronously.
+    description: Optional background execution tracking, independent of Change Request review.
 paths:
   /v1/collections/{collectionId}/records:
     post:
       operationId: createRecord
-      summary: Create a Record directly
+      summary: Create one Record directly
       description: >-
-        Create one Record in the selected collection and commit it authoritatively during this
-        request, or return 202 only when actual commit work continues asynchronously. The
-        deployment replaces CreateInput.data with its domain schema. A successful synchronous
-        creation returns the new Record URI in Location. Replays follow the Idempotency-Key
-        contract: the lookup scope contains method, canonical target URI, authenticated client,
-        tenant or equivalent authorisation partition, and effective trusted purpose; the
-        fingerprint contains method, canonical target URI, content type, canonical body, and
-        every declared semantic header.
+        Creates one Record in the selected Collection. A synchronous `201` response means that the
+        authoritative commit has completed and returns the new Record URI in `Location`. The
+        operation returns `202` only when it accepts actual commit work for asynchronous execution.
+        The deployment replaces `CreateInput.data` with its domain schema. Retries follow the
+        shared `Idempotency-Key` contract.
       tags: [Direct Write]
       security:
         - citizenOAuth: [bb:digital-registries:record:create]
@@ -101,16 +107,15 @@ paths:
   /v1/collections/{collectionId}/records/{recordId}:
     get:
       operationId: getWritableRecord
-      summary: Read a Record for a conditional write
+      summary: Retrieve a Record for conditional writing
       description: >-
-        Return the caller-authorised writable representation and a strong ETag suitable for
-        If-Match. This supporting read is not a separate Write or Consultation capability. Where
-        the Consultation Retrieve operation uses the same URI, the deployment publishes one GET
-        operation and view, adds the strong validator needed by the selected write, and references
-        that operation as the companion read; it does not install a second competing GET.
-        If-None-Match is a cache validator and may contain a weak tag; it is distinct from the
-        strong If-Match required by mutations. Unknown, out-of-collection, and protected Record
-        existence share 404.
+        Returns the caller-authorised writable representation and a strong `ETag` for `If-Match`.
+        This supporting read is not a separate Write or Consultation capability. If Consultation
+        Retrieve uses the same URI, the deployment publishes one `GET` operation and one view,
+        adds the strong validator required for writing, and identifies that operation as the
+        companion read. It does not publish a second competing `GET`. `If-None-Match` is a cache
+        validator and can contain a weak tag; it does not replace the strong `If-Match` required
+        for mutation. Unknown, out-of-Collection, and protected Records all return `404`.
       tags: [Direct Write]
       security:
         - citizenOAuth: [bb:digital-registries:record:read]
@@ -127,6 +132,8 @@ paths:
           $ref: '#/components/responses/NotModified'
         '400':
           $ref: '#/components/responses/BadRequest'
+          description: >-
+            Malformed or structurally invalid request. This supporting read has no request body and does not require `Idempotency-Key`.
         '401':
           $ref: '#/components/responses/Unauthorized'
         '403':
@@ -143,15 +150,15 @@ paths:
           $ref: '#/components/responses/ServiceUnavailable'
     patch:
       operationId: updateRecord
-      summary: Update a Record directly
+      summary: Update one Record directly
       description: >-
-        Apply UpdateInput as an RFC 7396 JSON Merge Patch to the writable Record representation.
-        Only the data member is writable; the closed schema rejects recordId, source evidence,
-        authority-owned state, and other control members. Domain members below data are
-        intentionally unconstrained here and are narrowed by deployed contracts. A null domain
-        member removes that member under RFC 7396. If-Match is required and accepts only the
-        strong ETag obtained from the declared write-capable companion read. A successful
-        synchronous update is bodyless and returns the new strong ETag.
+        Applies `UpdateInput` to the writable Record representation as an RFC 7396 JSON Merge
+        Patch. Only `data` is writable. The closed schema rejects `recordId`, source evidence,
+        authority-owned state, and other control members. This reference contract leaves domain
+        members below `data` unconstrained; each deployment narrows them in its published contract.
+        Under RFC 7396, a null domain member removes that member. Send the strong `ETag` from the
+        companion read in `If-Match`; weak validators are not accepted. A synchronous commit
+        returns bodyless `204` with the new strong `ETag`.
       tags: [Direct Write]
       security:
         - citizenOAuth: [bb:digital-registries:record:update]
@@ -209,13 +216,13 @@ paths:
       operationId: applyRecordTransition
       summary: Apply the published Record transition
       description: >-
-        Apply the named transition profile published by this operation. This reference fixes the
-        action path to transition; a concrete deployment narrows TransitionInput.name to a const
-        or closed enum and publishes a closed typed parameter profile rather than accepting an
-        arbitrary runtime action or generic workflow expression. If-Match guards the source
-        Record. The server rechecks current authorisation,
-        trusted purpose, grants, and the source validator at commit. Unknown and protected Records
-        share 404. Return 202 only if actual transition work continues asynchronously.
+        Applies the named transition profile published for this operation. This reference fixes
+        the action path as `transition`. A deployment narrows `TransitionInput.name` to a constant
+        or closed enumeration and publishes closed, typed parameters instead of accepting an
+        arbitrary action or workflow expression. `If-Match` guards the source Record. At commit,
+        the service rechecks current authorisation, trusted purpose, grants, and the source
+        validator. Unknown and protected Records both return `404`. The operation returns `202`
+        only for actual asynchronous transition work.
       tags: [Direct Write]
       security:
         - citizenOAuth: [bb:digital-registries:record:transition]
@@ -277,13 +284,13 @@ paths:
       operationId: submitChangeRequest
       summary: Submit an immutable change proposal
       description: >-
-        Create an immutable proposal in pending review state. The proposal has no Record side
-        effect. Its typed input is the same CreateInput, UpdateInput, or TransitionInput used by
-        the corresponding direct operation. Update and transition proposals bind the source
-        Record's strong validator in baseETag; update also declares inputMediaType. The trusted
-        actor and purpose come from verified authorisation context, never from client-supplied
-        actor, approval, decision, or review-status fields. A manual pending request is a
-        completed resource creation and therefore returns 201 with its Location.
+        Creates one immutable, non-authoritative proposal in pending review, with no Record side
+        effect. It uses the corresponding direct operation's typed `CreateInput`, `UpdateInput`, or
+        `TransitionInput`. Update and transition proposals bind the source Record's strong
+        validator in `baseETag`; update also declares `inputMediaType`. Trusted actor and purpose
+        come from verified authorisation context, never client-supplied actor, approval, decision,
+        or review-state fields. Completed creation returns `201` with `Location`; waiting for
+        review is not asynchronous execution.
       tags: [Change Requests]
       security:
         - citizenOAuth: [bb:digital-registries:change-request:submit]
@@ -336,20 +343,20 @@ paths:
           $ref: '#/components/responses/ServiceUnavailable'
     get:
       operationId: listChangeRequests
-      summary: List visible change requests
+      summary: List caller-visible change requests
       description: >-
-        Return a bounded page of change requests visible to the caller. An empty result returns
-        200 with an empty items array. Order is submittedAt ascending with changeRequestId as the
-        unique tie-breaker. The integrity-protected cursor binds the authenticated actor and
-        tenant partition, trusted purpose, Registry and Collection scope, filters, order, and
-        effective page size. It expires under the published changeRequestCursorLifetime profile
-        parameter; malformed, expired, tampered, or context-mismatched cursors return 400 and
-        never restart traversal. Every page is reauthorised. Traversal reads current state, not a
-        snapshot; newly submitted requests can appear later in order, while state changes do not
-        reorder an existing request. The deployment publishes changeRequestResultWindow and the
-        processing-time bound; exceeding the latter returns 503 with Retry-After. A null
-        nextCursor marks completion. The response is no-store and does not disclose protected
-        requests through counts, ordering, or errors.
+        Returns a bounded page of Change Requests visible to the current caller and context. Empty
+        results return `200` with an empty `items` array. Order is ascending `submittedAt`, with
+        `changeRequestId` as the unique tie-breaker. The integrity-protected cursor binds the
+        authenticated actor and tenant partition, trusted purpose, Registry and Collection scope,
+        filters, order, and effective page size; it expires under `changeRequestCursorLifetime`.
+        Malformed, expired, tampered, or context-mismatched cursors return `400` and never restart
+        traversal. Every page is reauthorised under current policy. Traversal reads current state,
+        not a snapshot: new requests can appear later in order, but state changes do not reorder an
+        existing request. The
+        deployment publishes `changeRequestResultWindow` and a processing-time bound; exceeding the
+        latter returns `503` with `Retry-After`. A null `nextCursor` marks completion. Responses use
+        `no-store` and disclose no protected requests through counts, ordering, or errors.
       tags: [Change Requests]
       security:
         - citizenOAuth: [bb:digital-registries:change-request:read]
@@ -363,6 +370,8 @@ paths:
           $ref: '#/components/responses/ChangeRequestPage'
         '400':
           $ref: '#/components/responses/BadRequest'
+          description: >-
+            Malformed or structurally invalid request, including invalid pagination controls or a malformed, expired, tampered, or context-mismatched cursor. This read does not require `Idempotency-Key`.
         '401':
           $ref: '#/components/responses/Unauthorized'
         '403':
@@ -378,12 +387,12 @@ paths:
   /v1/change-requests/{changeRequestId}:
     get:
       operationId: getChangeRequest
-      summary: Get one change request
+      summary: Retrieve one change request
       description: >-
-        Return one caller-visible change request. Unknown and protected request existence share
-        404. The strong ETag identifies the immutable proposal version together with its current
-        review and application state. If-None-Match provides conditional read semantics and does
-        not replace the strong If-Match required by review actions.
+        Returns one caller-visible Change Request. Unknown and protected requests both return
+        `404`. Its strong `ETag` identifies the immutable proposal version with current review and
+        application state. `If-None-Match` enables conditional reading but does not replace the
+        strong `If-Match` required for review.
       tags: [Change Requests]
       security:
         - citizenOAuth: [bb:digital-registries:change-request:read]
@@ -399,6 +408,8 @@ paths:
           $ref: '#/components/responses/NotModified'
         '400':
           $ref: '#/components/responses/BadRequest'
+          description: >-
+            Malformed or structurally invalid request. This read has no request body and does not require `Idempotency-Key`.
         '401':
           $ref: '#/components/responses/Unauthorized'
         '403':
@@ -418,15 +429,14 @@ paths:
       operationId: approveChangeRequest
       summary: Approve the exact proposal version
       description: >-
-        Approve the proposal version identified by the request resource's strong If-Match.
-        If-Match guards the change request itself; stored baseETag separately guards the source
-        Record at authoritative commit. Approval cannot manufacture trusted purpose, extend
-        grants, or bypass current authorisation. A 200 response can remain approved and
-        not-started. This endpoint records only the review decision and returns 200; an internal
-        worker with the independent bb:digital-registries:change-request:apply grant can apply it
-        later. Review authority alone cannot start authoritative application.
-        An optional ReviewDecisionInput body can retain a human review comment as governance
-        context. The comment is not Record data, authority, purpose, or a decision selector.
+        Approves the proposal version selected by the request resource's strong `If-Match`.
+        `If-Match` guards the Change Request representation; the stored `baseETag` independently
+        guards the source Record at commit. Approval cannot create trusted purpose, extend grants,
+        or bypass current authorisation. This review-only operation returns `200` with approval
+        recorded and application `not-started`. An internal worker with the independent
+        `bb:digital-registries:change-request:apply` grant can later attempt application; review
+        authority alone cannot. Optional `ReviewDecisionInput` can retain a human comment as
+        governance context, not Record data, authority, purpose, or a decision selector.
       tags: [Change Requests]
       security:
         - citizenOAuth: [bb:digital-registries:change-request:review]
@@ -475,9 +485,9 @@ paths:
       operationId: rejectChangeRequest
       summary: Reject the exact proposal version
       description: >-
-        Reject the pending proposal version identified by the request resource's strong If-Match.
-        An optional ReviewDecisionInput body retains a review comment without altering the
-        immutable proposal or supplying authority. Unknown and protected requests share 404.
+        Rejects the pending proposal version selected by the request resource's strong `If-Match`.
+        Optional `ReviewDecisionInput` can retain a comment but cannot alter the proposal or supply
+        authority. Unknown and protected requests both return `404`.
       tags: [Change Requests]
       security:
         - citizenOAuth: [bb:digital-registries:change-request:review]
@@ -526,10 +536,10 @@ paths:
       operationId: withdrawChangeRequest
       summary: Withdraw the exact proposal version
       description: >-
-        Withdraw the pending proposal version identified by the request resource's strong
-        If-Match. The caller must be authorised by current policy; possession of the request
-        identifier or an earlier proposal grant does not confer authority. An optional
-        ReviewDecisionInput body retains a governance comment but does not alter the proposal.
+        Withdraws the pending proposal version selected by the request resource's strong
+        `If-Match`. Current policy must authorise the caller; the request identifier or an earlier
+        proposal grant confers no authority. Optional `ReviewDecisionInput` can retain a governance
+        comment but cannot alter the proposal.
       tags: [Change Requests]
       security:
         - citizenOAuth: [bb:digital-registries:change-request:withdraw]
@@ -576,13 +586,14 @@ paths:
   /v1/operations/{operationId}:
     get:
       operationId: getOperation
-      summary: Get asynchronous write status
+      summary: Retrieve asynchronous write status
       description: >-
-        Poll work that a write response accepted with 202. A successful lookup can return a
-        failed domain operation state; failure of this GET itself uses HTTP Problem Details.
-        Non-terminal responses can include Retry-After. Unknown and protected Operations share
-        404. Result retention is controlled by the deployment's published operationRetention
-        profile parameter.
+        Available only with background processing. Returns execution work accepted with `202`;
+        `operationId` identifies a background job, not an OpenAPI operation name. `pending` means
+        queued execution, not pending approval. Review and application states remain on the Change
+        Request. A successful `GET` can report failed work; failure of this `GET` uses HTTP Problem
+        Details. Non-terminal responses can include `Retry-After`. Unknown and protected Operations
+        both return `404`. Published `operationRetention` controls result retention.
       tags: [Operations]
       security:
         - citizenOAuth: [bb:digital-registries:operation:read]
@@ -595,6 +606,8 @@ paths:
           $ref: '#/components/responses/Operation'
         '400':
           $ref: '#/components/responses/BadRequest'
+          description: >-
+            Malformed or structurally invalid request. This supporting read has no request body and does not require `Idempotency-Key`.
         '401':
           $ref: '#/components/responses/Unauthorized'
         '403':
@@ -693,9 +706,9 @@ components:
       in: header
       required: true
       description: >-
-        One strong ETag for the target representation. Weak validators and wildcard matching are
-        not accepted. On review actions this guards the change request; it never substitutes for
-        the proposal's baseETag, which guards the source Record at commit.
+        One strong `ETag` for the target representation; weak validators and wildcards are not
+        accepted. For review, it guards the Change Request, not the proposal's `baseETag`, which
+        guards the source Record at commit.
       schema:
         $ref: '#/components/schemas/StrongETag'
     IfNoneMatch:
@@ -711,17 +724,19 @@ components:
       in: header
       required: true
       description: >-
-        Opaque client-generated high-entropy key using Structured Field String syntax, including
-        quotation marks, with at most 200 characters inside the quotes. UUID values are
-        recommended. Missing, malformed, or oversized keys return 400 before processing. The
-        deployment publishes idempotencyReplayWindow; after expiry it may process the key as new
-        only when its profile says so. Within the window, completed matching retries return the
-        original status, body, Content-Type, and Location while per-attempt headers are regenerated;
-        fingerprint mismatch returns 422 and a matching in-flight retry returns 409. Before a
-        stored result is disclosed, the server rechecks current authorisation, effective trusted
-        purpose, and disclosure policy; effective trusted purpose is part of the lookup scope so
-        a purpose change cannot select a stored result. A replay key never preserves or
-        manufactures a grant.
+        Opaque, client-generated, high-entropy Structured Field String, including quotation marks,
+        with at most 200 characters inside them; UUID values are recommended. Replay lookup binds
+        the method, canonical target URI, authenticated client, tenant or equivalent authorisation
+        partition, and effective trusted purpose. The fingerprint binds the method, canonical
+        target URI, content type, canonical body, and every declared semantic header. A missing,
+        malformed, or oversized key returns `400` before processing. The deployment publishes
+        `idempotencyReplayWindow`; after expiry, it may process the key as new only if its profile
+        permits. Within the window, a completed matching retry returns the original status, body,
+        `Content-Type`, and `Location`, with per-attempt headers regenerated. Fingerprint mismatch
+        returns `422`; a matching in-flight retry returns `409`. Before disclosing a stored result,
+        the service rechecks current authorisation, effective trusted purpose, and disclosure
+        policy. A purpose change cannot select the stored result because purpose is in the lookup
+        scope. The key never preserves or creates a grant.
       schema:
         type: string
         minLength: 3
@@ -743,10 +758,11 @@ components:
       in: query
       required: false
       description: >-
-        Opaque integrity-protected continuation returned by the previous change-request page;
-        omit on the first request. It binds caller context, trusted purpose, Registry and
-        Collection scope, filters, deterministic order, and effective page size, and expires
-        under changeRequestCursorLifetime. Invalid continuation returns 400 and never restarts.
+        Opaque, integrity-protected continuation from the preceding Change Request page; omit it
+        for the first page. It binds caller context, trusted purpose, Registry and Collection
+        scope, filters, deterministic order, and effective page size, and expires under
+        `changeRequestCursorLifetime`. Invalid continuation returns `400` and never restarts
+        traversal.
       schema:
         type: string
         minLength: 1
@@ -834,8 +850,8 @@ components:
       additionalProperties: false
       required: [data]
       description: >-
-        Semantic input for direct and governed creation. Deployments replace or narrow data with
-        their domain schema; the generic contract intentionally declares no domain fields.
+        Semantic input shared by direct and governed creation. Deployments replace or narrow
+        `data` with their domain schema; this reference contract defines no domain fields.
       properties:
         data:
           type: object
@@ -851,9 +867,9 @@ components:
       additionalProperties: false
       required: [data]
       description: >-
-        RFC 7396 merge patch shared by direct and governed update and applied to the writable
-        Record representation. Only data is mutable. The closed schema rejects recordId, source
-        evidence, and authority-owned control fields; null domain members remove those members.
+        RFC 7396 JSON Merge Patch shared by direct and governed update. It applies to the writable
+        Record representation. Only `data` is mutable; the closed schema rejects `recordId`, source
+        evidence, and authority-owned control fields. Null domain members are removed.
       properties:
         data:
           type: object
@@ -868,9 +884,9 @@ components:
       additionalProperties: false
       required: [name]
       description: >-
-        Input for the transition action. Concrete profiles narrow name to a const or closed enum,
-        narrow parameters to a closed typed schema, and publish those allowed names. The generic
-        pattern is not an arbitrary runtime action selector.
+        Input shared by direct and governed transition. Concrete profiles narrow `name` to a
+        constant or closed enumeration, narrow `parameters` to a closed typed schema, and publish
+        allowed names. This is not an arbitrary runtime action selector.
       properties:
         name:
           type: string
@@ -915,8 +931,9 @@ components:
           recordId: r_42
     CreateChangeRequest:
       description: >-
-        Immutable submitted proposal. Client-supplied actor, purpose, review status, approval, and
-        decision fields are not admitted. Update and transition bind a strong source baseETag.
+        Immutable submitted proposal. Closed shapes reject client-supplied actor, purpose, review
+        state, approval, and decision fields. Update and transition bind a strong source
+        `baseETag`.
       oneOf:
         - type: object
           description: Create proposal with no client-selected Record identifier.
@@ -977,9 +994,9 @@ components:
       additionalProperties: false
       required: [comment]
       description: >-
-        Optional request body for a review action. comment is retained governance context only;
-        it is not authoritative Record data, actor identity, trusted purpose, approval state, or
-        a substitute for the operation selected by the request URI and current authorisation.
+        Optional body for a review action. `comment` is retained governance context only, not
+        authoritative Record data, actor identity, trusted purpose, approval state, or a substitute
+        for the operation selected by the request URI and current authorisation.
       properties:
         comment:
           type: string
@@ -1064,10 +1081,10 @@ components:
         - submittedAt
         - updatedAt
       description: >-
-        Immutable proposal plus independently observable review and application states. pending
-        never has a Record side effect. approved does not imply applied. result is present only
-        for applied; error is required for blocked or failed. Readers accept additive
-        response-envelope fields.
+        Immutable proposal with independently observable review and application states. `pending`
+        has no Record side effect; `approved` does not imply `applied`. `result` appears only for
+        `applied`, and `error` is required for `blocked` or `failed`. Readers accept additive
+        envelope fields.
       properties:
         changeRequestId:
           $ref: '#/components/schemas/OpaqueId'
@@ -1096,16 +1113,16 @@ components:
           type: string
           enum: [pending, approved, rejected, withdrawn]
           description: >-
-            Governance state: pending awaits review, approved records approval, rejected records
-            rejection, and withdrawn records authorised withdrawal.
+            Governance state: `pending` awaits review, `approved` records approval, `rejected`
+            records rejection, and `withdrawn` records authorised withdrawal.
           examples: [pending]
         applicationState:
           type: string
           enum: [not-started, applying, applied, blocked, failed]
           description: >-
-            Authoritative application state: not-started has no commit work, applying is
-            non-terminal, applied succeeded, blocked needs a changed precondition or authority,
-            and failed is terminal processing failure.
+            Authoritative application state: `not-started` has no commit work, `applying` is
+            non-terminal, `applied` succeeded, `blocked` needs changed precondition or authority,
+            and `failed` is terminal processing failure.
           examples: [not-started]
         result:
           $ref: '#/components/schemas/WriteResult'
@@ -1267,9 +1284,11 @@ components:
       type: object
       required: [operationId, status, createdAt, updatedAt]
       description: >-
-        Pollable asynchronous write state. pending and running are non-terminal; succeeded and
-        failed are terminal. result appears only on succeeded and error is required on failed.
-        Readers accept additive response-envelope fields.
+        Optional background execution state, separate from Change Request governance. `pending`
+        means queued execution, not pending approval; `running` means execution is in progress.
+        Neither grants approval or implies a committed Record. `succeeded` and `failed` are
+        terminal; only `succeeded` has `result`, and `failed` requires `error`. Review and
+        application states remain on the Change Request. Readers accept additive envelope fields.
       properties:
         operationId:
           $ref: '#/components/schemas/OpaqueId'
@@ -1546,7 +1565,10 @@ components:
           schema: {$ref: '#/components/schemas/WriteResult'}
           example: {collectionId: records, recordId: r_42, etag: '"record-7faa"'}
     WriteAccepted:
-      description: Actual authoritative work continues asynchronously; success is not implied.
+      description: >-
+        Optional background execution has been accepted; authoritative commit is not implied.
+        Location identifies the Operation to poll. Waiting for manual approval alone does not
+        produce this response; completed Change Request creation returns 201 instead.
       headers:
         Location: {$ref: '#/components/headers/Location'}
         Cache-Control: {$ref: '#/components/headers/CacheControl'}
