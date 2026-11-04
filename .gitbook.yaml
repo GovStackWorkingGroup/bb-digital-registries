@@ -81,3 +81,4 @@ redirects:
   05-api-families/identity-federation: introduction/scope.md#not-covered
   spec/05-api-families/identity-federation: introduction/scope.md#not-covered
   resources/roadmap/write: requirements/registry-services.md#write-write
+  resources/write-api-reference: resources/api-reference.md

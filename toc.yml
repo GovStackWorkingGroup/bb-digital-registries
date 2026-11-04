@@ -10,7 +10,6 @@ toc:
     - registry-services.md
   resources:
     - api-reference.md
-    - write-api-reference.md
     - api-examples/README.md
     - api-examples/birth-registration.md
     - api-examples/business.md

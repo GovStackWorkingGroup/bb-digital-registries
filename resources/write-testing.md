@@ -8,7 +8,7 @@ description: Draft traceability and pending runtime scenarios for Write operatio
 
 ## Verification boundary
 
-The repository validator can check requirement structure, local references, operation identifiers, OpenAPI schemas, and example validity.
+The repository validator can check requirement structure, local references, operation identifiers, the unified OpenAPI schema, example validity, and declared identity and version handoffs across combined Read and Write fixtures.
 It cannot prove current authorisation, commit atomicity, strong preconditions, idempotent replay, protected existence, workflow separation, source behaviour, concurrency, or crash recovery in a deployment.
 
 The cases below are normative verification targets for the selected DRAFT options.
@@ -77,17 +77,61 @@ It is not counted as a pass and does not weaken another applicable requirement.
 | Request-list source change | Listing and request store | Results follow declared live consistency and bounds without an undeclared exhaustive or snapshot guarantee. | Pending implementation conformance test. |
 | Declared compound failure | Write component and declared external components | Every claimed compound guarantee holds at each injected boundary, or the service reports the declared non-atomic outcome. | Pending implementation conformance test. |
 
+## Runtime companion-guard procedure
+
+Use this procedure for every selected Update and Transition companion read.
+Record the Registry, Collection, target Record, mutation operation, companion
+operation and view, declared companion-currency condition, and the effective
+authorisation and disclosure, purpose, and field selection. Use synthetic
+source fixtures and retain authoritative before-and-after evidence.
+
+1. Obtain the permitted companion body and opaque strong ETag from one current
+   authoritative guard evaluation. Change authoritative state through a second
+   authorised path, then submit the earlier ETag in `If-Match`. If an ordinary
+   read is intentionally lagged, record it separately and do not use its token
+   as companion evidence. The mutation must atomically return the generic `412`
+   response and leave the intervening authoritative state unchanged.
+2. Obtain a fresh companion body and ETag. Change a source field or condition
+   that affects this mutation's validation, mapping, or committed effect but is
+   not disclosed in the permitted body. Under the identical effective context,
+   retrieve again and record an equal body with a different opaque ETag. A
+   mutation using the prior token must return generic `412`, disclose neither
+   the changed condition nor a replacement token, and have no authoritative
+   effect. An unrelated hidden change is not required to invalidate the tag.
+3. Perform a successful mutation and retain its success ETag. With no
+   intervening mutation-relevant change, wait until the declared companion
+   currency is satisfied, then retrieve the exact committed guard state under
+   the identical effective context. Only this case may require equality between
+   the success ETag and the later companion ETag. Repeat after changing the
+   effective authorisation or disclosure, purpose, or field selection, and do
+   not infer equality merely because the view name is unchanged.
+
+For each case, retain the exact requests and responses, trusted context record,
+source setup and observations, authoritative write count, and audit
+correlation. The repository fixture declares the intended relationships but
+does not execute this procedure or prove runtime concurrency behaviour.
+
 ## Artifact checks
 
 Artifact validation should confirm that:
 
-- each Write option references `resources/write-api.yml` and its exact primary `operationId`;
+- each Write option resolves its exact primary `operationId` in the unified `api/openapi.yaml` contract, while `api/write.openapi.yaml` remains only a compatibility alias;
 - each SERVICE_API requirement resolves its operation in its own declared contract;
 - OpenAPI request and response examples validate against their referenced schemas;
-- primary and supporting operations use consistent Registry, Collection, identity, error, idempotency, precondition, and acknowledgement definitions;
+- primary and supporting operations use consistent Registry, Collection, broad Record identity, restricted workflow identity, error, idempotency, precondition, and acknowledgement definitions;
+- `Idempotency-Key` is required for mutation operations and is not imposed on read-only POST Lookup or Search;
+- Update and Transition identify one companion Retrieve operation and view; fixture-only guard evaluation identifiers keep each request, response, and ETag handoff internally coherent; companion guards declare a current authoritative body-and-ETag evaluation; later equality additionally requires the exact committed guard state, no intervening mutation-relevant change, settled companion currency, and identical effective authorisation and disclosure, purpose, and field selection;
+- the conditional journey rejects a lagged companion declaration and includes a hidden mutation-relevant source change whose unchanged permitted body receives a different opaque guard ETag, while the prior token produces generic `412` without a replacement ETag;
+- synchronous Create `Location`, returned `collectionId` and `recordId`, response `ETag`, and body `etag` agree, including deployments with a declared base path and encoded one-segment identifiers;
 - operation-specific declaration and correction inputs remain typed, every accepted field maps to authoritative state, retained provenance, or workflow-only context, and no check assumes that Write input equals Consultation `Record.data`;
+- caller discovery can describe caller-visible Read, independently granted Write, and supporting workflow operations without treating discovery as authority;
+- `api/examples/combined-journeys.json` covers Create then Retrieve, conditional companion Retrieve then Update then companion Retrieve plus stale and hidden-relevant-change `If-Match` rejections, Transition then companion Retrieve, asynchronous completion then Retrieve, and governed submission and approval with no effect before authoritative application and Retrieve; Operation polling and Change Request review/application retain their original workflow identities and immutable proposal;
 - local links and all `write-1` through `write-19` anchors resolve; and
 - non-normative domain examples do not introduce a domain-schema dependency into the shared contract or requirements.
 
+Run `uv run python tools/validate_write.py` for the command-line artifact gate and `uv run python -m unittest tools.test_write` for its unit, contract-integration, negative-mutation, and end-to-end artifact regressions.
+
 Passing these checks is artifact evidence only.
+They validate declared exchanges and handoffs without sending HTTP requests or observing a deployed source, Adapter, workflow worker, or Registry.
+They do not require one retained history revision for each Write.
 Record runtime results separately, including failures and not-applicable cases, and do not convert a schema-valid trace into an implementation pass.

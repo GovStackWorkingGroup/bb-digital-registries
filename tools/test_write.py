@@ -6,6 +6,9 @@ from __future__ import annotations
 from copy import deepcopy
 import json
 from pathlib import Path
+import subprocess
+import sys
+import tempfile
 import unittest
 from urllib.parse import urldefrag
 
@@ -76,6 +79,159 @@ def assert_normative_contracts_are_example_independent(functionality):
 
 
 class WriteArtifactTests(unittest.TestCase):
+    def test_unified_contract_is_canonical_and_legacy_write_path_is_an_alias(self):
+        canonical = API / "openapi.yaml"
+        legacy = API / "write.openapi.yaml"
+        self.assertTrue(legacy.is_symlink(), "The legacy Write path must be a symlink")
+        self.assertEqual(legacy.resolve(), canonical.resolve())
+
+        contract = yaml.safe_load(canonical.read_text())
+        operation_ids = [
+            value["operationId"]
+            for _route, _method, value in write.operations(contract)
+            if "operationId" in value
+        ]
+        self.assertEqual(len(operation_ids), len(set(operation_ids)))
+        self.assertTrue(
+            {"retrieveRecord", *write.REFERENCE_REQUIRED_OPERATIONS}
+            <= set(operation_ids),
+            "The canonical API must expose both Read and Write operations",
+        )
+        write.validate_no_duplicate_yaml_keys(canonical)
+
+    def test_composed_contract_reuses_record_identity_and_keeps_workflow_ids_opaque(self):
+        contract = yaml.safe_load((API / "openapi.yaml").read_text())
+        schemas = contract["components"]["schemas"]
+        self.assertEqual(
+            schemas["WriteResult"]["properties"]["recordId"]["$ref"],
+            "#/components/schemas/RecordId",
+        )
+        self.assertEqual(
+            schemas["RecordTarget"]["properties"]["recordId"]["$ref"],
+            "#/components/schemas/RecordId",
+        )
+        self.assertEqual(
+            contract["components"]["parameters"]["ChangeRequestId"]["schema"]["$ref"],
+            "#/components/schemas/OpaqueId",
+        )
+        self.assertEqual(
+            contract["components"]["parameters"]["OperationId"]["schema"]["$ref"],
+            "#/components/schemas/OpaqueId",
+        )
+        retrieve_scope = operation(contract, "retrieveRecord").get(
+            "security", contract["security"]
+        )[0]
+        update_scope = operation(contract, "updateRecord").get(
+            "security", contract["security"]
+        )[0]
+        self.assertNotEqual(retrieve_scope, update_scope)
+
+    def test_duplicate_path_or_method_keys_are_rejected_before_loading(self):
+        with tempfile.TemporaryDirectory() as directory:
+            contract = Path(directory) / "duplicate.yaml"
+            contract.write_text(
+                "paths:\n"
+                "  /v1/records:\n"
+                "    get: {operationId: first}\n"
+                "    get: {operationId: second}\n"
+            )
+            with self.assertRaises(ValueError):
+                write.validate_no_duplicate_yaml_keys(contract)
+
+    def test_repository_publishes_one_normative_unified_api_reference(self):
+        inventory = yaml.safe_load((ROOT / "api-references.yml").read_text())
+        normative = [
+            reference
+            for reference in inventory["references"]
+            if reference.get("role") == "normative"
+        ]
+        self.assertEqual(
+            normative,
+            [
+                {
+                    "id": "registry",
+                    "page": "resources/api-reference.md",
+                    "contract": "api/openapi.yaml",
+                    "role": "normative",
+                    "operationId": "retrieveRecord",
+                    "response": "200",
+                }
+            ],
+        )
+        toc = yaml.safe_load((ROOT / "toc.yml").read_text())
+        resource_pages = toc["toc"]["resources"]
+        self.assertEqual(resource_pages.count("api-reference.md"), 1)
+        self.assertNotIn("write-api-reference.md", resource_pages)
+        summary = (ROOT / "SUMMARY.md").read_text()
+        self.assertEqual(
+            summary.count("](resources/api-reference.md)"),
+            1,
+        )
+        self.assertNotIn("resources/write-api-reference.md", summary)
+
+    def test_write_validator_does_not_require_idempotency_for_read_posts(self):
+        contract = yaml.safe_load(write.WRITE.read_text())
+        search = operation(contract, "searchRecords")
+        self.assertIsNone(write._header_parameter(write.WRITE, search, "Idempotency-Key"))
+        write.validate_write_document(
+            contract,
+            write.WRITE,
+            require_reference_surface=True,
+        )
+
+    def test_create_location_and_etag_bind_the_returned_record(self):
+        fixture = deepcopy(
+            next(
+                item
+                for item in write.contract_fixture_items()
+                if item["name"] == "direct-create"
+            )
+        )
+        write.validate_contract_fixture(fixture)
+
+        wrong_location = deepcopy(fixture)
+        wrong_location["response"]["headers"]["Location"] = (
+            "/v1/collections/records/records/r_other"
+        )
+        with self.assertRaises(ValueError):
+            write.validate_contract_fixture(wrong_location)
+
+        wrong_etag = deepcopy(fixture)
+        wrong_etag["response"]["body"]["etag"] = '"record-other"'
+        with self.assertRaises(ValueError):
+            write.validate_contract_fixture(wrong_etag)
+
+    def test_create_location_supports_declared_prefix_and_encoded_segment_ids(self):
+        with tempfile.TemporaryDirectory() as directory:
+            contract = Path(directory) / "openapi.yaml"
+            contract.write_text(
+                yaml.safe_dump(
+                    {
+                        "servers": [
+                            {
+                                "url": "https://{host}/registry",
+                                "variables": {
+                                    "host": {"default": "registry.example"}
+                                },
+                            }
+                        ]
+                    }
+                )
+            )
+            write.validate_created_location(
+                contract,
+                "https://registry.example/registry/v1/collections/people%2F2026/records/id%2F42",
+                "people/2026",
+                "id/42",
+            )
+            with self.assertRaises(ValueError):
+                write.validate_created_location(
+                    contract,
+                    "https://registry.example/registry/v1/collections/people/2026/records/id/42",
+                    "people/2026",
+                    "id/42",
+                )
+
     def test_required_write_artifacts_exist(self):
         expected = (
             write.WRITE,
@@ -95,6 +251,21 @@ class WriteArtifactTests(unittest.TestCase):
 
     def test_current_artifacts_pass_the_offline_write_gate(self):
         write.validate_all()
+
+    def test_write_validator_cli_runs_the_end_to_end_artifact_gate(self):
+        completed = subprocess.run(
+            [sys.executable, str(ROOT / "tools/validate_write.py")],
+            cwd=ROOT,
+            check=False,
+            capture_output=True,
+            text=True,
+        )
+        self.assertEqual(
+            completed.returncode,
+            0,
+            completed.stdout + completed.stderr,
+        )
+        self.assertIn("deployed Write behavior was not exercised", completed.stdout)
 
     def test_canonical_contract_fixtures_are_schema_validated(self):
         fixtures = write.contract_fixture_items()
@@ -151,6 +322,222 @@ class WriteArtifactTests(unittest.TestCase):
             wrong["response"]["body"].pop(outcome)
             with self.assertRaises(ValidationError):
                 write.validate_contract_fixture(wrong)
+
+    def test_combined_journeys_cover_the_unified_lifecycles(self):
+        journeys = write.combined_journey_items()
+        self.assertEqual(
+            {journey["kind"] for journey in journeys},
+            {
+                "create-retrieve",
+                "conditional-update",
+                "transition-read",
+                "async-completion-read",
+                "governed-application-read",
+            },
+        )
+        for journey in journeys:
+            with self.subTest(journey=journey["name"]):
+                write.validate_combined_journey(journey)
+
+    def test_combined_journey_gate_rejects_broken_handoffs_and_early_effects(self):
+        journeys = {item["kind"]: item for item in write.combined_journey_items()}
+
+        conditional = deepcopy(journeys["conditional-update"])
+        handoff = next(
+            link
+            for link in conditional["links"]
+            if link.get("version") == "if-match"
+        )
+        target = next(
+            step for step in conditional["steps"] if step["step"] == handoff["to"]
+        )
+        target["request"]["headers"]["If-Match"] = '"unrelated-version"'
+        with self.assertRaises(ValueError):
+            write.validate_combined_journey(conditional)
+
+        weakened = deepcopy(journeys["conditional-update"])
+        successor = next(
+            link
+            for link in weakened["links"]
+            if link["from"] == "update" and link["to"] == "retrieve-after"
+        )
+        successor.pop("version")
+        with self.assertRaises(ValueError):
+            write.validate_combined_journey(weakened)
+
+        missing = deepcopy(journeys["create-retrieve"])
+        missing["links"] = []
+        with self.assertRaises(ValueError):
+            write.validate_combined_journey(missing)
+
+        weakened = deepcopy(journeys["async-completion-read"])
+        weakened["links"][0]["identity"] = False
+        with self.assertRaises(ValueError):
+            write.validate_combined_journey(weakened)
+
+        governed = deepcopy(journeys["governed-application-read"])
+        approval = next(
+            step
+            for step in governed["steps"]
+            if step["operationId"] == "approveChangeRequest"
+        )
+        approval["response"]["body"]["applicationState"] = "applied"
+        approval["response"]["body"]["result"] = {
+            "collectionId": "records",
+            "recordId": "r_42",
+            "etag": '"record-v2"',
+        }
+        with self.assertRaises((ValueError, ValidationError)):
+            write.validate_combined_journey(governed)
+
+    def test_different_views_do_not_require_equal_response_etags(self):
+        journey = deepcopy(
+            next(
+                item
+                for item in write.combined_journey_items()
+                if item["kind"] == "create-retrieve"
+            )
+        )
+        read = next(
+            step for step in journey["steps"] if step["operationId"] == "retrieveRecord"
+        )
+        read["response"]["headers"]["ETag"] = '"projected-view-version"'
+        write.validate_combined_journey(journey)
+
+    def test_companion_guard_rejects_lag_and_effective_context_drift(self):
+        journey = deepcopy(
+            next(
+                item
+                for item in write.combined_journey_items()
+                if item["kind"] == "conditional-update"
+            )
+        )
+        guard = next(
+            step for step in journey["steps"] if step["step"] == "retrieve-before"
+        )
+        guard["guardEvaluation"]["currency"] = "lagged"
+        with self.assertRaises(ValueError):
+            write.validate_combined_journey(journey)
+
+        journey = deepcopy(
+            next(
+                item
+                for item in write.combined_journey_items()
+                if item["kind"] == "conditional-update"
+            )
+        )
+        successor = next(
+            step for step in journey["steps"] if step["step"] == "retrieve-after"
+        )
+        successor["effectiveContext"]["purpose"] = "different-purpose"
+        with self.assertRaises(ValueError):
+            write.validate_combined_journey(journey)
+
+        journey = deepcopy(
+            next(
+                item
+                for item in write.combined_journey_items()
+                if item["kind"] == "conditional-update"
+            )
+        )
+        update = next(
+            step for step in journey["steps"] if step["step"] == "update"
+        )
+        update["committedGuardEvaluationId"] = "different-guard-evaluation"
+        with self.assertRaises(ValueError):
+            write.validate_combined_journey(journey)
+
+        journey = deepcopy(
+            next(
+                item
+                for item in write.combined_journey_items()
+                if item["kind"] == "conditional-update"
+            )
+        )
+        journey["observation"]["interveningMutationRelevantChange"] = True
+        with self.assertRaises(ValueError):
+            write.validate_combined_journey(journey)
+
+    def test_hidden_mutation_relevant_change_invalidates_the_guard(self):
+        journey = deepcopy(
+            next(
+                item
+                for item in write.combined_journey_items()
+                if item["kind"] == "conditional-update"
+            )
+        )
+        before = next(
+            step for step in journey["steps"] if step["step"] == "retrieve-after"
+        )
+        changed = next(
+            step
+            for step in journey["steps"]
+            if step["step"] == "retrieve-after-hidden-relevant-change"
+        )
+        stale = next(
+            step
+            for step in journey["steps"]
+            if step["step"] == "hidden-change-stale-update"
+        )
+        self.assertEqual(before["response"]["body"], changed["response"]["body"])
+        self.assertNotEqual(
+            before["response"]["headers"]["ETag"],
+            changed["response"]["headers"]["ETag"],
+        )
+        self.assertEqual(stale["response"]["status"], 412)
+        write.validate_combined_journey(journey)
+
+        stale["response"] = {
+            "status": 204,
+            "headers": {
+                "ETag": changed["response"]["headers"]["ETag"],
+                "Cache-Control": "no-store",
+            },
+        }
+        with self.assertRaises(ValueError):
+            write.validate_combined_journey(journey)
+
+        journey = deepcopy(
+            next(
+                item
+                for item in write.combined_journey_items()
+                if item["kind"] == "conditional-update"
+            )
+        )
+        hidden_link = next(
+            link for link in journey["links"] if link.get("hiddenRelevantChange")
+        )
+        hidden_link["hiddenRelevantChange"] = False
+        with self.assertRaises(ValueError):
+            write.validate_combined_journey(journey)
+
+    def test_workflow_steps_preserve_operation_and_proposal_identity(self):
+        journeys = {item["kind"]: item for item in write.combined_journey_items()}
+
+        asynchronous = deepcopy(journeys["async-completion-read"])
+        completed = next(
+            step for step in asynchronous["steps"] if step["step"] == "completed"
+        )
+        completed["request"]["path"]["operationId"] = "op_8"
+        completed["response"]["body"]["operationId"] = "op_8"
+        with self.assertRaises(ValueError):
+            write.validate_combined_journey(asynchronous)
+
+        governed = deepcopy(journeys["governed-application-read"])
+        for name in ("approve", "applied"):
+            step = next(item for item in governed["steps"] if item["step"] == name)
+            step["request"]["path"]["changeRequestId"] = "cr_8"
+            step["response"]["body"]["changeRequestId"] = "cr_8"
+        with self.assertRaises(ValueError):
+            write.validate_combined_journey(governed)
+
+        governed = deepcopy(journeys["governed-application-read"])
+        approve = next(
+            step for step in governed["steps"] if step["step"] == "approve"
+        )
+        approve["response"]["body"]["input"]["data"]["label"] = "Other proposal"
+        with self.assertRaises(ValueError):
+            write.validate_combined_journey(governed)
 
     def test_write_capabilities_are_separate_and_normative(self):
         contract = yaml.safe_load(write.WRITE.read_text())

@@ -1,10 +1,10 @@
 ---
-description: Illustrative Consultation and Write bindings, schemas, and exchanges.
+description: Illustrative Registry API read and Write bindings, schemas, and exchanges.
 ---
 
 # API examples
 
-The Consultation examples below specialise the [Consultation contract](../api-reference.md). The independently selectable Write examples are listed separately below.
+The read examples below specialise the read operations in the unified [Registry API contract](../api-reference.md). The independently selectable Write examples are listed separately below.
 
 | OpenAPI | Collection | Capabilities | Selectable features | Record view |
 | --- | --- | --- | --- | --- |
@@ -51,14 +51,14 @@ containing Record views.
 | --- | --- |
 | [Business Record and request schemas](../../api/examples/business-registry.schema.json) | [Consultation exchanges](../../api/examples/consultation-exchanges.json) |
 | [Household, birth-registration, and reference schemas](../../api/examples/relationship-examples.schema.json) | [Relationship exchanges](../../api/examples/relationship-exchanges.json) |
-| [Consultation operation extension schema](../../api/extensions/x-govstack-digital-registries.schema.json) | [Positive and negative schema fixtures](../../api/examples/consultation-extension-fixtures.json) and [history, temporal, search, and discovery exchanges](../../api/examples/consultation-extension-exchanges.json) |
+| [Read operation extension schema](../../api/extensions/x-govstack-digital-registries.schema.json) | [Positive and negative schema fixtures](../../api/examples/consultation-extension-fixtures.json) and [history, temporal, search, and discovery exchanges](../../api/examples/consultation-extension-exchanges.json) |
 
 ## Discovery
 
 | Artifact | Purpose |
 | --- | --- |
 | [Registry metadata](../../api/examples/registry-metadata.jsonld) | Compacted JSON-LD document for the business Registry, validated against the [metadata document schema](../../api/extensions/registry-metadata.schema.json) |
-| [API catalog linkset](../../api/examples/api-catalog.linkset.json) | RFC 9727 `/.well-known/api-catalog` response linking the three contracts and the metadata document |
+| [API catalog linkset](../../api/examples/api-catalog.linkset.json) | RFC 9727 `/.well-known/api-catalog` response linking the unified Registry contract, the informative Evidence contract, and the metadata document |
 
 [Discover Registry Services](../../requirements/registry-discovery.md#core-api-family-discovery) includes both discovery examples. The artifact checks verify that the embedded examples match these files.
 
@@ -68,9 +68,9 @@ Example cursors are illustrative values.
 
 ## Non-normative Write examples
 
-[Write example OpenAPI](write.md), [input and result schemas](../../api/examples/write-examples.schema.json), and [request/response exchanges](../../api/examples/write-exchanges.json) illustrate the shared [Write contract](../write-api-reference.md) using birth registration, households, and individuals. Both direct commits and approval-based proposals are shown. These are example deployment choices, not additional conformance requirements.
+[Write example OpenAPI](write.md), [input and result schemas](../../api/examples/write-examples.schema.json), and [request/response exchanges](../../api/examples/write-exchanges.json) illustrate the Write operations in the shared [Registry API contract](../api-reference.md) using birth registration, households, and individuals. Both direct commits and approval-based proposals are shown. These are example deployment choices, not additional conformance requirements.
 
-Birth declaration and correction commands carry proposed facts, reasons, and evidence references. A successful authoritative commit maps accepted facts into a Birth read projection. Command annotations remain outside that projection. Pending and rejected proposals do not change authoritative facts. The HTTP idempotency key and source transaction identifier have separate roles.
+Birth declaration and correction commands carry proposed facts, reasons, and evidence references. A successful authoritative commit maps accepted facts into authoritative state as declared by the operation. A permitted Birth read projection can omit, transform, or combine that state and is governed by its own access and currency contract. Command annotations remain outside that projection. Pending and rejected proposals do not change authoritative facts. The HTTP idempotency key and source transaction identifier have separate roles.
 
 | Household case | Example relationship input |
 | --- | --- |

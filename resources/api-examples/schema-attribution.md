@@ -7,7 +7,7 @@ description: Sources, licences, and changes for schemas used by the illustrative
 The [Write examples](README.md#non-normative-write-examples) use selected
 [PublicSchema](https://publicschema.org/) models and their GeoJSON dependency.
 These models are illustrative domain choices. They are not requirements of the
-shared Write contract.
+Write operations in the shared Registry API contract.
 
 ## PublicSchema
 

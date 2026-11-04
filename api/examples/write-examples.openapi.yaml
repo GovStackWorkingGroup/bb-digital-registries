@@ -86,25 +86,25 @@ paths:
         '201':
           $ref: '#/components/responses/BirthRecordCreated'
         '400':
-          $ref: '../write.openapi.yaml#/components/responses/BadRequest'
+          $ref: '../write.openapi.yaml#/components/responses/WriteBadRequest'
         '401':
-          $ref: '../write.openapi.yaml#/components/responses/Unauthorized'
+          $ref: '../write.openapi.yaml#/components/responses/WriteUnauthorized'
         '403':
-          $ref: '../write.openapi.yaml#/components/responses/Forbidden'
+          $ref: '../write.openapi.yaml#/components/responses/WriteForbidden'
         '404':
-          $ref: '../write.openapi.yaml#/components/responses/CollectionNotAvailable'
+          $ref: '../write.openapi.yaml#/components/responses/WriteCollectionNotAvailable'
         '409':
           $ref: '../write.openapi.yaml#/components/responses/Conflict'
         '415':
-          $ref: '../write.openapi.yaml#/components/responses/UnsupportedMediaType'
+          $ref: '../write.openapi.yaml#/components/responses/WriteUnsupportedMediaType'
         '422':
           $ref: '../write.openapi.yaml#/components/responses/UnprocessableContent'
         '429':
-          $ref: '../write.openapi.yaml#/components/responses/TooManyRequests'
+          $ref: '../write.openapi.yaml#/components/responses/WriteTooManyRequests'
         '500':
-          $ref: '../write.openapi.yaml#/components/responses/InternalError'
+          $ref: '../write.openapi.yaml#/components/responses/WriteInternalError'
         '503':
-          $ref: '../write.openapi.yaml#/components/responses/ServiceUnavailable'
+          $ref: '../write.openapi.yaml#/components/responses/WriteServiceUnavailable'
   /v1/collections/households/records:
     post:
       operationId: createHousehold
@@ -146,16 +146,16 @@ paths:
                     is_active: true
       responses:
         '201': {$ref: '#/components/responses/HouseholdRecordCreated'}
-        '400': {$ref: '../write.openapi.yaml#/components/responses/BadRequest'}
-        '401': {$ref: '../write.openapi.yaml#/components/responses/Unauthorized'}
-        '403': {$ref: '../write.openapi.yaml#/components/responses/Forbidden'}
-        '404': {$ref: '../write.openapi.yaml#/components/responses/CollectionNotAvailable'}
+        '400': {$ref: '../write.openapi.yaml#/components/responses/WriteBadRequest'}
+        '401': {$ref: '../write.openapi.yaml#/components/responses/WriteUnauthorized'}
+        '403': {$ref: '../write.openapi.yaml#/components/responses/WriteForbidden'}
+        '404': {$ref: '../write.openapi.yaml#/components/responses/WriteCollectionNotAvailable'}
         '409': {$ref: '../write.openapi.yaml#/components/responses/Conflict'}
-        '415': {$ref: '../write.openapi.yaml#/components/responses/UnsupportedMediaType'}
+        '415': {$ref: '../write.openapi.yaml#/components/responses/WriteUnsupportedMediaType'}
         '422': {$ref: '../write.openapi.yaml#/components/responses/UnprocessableContent'}
-        '429': {$ref: '../write.openapi.yaml#/components/responses/TooManyRequests'}
-        '500': {$ref: '../write.openapi.yaml#/components/responses/InternalError'}
-        '503': {$ref: '../write.openapi.yaml#/components/responses/ServiceUnavailable'}
+        '429': {$ref: '../write.openapi.yaml#/components/responses/WriteTooManyRequests'}
+        '500': {$ref: '../write.openapi.yaml#/components/responses/WriteInternalError'}
+        '503': {$ref: '../write.openapi.yaml#/components/responses/WriteServiceUnavailable'}
   /v1/collections/individuals/records:
     post:
       operationId: createIndividual
@@ -188,17 +188,48 @@ paths:
                 date_of_birth: '1990-02-12'
       responses:
         '201': {$ref: '#/components/responses/IndividualRecordCreated'}
-        '400': {$ref: '../write.openapi.yaml#/components/responses/BadRequest'}
-        '401': {$ref: '../write.openapi.yaml#/components/responses/Unauthorized'}
-        '403': {$ref: '../write.openapi.yaml#/components/responses/Forbidden'}
-        '404': {$ref: '../write.openapi.yaml#/components/responses/CollectionNotAvailable'}
+        '400': {$ref: '../write.openapi.yaml#/components/responses/WriteBadRequest'}
+        '401': {$ref: '../write.openapi.yaml#/components/responses/WriteUnauthorized'}
+        '403': {$ref: '../write.openapi.yaml#/components/responses/WriteForbidden'}
+        '404': {$ref: '../write.openapi.yaml#/components/responses/WriteCollectionNotAvailable'}
         '409': {$ref: '../write.openapi.yaml#/components/responses/Conflict'}
-        '415': {$ref: '../write.openapi.yaml#/components/responses/UnsupportedMediaType'}
+        '415': {$ref: '../write.openapi.yaml#/components/responses/WriteUnsupportedMediaType'}
         '422': {$ref: '../write.openapi.yaml#/components/responses/UnprocessableContent'}
-        '429': {$ref: '../write.openapi.yaml#/components/responses/TooManyRequests'}
-        '500': {$ref: '../write.openapi.yaml#/components/responses/InternalError'}
-        '503': {$ref: '../write.openapi.yaml#/components/responses/ServiceUnavailable'}
+        '429': {$ref: '../write.openapi.yaml#/components/responses/WriteTooManyRequests'}
+        '500': {$ref: '../write.openapi.yaml#/components/responses/WriteInternalError'}
+        '503': {$ref: '../write.openapi.yaml#/components/responses/WriteServiceUnavailable'}
   /v1/collections/individuals/records/{recordId}:
+    get:
+      operationId: retrieveIndividualForWrite
+      summary: Retrieve the permitted Person view used for conditional update
+      description: >-
+        Returns the permitted individual-write companion view of the current
+        authoritative Person record. Artifact validation checks the declared
+        strong ETag handoff, not runtime authority or projection currency.
+      tags: [Direct Write examples]
+      security:
+        - serviceOAuth: [bb:digital-registries:record:read]
+      x-govstack-digital-registries:
+        registry: https://registry.example/registries/example
+        collection: individuals
+        capability: retrieve
+        view: individual-write
+        features: [conditional-read]
+      parameters:
+        - $ref: '../openapi.yaml#/components/parameters/RecordId'
+        - $ref: '../openapi.yaml#/components/parameters/Traceparent'
+        - $ref: '../openapi.yaml#/components/parameters/IfNoneMatch'
+      responses:
+        '200': {$ref: '../openapi.yaml#/components/responses/Record'}
+        '304': {$ref: '../openapi.yaml#/components/responses/NotModified'}
+        '400': {$ref: '../openapi.yaml#/components/responses/BadRequest'}
+        '401': {$ref: '../openapi.yaml#/components/responses/Unauthorized'}
+        '403': {$ref: '../openapi.yaml#/components/responses/Forbidden'}
+        '404': {$ref: '../openapi.yaml#/components/responses/RecordNotAvailable'}
+        '406': {$ref: '../openapi.yaml#/components/responses/NotAcceptable'}
+        '429': {$ref: '../openapi.yaml#/components/responses/TooManyRequests'}
+        '500': {$ref: '../openapi.yaml#/components/responses/InternalError'}
+        '503': {$ref: '../openapi.yaml#/components/responses/ServiceUnavailable'}
     patch:
       operationId: updateRecord
       summary: Apply a merge patch to a Person directly
@@ -215,6 +246,9 @@ paths:
         capability: update
         inputSchema: ./write-examples.schema.json#/$defs/IndividualUpdateInput
         inputMediaType: application/merge-patch+json
+        companionRead:
+          operationId: retrieveIndividualForWrite
+          view: individual-write
       parameters:
         - $ref: '../write.openapi.yaml#/components/parameters/RecordId'
         - $ref: '../write.openapi.yaml#/components/parameters/Traceparent'
@@ -235,19 +269,52 @@ paths:
           description: Person updated and committed; response is bodyless.
           headers:
             ETag: {$ref: '../write.openapi.yaml#/components/headers/StrongETag'}
-            Cache-Control: {$ref: '../write.openapi.yaml#/components/headers/CacheControl'}
-        '400': {$ref: '../write.openapi.yaml#/components/responses/BadRequest'}
-        '401': {$ref: '../write.openapi.yaml#/components/responses/Unauthorized'}
-        '403': {$ref: '../write.openapi.yaml#/components/responses/Forbidden'}
-        '404': {$ref: '../write.openapi.yaml#/components/responses/RecordNotAvailable'}
+            Cache-Control: {$ref: '../write.openapi.yaml#/components/headers/WriteCacheControl'}
+        '400': {$ref: '../write.openapi.yaml#/components/responses/WriteBadRequest'}
+        '401': {$ref: '../write.openapi.yaml#/components/responses/WriteUnauthorized'}
+        '403': {$ref: '../write.openapi.yaml#/components/responses/WriteForbidden'}
+        '404': {$ref: '../write.openapi.yaml#/components/responses/WriteRecordNotAvailable'}
         '409': {$ref: '../write.openapi.yaml#/components/responses/Conflict'}
         '412': {$ref: '../write.openapi.yaml#/components/responses/PreconditionFailed'}
-        '415': {$ref: '../write.openapi.yaml#/components/responses/UnsupportedMediaType'}
+        '415': {$ref: '../write.openapi.yaml#/components/responses/WriteUnsupportedMediaType'}
         '422': {$ref: '../write.openapi.yaml#/components/responses/UnprocessableContent'}
         '428': {$ref: '../write.openapi.yaml#/components/responses/PreconditionRequired'}
-        '429': {$ref: '../write.openapi.yaml#/components/responses/TooManyRequests'}
-        '500': {$ref: '../write.openapi.yaml#/components/responses/InternalError'}
-        '503': {$ref: '../write.openapi.yaml#/components/responses/ServiceUnavailable'}
+        '429': {$ref: '../write.openapi.yaml#/components/responses/WriteTooManyRequests'}
+        '500': {$ref: '../write.openapi.yaml#/components/responses/WriteInternalError'}
+        '503': {$ref: '../write.openapi.yaml#/components/responses/WriteServiceUnavailable'}
+  /v1/collections/birth-registrations/records/{recordId}:
+    get:
+      operationId: retrieveBirthRegistrationForWrite
+      summary: Retrieve the permitted Birth view used for correction
+      description: >-
+        Returns the permitted birth-registration-write companion view of the
+        current authoritative Birth record. Artifact validation checks the
+        declared strong ETag handoff, not runtime authority or projection
+        currency.
+      tags: [Direct Write examples]
+      security:
+        - serviceOAuth: [bb:digital-registries:record:read]
+      x-govstack-digital-registries:
+        registry: https://registry.example/registries/example
+        collection: birth-registrations
+        capability: retrieve
+        view: birth-registration-write
+        features: [conditional-read]
+      parameters:
+        - $ref: '../openapi.yaml#/components/parameters/RecordId'
+        - $ref: '../openapi.yaml#/components/parameters/Traceparent'
+        - $ref: '../openapi.yaml#/components/parameters/IfNoneMatch'
+      responses:
+        '200': {$ref: '../openapi.yaml#/components/responses/Record'}
+        '304': {$ref: '../openapi.yaml#/components/responses/NotModified'}
+        '400': {$ref: '../openapi.yaml#/components/responses/BadRequest'}
+        '401': {$ref: '../openapi.yaml#/components/responses/Unauthorized'}
+        '403': {$ref: '../openapi.yaml#/components/responses/Forbidden'}
+        '404': {$ref: '../openapi.yaml#/components/responses/RecordNotAvailable'}
+        '406': {$ref: '../openapi.yaml#/components/responses/NotAcceptable'}
+        '429': {$ref: '../openapi.yaml#/components/responses/TooManyRequests'}
+        '500': {$ref: '../openapi.yaml#/components/responses/InternalError'}
+        '503': {$ref: '../openapi.yaml#/components/responses/ServiceUnavailable'}
   /v1/collections/birth-registrations/records/{recordId}/correct-birth:
     post:
       operationId: correctBirth
@@ -267,6 +334,9 @@ paths:
         inputSchema: ./write-examples.schema.json#/$defs/BirthCorrectionInput
         action: correct-birth
         transitionProfile: publicschema-birth-correction
+        companionRead:
+          operationId: retrieveBirthRegistrationForWrite
+          view: birth-registration-write
       parameters:
         - $ref: '../write.openapi.yaml#/components/parameters/RecordId'
         - $ref: '../write.openapi.yaml#/components/parameters/Traceparent'
@@ -297,29 +367,61 @@ paths:
         '200':
           $ref: '#/components/responses/BirthTransitionApplied'
         '400':
-          $ref: '../write.openapi.yaml#/components/responses/BadRequest'
+          $ref: '../write.openapi.yaml#/components/responses/WriteBadRequest'
         '401':
-          $ref: '../write.openapi.yaml#/components/responses/Unauthorized'
+          $ref: '../write.openapi.yaml#/components/responses/WriteUnauthorized'
         '403':
-          $ref: '../write.openapi.yaml#/components/responses/Forbidden'
+          $ref: '../write.openapi.yaml#/components/responses/WriteForbidden'
         '404':
-          $ref: '../write.openapi.yaml#/components/responses/RecordNotAvailable'
+          $ref: '../write.openapi.yaml#/components/responses/WriteRecordNotAvailable'
         '409':
           $ref: '../write.openapi.yaml#/components/responses/Conflict'
         '412':
           $ref: '../write.openapi.yaml#/components/responses/PreconditionFailed'
         '415':
-          $ref: '../write.openapi.yaml#/components/responses/UnsupportedMediaType'
+          $ref: '../write.openapi.yaml#/components/responses/WriteUnsupportedMediaType'
         '422':
           $ref: '../write.openapi.yaml#/components/responses/UnprocessableContent'
         '428':
           $ref: '../write.openapi.yaml#/components/responses/PreconditionRequired'
         '429':
-          $ref: '../write.openapi.yaml#/components/responses/TooManyRequests'
+          $ref: '../write.openapi.yaml#/components/responses/WriteTooManyRequests'
         '500':
-          $ref: '../write.openapi.yaml#/components/responses/InternalError'
+          $ref: '../write.openapi.yaml#/components/responses/WriteInternalError'
         '503':
-          $ref: '../write.openapi.yaml#/components/responses/ServiceUnavailable'
+          $ref: '../write.openapi.yaml#/components/responses/WriteServiceUnavailable'
+  /v1/collections/households/records/{recordId}:
+    get:
+      operationId: retrieveHouseholdForWrite
+      summary: Retrieve the permitted Household view used for membership changes
+      description: >-
+        Returns the permitted household-write companion view of the current
+        authoritative Household record. Artifact validation checks the declared
+        strong ETag handoff, not runtime authority or projection currency.
+      tags: [Direct Write examples]
+      security:
+        - serviceOAuth: [bb:digital-registries:record:read]
+      x-govstack-digital-registries:
+        registry: https://registry.example/registries/example
+        collection: households
+        capability: retrieve
+        view: household-write
+        features: [conditional-read]
+      parameters:
+        - $ref: '../openapi.yaml#/components/parameters/RecordId'
+        - $ref: '../openapi.yaml#/components/parameters/Traceparent'
+        - $ref: '../openapi.yaml#/components/parameters/IfNoneMatch'
+      responses:
+        '200': {$ref: '../openapi.yaml#/components/responses/Record'}
+        '304': {$ref: '../openapi.yaml#/components/responses/NotModified'}
+        '400': {$ref: '../openapi.yaml#/components/responses/BadRequest'}
+        '401': {$ref: '../openapi.yaml#/components/responses/Unauthorized'}
+        '403': {$ref: '../openapi.yaml#/components/responses/Forbidden'}
+        '404': {$ref: '../openapi.yaml#/components/responses/RecordNotAvailable'}
+        '406': {$ref: '../openapi.yaml#/components/responses/NotAcceptable'}
+        '429': {$ref: '../openapi.yaml#/components/responses/TooManyRequests'}
+        '500': {$ref: '../openapi.yaml#/components/responses/InternalError'}
+        '503': {$ref: '../openapi.yaml#/components/responses/ServiceUnavailable'}
   /v1/collections/households/records/{recordId}/add-member:
     post:
       operationId: addHouseholdMember
@@ -339,6 +441,9 @@ paths:
         inputSchema: ./write-examples.schema.json#/$defs/HouseholdAddMemberInput
         action: add-member
         transitionProfile: publicschema-household-add-member
+        companionRead:
+          operationId: retrieveHouseholdForWrite
+          view: household-write
       parameters:
         - $ref: '../write.openapi.yaml#/components/parameters/RecordId'
         - $ref: '../write.openapi.yaml#/components/parameters/Traceparent'
@@ -364,29 +469,29 @@ paths:
         '200':
           $ref: '#/components/responses/HouseholdTransitionApplied'
         '400':
-          $ref: '../write.openapi.yaml#/components/responses/BadRequest'
+          $ref: '../write.openapi.yaml#/components/responses/WriteBadRequest'
         '401':
-          $ref: '../write.openapi.yaml#/components/responses/Unauthorized'
+          $ref: '../write.openapi.yaml#/components/responses/WriteUnauthorized'
         '403':
-          $ref: '../write.openapi.yaml#/components/responses/Forbidden'
+          $ref: '../write.openapi.yaml#/components/responses/WriteForbidden'
         '404':
-          $ref: '../write.openapi.yaml#/components/responses/RecordNotAvailable'
+          $ref: '../write.openapi.yaml#/components/responses/WriteRecordNotAvailable'
         '409':
           $ref: '../write.openapi.yaml#/components/responses/Conflict'
         '412':
           $ref: '../write.openapi.yaml#/components/responses/PreconditionFailed'
         '415':
-          $ref: '../write.openapi.yaml#/components/responses/UnsupportedMediaType'
+          $ref: '../write.openapi.yaml#/components/responses/WriteUnsupportedMediaType'
         '422':
           $ref: '../write.openapi.yaml#/components/responses/UnprocessableContent'
         '428':
           $ref: '../write.openapi.yaml#/components/responses/PreconditionRequired'
         '429':
-          $ref: '../write.openapi.yaml#/components/responses/TooManyRequests'
+          $ref: '../write.openapi.yaml#/components/responses/WriteTooManyRequests'
         '500':
-          $ref: '../write.openapi.yaml#/components/responses/InternalError'
+          $ref: '../write.openapi.yaml#/components/responses/WriteInternalError'
         '503':
-          $ref: '../write.openapi.yaml#/components/responses/ServiceUnavailable'
+          $ref: '../write.openapi.yaml#/components/responses/WriteServiceUnavailable'
   /v1/change-requests:
     post:
       operationId: submitChangeRequest
@@ -433,25 +538,25 @@ paths:
         '201':
           $ref: '#/components/responses/ChangeRequestCreated'
         '400':
-          $ref: '../write.openapi.yaml#/components/responses/BadRequest'
+          $ref: '../write.openapi.yaml#/components/responses/WriteBadRequest'
         '401':
-          $ref: '../write.openapi.yaml#/components/responses/Unauthorized'
+          $ref: '../write.openapi.yaml#/components/responses/WriteUnauthorized'
         '403':
-          $ref: '../write.openapi.yaml#/components/responses/Forbidden'
+          $ref: '../write.openapi.yaml#/components/responses/WriteForbidden'
         '404':
           $ref: '../write.openapi.yaml#/components/responses/TargetNotAvailable'
         '409':
           $ref: '../write.openapi.yaml#/components/responses/Conflict'
         '415':
-          $ref: '../write.openapi.yaml#/components/responses/UnsupportedMediaType'
+          $ref: '../write.openapi.yaml#/components/responses/WriteUnsupportedMediaType'
         '422':
           $ref: '../write.openapi.yaml#/components/responses/UnprocessableContent'
         '429':
-          $ref: '../write.openapi.yaml#/components/responses/TooManyRequests'
+          $ref: '../write.openapi.yaml#/components/responses/WriteTooManyRequests'
         '500':
-          $ref: '../write.openapi.yaml#/components/responses/InternalError'
+          $ref: '../write.openapi.yaml#/components/responses/WriteInternalError'
         '503':
-          $ref: '../write.openapi.yaml#/components/responses/ServiceUnavailable'
+          $ref: '../write.openapi.yaml#/components/responses/WriteServiceUnavailable'
   /v1/change-requests/{changeRequestId}:
     get:
       operationId: getChangeRequest
@@ -468,23 +573,23 @@ paths:
         '200':
           $ref: '#/components/responses/ChangeRequest'
         '304':
-          $ref: '../write.openapi.yaml#/components/responses/NotModified'
+          $ref: '../write.openapi.yaml#/components/responses/WriteNotModified'
         '400':
-          $ref: '../write.openapi.yaml#/components/responses/BadRequest'
+          $ref: '../write.openapi.yaml#/components/responses/WriteBadRequest'
         '401':
-          $ref: '../write.openapi.yaml#/components/responses/Unauthorized'
+          $ref: '../write.openapi.yaml#/components/responses/WriteUnauthorized'
         '403':
-          $ref: '../write.openapi.yaml#/components/responses/Forbidden'
+          $ref: '../write.openapi.yaml#/components/responses/WriteForbidden'
         '404':
           $ref: '../write.openapi.yaml#/components/responses/ChangeRequestNotAvailable'
         '406':
-          $ref: '../write.openapi.yaml#/components/responses/NotAcceptable'
+          $ref: '../write.openapi.yaml#/components/responses/WriteNotAcceptable'
         '429':
-          $ref: '../write.openapi.yaml#/components/responses/TooManyRequests'
+          $ref: '../write.openapi.yaml#/components/responses/WriteTooManyRequests'
         '500':
-          $ref: '../write.openapi.yaml#/components/responses/InternalError'
+          $ref: '../write.openapi.yaml#/components/responses/WriteInternalError'
         '503':
-          $ref: '../write.openapi.yaml#/components/responses/ServiceUnavailable'
+          $ref: '../write.openapi.yaml#/components/responses/WriteServiceUnavailable'
   /v1/change-requests/{changeRequestId}/approve:
     post:
       operationId: approveChangeRequest
@@ -514,11 +619,11 @@ paths:
         '200':
           $ref: '#/components/responses/ChangeRequestApproved'
         '400':
-          $ref: '../write.openapi.yaml#/components/responses/BadRequest'
+          $ref: '../write.openapi.yaml#/components/responses/WriteBadRequest'
         '401':
-          $ref: '../write.openapi.yaml#/components/responses/Unauthorized'
+          $ref: '../write.openapi.yaml#/components/responses/WriteUnauthorized'
         '403':
-          $ref: '../write.openapi.yaml#/components/responses/Forbidden'
+          $ref: '../write.openapi.yaml#/components/responses/WriteForbidden'
         '404':
           $ref: '../write.openapi.yaml#/components/responses/ChangeRequestNotAvailable'
         '409':
@@ -530,11 +635,11 @@ paths:
         '428':
           $ref: '../write.openapi.yaml#/components/responses/PreconditionRequired'
         '429':
-          $ref: '../write.openapi.yaml#/components/responses/TooManyRequests'
+          $ref: '../write.openapi.yaml#/components/responses/WriteTooManyRequests'
         '500':
-          $ref: '../write.openapi.yaml#/components/responses/InternalError'
+          $ref: '../write.openapi.yaml#/components/responses/WriteInternalError'
         '503':
-          $ref: '../write.openapi.yaml#/components/responses/ServiceUnavailable'
+          $ref: '../write.openapi.yaml#/components/responses/WriteServiceUnavailable'
   /v1/change-requests/{changeRequestId}/reject:
     post:
       operationId: rejectChangeRequest
@@ -561,11 +666,11 @@ paths:
         '200':
           $ref: '#/components/responses/ChangeRequestRejected'
         '400':
-          $ref: '../write.openapi.yaml#/components/responses/BadRequest'
+          $ref: '../write.openapi.yaml#/components/responses/WriteBadRequest'
         '401':
-          $ref: '../write.openapi.yaml#/components/responses/Unauthorized'
+          $ref: '../write.openapi.yaml#/components/responses/WriteUnauthorized'
         '403':
-          $ref: '../write.openapi.yaml#/components/responses/Forbidden'
+          $ref: '../write.openapi.yaml#/components/responses/WriteForbidden'
         '404':
           $ref: '../write.openapi.yaml#/components/responses/ChangeRequestNotAvailable'
         '409':
@@ -577,11 +682,11 @@ paths:
         '428':
           $ref: '../write.openapi.yaml#/components/responses/PreconditionRequired'
         '429':
-          $ref: '../write.openapi.yaml#/components/responses/TooManyRequests'
+          $ref: '../write.openapi.yaml#/components/responses/WriteTooManyRequests'
         '500':
-          $ref: '../write.openapi.yaml#/components/responses/InternalError'
+          $ref: '../write.openapi.yaml#/components/responses/WriteInternalError'
         '503':
-          $ref: '../write.openapi.yaml#/components/responses/ServiceUnavailable'
+          $ref: '../write.openapi.yaml#/components/responses/WriteServiceUnavailable'
 components:
   securitySchemes:
     serviceOAuth:
@@ -631,7 +736,7 @@ components:
         ETag:
           $ref: '../write.openapi.yaml#/components/headers/StrongETag'
         Cache-Control:
-          $ref: '../write.openapi.yaml#/components/headers/CacheControl'
+          $ref: '../write.openapi.yaml#/components/headers/WriteCacheControl'
       content:
         application/json:
           schema:
@@ -655,7 +760,7 @@ components:
         ETag:
           $ref: '../write.openapi.yaml#/components/headers/StrongETag'
         Cache-Control:
-          $ref: '../write.openapi.yaml#/components/headers/CacheControl'
+          $ref: '../write.openapi.yaml#/components/headers/WriteCacheControl'
       content:
         application/json:
           schema:
@@ -676,7 +781,7 @@ components:
         ETag:
           $ref: '../write.openapi.yaml#/components/headers/StrongETag'
         Cache-Control:
-          $ref: '../write.openapi.yaml#/components/headers/CacheControl'
+          $ref: '../write.openapi.yaml#/components/headers/WriteCacheControl'
       content:
         application/json:
           schema:
@@ -691,7 +796,7 @@ components:
         ETag:
           $ref: '../write.openapi.yaml#/components/headers/StrongETag'
         Cache-Control:
-          $ref: '../write.openapi.yaml#/components/headers/CacheControl'
+          $ref: '../write.openapi.yaml#/components/headers/WriteCacheControl'
       content:
         application/json:
           schema:
@@ -706,7 +811,7 @@ components:
         ETag:
           $ref: '../write.openapi.yaml#/components/headers/StrongETag'
         Cache-Control:
-          $ref: '../write.openapi.yaml#/components/headers/CacheControl'
+          $ref: '../write.openapi.yaml#/components/headers/WriteCacheControl'
       content:
         application/json:
           schema:
@@ -723,7 +828,7 @@ components:
         ETag:
           $ref: '../write.openapi.yaml#/components/headers/StrongETag'
         Cache-Control:
-          $ref: '../write.openapi.yaml#/components/headers/CacheControl'
+          $ref: '../write.openapi.yaml#/components/headers/WriteCacheControl'
       content:
         application/json:
           schema:
@@ -756,7 +861,7 @@ components:
         ETag:
           $ref: '../write.openapi.yaml#/components/headers/StrongETag'
         Cache-Control:
-          $ref: '../write.openapi.yaml#/components/headers/CacheControl'
+          $ref: '../write.openapi.yaml#/components/headers/WriteCacheControl'
       content:
         application/json:
           schema:
@@ -789,7 +894,7 @@ components:
         ETag:
           $ref: '../write.openapi.yaml#/components/headers/StrongETag'
         Cache-Control:
-          $ref: '../write.openapi.yaml#/components/headers/CacheControl'
+          $ref: '../write.openapi.yaml#/components/headers/WriteCacheControl'
       content:
         application/json:
           schema:
@@ -822,7 +927,7 @@ components:
         ETag:
           $ref: '../write.openapi.yaml#/components/headers/StrongETag'
         Cache-Control:
-          $ref: '../write.openapi.yaml#/components/headers/CacheControl'
+          $ref: '../write.openapi.yaml#/components/headers/WriteCacheControl'
       content:
         application/json:
           schema:

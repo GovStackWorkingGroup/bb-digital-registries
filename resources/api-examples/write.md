@@ -1,5 +1,5 @@
 ---
-description: Illustrative Registry Write contract, separate from the canonical draft.
+description: Illustrative Registry Write operations based on the unified canonical draft.
 ---
 
 # Registry Write API example

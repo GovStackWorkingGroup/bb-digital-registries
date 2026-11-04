@@ -148,7 +148,7 @@ A service description declares only the families available for its associated Re
 
 One API can expose several logical Record Collections and operations from several families. A Collection is an addressable API grouping with declared membership, not an assertion that its Records occupy one table, source module, governed dataset, or institutionally separate Registry. Its `collectionId` is stable within the API contract. One Registry can expose several Collections, and one Record can be a member of several Collections while retaining the same identity. Its contract documents each Collection's membership and each operation's inputs, representation, and access requirements. API-family classifications describe capabilities independently of URL structure.
 
-An OpenAPI contract declares the Registry context of each Collection-scoped Consultation operation with the `x-govstack-digital-registries` extension on the Operation Object. The extension requires four values: `registry`, the Registry Identifier, equal to the `@id` of a Registry in the published metadata; `collection`, equal to `{collectionId}` in the operation path or its fixed concrete value; `capability`, one of `retrieve`, `lookup`, `list`, `search`, `revision-list`, and `revision-retrieve`; and `view`, the name of the Record view the operation returns. Its `features` array, which can be omitted, selects the additional guarantees defined by [Consultation](registry-services.md#consultation-selectable-read-features), including recorded-time, effective-time, and purpose binding; omission or an empty array selects none. An operation selecting `purpose-bound` also declares the extension's `purpose` object. The [extension schema](../api/extensions/x-govstack-digital-registries.schema.json) is its normative definition, and its capability and feature values are closed for that versioned contract. Operations of one Collection that declare the same view return the same Record schema. History operations can declare a distinct view, such as `record-history`. The extension is the machine-readable link between a Record read and the metadata that identifies its Registry and authority; the [Common Record context](registry-services.md#core-common-record-context) relies on it. The cross-Collection caller capability document has its own bounded schema and references these operations; it does not carry one Registry or Collection extension. Its advisory capability and feature annotations are separately extensible under [Consultation](registry-services.md#consultation-operations). The `capability` property is binding vocabulary mapped to the framework option keys in the [overview](../introduction/overview.md#functionalities); it is not a framework capability declaration.
+An OpenAPI contract declares the Registry context of each Collection-scoped read operation with the `x-govstack-digital-registries` extension on the Operation Object. The extension requires four values: `registry`, the Registry Identifier, equal to the `@id` of a Registry in the published metadata; `collection`, equal to `{collectionId}` in the operation path or its fixed concrete value; `capability`, one of `retrieve`, `lookup`, `list`, `search`, `revision-list`, and `revision-retrieve`; and `view`, the name of the Record view the operation returns. Its `features` array, which can be omitted, selects the additional guarantees defined by [Consultation](registry-services.md#consultation-selectable-read-features), including recorded-time, effective-time, and purpose binding; omission or an empty array selects none. An operation selecting `purpose-bound` also declares the extension's `purpose` object. The [extension schema](../api/extensions/x-govstack-digital-registries.schema.json) is its normative definition, and its capability and feature values are closed for that versioned contract. Operations of one Collection that declare the same view return the same Record schema. History operations can declare a distinct view, such as `record-history`. The Write operation extension declares the Registry, Collection where applicable, capability, input schema, and operation-specific binding for primary Write operations in the same OpenAPI contract. An Update or Transition declaration identifies the shared `retrieveRecord` companion read for the exact same Registry, Collection, and view. The extensions are machine-readable links between operations and the metadata that identifies the Registry and authority; the [Common Record context](registry-services.md#core-common-record-context) relies on them. The caller capability document has its own bounded schema and references caller-visible Consultation, Write, and supporting workflow operations. Collection-scoped entries appear under `collections`; cross-Collection Change Request and asynchronous Operation entries appear under optional root `operations` with their Registry context. A recognised Consultation entry requires `view` and can carry read annotations. Existing recognised read entries can omit `family` and are interpreted as Consultation. A new Write or supporting workflow entry declares `family: write` and cannot carry those read annotations, while Update and Transition entries identify their companion read. Unknown future capability entries remain skippable without acquiring known read or Write fields. The advisory capability and feature annotations are separately extensible under [Consultation](registry-services.md#consultation-operations). The `capability` property is binding vocabulary mapped to the framework option keys in the [overview](../introduction/overview.md#functionalities); it is not a framework capability declaration.
 
 ```yaml
   /v1/collections/businesses/records/{recordId}:
@@ -171,7 +171,7 @@ An implementation publishes its Registry metadata as one document compacted with
 
 Consumers locate the document through the [RFC 9727](https://www.rfc-editor.org/rfc/rfc9727.html) API catalog. The origin that hosts a Digital Registries API serves `/.well-known/api-catalog` as an [RFC 9264 linkset](https://www.rfc-editor.org/rfc/rfc9264.html) in `application/linkset+json`, following the GET, HEAD, and HTTPS requirements of RFC 9727. For every Digital Registries API at that origin, the linkset carries a `service-desc` link to the OpenAPI contract and a `service-meta` link, typed `application/ld+json`, to the Registry metadata document. Both link relations are defined by [RFC 8631](https://www.rfc-editor.org/rfc/rfc8631.html). The well-known path is one of the unversioned paths the GovStack API Design Guide permits, so no other root path is needed for discovery. The [canonical OpenAPI contract](../resources/api.yml) describes `GET` and `HEAD` on this path, including the `Link` header with the `api-catalog` relation, at the origin root outside any deployment routing prefix.
 
-The linkset below publishes the three contracts and the metadata document of the [informative example](#core-informative-json-ld-example). It is also available as a [file](../api/examples/api-catalog.linkset.json).
+The linkset below publishes the unified Registry contract, the separate informative Evidence contract, and the metadata document of the [informative example](#core-informative-json-ld-example). It is also available as a [file](../api/examples/api-catalog.linkset.json).
 
 ```json
 {
@@ -180,14 +180,9 @@ The linkset below publishes the three contracts and the metadata document of the
       "anchor": "https://registry.example/",
       "service-desc": [
         {
-          "href": "https://registry.example/contracts/1.0.0-draft/examples/business-registry.openapi.yaml",
+          "href": "https://registry.example/contracts/1.0.0-draft/openapi.yaml",
           "type": "application/vnd.oai.openapi",
-          "title": "Business Registry Consultation API"
-        },
-        {
-          "href": "https://registry.example/contracts/business-write.openapi.json",
-          "type": "application/vnd.oai.openapi+json",
-          "title": "Business Registry Write API"
+          "title": "Business Registry API"
         },
         {
           "href": "https://registry.example/contracts/business-evidence.openapi.json",
@@ -211,9 +206,9 @@ An entry in an external catalogue, such as a national data portal, can repeat th
 
 #### Informative JSON-LD example <a href="#core-informative-json-ld-example" id="core-informative-json-ld-example"></a>
 
-This JSON-LD document describes a business Registry, its authority and governed dataset, and three logical services supporting Consultation, Write, and Evidence at a shared API endpoint. The GovStack context maps JSON properties to the RDF vocabulary and identifies IRI-valued properties. The specification IRI is illustrative; publication status is listed under [coverage and limitations](../introduction/scope.md#coverage-and-limitations).
+This JSON-LD document describes a business Registry, its authority and governed dataset, and two logical services at a shared API endpoint. One unified Registry service supports Consultation and Write; a separate informative service supports Evidence. The GovStack context maps JSON properties to the RDF vocabulary and identifies IRI-valued properties. The specification IRI is illustrative; publication status is listed under [coverage and limitations](../introduction/scope.md#coverage-and-limitations).
 
-The Consultation entry illustrates publication of the [business Registry OpenAPI](../api/examples/business-registry.openapi.yaml) with its local dependencies at the example contract URL. It supports Retrieve, Lookup, List, and Search. The document is also available as a [file](../api/examples/registry-metadata.jsonld) and validates against the metadata document schema. Its own URI, `https://registry.example/catalog`, is the `service-meta` target of the linkset above.
+The Registry service entry illustrates one contract that exposes independently authorised Consultation and Write operations. The document is also available as a [file](../api/examples/registry-metadata.jsonld) and validates against the metadata document schema. Its own URI, `https://registry.example/catalog`, is the `service-meta` target of the linkset above.
 
 ```json
 {
@@ -228,8 +223,7 @@ The Consultation entry illustrates publication of the [business Registry OpenAPI
       "catalogResource": "https://registry.example/registries/business",
       "catalogDataset": "https://registry.example/datasets/business-records",
       "catalogService": [
-        "https://registry.example/services/business-consultation",
-        "https://registry.example/services/business-write",
+        "https://registry.example/services/business-registry",
         "https://registry.example/services/business-evidence"
       ]
     },
@@ -245,8 +239,7 @@ The Consultation entry illustrates publication of the [business Registry OpenAPI
       "authority": "https://registry.example/organisations/business-authority",
       "governedDataset": "https://registry.example/datasets/business-records",
       "dataService": [
-        "https://registry.example/services/business-consultation",
-        "https://registry.example/services/business-write",
+        "https://registry.example/services/business-registry",
         "https://registry.example/services/business-evidence"
       ]
     },
@@ -263,23 +256,17 @@ The Consultation entry illustrates publication of the [business Registry OpenAPI
       "publisher": "https://registry.example/organisations/business-authority"
     },
     {
-      "@id": "https://registry.example/services/business-consultation",
+      "@id": "https://registry.example/services/business-registry",
       "@type": "dcat:DataService",
-      "title": "Business Registry Consultation API",
-      "description": "Retrieves, looks up, lists, and searches permitted business Records.",
-      "serviceType": "apif:consultation",
+      "title": "Business Registry API",
+      "description": "Reads permitted business Records and accepts separately authorised direct or governed changes.",
+      "serviceType": [
+        "apif:consultation",
+        "apif:write"
+      ],
       "servesDataset": "https://registry.example/datasets/business-records",
       "endpointURL": "https://registry.example",
-      "endpointDescription": "https://registry.example/contracts/1.0.0-draft/examples/business-registry.openapi.yaml"
-    },
-    {
-      "@id": "https://registry.example/services/business-write",
-      "@type": "dcat:DataService",
-      "title": "Business Registry Write API",
-      "description": "Accepts governed requests to create or revise business Records.",
-      "serviceType": "apif:write",
-      "endpointURL": "https://registry.example",
-      "endpointDescription": "https://registry.example/contracts/business-write.openapi.json"
+      "endpointDescription": "https://registry.example/contracts/1.0.0-draft/openapi.yaml"
     },
     {
       "@id": "https://registry.example/services/business-evidence",
@@ -341,7 +328,7 @@ for each serviceReference in asList(registry.dataService):
 return discoveredServices
 ```
 
-`loadJsonLd` parses the document and normalises properties that can contain one or several values; because the document is compacted with the pinned context, a plain JSON parser is sufficient. `DigitalRegistriesApiFamilies` contains the eight `serviceType` values listed under [API family discovery](#core-api-family-discovery). The example returns three data services supporting Consultation, Write, and Evidence.
+`loadJsonLd` parses the document and normalises properties that can contain one or several values; because the document is compacted with the pinned context, a plain JSON parser is sufficient. `DigitalRegistriesApiFamilies` contains the eight `serviceType` values listed under [API family discovery](#core-api-family-discovery). The example returns two data services: a Registry service classified as both Consultation and Write, and an Evidence service.
 
 The example assumes the selected Registry and its service descriptions are present in the returned graph. Deployments using external descriptions document their retrieval. A service description missing a required family classification or contract reference is incomplete under Core. Operation names alone establish neither a family classification nor a conformance claim.
 
@@ -475,7 +462,7 @@ This workflow applies to every Registry BB implementation. The publisher serves 
 2. The consumer inspects its authority, authoritative scope statement, and referenced Digital Registries specification version.
 3. The consumer follows the Registry's service associations and reads each service's identifier, API-family labels, endpoint URL, and operational-contract reference for the services available to that consumer's audience.
 4. The consumer follows the operational contract to determine the logical Collections, the Registry context declared on each operation, exact operations, selectable features, named searches, inputs, outputs, limits, temporal and purpose requirements, and access requirements. For HTTP APIs, this is an OpenAPI description unless the applicable binding defines an established protocol-native description.
-5. When the service offers caller capability discovery, the consumer can request `GET /v1/capabilities` to obtain a bounded, caller-filtered advisory view of authorised Collection operations and their required views, plus readable fields, selectors, searches, features, and purpose requirements. Filtering uses current trusted context, including a verified purpose when present, and can omit operations whose required purpose is absent. Discovery creates no new purpose input. The consumer still follows the versioned contract and does not treat this document as authority for any Record. If the caller-available description exceeds a declared bound, the service fails explicitly rather than truncating or silently omitting it.
+5. When the service offers caller capability discovery, the consumer can request `GET /v1/capabilities` to obtain a bounded, caller-filtered advisory view of Collection-scoped and root Consultation, Write, and supporting workflow operations. Recognised Consultation entries declare their views and can include readable fields, selectors, searches, features, and purpose requirements. Write entries declare `family: write`; Update and Transition entries identify their companion read. Root entries identify the Registry without inventing a Collection. Filtering uses current trusted context, including a verified purpose when present, and can omit operations whose required purpose is absent. Discovery creates no new purpose input or authority. The consumer still follows the versioned contract and current access rules. If the caller-available description exceeds a declared bound, the service fails explicitly rather than truncating or silently omitting it.
 6. The consumer selects a suitable operation, or determines that the required operation is unavailable.
 
 #### Outcomes <a href="#discovery-workflow-outcomes" id="discovery-workflow-outcomes"></a>
@@ -494,10 +481,10 @@ An implementation of Registry Core with selected Consultation or Write services 
 
 | Artifact | Where it is served | Start from | Defined by |
 |---|---|---|---|
-| OpenAPI contract, one per API | A stable URL chosen by the deployment | The [example matching the selected capabilities](../resources/api-examples/README.md), using the [Consultation](../resources/api.yml) or [Write](../resources/write-api.yml) contract as applicable | [Consultation HTTP binding](registry-services.md#consultation-http-binding) and [API composition](#core-api-composition) |
+| OpenAPI contract, one per API | A stable URL chosen by the deployment | The [examples matching the selected operations](../resources/api-examples/README.md), using the unified [Registry API contract](../resources/api.yml) | [Consultation HTTP binding](registry-services.md#consultation-http-binding), [Write binding](registry-services.md#write-write), and [API composition](#core-api-composition) |
 | Registry metadata document | A stable document URI, served as `application/ld+json` | [Registry metadata example](../api/examples/registry-metadata.jsonld), validated by the [metadata document schema](../api/extensions/registry-metadata.schema.json) | [Registry metadata](#core-registry-metadata) |
-| API catalog linkset | `/.well-known/api-catalog` at the API origin, served as `application/linkset+json` | [API catalog example](../api/examples/api-catalog.linkset.json) and the `/.well-known/api-catalog` path of the [canonical Consultation OpenAPI](../resources/api.yml) | [Discovery publication](#core-discovery-publication) |
-| Health endpoint | `/health` relative to the OpenAPI server URL, including any routing prefix | The `/health` path of the [canonical Consultation OpenAPI](../resources/api.yml) | GovStack API Design Guide, unversioned health endpoint |
+| API catalog linkset | `/.well-known/api-catalog` at the API origin, served as `application/linkset+json` | [API catalog example](../api/examples/api-catalog.linkset.json) and the `/.well-known/api-catalog` path of the [canonical Registry OpenAPI](../resources/api.yml) | [Discovery publication](#core-discovery-publication) |
+| Health endpoint | `/health` relative to the OpenAPI server URL, including any routing prefix | The `/health` path of the [canonical Registry OpenAPI](../resources/api.yml) | GovStack API Design Guide, unversioned health endpoint |
 
 
 ## Service Interfaces <a href="#interfaces-service-interfaces" id="interfaces-service-interfaces"></a>
@@ -508,7 +495,7 @@ An implementation of Registry Core with selected Consultation or Write services 
 
 Family classifications identify a service's broad capabilities. The linked contract defines exact operations, parameters, schemas, outcomes, and access requirements. Catalogue descriptions link to these details without reproducing them. A static published description and contract are sufficient; discovery does not require a new runtime service.
 
-Every Collection-scoped Consultation operation of an OpenAPI contract declares its Registry context with the `x-govstack-digital-registries` extension defined under [API composition](#core-api-composition). The extension also declares any selectable operation features; omission or an empty `features` array declares none. Cross-Collection caller capability discovery uses its bounded response schema and references those operations. Each API family defines the HTTP binding of its operations.
+Every Collection-scoped Consultation operation of an OpenAPI contract declares its Registry context with the `x-govstack-digital-registries` extension defined under [API composition](#core-api-composition). The extension also declares any selectable operation features; omission or an empty `features` array declares none. Primary Write operations use the Write extension in the same contract. Caller capability discovery uses its bounded response schema to reference Collection-scoped operations and root Change Request or asynchronous Operation resources. Each API family defines the binding vocabulary of its operations; the canonical HTTP entry point combines the selected Consultation and Write operations.
 
 The [adopter kit](#artifact-inventory-adopter-kit) lists the artifacts an implementation publishes. [Coverage and limitations](../introduction/scope.md#coverage-and-limitations) records binding availability. [Requirement maturity](../introduction/scope.md#conformance-requirement-maturity) defines conformance status.
 

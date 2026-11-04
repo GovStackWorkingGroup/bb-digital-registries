@@ -11,6 +11,7 @@ This specification uses the [GovStack Common Terminology](https://specs.govstack
 | API Consumer | A system authorised to invoke a Registry service interface. |
 | API Family | A coherent group of related Registry operations. |
 | Authoritative Source | A source for which a named authority accepts responsibility within a declared domain and scope. Authoritative does not imply error-free. |
+| Authoritative State | Record state that the Registry has committed within its declared authoritative scope. A permitted read projection can omit, transform, or combine this state. |
 | Binding | A mapping of abstract operations to a transport or established protocol. |
 | Binding Capability | An operation pattern named by `capability` in the normative operation extension, such as `retrieve` or `create`. The defined values map to operation option keys. |
 | Capability | An informative business outcome declared in `metadata.yml` and realised by one or more functionalities. A capability does not carry requirements. |
@@ -23,6 +24,7 @@ This specification uses the [GovStack Common Terminology](https://specs.govstack
 | Lookup | Resolution of a Record using a declared exact selector, such as a registration number or a defined combination of fields. It does not imply general search or approximate matching. |
 | Option | A choice permitted by a variation point. Its key identifies the selection and determines which conditional requirements apply. |
 | Permitted Representation | The record data and metadata an API consumer is authorised to receive. It may be filtered or redacted and need not contain the complete stored record. |
+| Read Projection | A permitted representation produced under a declared view, access policy, and source-currency contract. It is not necessarily the Registry's complete authoritative state or a Write input shape. |
 | Record | The Registry's representation of an entity, place, asset, or event within its declared scope. |
 | Record Identifier | A stable identifier unique within its Registry. It may reuse a suitable source identifier; the Registry context and identifier together identify the Record. |
 | Record Principal | A person or organisation with a recognised relationship to a record, such as its subject, owner, title holder, director, or credential holder. |

@@ -32,7 +32,8 @@ import yaml
 
 ROOT = Path(__file__).resolve().parents[1]
 API = ROOT / "api"
-WRITE = API / "write.openapi.yaml"
+WRITE = API / "openapi.yaml"
+WRITE_ALIAS = API / "write.openapi.yaml"
 WRITE_EXTENSION_SCHEMA = (
     API / "extensions/x-govstack-digital-registries-write.schema.json"
 )
@@ -41,9 +42,11 @@ EXAMPLE_API = API / "examples/write-examples.openapi.yaml"
 EXAMPLE_SCHEMA = API / "examples/write-examples.schema.json"
 EXCHANGES = API / "examples/write-exchanges.json"
 CONTRACT_FIXTURES = API / "examples/write-contract-fixtures.json"
+COMBINED_JOURNEYS = API / "examples/combined-journeys.json"
 VENDOR = API / "examples/publicschema"
 VENDOR_PROVENANCE = VENDOR / "PROVENANCE.md"
 EXTENSION = "x-govstack-digital-registries-write"
+READ_EXTENSION = "x-govstack-digital-registries"
 HTTP_METHODS = {"get", "put", "post", "delete", "options", "head", "patch", "trace"}
 
 WRITE_OPERATIONS = {
@@ -68,6 +71,11 @@ STRONG_PRECONDITION_OPERATIONS = {
     "rejectChangeRequest",
     "withdrawChangeRequest",
 }
+WRITE_SUPPORT_OPERATIONS = {
+    "listChangeRequests",
+    "getChangeRequest",
+    "getOperation",
+}
 FORBIDDEN_CLIENT_FIELDS = {
     "actor",
     "actorId",
@@ -85,6 +93,27 @@ FORBIDDEN_CLIENT_FIELDS = {
     "reviewerId",
 }
 DOCUMENTS: dict[str, Any] = {}
+
+
+def validate_no_duplicate_yaml_keys(path: Path) -> None:
+    """Reject duplicate mapping keys before YAML loading can overwrite them."""
+    root = yaml.compose(path.read_text())
+
+    def visit(node: yaml.Node, pointer: str = "") -> None:
+        if isinstance(node, yaml.MappingNode):
+            keys: set[str] = set()
+            for key_node, value_node in node.value:
+                key = key_node.value
+                if key in keys:
+                    raise ValueError(f"{path.name}{pointer} repeats YAML key {key!r}")
+                keys.add(key)
+                visit(value_node, pointer + "/" + str(key))
+        elif isinstance(node, yaml.SequenceNode):
+            for index, value_node in enumerate(node.value):
+                visit(value_node, pointer + "/" + str(index))
+
+    if root is not None:
+        visit(root)
 
 
 def load_document(path: Path) -> Any:
@@ -320,6 +349,57 @@ def _path_parameters(route: str, supplied: Any) -> dict[str, str]:
     }
 
 
+def _declared_server_url(source: Path) -> str:
+    contract = load_document(source)
+    servers = contract.get("servers", [])
+    if not servers:
+        raise ValueError("Contract needs a server to resolve response Location")
+    server = servers[0]
+    url = server.get("url")
+    if not isinstance(url, str):
+        raise ValueError("Contract server URL must be a string")
+    variables = server.get("variables", {})
+    for name in re.findall(r"{([^{}]+)}", url):
+        default = variables.get(name, {}).get("default")
+        if not isinstance(default, str):
+            raise ValueError(f"Contract server variable {name} needs a default")
+        url = url.replace("{" + name + "}", default)
+    return url
+
+
+def validate_created_location(
+    source: Path, location: str, collection_id: str, record_id: str
+) -> None:
+    """Bind a create Location to its returned identity under the declared server."""
+    if not all(
+        isinstance(value, str) and value
+        for value in (location, collection_id, record_id)
+    ):
+        raise ValueError("Create Location and returned Record identity must be strings")
+    server_url = _declared_server_url(source)
+    parsed_server = urlparse(server_url)
+    resolved = urlparse(urljoin(server_url.rstrip("/") + "/", location))
+    if parsed_server.scheme and (
+        resolved.scheme,
+        resolved.netloc,
+    ) != (
+        parsed_server.scheme,
+        parsed_server.netloc,
+    ):
+        raise ValueError("Create Location leaves the declared API server")
+    prefix = parsed_server.path.rstrip("/")
+    expected_prefix = prefix + "/v1/collections/"
+    if not resolved.path.startswith(expected_prefix):
+        raise ValueError("Create Location does not use the declared API base path")
+    suffix = resolved.path[len(expected_prefix) :]
+    match = re.fullmatch(r"([^/]+)/records/([^/]+)", suffix)
+    if match is None:
+        raise ValueError("Create Location is not one encoded Record URI")
+    actual_collection, actual_record = (unquote(value) for value in match.groups())
+    if (actual_collection, actual_record) != (collection_id, record_id):
+        raise ValueError("Create Location does not match the returned Record identity")
+
+
 def validate_exchange(source: Path, exchange: dict[str, Any]) -> None:
     """Validate one illustrative exchange against its declared OpenAPI operation."""
     if not isinstance(exchange, dict):
@@ -442,6 +522,26 @@ def validate_exchange(source: Path, exchange: dict[str, Any]) -> None:
     elif content and 200 <= status < 300:
         raise ValueError(f"Successful {status} response omits its declared body")
 
+    body = response.get("body")
+    if isinstance(body, dict) and isinstance(body.get("etag"), str):
+        response_etag = supplied_response_headers.get("etag")
+        if response_etag is None or response_etag[1] != body["etag"]:
+            raise ValueError("Response ETag differs from the body etag")
+    if (
+        status == 201
+        and operation.get(EXTENSION, {}).get("capability") == "create"
+        and isinstance(body, dict)
+    ):
+        location = supplied_response_headers.get("location")
+        if location is None:
+            raise ValueError("Create response omits Location")
+        validate_created_location(
+            source,
+            location[1],
+            body.get("collectionId"),
+            body.get("recordId"),
+        )
+
     review_state = {
         "approve": "approved",
         "reject": "rejected",
@@ -473,7 +573,10 @@ def validate_exchange(source: Path, exchange: dict[str, Any]) -> None:
             raise ValueError("If-Match must carry a strong entity-tag")
 
     _validate_exchange_identity(exchange, supplied["path"])
-    if 200 <= status < 300:
+    if 200 <= status < 300 and (
+        EXTENSION in operation
+        or operation_id in {"getChangeRequest", "getOperation"}
+    ):
         validate_request_local_mappings(exchange, supplied["path"])
 
 
@@ -787,6 +890,35 @@ def validate_write_document(
         ):
             raise ValueError(f"{operation_id} selects the wrong Write capability")
 
+        companion = operation[EXTENSION].get("companionRead")
+        if operation[EXTENSION].get("capability") in {"update", "transition"}:
+            if not isinstance(companion, dict):
+                raise ValueError(f"{operation_id} needs a typed companion read")
+            companion_id = companion.get("operationId")
+            if companion_id not in by_id:
+                raise ValueError(
+                    f"{operation_id} companion read names an unknown operation"
+                )
+            _read_route, read_method, read_operation = by_id[companion_id]
+            read_metadata = read_operation.get(READ_EXTENSION)
+            if read_method != "get" or not isinstance(read_metadata, dict):
+                raise ValueError(
+                    f"{operation_id} companion read must be a declared Read GET"
+                )
+            for key in ("registry", "collection"):
+                if read_metadata.get(key) != operation[EXTENSION].get(key):
+                    raise ValueError(
+                        f"{operation_id} companion read has a different {key}"
+                    )
+            if companion.get("view") != read_metadata.get("view"):
+                raise ValueError(
+                    f"{operation_id} companion read view does not match the Read operation"
+                )
+        elif companion is not None:
+            raise ValueError(
+                f"{operation_id} declares companionRead outside update or transition"
+            )
+
     for operation_id, route, _method, operation in write_entries:
         capability = operation[EXTENSION]["capability"]
         if capability not in {"create", "update", "transition"}:
@@ -914,7 +1046,7 @@ def validate_write_document(
             )
 
     for operation_id, (_route, method, operation) in by_id.items():
-        if method not in {"post", "put", "patch", "delete"}:
+        if method not in {"post", "put", "patch", "delete"} or EXTENSION not in operation:
             continue
         idempotency = _header_parameter(source, operation, "Idempotency-Key")
         if idempotency is None or not idempotency[1].get("required"):
@@ -954,6 +1086,8 @@ def _validate_response_shapes(
         ):
             raise ValueError(f"{operation_id} 201 requires Location")
     for operation_id, (_route, _method, operation) in by_id.items():
+        if operation_id not in WRITE_SUPPORT_OPERATIONS and EXTENSION not in operation:
+            continue
         for status, response in operation.get("responses", {}).items():
             response_source, response = resolve_object(source, response)
             if status == "204" and "content" in response:
@@ -1014,6 +1148,8 @@ def _validate_error_response_schemas(
     source: Path, by_id: dict[str, tuple[str, str, dict[str, Any]]]
 ) -> None:
     for operation_id, (_route, _method, operation) in by_id.items():
+        if operation_id not in WRITE_SUPPORT_OPERATIONS and EXTENSION not in operation:
+            continue
         for status, response in operation.get("responses", {}).items():
             if not status.startswith(("4", "5")):
                 continue
@@ -1041,7 +1177,7 @@ def _validate_error_response_schemas(
 
 def _validate_operation_scopes(document: dict[str, Any]) -> None:
     supporting_scopes = {
-        "getWritableRecord": "bb:digital-registries:record:read",
+        "retrieveRecord": "bb:digital-registries:record:read",
         "listChangeRequests": "bb:digital-registries:change-request:read",
         "getChangeRequest": "bb:digital-registries:change-request:read",
         "approveChangeRequest": "bb:digital-registries:change-request:review",
@@ -1075,7 +1211,7 @@ def _validate_operation_scopes(document: dict[str, Any]) -> None:
             expected = "bb:digital-registries:operation:read"
         if expected is None:
             continue
-        security = operation.get("security")
+        security = operation.get("security", document.get("security"))
         if not isinstance(security, list) or not security:
             raise ValueError(
                 f"{operation_id} must declare its operation-specific OAuth scope"
@@ -1099,6 +1235,7 @@ def _validate_client_fields(
         if (
             method not in {"post", "put", "patch", "delete"}
             or "requestBody" not in operation
+            or EXTENSION not in operation
         ):
             continue
         body_source, schema, _media = _request_schema(source, operation)
@@ -1329,6 +1466,381 @@ def contract_fixture_items() -> list[dict[str, Any]]:
     return fixtures
 
 
+def combined_journey_items() -> list[dict[str, Any]]:
+    value = load_document(COMBINED_JOURNEYS)
+    if not isinstance(value, dict):
+        raise ValueError("combined-journeys.json must be an object")
+    journeys = value.get("journeys")
+    if not isinstance(journeys, list) or not journeys:
+        raise ValueError("combined-journeys.json must contain journeys")
+    names = [journey.get("name") for journey in journeys if isinstance(journey, dict)]
+    if len(names) != len(journeys) or any(
+        not isinstance(name, str) or not name for name in names
+    ):
+        raise ValueError("Every combined journey needs a name")
+    if len(names) != len(set(names)):
+        raise ValueError("Combined journey names must be unique")
+    return journeys
+
+
+def _journey_response_etag(step: dict[str, Any]) -> str | None:
+    response = step.get("response", {})
+    headers = _casefold_headers(response.get("headers"))
+    if "etag" in headers:
+        value = headers["etag"][1]
+        return value if isinstance(value, str) else None
+    body = response.get("body")
+    if not isinstance(body, dict):
+        return None
+    result = body.get("result", body)
+    return result.get("etag") if isinstance(result, dict) else None
+
+
+def _journey_identity(step: dict[str, Any]) -> tuple[str, str] | None:
+    body = step.get("response", {}).get("body")
+    if isinstance(body, dict):
+        result = body.get("result", body)
+        if isinstance(result, dict) and all(
+            isinstance(result.get(key), str)
+            for key in ("collectionId", "recordId")
+        ):
+            return result["collectionId"], result["recordId"]
+    operation_id = step.get("operationId")
+    if not isinstance(operation_id, str):
+        return None
+    route, _method, _operation = operation_by_id(WRITE, operation_id)
+    path = _path_parameters(route, step.get("request", {}).get("path", {}))
+    if all(isinstance(path.get(key), str) for key in ("collectionId", "recordId")):
+        return path["collectionId"], path["recordId"]
+    return None
+
+
+def _journey_effective_context(step: dict[str, Any]) -> dict[str, Any]:
+    context = step.get("effectiveContext")
+    required = {"authorization", "disclosure", "purpose", "fieldSelection"}
+    if not isinstance(context, dict) or set(context) != required:
+        raise ValueError(
+            "Combined journey effective context must declare authorization, "
+            "disclosure, purpose, and fieldSelection"
+        )
+    if any(
+        not isinstance(context[key], str) or not context[key]
+        for key in ("authorization", "disclosure", "purpose")
+    ):
+        raise ValueError("Combined journey effective context values must be non-empty")
+    fields = context["fieldSelection"]
+    if (
+        not isinstance(fields, list)
+        or not fields
+        or any(not isinstance(field, str) or not field for field in fields)
+        or len(fields) != len(set(fields))
+    ):
+        raise ValueError(
+            "Combined journey fieldSelection must contain unique field names"
+        )
+    normalized = dict(context)
+    normalized["fieldSelection"] = sorted(fields)
+    return normalized
+
+
+def _validate_companion_guard(step: dict[str, Any]) -> str:
+    guard = step.get("guardEvaluation")
+    if (
+        step.get("operationId") != "retrieveRecord"
+        or not isinstance(guard, dict)
+        or set(guard) != {"id", "currency", "bodyAndETag"}
+        or not isinstance(guard.get("id"), str)
+        or not guard["id"]
+        or guard.get("currency") != "current-authoritative"
+        or guard.get("bodyAndETag") != "same-evaluation"
+    ):
+        raise ValueError(
+            "Companion guard must declare one current-authoritative body-and-ETag evaluation"
+        )
+    _journey_effective_context(step)
+    return guard["id"]
+
+
+def validate_combined_journey(journey: dict[str, Any]) -> None:
+    """Execute one cross-operation fixture against the unified static contract."""
+    steps = journey.get("steps")
+    if not isinstance(steps, list) or not steps:
+        raise ValueError("Combined journey needs steps")
+    by_name: dict[str, dict[str, Any]] = {}
+    for step in steps:
+        if not isinstance(step, dict) or not isinstance(step.get("step"), str):
+            raise ValueError("Every combined journey step needs a step name")
+        if step["step"] in by_name:
+            raise ValueError("Combined journey step names must be unique")
+        by_name[step["step"]] = step
+        validate_exchange(WRITE, step)
+
+    required_operations = {
+        "create-retrieve": {"createRecord", "retrieveRecord"},
+        "conditional-update": {"retrieveRecord", "updateRecord"},
+        "transition-read": {"applyRecordTransition", "retrieveRecord"},
+        "async-completion-read": {
+            "createRecord",
+            "getOperation",
+            "retrieveRecord",
+        },
+        "governed-application-read": {
+            "submitChangeRequest",
+            "approveChangeRequest",
+            "getChangeRequest",
+            "retrieveRecord",
+        },
+    }
+    kind = journey.get("kind")
+    if kind not in required_operations:
+        raise ValueError("Combined journey names an unknown kind")
+    operation_ids = {step.get("operationId") for step in steps}
+    missing = required_operations[kind] - operation_ids
+    if missing:
+        raise ValueError(
+            f"Combined {kind} journey omits operations: {', '.join(sorted(missing))}"
+        )
+    if kind == "conditional-update":
+        update_statuses = {
+            step["response"]["status"]
+            for step in steps
+            if step.get("operationId") == "updateRecord"
+        }
+        if not {204, 412} <= update_statuses:
+            raise ValueError(
+                "Conditional update journey needs success and stale If-Match cases"
+            )
+        visible = by_name.get("retrieve-after")
+        hidden = by_name.get("retrieve-after-hidden-relevant-change")
+        stale_hidden = by_name.get("hidden-change-stale-update")
+        if visible is None or hidden is None or stale_hidden is None:
+            raise ValueError(
+                "Conditional update journey needs the hidden relevant change case"
+            )
+        _validate_companion_guard(hidden)
+        if hidden.get("fixtureCondition") != "mutation-relevant-hidden-state-changed":
+            raise ValueError("Hidden relevant change needs an explicit fixture condition")
+        if stale_hidden.get("fixtureCondition") != (
+            "previous-token-after-mutation-relevant-hidden-change"
+        ):
+            raise ValueError("Hidden relevant stale attempt needs an explicit condition")
+        if (
+            visible.get("response", {}).get("body")
+            != hidden.get("response", {}).get("body")
+            or _journey_response_etag(visible) == _journey_response_etag(hidden)
+        ):
+            raise ValueError(
+                "Hidden mutation-relevant state must change the guard ETag without changing the permitted body"
+            )
+        stale_response = stale_hidden.get("response", {})
+        if (
+            stale_response.get("status") != 412
+            or "etag" in _casefold_headers(stale_response.get("headers"))
+            or stale_response.get("body", {}).get("type")
+            != "https://govstack.global/problems/digital-registries/precondition-failed"
+        ):
+            raise ValueError(
+                "Hidden mutation-relevant change must reject the previous token with generic 412"
+            )
+    if kind == "governed-application-read":
+        approval = next(
+            step for step in steps if step.get("operationId") == "approveChangeRequest"
+        )
+        approval_body = approval.get("response", {}).get("body", {})
+        if (
+            approval_body.get("reviewState") != "approved"
+            or approval_body.get("applicationState") != "not-started"
+            or "result" in approval_body
+        ):
+            raise ValueError("Approval must have no authoritative Record effect")
+        applied = [
+            step
+            for step in steps
+            if step.get("operationId") == "getChangeRequest"
+            and step.get("response", {})
+            .get("body", {})
+            .get("applicationState")
+            == "applied"
+        ]
+        if len(applied) != 1:
+            raise ValueError(
+                "Governed journey needs one authoritative applied observation"
+            )
+        submitted = by_name["submit"].get("response", {}).get("body", {})
+        immutable_fields = (
+            "proposalVersion",
+            "kind",
+            "target",
+            "baseETag",
+            "inputMediaType",
+            "input",
+        )
+        for name in ("approve", "applied"):
+            step = by_name[name]
+            body = step.get("response", {}).get("body", {})
+            path = step.get("request", {}).get("path", {})
+            if (
+                body.get("changeRequestId") != submitted.get("changeRequestId")
+                or path.get("changeRequestId") != submitted.get("changeRequestId")
+                or any(body.get(field) != submitted.get(field) for field in immutable_fields)
+            ):
+                raise ValueError(
+                    "Governed journey changes its Change Request identity or proposal"
+                )
+
+    links = journey.get("links")
+    if not isinstance(links, list) or not links:
+        raise ValueError("Combined journey needs explicit cross-step links")
+    required_links = {
+        "create-retrieve": [
+            ("create", "retrieve", True, None, False),
+        ],
+        "conditional-update": [
+            ("retrieve-before", "update", True, "if-match", False),
+            ("update", "retrieve-after", True, "response-etag", True),
+            ("retrieve-before", "stale-update", True, "if-match", False),
+            (
+                "retrieve-after",
+                "hidden-change-stale-update",
+                True,
+                "if-match",
+                False,
+            ),
+            (
+                "retrieve-after-hidden-relevant-change",
+                "hidden-change-stale-update",
+                True,
+                None,
+                False,
+            ),
+        ],
+        "transition-read": [
+            ("transition", "retrieve", True, "response-etag", True),
+        ],
+        "async-completion-read": [
+            ("completed", "retrieve", True, None, False),
+        ],
+        "governed-application-read": [
+            ("applied", "retrieve", True, None, False),
+        ],
+    }[kind]
+    for source_name, target_name, identity, version, same_view in required_links:
+        matches = [
+            link
+            for link in links
+            if link.get("from") == source_name and link.get("to") == target_name
+        ]
+        if len(matches) != 1:
+            raise ValueError(
+                f"Combined {kind} journey needs one {source_name} to {target_name} link"
+            )
+        link = matches[0]
+        if (
+            link.get("identity") is not identity
+            or link.get("version") != version
+            or bool(link.get("sameView")) is not same_view
+        ):
+            raise ValueError(
+                f"Combined {kind} journey weakens its required handoff"
+            )
+    if kind == "async-completion-read":
+        accepted = by_name["accepted"].get("response", {}).get("body", {})
+        completed = by_name["completed"].get("response", {}).get("body", {})
+        if completed.get("status") != "succeeded" or not isinstance(
+            completed.get("result"), dict
+        ):
+            raise ValueError("Async journey must observe success before reading")
+        completed_path = by_name["completed"].get("request", {}).get("path", {})
+        if (
+            not isinstance(accepted.get("operationId"), str)
+            or completed_path.get("operationId") != accepted["operationId"]
+            or completed.get("operationId") != accepted["operationId"]
+        ):
+            raise ValueError("Async journey polls a different Operation identity")
+    for link in links:
+        if not isinstance(link, dict):
+            raise ValueError("Combined journey link must be an object")
+        source = by_name.get(link.get("from"))
+        target = by_name.get(link.get("to"))
+        if source is None or target is None:
+            raise ValueError("Combined journey link names an unknown step")
+        if link.get("sameEffectiveContext") is not None:
+            if link.get("sameEffectiveContext") is not True or (
+                _journey_effective_context(source)
+                != _journey_effective_context(target)
+            ):
+                raise ValueError(
+                    "Combined journey effective authorization, disclosure, purpose, or field selection differs"
+                )
+        if link.get("hiddenRelevantChange") is not None:
+            if (
+                link.get("hiddenRelevantChange") is not True
+                or source.get("fixtureCondition")
+                != "mutation-relevant-hidden-state-changed"
+                or target.get("fixtureCondition")
+                != "previous-token-after-mutation-relevant-hidden-change"
+            ):
+                raise ValueError("Combined journey weakens its hidden relevant change")
+        if link.get("identity"):
+            source_identity = _journey_identity(source)
+            target_identity = _journey_identity(target)
+            if source_identity is None or source_identity != target_identity:
+                raise ValueError("Combined journey Record identity handoff differs")
+        version = link.get("version")
+        if version is None:
+            continue
+        if link.get("sameEffectiveContext") is not True:
+            raise ValueError("Combined journey version handoff needs one effective context")
+        source_etag = _journey_response_etag(source)
+        if source_etag is None:
+            raise ValueError("Combined journey version source has no ETag")
+        if version == "if-match":
+            guard_id = _validate_companion_guard(source)
+            target_headers = _casefold_headers(
+                target.get("request", {}).get("headers")
+            )
+            if (
+                target_headers.get("if-match", (None, None))[1] != source_etag
+                or target.get("preconditionGuardEvaluationId") != guard_id
+            ):
+                raise ValueError("Combined journey If-Match handoff differs")
+        elif version == "response-etag":
+            guard_id = _validate_companion_guard(target)
+            if not link.get("sameView"):
+                raise ValueError(
+                    "Response ETag equality is valid only for a declared same view"
+                )
+            if journey.get("observation") != {
+                "companionCurrency": "settled",
+                "committedGuardState": "exact",
+                "interveningMutationRelevantChange": False,
+            }:
+                raise ValueError(
+                    "Success ETag equality needs the exact committed guard state, settled companion currency, and no intervening relevant change"
+                )
+            source_view = source.get("view")
+            target_view = target.get("view")
+            if (
+                not isinstance(source_view, str)
+                or source_view != target_view
+                or _journey_response_etag(target) != source_etag
+                or source.get("committedGuardEvaluationId") != guard_id
+            ):
+                raise ValueError("Same-view response version handoff differs")
+        else:
+            raise ValueError("Combined journey link names an unknown version handoff")
+
+        if source.get("operationId") in {"updateRecord", "applyRecordTransition"}:
+            _route, _method, mutation = operation_by_id(
+                WRITE, source["operationId"]
+            )
+            companion = mutation[EXTENSION]["companionRead"]
+            if target.get("operationId") != companion["operationId"]:
+                raise ValueError("Mutation successor is not its declared companion GET")
+            if target.get("view") != companion["view"]:
+                raise ValueError("Mutation successor uses a different companion view")
+
+
 def validate_contract_fixture(fixture: dict[str, Any]) -> None:
     has_operation = "operationId" in fixture
     has_schema_value = "schema" in fixture or "value" in fixture
@@ -1389,19 +1901,25 @@ def validate_example_coverage(exchanges: list[dict[str, Any]]) -> None:
 def validate_all() -> None:
     required = (
         WRITE,
+        WRITE_ALIAS,
         WRITE_EXTENSION_SCHEMA,
         WRITE_COVERAGE,
         EXAMPLE_API,
         EXAMPLE_SCHEMA,
         EXCHANGES,
         CONTRACT_FIXTURES,
+        COMBINED_JOURNEYS,
         VENDOR,
     )
     missing = [str(path.relative_to(ROOT)) for path in required if not path.exists()]
     if missing:
         raise ValueError(f"Required Write artifact is missing: {', '.join(missing)}")
+    if not WRITE_ALIAS.is_symlink() or WRITE_ALIAS.resolve() != WRITE.resolve():
+        raise ValueError("api/write.openapi.yaml must be a symlink alias to api/openapi.yaml")
     canonical = load_document(WRITE)
     example_api = load_document(EXAMPLE_API)
+    validate_no_duplicate_yaml_keys(WRITE)
+    validate_no_duplicate_yaml_keys(EXAMPLE_API)
     validate_openapi(canonical, base_uri=WRITE.as_uri())
     validate_openapi(example_api, base_uri=EXAMPLE_API.as_uri())
     validate_write_document(canonical, WRITE)
@@ -1415,6 +1933,19 @@ def validate_all() -> None:
     validate_example_coverage(exchanges)
     for fixture in contract_fixture_items():
         validate_contract_fixture(fixture)
+    journeys = combined_journey_items()
+    expected_journey_kinds = {
+        "create-retrieve",
+        "conditional-update",
+        "transition-read",
+        "async-completion-read",
+        "governed-application-read",
+    }
+    actual_journey_kinds = {journey.get("kind") for journey in journeys}
+    if actual_journey_kinds != expected_journey_kinds:
+        raise ValueError("Combined journeys must cover every required lifecycle")
+    for journey in journeys:
+        validate_combined_journey(journey)
 
 
 def main(argv: list[str] | None = None) -> int:

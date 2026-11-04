@@ -1,5 +1,5 @@
 references:
-  - id: consultation
+  - id: registry
     page: resources/api-reference.md
     contract: api/openapi.yaml
     role: normative
@@ -24,12 +24,6 @@ references:
     role: example
     operationId: retrieveHousehold
     response: '200'
-  - id: write
-    page: resources/write-api-reference.md
-    contract: api/write.openapi.yaml
-    role: normative
-    operationId: createRecord
-    response: '201'
   - id: write-examples
     page: resources/api-examples/write.md
     contract: api/examples/write-examples.openapi.yaml

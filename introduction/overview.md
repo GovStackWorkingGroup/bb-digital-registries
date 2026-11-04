@@ -8,7 +8,7 @@ description: Purpose, value, system boundary, functionalities, actors, and inter
 
 ### Value
 
-The Digital Registries Building Block exists so that governments and authorised service providers can discover governed registries and obtain permitted Registry information through consistent external contracts. A named Registry Authority remains institutionally responsible for each Registry within its declared scope. Authoritative means that the authority accepts responsibility for maintaining the Record in that scope; completeness and accuracy are separate data-quality properties.
+The Digital Registries Building Block exists so that governments and authorised service providers can discover governed registries and use permitted read, direct Write, and approval-based operations through a consistent external contract. A named Registry Authority remains institutionally responsible for each Registry within its declared scope. Authoritative means that the authority accepts responsibility for maintaining the Record in that scope; completeness and accuracy are separate data-quality properties.
 
 | Capability | Value |
 |---|---|
@@ -40,7 +40,7 @@ Reference architectures and domain or jurisdictional implementation guides can p
 
 ### System under test
 
-The system under test is a software component that publishes the identity, authority, scope, services, and contracts of one or more Registries and provides permitted Registry information through declared interfaces. It is assessed as a black box through those interfaces and through auditable evidence where a property, such as Record Identifier non-reassignment, cannot be established from one exchange.
+The system under test is a software component that publishes the identity, authority, scope, services, and contracts of one or more Registries and provides permitted Registry operations through declared interfaces. It is assessed as a black box through those interfaces and through auditable evidence where a property, such as Record Identifier non-reassignment, cannot be established from one exchange.
 
 The interoperability contract is independent of database technology, internal modules, administrative tools, deployment model, and whether an adaptor fronts an existing Registry. An implementation can be centralised or distributed and can use relational, document, graph, event-sourced, or other storage approaches. Those choices affect conformance only when they change observable behaviour or required evidence.
 
@@ -68,7 +68,7 @@ The wire contract retains `capability` as its established field name. In that bi
 | Write `transition` | `write-transition` | `applyRecordTransition` |
 | Write `change-requests` | `write-change-requests` | `submitChangeRequest` |
 
-The Write values belong to the separate Write operation extension; the existing Consultation extension remains closed to its six read `capability` values. The binding field does not declare a framework capability. The framework capabilities are the informative outcomes Registry Service Discovery and Authoritative Registry Services.
+The Write values belong to the Write operation extension, while the Consultation extension remains closed to its six read `capability` values. Both extensions occur in the same canonical API contract. The binding field does not declare a framework capability. The framework capabilities are the informative outcomes Registry Service Discovery and Authoritative Registry Services.
 
 ### Actors
 
@@ -86,8 +86,7 @@ The Registry Authority and Registry Operator can be the same organisation or dif
 |---|---|---|---|---|---|
 | Registry service discovery | API Consumer | Inbound request, outbound response | Discover Registry Services | Service API | [`resources/api.yml`](../resources/api.yml), realised by [`requirements/registry-discovery.md`](../requirements/registry-discovery.md) |
 | Registry metadata and operational contracts | API Consumer | Outbound published documents | Discover Registry Services | File | [Registry Core model](../requirements/registry-discovery.md#core-registry-metadata) and the schemas and contracts linked from `resources/api.yml` |
-| Registry consultation | API Consumer | Inbound request, outbound response | Provide Registry Services | Service API | [`resources/api.yml`](../resources/api.yml), realised by [`requirements/registry-services.md`](../requirements/registry-services.md) |
-| Registry writes and approval requests | API Consumer | Inbound request, outbound response | Provide Registry Services | Service API | [`resources/write-api.yml`](../resources/write-api.yml), realised by the selected Write options in [`requirements/registry-services.md`](../requirements/registry-services.md) |
+| Registry reads, direct writes, Change Requests, and Operation status | API Consumer | Inbound request, outbound response | Provide Registry Services | Service API | [`resources/api.yml`](../resources/api.yml), realised by the selected options and supporting operations in [`requirements/registry-services.md`](../requirements/registry-services.md) |
 | Record schemas and field meanings | API Consumer | Outbound published documents | Provide Registry Services | File | The deployment's linked operational contract and schemas, constrained by the [Registry Core model](../requirements/registry-services.md#core-domain-semantics-and-extensions) |
 
 Logging, monitoring, deployment, and other interfaces inherited from the cross-functional requirements are not repeated here.

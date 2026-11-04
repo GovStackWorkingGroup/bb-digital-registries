@@ -6,7 +6,7 @@ description: Draft verification of mandatory Registry discovery and selected cap
 
 ## Test maturity
 
-The scenarios below define verification intent for the [draft requirements](../introduction/scope.md#conformance-requirement-maturity). The [Consultation artifact checks](#artifact-validation) validate OpenAPI documents, requirement-to-operation mappings, and schema fixtures. They inspect the declared conditional-response headers and body shape, revision parent identity, and rich caller-capability metadata as artifacts. They do not execute cursor replay, protected-history outcomes, or temporal source-unavailability behaviour; those remain implementation scenarios. Passing artifact checks supports contract review only and does not establish deployed runtime behaviour or implementation conformance. Implementation conformance requires separate evaluation of a deployed Registry; an executable suite is pending. Legacy Cucumber tests under `test/openAPI` remain migration evidence for the previous generated CRUD interface.
+The scenarios below define verification intent for the [draft requirements](../introduction/scope.md#conformance-requirement-maturity). The [artifact checks](#artifact-validation) validate the unified Read and Write OpenAPI document, requirement-to-operation mappings, schema fixtures, and cross-operation journey fixtures. They inspect declared conditional-response headers and body shape, revision parent identity, caller-visible Read and Write capability metadata, and static identity and version handoffs. They do not execute cursor replay, protected-history outcomes, temporal source-unavailability behaviour, authoritative mutations, or workflow processing; those remain implementation scenarios. Passing artifact checks supports contract review only and does not establish deployed runtime behaviour or implementation conformance. Implementation conformance requires separate evaluation of a deployed Registry; an executable deployed-service suite is pending. Legacy Cucumber tests under `test/openAPI` remain migration evidence for the previous generated CRUD interface.
 
 ## Artifact validation
 
@@ -21,9 +21,50 @@ uv run python tools/validate_write.py
 ```
 
 These checks inspect source structure, local references, requirement-to-operation
-links, schemas, examples, and fixture exchanges. They do not execute a Registry
-implementation or establish conformance. The scenarios below describe the
-separate implementation evidence needed.
+links, schemas, examples, fixture exchanges, and the combined journeys in
+`api/examples/combined-journeys.json`. The combined fixture gate covers
+Create then Retrieve, conditional Retrieve then Update then Retrieve with a
+stale `If-Match` rejection, Transition then Retrieve, asynchronous completion
+then Retrieve, and governed submission and approval followed by authoritative
+application and Retrieve. It compares response validators only when a fixture
+declares the exact committed guard state, no intervening mutation-relevant
+change, settled companion currency, and the same effective authorisation and
+disclosure, purpose, and field selection. The fixture also declares a hidden
+mutation-relevant source change that leaves the permitted body unchanged,
+changes the opaque guard ETag, and makes the prior token receive generic `412`.
+These are internally coherent artifact declarations, not observations of a
+runtime concurrency engine. They do not require immediate visibility from an
+ordinary non-companion read or one retained revision per Write. The checks do
+not execute a Registry implementation or establish conformance. The scenarios
+below describe the separate implementation evidence needed.
+
+### Runtime companion-guard procedure
+
+For a deployed implementation, first record the selected Update or Transition,
+its companion Retrieve, the declared companion-currency condition, and one
+fixed effective authorisation and disclosure, purpose, and field selection.
+Then execute these cases against non-production source fixtures:
+
+1. Retrieve the companion guard, retain its permitted body and opaque strong
+   ETag, make a mutation-relevant authoritative change, and submit the old ETag
+   in `If-Match`. Even if an ordinary read remains lagged, the Write must
+   atomically reject the stale guard with the declared generic `412` and make
+   no authoritative change.
+2. Repeat with a source condition that affects the mutation's validation,
+   mapping, or committed effect but is not visible in the permitted body.
+   Retrieve the companion guard again under the identical effective context;
+   the body stays equal, the opaque ETag changes, and a Write using the prior
+   ETag receives generic `412` without disclosing the changed condition.
+3. Perform a successful mutation, make no intervening mutation-relevant
+   change, wait for the declared companion currency, and retrieve under the
+   identical effective context. Compare the success ETag only when the later
+   companion read observes the exact committed guard state. Repeat with one
+   context dimension changed to confirm that view-name equality alone is not
+   treated as validator equality.
+
+Retain the requests, responses, source observations, effective-context record,
+and authoritative before-and-after state. A schema-valid trace or the static
+fixture does not count as a runtime pass.
 
 ## Applicability and required fixtures
 
@@ -58,7 +99,7 @@ An implementation being evaluated provides non-production fixtures according to 
 | Source acceptance timestamps before, at, and after revisions, including a correction; proven item absence; evaluable empty Search; source inability to evaluate history | An operation declares `recorded-time`. |
 | Source applicability dates or instants covering boundaries, overlaps, corrections, no applicable state, evaluable empty Search, and source inability to evaluate history | An operation declares `effective-time`. |
 | Named Search fixtures for each declared equality, range, set-membership, prefix, or domain-specific semantic | Search is selected. |
-| Caller contexts with different authorised operations; a rich discovery entry containing its required view plus `readableFields`, selectors, searches, known and unknown features, and purpose requirements; an unknown capability entry; plus a description exceeding each declared bound | Caller capability discovery is offered. |
+| Caller contexts with different authorised operations; a rich discovery entry containing visible Read, Write, and supporting workflow operations; Read entries with their required view plus `readableFields`, selectors, searches, known and unknown features, and purpose requirements; Write entries with their declared input and companion-read metadata where applicable; an unknown capability entry; plus a description exceeding each declared bound | Caller capability discovery is offered. |
 | Trusted contexts with missing, malformed, allowed, disallowed, and changed controlled purpose values | An operation declares `purpose-bound`. |
 | Nested components, same-target and mixed-target references, and collection-boundary fixtures | A selected view exposes subobjects, references, or embedded collections. |
 | Recorded related details and a separately changed current target Record; a parent without an individual reference where supported | A selected view exposes recorded related details or references that may be absent. |
@@ -158,7 +199,7 @@ The following cases apply to the selected read capabilities. Run them against ea
 | Effective-time selection | Select supported dates or instants at applicability boundaries and where no state applies; exercise proven item absence, an evaluable Search with zero permitted matches, source evaluation inability, and an omitted selector. | Selected success uses `TemporalRecord` or `TemporalRecordPage` with echoed context, including a `200` empty Page. Proven item absence is `404`; source inability is `409 temporal-state-not-available`; omitted selection returns latest permitted state without temporal metadata. Revision operations reject the selector; occurrence and registration dates are used only when the source explicitly defines that meaning. |
 | Temporal and traversal separation | Apply a temporal selector to live pagination, and run snapshot traversal without a temporal selector. | Temporal selection alone does not promise a snapshot; snapshot traversal alone does not expose historical states. |
 | Reusable Search semantics | Exercise all and only the equality, range, set-membership, prefix, and domain-specific semantics named by each Search. | Typed matching follows the contract; undeclared operators and fields fail; no fuzzy or universal query behaviour is inferred. |
-| Caller capabilities | Request a rich capability document under callers with different rights, including each operation's required view, `readableFields`, selectors, searches, known and unknown features, purpose requirements, and an unknown capability entry; exceed declared bounds and attempt allowed and unavailable Record access. | One bounded `no-store` document exposes only caller-available advisory metadata and identifies the view of each operation. `readableFields` does not imply `field-selection`; clients skip unknown capabilities and ignore unknown advisory features; the normative operation extension remains closed. Over-bound descriptions fail explicitly without truncation or silent omission; every invocation still authorises and no Record access follows from discovery alone. |
+| Caller capabilities | Request a rich capability document under callers with different rights, including visible Read, Write, and supporting workflow operations. For Read entries, include the required view, `readableFields`, selectors, searches, known and unknown features, and purpose requirements. For Write entries, include the declared input and companion read where applicable. Include an unknown capability entry, exceed declared bounds, and attempt allowed and unavailable Record access. | One bounded `no-store` document exposes only caller-available advisory metadata. Read metadata identifies its view, while Write and workflow discovery does not imply Record-read authority. `readableFields` does not imply `field-selection`; clients skip unknown capabilities and ignore unknown advisory features; normative operation extensions remain closed. Over-bound descriptions fail explicitly without truncation or silent omission; every invocation still authorises and no Record access follows from discovery alone. |
 | Purpose binding | Invoke a purpose-bound operation with missing, untrusted, allowed, and unallowed trusted purpose context, then replay a cursor or validator under another purpose. | Invalid purpose fails before disclosure; allowed purpose is bound to continuation and validation and retained for audit without being treated as consent, authority, or downstream-use proof. |
 
 Relationship cases apply to views exposing the corresponding shapes. The [household](../api/examples/household-registry.openapi.yaml) and [birth-registration](../api/examples/birth-registration.openapi.yaml) contracts provide concrete examples; their [fixtures](../api/examples/relationship-exchanges.json) cover schema validation.
@@ -181,4 +222,4 @@ Record artifact validation separately from deployed implementation results.
 
 ## Write verification
 
-The [Write verification matrix](write-testing.md) covers direct creation, update, named transitions, and approval-based requests under their independently selected options. Run `uv run python tools/validate_write.py` for current contract, schema, provenance, positive/negative fixture, and exchange checks. These are artifact checks. Source commitment, idempotency replay, manual-review separation, concurrent updates, crash recovery, and multi-Record atomicity still require running-implementation evidence.
+The [Write verification matrix](write-testing.md) covers direct creation, update, named transitions, and approval-based requests under their independently selected options. Run `uv run python tools/validate_write.py` for the unified contract, schema, provenance, positive and negative fixtures, exchanges, and combined journey checks. These are artifact checks. Source commitment, idempotency replay, manual-review separation, concurrent updates, crash recovery, and multi-Record atomicity still require running-implementation evidence.

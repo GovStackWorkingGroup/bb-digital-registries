@@ -1,5 +1,5 @@
 version: 1
-contract: write.openapi.yaml
+contract: openapi.yaml
 description: >-
   Draft traceability for the independently selectable Digital Registries Write capabilities.
   An entry establishes contract coverage only; it is not implementation, deployment, or
@@ -26,7 +26,7 @@ capabilities:
     method: post
     operationId: submitChangeRequest
 supportingOperations:
-  - operationId: getWritableRecord
+  - operationId: retrieveRecord
     purpose: Obtain the strong Record validator required by conditional direct mutations.
   - operationId: listChangeRequests
     purpose: List caller-visible governed proposals.
@@ -45,8 +45,8 @@ dispositions:
   review: Runtime, policy, or audit evidence is required in addition to the published contract.
 draftRequirements:
   - {key: write-1, test: resources/write-testing.md#write-1, disposition: operation, operations: [createRecord, getOperation]}
-  - {key: write-2, test: resources/write-testing.md#write-2, disposition: operation, operations: [getWritableRecord, updateRecord]}
-  - {key: write-3, test: resources/write-testing.md#write-3, disposition: operation, operations: [getWritableRecord, applyRecordTransition, getOperation]}
+  - {key: write-2, test: resources/write-testing.md#write-2, disposition: operation, operations: [retrieveRecord, updateRecord]}
+  - {key: write-3, test: resources/write-testing.md#write-3, disposition: operation, operations: [retrieveRecord, applyRecordTransition, getOperation]}
   - {key: write-4, test: resources/write-testing.md#write-4, disposition: operation, operations: [submitChangeRequest, getChangeRequest, approveChangeRequest, rejectChangeRequest, withdrawChangeRequest]}
   - {key: write-5, test: resources/write-testing.md#write-5, disposition: operation, operations: [createRecord, updateRecord, applyRecordTransition, submitChangeRequest]}
   - key: write-6
@@ -54,7 +54,7 @@ draftRequirements:
     disposition: review
     rationale: Atomic commit and any separately declared compound guarantee require failure-injection evidence.
   - {key: write-7, test: resources/write-testing.md#write-7, disposition: operation, operations: [createRecord, updateRecord, applyRecordTransition, submitChangeRequest, approveChangeRequest, rejectChangeRequest, withdrawChangeRequest]}
-  - {key: write-8, test: resources/write-testing.md#write-8, disposition: operation, operations: [getWritableRecord, updateRecord, applyRecordTransition, submitChangeRequest, approveChangeRequest]}
+  - {key: write-8, test: resources/write-testing.md#write-8, disposition: operation, operations: [retrieveRecord, updateRecord, applyRecordTransition, submitChangeRequest, approveChangeRequest]}
   - key: write-9
     test: resources/write-testing.md#write-9
     disposition: review
@@ -64,7 +64,7 @@ draftRequirements:
     test: resources/write-testing.md#write-11
     disposition: review
     rationale: Protocol acknowledgements are declared, while provenance and audit correlation require retained implementation evidence.
-  - {key: write-12, test: resources/write-testing.md#write-12, disposition: operation, operations: [createRecord, getWritableRecord, updateRecord, applyRecordTransition, submitChangeRequest, getChangeRequest, approveChangeRequest, rejectChangeRequest, withdrawChangeRequest, getOperation]}
+  - {key: write-12, test: resources/write-testing.md#write-12, disposition: operation, operations: [createRecord, retrieveRecord, updateRecord, applyRecordTransition, submitChangeRequest, getChangeRequest, approveChangeRequest, rejectChangeRequest, withdrawChangeRequest, getOperation]}
   - key: write-13
     test: resources/write-testing.md#write-13
     disposition: review

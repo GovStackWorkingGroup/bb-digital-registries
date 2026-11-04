@@ -6,11 +6,11 @@ description: Applicability, covered functionality, relationships, exclusions, an
 
 ## Subject and applicability
 
-API consumers need a consistent way to discover Registry services and obtain permitted Registry information without depending on each solution's internal design. This Building Block Specification defines the external behaviour of software that publishes governed Registry descriptions and service contracts and provides that information through declared external interfaces.
+API consumers need a consistent way to discover Registry services and use permitted Registry operations without depending on each solution's internal design. This Building Block Specification defines the external behaviour of software that publishes governed Registry descriptions and service contracts and provides read, direct Write, and approval-based operations through declared external interfaces.
 
 It applies to software solutions that expose Registry services over records concerning persons, organisations, places, assets, or events. A solution can operate one Registry or many Registries and can be an adaptor over an existing system. A Registry can operate independently; other GovStack Building Blocks are complementary when a deployment uses them. The specification concerns externally observable behaviour and required evidence, not the solution's internal architecture, institutional model, or product design.
 
-The Consultation binding can group Records into logical Collections for stable API addressing and declared membership. A Collection is independent of database tables, source modules, governed datasets, and the Registry's institutional boundary. For example, `birth-registrations`, `marriage-registrations`, and `death-registrations` can be separate Collections in one civil-registration service. These are illustrative API choices, not a mandatory definition of civil-registration law or authoritative scope.
+The Registry API can group Records into logical Collections for stable API addressing and declared membership. A Collection is independent of database tables, source modules, governed datasets, and the Registry's institutional boundary. For example, `birth-registrations`, `marriage-registrations`, and `death-registrations` can be separate Collections in one civil-registration service. These are illustrative API choices, not a mandatory definition of civil-registration law or authoritative scope.
 
 ## Relationships
 
@@ -22,7 +22,7 @@ Every applicable parent requirement retains its original classifier and applicab
 
 ## Covered
 
-The current alpha material covers Registry Core plus selected Consultation and Write operations. The specification's core covers both functionalities below and defines no extensions.
+The current alpha material covers Registry Core plus selected read and Write operations in one Registry API contract. The specification's core covers both functionalities below and defines no extensions.
 
 - **Discover Registry Services:** identify a Registry, its responsible authority and authoritative scope, and locate its exposed services and machine-readable contracts.
 - **Provide Registry Services:** provide at least one approved Registry service through the operations declared by the Registry's published contract.
@@ -54,7 +54,7 @@ Core requirements concerning returned Records apply through each selected option
 
 An operation can also declare selectable Consultation features. `conditional-read` applies only to Retrieve; `field-selection` can apply to a declared read; `complete-traversal` and `snapshot-traversal` apply only to List or Search, and `snapshot-traversal` includes the `complete-traversal` guarantee. `recorded-time` and `effective-time` add temporal selectors only to Retrieve, Lookup, List, or Search. `purpose-bound` adds a required trusted purpose binding to the inherited security contract of a Record or history operation. An absent or empty `features` member declares none of these selectable guarantees.
 
-Features are not options of the variation point. Each feature requirement carries its operation option in `applies_when` and its feature condition in `documentation`. Declaring a feature brings its applicable requirement, contract, and tests into a future claim. The normative operation extension remains closed to the capability and feature values of its contract version. Caller capability discovery is separately offered supporting metadata: it does not satisfy the minimum Registry service choice, grant record-level authority, or select `purpose-bound`. Its capability and feature annotations are extensible advisory metadata.
+Features are not options of the variation point. Each feature requirement carries its operation option in `applies_when` and its feature condition in `documentation`. Declaring a feature brings its applicable requirement, contract, and tests into a future claim. The normative operation extensions remain closed to the capability and feature values of their contract version. Caller capability discovery is separately offered supporting metadata for caller-visible Consultation, Write, and supporting workflow operations. It does not satisfy the minimum Registry service choice, grant record-level or mutation authority, or select `purpose-bound`. Its capability and feature annotations are extensible advisory metadata. A recognised Consultation entry requires its read `view`; a Write or supporting workflow entry cannot carry one. Existing recognised read entries can omit `family` and are interpreted as Consultation, while new Write entries declare `family: write`. Unknown future capability entries remain skippable without being forced into either known family's fields.
 
 Registry metadata can describe a Registry for directory participation without establishing Digital Registries conformance. A specification reference, API-family classification, binding `capability` value, or linked operational contract is not by itself a conformance claim.
 
@@ -65,8 +65,7 @@ The specification also covers:
 - declaration of representation formats, schemas, documented field meanings, and protocol bindings;
 - interpretation of source revision, lifecycle, and provenance information when supplied;
 - the shared Record envelope, error outcomes, disclosure behaviour, and live cursor pagination contract of the six Consultation operations;
-- the HTTP binding and publication artifacts for Consultation; and
-- independently selected direct Write and approval-based change-request contracts.
+- one HTTP binding and its publication artifacts for the selected read, direct Write, and approval-based change-request operations.
 
 The specification separates operations, common Registry and Record context, domain semantics, and protocol bindings. This separation allows national registries, commercial products, open-source platforms, and adaptors to expose the same external contract without sharing an internal architecture or adopting a product-specific or universal domain model.
 
@@ -79,7 +78,7 @@ This section describes the material available in `3.0.0-alpha.2`; it does not ad
 | Registry Core | DRAFT requirements for metadata, scoped Record identity across logical Collections, schema context, documented field meanings, and interpretation of supplied source metadata | Complete schema lifecycle and domain-specific compatibility policies are not specified |
 | Metadata and discovery | A JSON metadata document and schema, RFC 9727 discovery linkset, OpenAPI Registry context extension, examples, and an informative DCAT vocabulary appendix | The vocabulary, context, and schema are not published at their assigned `vocab.govstack.global` IRIs; canonical specification-version IRIs are not published |
 | Authority | Registry Authority identity and declared authoritative scope | Delegation, shared responsibility, and a machine-readable mandate model are not specified |
-| Service interfaces | Canonical draft Consultation and Write OpenAPI contracts, shared schemas, and concrete example contracts | No canonical contracts exist for Provisioning, Evidence, Notification, Aggregate Data, Access Transparency, or Identity Federation; Consultation operation patterns described only informatively are not current options |
+| Service interfaces | One canonical draft Registry OpenAPI contract, shared schemas, and concrete example contracts | No canonical contracts exist for Provisioning, Evidence, Notification, Aggregate Data, Access Transparency, or Identity Federation; Consultation operation patterns described only informatively are not current options |
 | Verification | Discovery, Consultation, and Write artifact validation, requirement-to-operation mapping, and Write implementation scenarios | No end-to-end implementation conformance suite or deployed runtime evidence is published; artifact checks do not establish runtime behaviour |
 
 Domain-specific semantic models and jurisdiction-specific governance or legal compliance remain outside the Building Block's standardisation scope. Registry Authorities and adopting ecosystems supply them as appropriate. Field meanings must be documented even when no formal semantic model is selected. Source revision, lifecycle state, recording time, and effective-time history are not required unless a selected option or feature requires them.
@@ -92,13 +91,13 @@ All requirements and options in `3.0.0-alpha.2` are `DRAFT` and unnumbered. Unde
 
 Requirement levels and other classifiers are interpreted according to that model. Lowercase modal verbs have their ordinary English meaning; this specification does not use BCP 14 keywords to assign requirement levels.
 
-No implementation, operation, or functionality can claim conformance with this alpha. The Consultation and Write HTTP bindings are also DRAFT, and no executable implementation conformance suite is published. Canonical contracts, requirement-to-operation mappings, and example-validation checks support artifact review and prototyping only; they do not establish deployed runtime behaviour. Procurement and certification should reference an approved specification version. No approval or certification obligation is claimed here.
+No implementation, operation, or functionality can claim conformance with this alpha. The unified Registry HTTP binding is also DRAFT, and no executable implementation conformance suite is published. The canonical contract, requirement-to-operation mappings, and example-validation checks support artifact review and prototyping only; they do not establish deployed runtime behaviour. Procurement and certification should reference an approved specification version. No approval or certification obligation is claimed here.
 
 ## Conformance declaration and binding vocabulary <a href="#conformance-conformance-declaration-and-binding-vocabulary" id="conformance-conformance-declaration-and-binding-vocabulary"></a>
 
 The GovStack framework requires a future conformance declaration to list the options a solution claims. A claim also names any features declared by its claimed operations; every applicable requirement, contract, and test for those features forms part of the claim. The framework has not yet defined the declaration's serialisation, so this specification does not invent one.
 
-The Consultation OpenAPI extension retains `capability` as a wire-level field name. Its six values bind operations to the six Consultation option keys above. The separate Write extension binds operations to the four Write options; it does not add Write values to the closed Consultation extension. These binding values are not informative framework capabilities. The informative capabilities declared for this specification are Registry Service Discovery and Authoritative Registry Services.
+The Consultation OpenAPI extension retains `capability` as a wire-level field name. Its six values bind operations to the six Consultation option keys above. The Write extension binds operations to the four Write options; it does not add Write values to the closed Consultation extension. Both extensions are used in the same canonical contract. These binding values are not informative framework capabilities. The informative capabilities declared for this specification are Registry Service Discovery and Authoritative Registry Services.
 
 ## Adaptors <a href="#conformance-adaptors" id="conformance-adaptors"></a>
 
@@ -132,6 +131,6 @@ The GovStack Registries and Registration Working Group owns this draft. Change r
 
 ## Write scope <a href="#conformance-write-applicability" id="conformance-write-applicability"></a>
 
-The [Write requirements](../requirements/registry-services.md) and [Write verification matrix](../resources/write-testing.md) apply to selected Write options. Their canonical transport entry point is [write-api.yml](../resources/write-api.yml). A direct Write selection does not require change requests or manual review; a change-request selection does not grant direct mutation authority. Compound changes are available only when the published operation declares their supported boundary and guarantees. Pending review and approval do not establish commitment.
+The [Write requirements](../requirements/registry-services.md) and [Write verification matrix](../resources/write-testing.md) apply to selected Write options. Their canonical transport entry point is the unified [Registry API](../resources/api.yml); [write-api.yml](../resources/write-api.yml) remains a compatibility alias. A direct Write selection does not require change requests or manual review; a change-request selection does not grant direct mutation authority. Compound changes are available only when the published operation declares their supported boundary and guarantees. Pending review and approval do not establish commitment.
 
 Registry-managed review concerns the proposed authoritative change; it does not require a general-purpose intake or workflow engine. Adopting institutions define permissions, review policy, accepted transitions, and domain models. Birth registration, Household, Person, membership, and other payloads in the [Write examples](../resources/api-examples/README.md) are non-normative profiles. Their fields, vocabularies, local reference mappings, bounds, domain models, and policy rules are not requirements of shared Write.

@@ -4,14 +4,9 @@
       "anchor": "https://registry.example/",
       "service-desc": [
         {
-          "href": "https://registry.example/contracts/1.0.0-draft/examples/business-registry.openapi.yaml",
+          "href": "https://registry.example/contracts/1.0.0-draft/openapi.yaml",
           "type": "application/vnd.oai.openapi",
-          "title": "Business Registry Consultation API"
-        },
-        {
-          "href": "https://registry.example/contracts/business-write.openapi.json",
-          "type": "application/vnd.oai.openapi+json",
-          "title": "Business Registry Write API"
+          "title": "Business Registry API"
         },
         {
           "href": "https://registry.example/contracts/business-evidence.openapi.json",

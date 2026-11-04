@@ -1274,9 +1274,7 @@
               "type": "string"
             },
             "recordId": {
-              "type": "string",
-              "minLength": 1,
-              "description": "Authority-assigned Record identifier within the selected Collection."
+              "$ref": "../openapi.yaml#/components/schemas/RecordId"
             }
           },
           "required": [
@@ -1393,9 +1391,7 @@
               "type": "string"
             },
             "recordId": {
-              "type": "string",
-              "minLength": 1,
-              "description": "Authority-assigned Record identifier within the selected Collection."
+              "$ref": "../openapi.yaml#/components/schemas/RecordId"
             }
           },
           "required": [
@@ -1470,9 +1466,7 @@
           "type": "string"
         },
         "recordId": {
-          "type": "string",
-          "minLength": 1,
-          "description": "Authority-assigned Record identifier within the selected Collection."
+          "$ref": "../openapi.yaml#/components/schemas/RecordId"
         }
       },
       "required": [
@@ -1496,9 +1490,7 @@
           "type": "string"
         },
         "recordId": {
-          "type": "string",
-          "minLength": 1,
-          "description": "Authority-assigned Record identifier within the selected Collection."
+          "$ref": "../openapi.yaml#/components/schemas/RecordId"
         },
         "etag": {
           "$ref": "#/$defs/StrongETag",
@@ -1606,9 +1598,7 @@
                   "type": "string"
                 },
                 "recordId": {
-                  "type": "string",
-                  "minLength": 1,
-                  "description": "Authority-assigned Record identifier within the selected Collection."
+                  "$ref": "../openapi.yaml#/components/schemas/RecordId"
                 }
               },
               "required": [
@@ -1781,9 +1771,7 @@
                     "type": "string"
                   },
                   "recordId": {
-                    "type": "string",
-                    "minLength": 1,
-                    "description": "Authority-assigned Record identifier within the selected Collection."
+                    "$ref": "../openapi.yaml#/components/schemas/RecordId"
                   }
                 },
                 "required": [

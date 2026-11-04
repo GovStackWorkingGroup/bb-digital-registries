@@ -46,6 +46,28 @@
       "pattern": "^[a-z][a-z0-9-]{0,127}(?![\\s\\S])",
       "maxLength": 128
     },
+    "companionRead": {
+      "description": "The single permitted Record read whose body and strong ETag come from one current authoritative guard evaluation for this Update or Transition. A deployment cannot designate it when effective disclosure policy forbids revealing the opaque tag or its change cadence.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["operationId", "view"],
+      "properties": {
+        "operationId": {
+          "description": "operationId of the GET Record operation in the same deployed contract.",
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[A-Za-z][A-Za-z0-9]{0,127}(?![\\s\\S])"
+        },
+        "view": {
+          "description": "Exact permitted Record view returned by the companion read. Its writable data and every field or source condition that can alter this mutation's validation, mapping, or committed effect are evaluated at the same current authoritative point as the strong ETag; unrelated hidden state need not invalidate the tag.",
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-z][a-z0-9-]{0,127}(?![\\s\\S])"
+        }
+      }
+    },
     "purpose": {
       "description": "Optional trusted purpose binding enforced by this operation. Purpose comes only from a verified access-token claim or governed trusted authorisation context; request URI, query, ordinary body fields, and ad hoc headers never grant purpose.",
       "oneOf": [
@@ -147,6 +169,14 @@
           ]
         }
       }
+    },
+    {
+      "if": {
+        "properties": {"capability": {"enum": ["update", "transition"]}},
+        "required": ["capability"]
+      },
+      "then": {"required": ["companionRead"]},
+      "else": {"not": {"required": ["companionRead"]}}
     }
   ]
 }

@@ -21,12 +21,15 @@ requirements, contracts, and tests are defined.
 Business-outcome capabilities in `metadata.yml` are informative and are realised
 by the functionalities; operation choices are declared by option key.
 
-The six Consultation operations share a Record representation and bounded
-pagination over explicit logical Collections. Operations can separately declare
+The six read operations share a Record representation and bounded pagination
+over explicit logical Collections. Operations can separately declare
 conditional reads, field selection, complete traversal, snapshot traversal,
-recorded-time, effective-time, or purpose binding; caller capability discovery is
-also selectable. The HTTP binding supplies Registry, Collection, schema, capability,
-and selectable feature declarations through each operation's versioned contract.
+recorded-time, effective-time, or purpose binding; caller capability discovery can
+also be offered as supporting metadata. The same Registry API can expose read,
+direct Write, Change Request, and asynchronous Operation resources while keeping
+their grants and selection independent. The HTTP binding supplies Registry,
+Collection, schema, capability, and selectable feature declarations through its
+versioned contract.
 Source history, revision, lifecycle, recording-time, and effective-time metadata
 remain conditional on the source and the selected capability or feature.
 
@@ -38,10 +41,10 @@ remain conditional on the source and the selected capability or feature.
 - **Implementers:** use [Discover Registry Services](requirements/registry-discovery.md)
   for metadata and discovery, then [Provide Registry Services](requirements/registry-services.md)
   for the Record model, Consultation, Write, and workflows.
-- **API consumers:** use the [Consultation](resources/api-reference.md) and
-  [Write](resources/write-api-reference.md) references. The
+- **API consumers:** use the unified [Registry API reference](resources/api-reference.md).
+  The
   [API examples](resources/api-examples/README.md) illustrate deployment choices
-  and add no requirements to the shared contracts.
+  and add no requirements to the shared contract.
 - **Assessors:** use the [verification procedures](resources/testing.md),
   [Write verification](resources/write-testing.md), and the applicability
   declarations in the functionality files.

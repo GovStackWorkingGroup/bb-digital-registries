@@ -114,6 +114,30 @@ def verification(entry):
 
 
 class ConsultationExtensionTests(unittest.TestCase):
+    def test_consultation_classifier_excludes_mutations_on_shared_routes(self):
+        self.assertEqual(
+            consultation.route_kind(
+                "/v1/collections/{collectionId}/records", "get"
+            ),
+            ("get", "collection"),
+        )
+        self.assertIsNone(
+            consultation.route_kind(
+                "/v1/collections/{collectionId}/records", "post"
+            )
+        )
+        self.assertEqual(
+            consultation.route_kind(
+                "/v1/collections/{collectionId}/search", "post"
+            ),
+            ("post", "search"),
+        )
+        self.assertIsNone(
+            consultation.route_kind(
+                "/v1/collections/{collectionId}/records/{recordId}", "patch"
+            )
+        )
+
     def test_exchange_validator_covers_headers_bodyless_304_and_parent_identity(self):
         success = {
             "name": "businessConditionalRetrieve200",
@@ -502,6 +526,34 @@ class ConsultationExtensionTests(unittest.TestCase):
                         {**operation, "capability": "revision-list", "features": ["effective-time"]}):
             self.assertFalse(check.is_valid(invalid), invalid)
 
+    def test_write_discovery_forbids_top_level_read_purpose(self):
+        check = schema("CapabilityOperation")
+        operation = {
+            "operationId": "updateRecord",
+            "contract": "https://registry.example/contracts/1.0.0-draft/openapi.yaml",
+            "family": "write",
+            "capability": "update",
+            "write": {
+                "companionRead": {
+                    "operationId": "retrieveRecord",
+                    "view": "record-public",
+                }
+            },
+        }
+        check.validate(operation)
+        self.assertFalse(
+            check.is_valid(
+                {
+                    **operation,
+                    "purpose": {
+                        "required": True,
+                        "binding": "trusted-authorization-context",
+                        "allowedPurposes": ["record-correction"],
+                    },
+                }
+            )
+        )
+
     def test_temporal_search_example_echoes_selection_on_empty_pages(self):
         witnessed = False
         for contract, _, method, operation in operations():
@@ -645,7 +697,16 @@ class ConsultationExtensionTests(unittest.TestCase):
 
     def test_discovery_is_authenticated_bounded_and_private(self):
         operation = document(CANONICAL)["paths"]["/v1/capabilities"]["get"]
-        self.assertNotEqual(operation.get("security", document(CANONICAL)["security"]), [])
+        security = operation.get("security", document(CANONICAL)["security"])
+        self.assertNotEqual(security, [])
+        self.assertTrue(
+            all(
+                scopes == []
+                for requirement in security
+                for scopes in requirement.values()
+            ),
+            "Discovery authenticates without requiring a Record-read grant",
+        )
         response_path, response = resolve_object(CANONICAL, operation["responses"]["200"])
         self.assertIn("Cache-Control", response["headers"])
         _, cache_control = resolve_object(response_path, response["headers"]["Cache-Control"])
@@ -677,6 +738,124 @@ class ConsultationExtensionTests(unittest.TestCase):
             for _, node in nodes(document(CANONICAL)["components"]["schemas"][name]):
                 if node.get("type") == "array":
                     self.assertIn("maxItems", node, name)
+
+    def test_canonical_discovery_example_covers_read_write_and_workflow_operations(self):
+        examples = document(CANONICAL)["components"]["schemas"]["CallerCapabilities"][
+            "examples"
+        ]
+        self.assertTrue(examples)
+        operation_refs = [
+            operation_ref
+            for example in examples
+            for collection in example["collections"]
+            for operation_ref in collection["operations"]
+        ]
+        operation_refs.extend(
+            entry["operation"]
+            for example in examples
+            for entry in example["operations"]
+        )
+        advertised = {entry["operationId"] for entry in operation_refs}
+        self.assertTrue(
+            {
+                "retrieveRecord",
+                "listRecords",
+                "lookupRecord",
+                "searchRecords",
+                "listRecordRevisions",
+                "retrieveRecordRevision",
+                "createRecord",
+                "updateRecord",
+                "applyRecordTransition",
+                "submitChangeRequest",
+                "listChangeRequests",
+                "getChangeRequest",
+                "approveChangeRequest",
+                "rejectChangeRequest",
+                "withdrawChangeRequest",
+                "getOperation",
+            }
+            <= advertised
+        )
+        for entry in operation_refs:
+            with self.subTest(operation=entry["operationId"]):
+                self.assertIn(entry["family"], {"consultation", "write"})
+                if entry["family"] == "consultation":
+                    self.assertIn("view", entry)
+                else:
+                    self.assertNotIn("view", entry)
+                    self.assertFalse(
+                        {
+                            "features",
+                            "purpose",
+                            "readableFields",
+                            "selectors",
+                            "searches",
+                        }
+                        & entry.keys()
+                    )
+                if entry["capability"] in {"update", "transition"}:
+                    self.assertEqual(
+                        set(entry["write"]["companionRead"]),
+                        {"operationId", "view"},
+                    )
+
+        baseline = deepcopy(examples[0])
+        update = next(
+            entry
+            for collection in baseline["collections"]
+            for entry in collection["operations"]
+            if entry["operationId"] == "updateRecord"
+        )
+        update["write"]["companionRead"]["view"] = "conflicting-view"
+        with self.assertRaises(ValueError):
+            consultation.validate_caller_capabilities(baseline)
+
+        baseline = deepcopy(examples[0])
+        operation_entry = next(
+            entry["operation"]
+            for entry in baseline["operations"]
+            if entry["operation"]["operationId"] == "getOperation"
+        )
+        operation_entry["capability"] = "change-request-retrieve"
+        with self.assertRaises(ValueError):
+            consultation.validate_caller_capabilities(baseline)
+
+    def test_registry_metadata_advertises_one_combined_read_write_service(self):
+        metadata = json.loads(
+            (API / "examples/registry-metadata.jsonld").read_text()
+        )
+        services = {
+            node["@id"]: node
+            for node in metadata["@graph"]
+            if "dcat:DataService" in consultation.as_list(node["@type"])
+        }
+        combined = services["https://registry.example/services/business-registry"]
+        self.assertEqual(
+            set(consultation.as_list(combined["serviceType"])),
+            {"apif:consultation", "apif:write"},
+        )
+        self.assertEqual(
+            combined["endpointDescription"],
+            "https://registry.example/contracts/1.0.0-draft/openapi.yaml",
+        )
+        self.assertNotIn(
+            "https://registry.example/services/business-write", services
+        )
+
+        linkset = json.loads(
+            (API / "examples/api-catalog.linkset.json").read_text()
+        )
+        descriptions = {
+            link["href"]
+            for context in linkset["linkset"]
+            for link in context["service-desc"]
+        }
+        self.assertIn(combined["endpointDescription"], descriptions)
+        self.assertNotIn(
+            "https://registry.example/contracts/business-write.openapi.json",
+            descriptions,
+        )
 
     def test_caller_capability_examples_reference_published_operation_contexts(self):
         examples = document(CANONICAL)["components"]["schemas"]["CallerCapabilities"]["examples"]
@@ -776,7 +955,7 @@ class ConsultationExtensionTests(unittest.TestCase):
                 "operations": [{
                     "operationId": "retrieveRecord", "contract": canonical_contract,
                     "capability": "retrieve", "view": "record-public",
-                    "features": ["future-feature"],
+                    "features": ["conditional-read", "future-feature"],
                 }],
             }],
         }

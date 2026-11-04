@@ -36,6 +36,7 @@ BIRTH = API / "examples/birth-registration.openapi.yaml"
 RELATIONSHIPS = API / "examples/relationship-examples.schema.json"
 OPENAPI_DOCUMENTS = (CANONICAL, BUSINESS, HOUSEHOLD, BIRTH)
 EXTENSION = "x-govstack-digital-registries"
+WRITE_EXTENSION = "x-govstack-digital-registries-write"
 EXTENSION_SCHEMA = API / "extensions/x-govstack-digital-registries.schema.json"
 METADATA_SCHEMA = API / "extensions/registry-metadata.schema.json"
 METADATA_EXAMPLE = API / "examples/registry-metadata.jsonld"
@@ -55,6 +56,19 @@ CAPABILITY_BY_ROUTE = {
     ("get", "revision-retrieve"): "revision-retrieve",
 }
 KNOWN_CAPABILITIES = set(CAPABILITY_BY_ROUTE.values())
+WRITE_CAPABILITY_BY_OPERATION = {
+    "createRecord": "create",
+    "updateRecord": "update",
+    "applyRecordTransition": "transition",
+    "submitChangeRequest": "change-requests",
+    "listChangeRequests": "change-request-list",
+    "getChangeRequest": "change-request-retrieve",
+    "approveChangeRequest": "change-request-approve",
+    "rejectChangeRequest": "change-request-reject",
+    "withdrawChangeRequest": "change-request-withdraw",
+    "getOperation": "operation-retrieve",
+}
+KNOWN_WRITE_CAPABILITIES = set(WRITE_CAPABILITY_BY_OPERATION.values())
 KNOWN_FEATURES = {
     "conditional-read", "field-selection", "complete-traversal", "snapshot-traversal",
     "recorded-time", "effective-time", "purpose-bound",
@@ -126,18 +140,17 @@ def route_kind(path: str, method: str) -> tuple[str, str] | None:
     """Classify only declared Record reads, independently from API resources."""
     if method not in {"get", "post"} or not path.startswith("/v1/collections/"):
         return None
-    if path.endswith("/revisions/{revisionId}"):
-        return method, "revision-retrieve"
-    if path.endswith("/revisions"):
-        return method, "revision-list"
-    if path.endswith("/lookup"):
-        return method, "lookup"
-    if path.endswith("/search"):
-        return method, "search"
-    if path.endswith("/{recordId}"):
-        return method, "item"
-    if path.endswith("/records"):
-        return method, "collection"
+    declared = (
+        ("get", "/revisions/{revisionId}", "revision-retrieve"),
+        ("get", "/revisions", "revision-list"),
+        ("post", "/lookup", "lookup"),
+        ("post", "/search", "search"),
+        ("get", "/{recordId}", "item"),
+        ("get", "/records", "collection"),
+    )
+    for expected_method, suffix, kind in declared:
+        if method == expected_method and path.endswith(suffix):
+            return method, kind
     return None
 
 
@@ -199,6 +212,12 @@ def validate_capability_identities(value: dict) -> None:
             if identity in operations:
                 raise ValueError("Caller capabilities repeat a contract operation identity")
             operations.add(identity)
+    for entry in value.get("operations", []):
+        operation = entry["operation"]
+        identity = (operation["contract"], operation["operationId"])
+        if identity in operations:
+            raise ValueError("Caller capabilities repeat a contract operation identity")
+        operations.add(identity)
 
 
 def _absolute_schema_refs(path: Path, value):
@@ -400,50 +419,122 @@ def validate_caller_capabilities(value: dict) -> None:
     """Validate discovery shape and agreement with explicitly mapped current contracts."""
     validator(CANONICAL, "/components/schemas/CallerCapabilities").validate(value)
     validate_capability_identities(value)
-    for collection in value["collections"]:
-        for advertised in collection["operations"]:
-            capability = advertised["capability"]
-            if capability not in KNOWN_CAPABILITIES:
-                continue
-            contract = PUBLISHED_CONTRACTS.get(advertised["contract"])
-            if contract is None:
-                raise ValueError("Caller capability references an unmapped contract URI")
-            _, _, operation = _operation_by_id(contract, advertised["operationId"])
-            declared = operation.get(EXTENSION)
-            if declared is None:
-                raise ValueError("Caller capability references a non-Consultation operation")
-            expected = {
-                "registry": collection["registry"],
-                "collection": collection["collectionId"],
-                "capability": capability,
-                "view": advertised["view"],
+    entries = [
+        (collection, advertised)
+        for collection in value["collections"]
+        for advertised in collection["operations"]
+    ]
+    entries.extend(
+        (
+            {"registry": entry["registry"], "collectionId": None},
+            entry["operation"],
+        )
+        for entry in value.get("operations", [])
+    )
+    for collection, advertised in entries:
+        family = advertised.get("family")
+        capability = advertised["capability"]
+        if family is None and capability in KNOWN_CAPABILITIES:
+            family = "consultation"
+        if (
+            capability not in KNOWN_CAPABILITIES
+            and capability not in KNOWN_WRITE_CAPABILITIES
+        ):
+            continue
+        contract = PUBLISHED_CONTRACTS.get(advertised["contract"])
+        if contract is None:
+            raise ValueError("Caller capability references an unmapped contract URI")
+        _, _, operation = _operation_by_id(contract, advertised["operationId"])
+        if family == "write":
+            read_only_fields = {
+                "view",
+                "features",
+                "purpose",
+                "readableFields",
+                "selectors",
+                "searches",
             }
-            for key, expected_value in expected.items():
-                if declared.get(key) != expected_value:
-                    raise ValueError(f"Caller capability {key} disagrees with linked operation")
-            advertised_features = set(advertised.get("features", [])) & KNOWN_FEATURES
-            if advertised_features != set(declared.get("features", [])):
-                raise ValueError("Caller capability features disagree with linked operation")
-            advertised_purpose = deepcopy(advertised.get("purpose"))
-            declared_purpose = deepcopy(declared.get("purpose"))
-            for purpose in (advertised_purpose, declared_purpose):
-                if isinstance(purpose, dict) and "allowedPurposes" in purpose:
-                    purpose["allowedPurposes"] = sorted(purpose["allowedPurposes"])
-            if advertised_purpose != declared_purpose:
-                raise ValueError("Caller capability purpose disagrees with linked operation")
-            readable = set(advertised.get("readableFields", []))
-            if not readable.issubset(_record_data_fields(contract, operation)):
-                raise ValueError("Caller capability names an undeclared readable field")
-            selectors = set(advertised.get("selectors", []))
-            if selectors and capability != "lookup":
-                raise ValueError("Caller capability selectors belong only to Lookup")
-            if not selectors.issubset(_request_discriminator_values(contract, operation, "selector")):
-                raise ValueError("Caller capability names an undeclared selector")
-            searches = set(advertised.get("searches", []))
-            if searches and capability != "search":
-                raise ValueError("Caller capability searches belong only to Search")
-            if not searches.issubset(_request_discriminator_values(contract, operation, "search")):
-                raise ValueError("Caller capability names an undeclared search")
+            if read_only_fields & advertised.keys():
+                raise ValueError(
+                    "Caller Write capability contains Consultation-only metadata"
+                )
+            expected_capability = WRITE_CAPABILITY_BY_OPERATION.get(
+                advertised["operationId"]
+            )
+            if expected_capability != capability:
+                raise ValueError(
+                    "Caller Write capability disagrees with linked operation"
+                )
+            declared_write = operation.get(WRITE_EXTENSION, {})
+            if declared_write.get("registry") not in {
+                None,
+                collection["registry"],
+            }:
+                raise ValueError(
+                    "Caller Write capability registry disagrees with linked operation"
+                )
+            if collection["collectionId"] is not None and declared_write.get(
+                "collection"
+            ) != collection["collectionId"]:
+                raise ValueError(
+                    "Caller Write capability collection disagrees with linked operation"
+                )
+            if capability in {"update", "transition"} and advertised.get(
+                "write", {}
+            ).get("companionRead") != declared_write.get("companionRead"):
+                raise ValueError(
+                    "Caller Write companion read disagrees with linked operation"
+                )
+            continue
+        if family != "consultation" or collection["collectionId"] is None:
+            raise ValueError(
+                "Caller Consultation capability needs a Collection context"
+            )
+        declared = operation.get(EXTENSION)
+        if declared is None:
+            raise ValueError(
+                "Caller capability references a non-Consultation operation"
+            )
+        expected = {
+            "registry": collection["registry"],
+            "collection": collection["collectionId"],
+            "capability": capability,
+            "view": advertised["view"],
+        }
+        for key, expected_value in expected.items():
+            if declared.get(key) != expected_value:
+                raise ValueError(
+                    f"Caller capability {key} disagrees with linked operation"
+                )
+        advertised_features = set(advertised.get("features", [])) & KNOWN_FEATURES
+        if advertised_features != set(declared.get("features", [])):
+            raise ValueError(
+                "Caller capability features disagree with linked operation"
+            )
+        advertised_purpose = deepcopy(advertised.get("purpose"))
+        declared_purpose = deepcopy(declared.get("purpose"))
+        for purpose in (advertised_purpose, declared_purpose):
+            if isinstance(purpose, dict) and "allowedPurposes" in purpose:
+                purpose["allowedPurposes"] = sorted(purpose["allowedPurposes"])
+        if advertised_purpose != declared_purpose:
+            raise ValueError("Caller capability purpose disagrees with linked operation")
+        readable = set(advertised.get("readableFields", []))
+        if not readable.issubset(_record_data_fields(contract, operation)):
+            raise ValueError("Caller capability names an undeclared readable field")
+        selectors = set(advertised.get("selectors", []))
+        if selectors and capability != "lookup":
+            raise ValueError("Caller capability selectors belong only to Lookup")
+        if not selectors.issubset(
+            _request_discriminator_values(contract, operation, "selector")
+        ):
+            raise ValueError("Caller capability names an undeclared selector")
+        searches = set(advertised.get("searches", []))
+        if searches and capability != "search":
+            raise ValueError("Caller capability searches belong only to Search")
+        if not searches.issubset(
+            _request_discriminator_values(contract, operation, "search")
+        ):
+            raise ValueError("Caller capability names an undeclared search")
 
 
 def fenced_json_blocks(markdown: str, anchor: str) -> list[dict]:
@@ -798,7 +889,8 @@ class ConsultationContractTests(unittest.TestCase):
             retrieve_path = collection_path + "/records/{recordId}"
             retrieve = spec["paths"][retrieve_path]
             self.assertIn("get", retrieve)
-            self.assertEqual(set(retrieve) & write_methods, set())
+            expected_write_methods = {"patch"} if contract == CANONICAL else set()
+            self.assertEqual(set(retrieve) & write_methods, expected_write_methods)
             parameters = [resolve_object(contract, parameter) for parameter in retrieve["get"]["parameters"]]
             id_parameter = [(path, value) for path, value in parameters if value["in"] == "path" and value["name"] == "recordId"]
             self.assertEqual(id_parameter, [(CANONICAL, document(CANONICAL)["components"]["parameters"]["RecordId"])])
@@ -1032,6 +1124,8 @@ class ConsultationContractTests(unittest.TestCase):
                         continue
                     features = operation_features(operation)
                     expected = expected_business.get(operation["operationId"], set())
+                    if path == CANONICAL and operation["operationId"] == "retrieveRecord":
+                        expected = {"conditional-read"}
                     with self.subTest(file=path.name, operation=operation["operationId"]):
                         if path == BUSINESS or (path == CANONICAL and operation[EXTENSION]["capability"] in {"retrieve", "lookup", "list", "search"}):
                             self.assertEqual(features, expected)

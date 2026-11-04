@@ -122,7 +122,7 @@ requirements:
     observability: OBSERVABLE
     mutability: EXTENSIBLE
     interaction: SERVICE_API
-    contract: resources/write-api.yml
+    contract: resources/api.yml
     api_operation_id: createRecord
     statement: The Digital Registry accepts an authorised typed Create input for a declared target Registry and Collection and either atomically creates one authoritative Record with a durable acknowledgement or accepts separately identifiable asynchronous work whose terminal success represents that commit.
     documentation: |
@@ -138,7 +138,7 @@ requirements:
     observability: OBSERVABLE
     mutability: EXTENSIBLE
     interaction: SERVICE_API
-    contract: resources/write-api.yml
+    contract: resources/api.yml
     api_operation_id: updateRecord
     statement: The Digital Registry accepts an authorised typed Update input for one existing Record in a declared target Registry and Collection and either atomically commits the permitted change against the required current target state or accepts separately identifiable asynchronous work that rechecks that state at commit.
     documentation: |
@@ -154,7 +154,7 @@ requirements:
     observability: OBSERVABLE
     mutability: EXTENSIBLE
     interaction: SERVICE_API
-    contract: resources/write-api.yml
+    contract: resources/api.yml
     api_operation_id: applyRecordTransition
     statement: The Digital Registry accepts an authorised typed Transition input naming a declared transition for one existing Record and either atomically commits it when valid for the required current target state or accepts separately identifiable asynchronous work that rechecks that state at commit.
     documentation: |
@@ -170,7 +170,7 @@ requirements:
     observability: OBSERVABLE
     mutability: EXTENSIBLE
     interaction: SERVICE_API
-    contract: resources/write-api.yml
+    contract: resources/api.yml
     api_operation_id: submitChangeRequest
     statement: The Digital Registry accepts an authorised typed change request for a declared target Registry and Collection as a non-authoritative immutable proposal whose later review and application are governed independently from submission.
     documentation: |
@@ -323,7 +323,7 @@ requirements:
     observability: OBSERVABLE
     mutability: EXTENSIBLE
     interaction: SERVICE_API
-    contract: resources/write-api.yml
+    contract: resources/api.yml
     api_operation_id: submitChangeRequest
     applies_when: [write-change-requests]
     statement: "A submitted Change Request is immutable: review, approval, rejection, withdrawal when offered, and application remain bound to its exact request version, canonical proposal content, target, source precondition, submitter context, and recorded provenance."
@@ -449,15 +449,15 @@ requirements:
     interaction: SERVICE_API
     contract: resources/api.yml
     api_operation_id: getCallerCapabilities
-    statement: The caller capability discovery operation, when offered, returns one bounded CallerCapabilities document filtered for the authenticated caller and current trusted request context that identifies each visible Collection by its collectionId and registry and each visible operation by its operationId, capability annotation, view, and version-specific HTTPS contract, without granting authority or replacing authorisation at invocation time.
+    statement: The caller capability discovery operation, when offered, returns one bounded CallerCapabilities document filtered for the authenticated caller and current trusted request context that identifies each visible Collection by its collectionId and registry, each root operation by its registry, and each visible Consultation, Write, supporting workflow, or unknown future operation by its operationId, capability annotation, and version-specific HTTPS contract, with an explicit or compatibility-inferred family for recognised operations and a view for each recognised Consultation operation, without granting authority or replacing authorisation at invocation time.
     documentation: |
-      Purpose: A caller learns which declared Consultation operations are currently disclosed as available to it, while every invocation remains separately authorised.
+      Purpose: A caller learns which declared read, Write, and supporting workflow operations are currently disclosed as available to it, while every invocation remains separately authorised.
       Condition: The Digital Registry offers caller capability discovery. Offering it does not by itself satisfy the minimum Registry service choice.
       Prerequisite: The service publishes the bounded response schema and authentication requirements.
-      Constraint: The filtering context includes a verified purpose when one is present. The document can omit operations whose required purpose is absent from that context; discovery itself does not select `purpose-bound` or create a new purpose input. The document contains at most 64 Collections, each with at most 16 operations. `collectionId` is unique within the document, and each `(contract, operationId)` pair is unique. An operation entry can additionally publish bounded `readableFields`, selector and named Search identifiers, feature annotations, and purpose requirements. `readableFields` describes fields the caller can receive under current policy. It is distinct from `field-selection`, does not advertise a `fields` input, and need not be present even when readable fields exist.
-      Constraint: Known discovery annotations agree with the linked operation's Collection, capability, view, selected features, and purpose declaration. Capability and feature annotations in `CallerCapabilities` are extensible for forward-compatible advisory discovery: a client skips an operation entry whose capability annotation it does not understand and ignores unknown feature annotations on an otherwise understood entry. The normative `x-govstack-digital-registries` extension in the linked versioned operation remains closed to the capability and feature values defined by that contract version. Unknown discovery metadata never grants authority, adds an operation, or widens fields. The identifiers point into the contract; the response does not reproduce their complete schemas. Contradictory duplicates or known metadata produce the declared explicit validation failure; the service does not silently merge them. The response uses `Cache-Control: no-store`. If the caller-available description exceeds a declared array or document bound, the service returns its declared explicit error instead of truncating entries, silently omitting authorised capabilities, or substituting an empty array. `collections: []` is reserved for the valid case where no operation is visible to that caller.
-      Constraint: The document is advisory. It does not grant authority, replace authorisation at invocation time, promise access to any particular Record, require disclosure of every readable field, or define a reusable profile model. An omitted operation or field establishes only that it is not disclosed as available in that response.
-      Verification: Request discovery under callers and trusted contexts with different permissions. Validate bounds, unique Collection identifiers and `(contract, operationId)` pairs, contract agreement, `readableFields`, selectors, searches, known features, purpose requirements, and `no-store`; confirm that `readableFields` does not imply `field-selection`. Submit an unknown capability annotation and verify that the entry is skipped; submit an unknown advisory feature and verify that it is ignored without granting authority. Confirm that the linked operation extension still rejects unknown capability and feature values. Submit contradictory duplicates and contradictory known metadata and exceed every declared bound, verifying explicit failures without merge, truncation, or silent omission. Then verify that every discovered operation still performs current authorisation and that no record-level permission can be inferred.
+      Constraint: The filtering context includes a verified purpose when one is present. The document can omit operations whose required purpose is absent from that context; discovery itself does not select `purpose-bound` or create a new purpose input. Authentication of discovery does not require a universal Record-read entitlement. The document contains at most 64 Collections, each with at most 16 operations, plus at most 64 root operations outside a Collection path. The root `operations` member is optional and omission means an empty array. `collectionId` is unique within `collections`, and each `(contract, operationId)` pair is unique within its operation catalogue. A recognised Consultation entry requires `view` and can additionally publish bounded `readableFields`, selector and named Search identifiers, feature annotations, and purpose requirements. Existing recognised read entries can omit `family`, which is interpreted as `consultation`; a new Write or supporting workflow entry explicitly declares `family: write` and carries no read-only view, feature, field, selector, or Search annotations. `readableFields` describes fields the caller can receive under current policy. It is distinct from `field-selection`, does not advertise a `fields` input, and need not be present even when readable fields exist. Update and Transition entries additionally identify their exact `write.companionRead` operation and view. Root entries identify the Registry and nest one operation without inventing a Collection. An entry with an unknown future capability remains skippable and is not forced into Consultation view or Write metadata rules.
+      Constraint: Known discovery annotations agree with the linked operation's Registry context, explicit or inferred family, capability, view and selectable features where applicable, purpose declaration, and companion read where applicable. Capability and feature annotations in `CallerCapabilities` are extensible for forward-compatible advisory discovery: a client skips an operation entry whose capability annotation it does not understand and ignores unknown feature annotations on an otherwise understood entry. The normative Registry operation extensions in the linked versioned contract remain closed to the capability and feature values defined by that contract version. Unknown discovery metadata never grants authority, adds an operation, or widens fields. The identifiers point into the contract; the response does not reproduce their complete schemas. Contradictory duplicates or known metadata produce the declared explicit validation failure; the service does not silently merge them. The response uses `Cache-Control: no-store`. If the caller-available description exceeds a declared array or document bound, the service returns its declared explicit error instead of truncating entries, silently omitting authorised capabilities, or substituting empty arrays. Only `collections: []` together with an omitted or empty root `operations` member means that no operation is visible to that caller.
+      Constraint: The document is advisory. It does not grant read, Write, submission, review, application, or Operation-status authority; replace authorisation at invocation time; promise access to any particular resource; require disclosure of every readable field; or define a reusable profile model. An omitted operation or field establishes only that it is not disclosed as available in that response.
+      Verification: Request discovery under callers and trusted contexts with different Consultation, Write, and workflow permissions, including a caller with disclosed Write operations but no Record-read grant. Validate Collection and root-operation bounds, unique Collection identifiers and `(contract, operationId)` pairs, Registry context, explicit and compatibility-inferred family handling, capability vocabularies, contract agreement, required recognised Consultation views, forbidden read annotations on Write operations, Update and Transition companion reads, optional-root omission, `readableFields`, selectors, searches, known features, purpose requirements, and `no-store`; confirm that `readableFields` does not imply `field-selection`. Submit an unknown capability annotation and verify that the entry is skipped without a read-view requirement; submit an unknown advisory feature and verify that it is ignored without granting authority. Confirm that the linked operation extensions still reject unknown capability and feature values. Submit contradictory duplicates and contradictory known metadata and exceed every declared bound, verifying explicit failures without merge, truncation, or silent omission. Then verify that every discovered operation still performs current authorisation and that no Record, mutation, review, application, or workflow permission can be inferred.
     test: resources/testing.md#consultation-17
 
   - id:
@@ -1777,13 +1777,13 @@ Revision history is selectable and source-backed. A service does not create hist
 
 ### HTTP binding <a href="#consultation-http-binding" id="consultation-http-binding"></a>
 
-The [canonical OpenAPI](../resources/api.yml) defines the synchronous HTTPS/JSON contract, version `1.0.0-draft`, using API design guide and ruleset `0.3.0-draft`. Its `CollectionId` schema uses the single reference value `records`; concrete examples use literal Collection Identifiers such as `businesses`, `households`, and `birth-registrations`. The `/v1` prefix is the HTTP compatibility line. The BB requirements remain DRAFT. The [read API design decisions](#consultation-consultation) record the binding choices and the shared guide refinements.
+The [canonical OpenAPI](../resources/api.yml) defines the HTTPS/JSON contract, version `1.0.0-draft`, using API design guide and ruleset `0.3.0-draft`. It contains read, direct Write, Change Request, and asynchronous Operation groups. Its `CollectionId` schema uses the single reference value `records`; concrete examples use literal Collection Identifiers such as `businesses`, `households`, and `birth-registrations`. The `/v1` prefix is the HTTP compatibility line. The BB requirements remain DRAFT. The [read API design decisions](#consultation-consultation) record the binding choices and the shared guide refinements.
 
 #### Deployment contract <a href="#consultation-deployment-contract" id="consultation-deployment-contract"></a>
 
 The server URL identifies the deployment root, which may include a stable routing prefix such as `/registry`. The canonical hierarchy is `/v1/collections/{collectionId}`; with that prefix a household Record is addressed under `/registry/v1/collections/households/records/{recordId}`.
 
-A deployment publishes a concrete OpenAPI contract containing its selected operations and selectable read features, service and authentication endpoints, versioned JSON Schemas for `data` and the complete response, selectors, searches, supported filters and ordering, source currency, access policy, resource limits, temporal and revision semantics where selected, and continuation policy. Every selected Collection-scoped Consultation operation carries the `x-govstack-digital-registries` extension required by [Provide Registry Services](registry-services.md); it names the Registry, Collection, capability, and view, and the operation's response schema defines that view. The `features` array, which can be omitted, declares the additional read guarantees. A `purpose-bound` operation also carries its required `purpose` declaration. The extension is the binding's answer to the Common Record context: the Registry Identifier is not repeated in requests or Records. The cross-Collection caller capability operation uses its own response schema rather than declaring one Collection context.
+A deployment publishes one concrete OpenAPI contract containing its selected read and Write operations, supporting workflow operations, selectable read features, service and authentication endpoints, and the schemas and policies needed for those selections. Every selected Collection-scoped read operation carries the `x-govstack-digital-registries` extension required by [Provide Registry Services](registry-services.md); it names the Registry, Collection, capability, and view, and the operation's response schema defines that view. The `features` array, which can be omitted, declares the additional read guarantees. A `purpose-bound` operation also carries its required `purpose` declaration. Selected primary Write operations carry their Write declarations, input mappings, and grants in the same contract. These extensions answer the Common Record context without repeating the Registry Identifier in requests or Records. The cross-Collection caller capability operation uses its own response schema rather than declaring one Collection context.
 
 One API can expose several collections. A shared API can therefore expose:
 
@@ -1840,7 +1840,7 @@ Revision Retrieve uses `GET /v1/collections/{collectionId}/records/{recordId}/re
 
 Lookup and Search are actions on the Collection resource, while item identifiers are under its separate `/records` child. Consequently, `lookup` and `search` do not collide with `{recordId}` and are not reserved Record Identifier values. Lookup and Search are synchronous reads returning `200`; selector and search values remain in the request body. Lookup uses a declared unique key within its documented scope; Search uses declared named typed criteria. The concrete contract defines comparison and normalisation rules and rejects unsupported inputs. The binding also exposes the guide's unversioned `/health` operation.
 
-The canonical contract can also expose `GET /v1/capabilities` with operation ID `getCallerCapabilities`. Its single bounded `CallerCapabilities` response is caller-filtered, advisory, and `no-store`; each operation entry requires a version-specific HTTPS contract, operation ID, capability annotation, and view, and can include `readableFields`, selector, Search, feature, and purpose annotations. `readableFields` does not imply `field-selection`. Capability and feature annotations are extensible as described in requirement #17, while the linked normative operation extension remains closed for its contract version. The document contains at most 64 Collections and 16 operations per Collection. A deployment fails explicitly when the authorised description exceeds a declared bound; it does not truncate or silently omit it. `collections: []` means no operation is visible to the caller, not overflow.
+The canonical contract can also expose `GET /v1/capabilities` with operation ID `getCallerCapabilities`. Its single bounded `CallerCapabilities` response is caller-filtered, advisory, and `no-store`. It can describe caller-visible Consultation, Write, and supporting workflow operations without granting permission to invoke them. Collection-scoped entries appear under `collections`; cross-Collection Change Request and asynchronous Operation entries appear in the optional root `operations` array with their Registry context. Each operation entry identifies its capability annotation, version-specific HTTPS contract, operation ID, and family. Existing recognised read entries can omit `family`, which means `consultation`; new Write and supporting entries explicitly declare `family: write`. A recognised Consultation entry also identifies its view and can include bounded `readableFields`, selector, Search, feature, and purpose annotations. `readableFields` does not imply `field-selection`. Write and supporting workflow entries carry no read annotations; discovered Update and Transition operations instead identify their exact companion read and view. Unknown future capabilities remain skippable and do not acquire read-view requirements. Capability and feature annotations are extensible as described in requirement #17, while the linked normative operation extensions remain closed for their contract version. The document contains at most 64 Collections, 16 operations per Collection, and 64 root operations. A deployment fails explicitly when the authorised description exceeds a declared bound; it does not truncate or silently omit it. Only `collections: []` with omitted or empty root `operations` means no operation is visible to the caller.
 
 **Example: exact Lookup.** The business binding names its Collection `businesses`. To resolve a business by its declared registration-number key, send this body to `POST /v1/collections/businesses/lookup`:
 
@@ -1927,7 +1927,7 @@ A successful List or Search with zero permitted matches returns `200` with an em
 
 Structural input errors, invalid query parameters, and invalid pagination controls use `400`. Empty, duplicate, incorrectly typed, or out-of-bounds field selections also use `400`. Structurally valid Lookup and Search bodies with unknown selector, search, or selectable field names or invalid domain values use `422`. Unknown selectable field names in a query use `400`. Malformed, expired, mismatched, or cross-parent Revision List cursors use `400 invalid-cursor`.
 
-Protected reads and errors use `Cache-Control: no-store`. Deployments may declare caching for public or isolated representations. An operation selecting `conditional-read` publishes `If-None-Match` and `304`; its `200` and `304` responses carry the declared ETag header for the permitted representation, and authorisation precedes evaluation of the validator. The matching `304` is bodyless, while `200` carries the declared response body and headers. A baseline Retrieve operation need not publish ETag, `If-None-Match`, or `304`. Authentication, authorisation, and source failures follow the declared OpenAPI responses and the API design guide. The API catalog's conditional responses are independent of the Consultation feature declaration.
+Protected reads and errors use `Cache-Control: no-store`. Deployments may declare caching for public or isolated representations. An operation selecting `conditional-read` publishes `If-None-Match` and `304`; its `200` and `304` responses carry the declared ETag header for the permitted representation, and authorisation precedes evaluation of the validator. The matching `304` is bodyless, while `200` carries the declared response body and headers. A baseline Retrieve operation need not publish ETag, `If-None-Match`, or `304`. When an Update or Transition designates Retrieve as its `companionRead`, the stricter current authoritative guard semantics under [Concurrency and commit guards](#write-concurrency-and-commit-guards) apply to that operation and view. Other reads retain their declared source-currency contract and can lag. Authentication, authorisation, and source failures follow the declared OpenAPI responses and the API design guide. The API catalog's conditional responses are independent of the Consultation feature declaration.
 
 When `purpose-bound` is selected, the operation extension identifies a trusted access-token claim or trusted authorisation context and the controlled allowed purpose values. Purpose never comes from an ordinary request parameter. Missing or unallowed purpose fails before disclosure, and the effective purpose participates in cursor and ETag context. This does not replace inherited security or establish consent, institutional authority, or downstream compliance. Operations without `purpose-bound` continue to use their inherited authentication and authorisation requirements without a purpose input.
 
@@ -2004,13 +2004,13 @@ The external service submits or applies a proposal through the same Registry bou
 This binding does not require a general workflow engine, a particular BReg workflow model, withdrawal, multiple approvers, or atomic changes spanning several Records or systems.
 
 The domain schema, allowed values, transitions, approval policy, and institutional authority remain deployment declarations.
-The shared Write contract does not select or require a domain schema vocabulary.
+The shared Write operations do not select or require a domain schema vocabulary.
 Domain-specific models, input forms, projections, and examples are institution-selected and cannot add an undeclared Write permission, mapping, or workflow guarantee.
 
 
 ### Published Write contract <a href="#write-published-write-contract" id="write-published-write-contract"></a>
 
-The canonical [Write OpenAPI contract](../resources/write-api.yml) defines the HTTP shapes.
+The canonical [Registry OpenAPI contract](../resources/api.yml) defines the Write HTTP shapes alongside the selected read and supporting operations. The [Write alias](../resources/write-api.yml) resolves to that same contract for compatibility.
 Every selected primary operation publishes:
 
 - a typed input schema and result schema;
@@ -2025,15 +2025,16 @@ The target is the institutionally governed Registry and a logical API Collection
 Publishing an operation, grant name, or metadata entry does not grant authority.
 The service evaluates current policy on every attempt.
 
-Write input is an operation contract, not a copy of a Consultation response.
+Write input is an operation contract, not a copy of a read response.
 A Create declaration, correction request, Update, Transition, or governed proposal can use its own typed form and can carry evidence, reasons, attestations, or other intake data that is not part of the public or permitted Record view.
 The operation declares how every accepted field maps to authoritative domain state, retained provenance, or workflow-only context and rejects accepted input for which that mapping is undefined.
 Direct and governed paths that represent the same mutation publish aligned mutation semantics, even when their transport envelopes and workflow metadata differ.
-Consultation projections can omit, transform, or combine authoritative fields under their separately declared view without changing the Write input contract.
+Read projections can omit, transform, or combine authoritative fields under their separately declared view without changing the Write input contract. A successful commit does not require an automatic echo of accepted domain fields into that projection.
 
-The contract also defines supporting operations for retrieving writable context, reading and listing Change Requests, recording review decisions, withdrawing a request where supported, and retrieving asynchronous Operation status where offered.
+The contract also defines supporting operations for retrieving permitted Record context, reading and listing Change Requests, recording review decisions, withdrawing a request where supported, and retrieving asynchronous Operation status where offered.
 These supporting operations do not become additional options of the `registry-service` variation point.
 They support the selected Write option and retain their own access requirements.
+Every published Update or Transition identifies the shared `retrieveRecord` operation as its companion read for the exact same Registry, Collection, and view. Only that designated use is a current authoritative guard view. Its body and strong ETag come from one evaluation under the effective authorisation, disclosure, purpose, and field-selection context. It remains separately authorised, does not grant Write permission, and does not require a caller with Write permission to have read permission. A deployment publishes one `GET` for that Record resource, not a competing writable-only retrieval operation.
 Application can be performed by a Registry-managed or external worker under a distinct application permission and can invoke a selected direct operation when the deployment exposes one to that trusted component.
 The binding does not require a public Change Request application endpoint.
 
@@ -2108,9 +2109,14 @@ Update and Transition require a strong opaque precondition for the current targe
 A Change Request that proposes a change to an existing Record captures the same source precondition at submission.
 The service rejects an omitted, malformed, or stale required precondition and checks a matching precondition atomically with commit.
 
+For a selected companion read, the response body and strong ETag come from one current authoritative guard evaluation. The tag is a valid strong HTTP validator for the permitted representation. It also invalidates when an authoritative field or source condition changes in a way that can alter the selected mutation's validation, mapping, or committed effect. Unrelated hidden state need not invalidate it.
+
+The tag is opaque, encodes no source value, widens no authority, and does not identify which guard state changed. Its value and change cadence remain disclosure-controlled metadata. A deployment cannot designate a read as the companion under an effective authorisation, disclosure, purpose, or field-selection context that forbids revealing the tag or cadence. Update and Transition compare the guard atomically with commit and return the generic `412` outcome on mismatch without identifying the changed state.
+
 The commit guard protects the current target representation.
 It does not require a public revision-history operation, retained historical representations, or reconstruction of a revision sequence.
 If two writers start from the same target state, at most one can commit under that guard.
+Ordinary non-companion read projections retain their declared source currency and can lag without weakening the companion guard.
 
 
 ### Authority and purpose <a href="#write-authority-and-purpose" id="write-authority-and-purpose"></a>
@@ -2136,6 +2142,8 @@ A domain schema can contain fields with similar names as Record data, but those 
 Every accepted Write uses its declared HTTP status, response schema, target URI, `Location`, or validator to identify the target, created resource, or asynchronous Operation and to distinguish authoritative commit, non-authoritative request creation, and accepted asynchronous work.
 A bodyless successful response can identify its existing target through the request URI and validator and does not need an invented response body.
 The response does not claim that queued work committed, that a submitted proposal was approved, or that an approved request was applied.
+An acknowledgement of authoritative commit establishes that declared commit outcome. It does not grant the caller read permission, guarantee immediate visibility through a permitted projection, establish projection currency, or create a revision-history guarantee.
+A matching tag is expected only when a later companion read has reached companion currency and observes that exact committed state, with no intervening mutation-relevant change, under the same effective authorisation, disclosure, purpose, and field-selection context. A shared view name alone does not establish tag equality, and the contract does not promise that any future read will eventually return the mutation success tag.
 Correlation follows the inherited API guidance and the deployment's published policy rather than requiring a new Write-specific identifier in every response.
 
 The service retains provenance and audit evidence for the trusted actor, selected operation, Registry, Collection, Record or Change Request target, trusted purpose where present, validated input identity, precondition, decision, and committed effect.
@@ -2162,7 +2170,7 @@ Its response is explicitly non-authoritative and states the policy and source ev
 It does not allocate an authoritative Record Identifier, advance a Change Request, reserve a transition, or guarantee that a later Write will succeed.
 
 A later Write repeats current authentication, authorisation, input validation, source precondition, trusted-purpose, and transition-policy checks.
-Clients distinguish preview data from the authoritative acknowledgement and from Consultation of committed Registry state.
+Clients distinguish preview data from the authoritative acknowledgement and from a permitted read projection of committed Registry state.
 
 
 ### Change Request lifecycle <a href="#write-change-request-lifecycle" id="write-change-request-lifecycle"></a>
@@ -2182,6 +2190,7 @@ A published review operation can also trigger separately authorised and revalida
 Its response and request representation distinguish approval with application not started, application processing, applied, blocked, and failed outcomes as supported by the contract.
 Only an explicitly acknowledged successful application changes authoritative Registry state.
 An approved request can therefore remain unapplied or record an application failure without rewriting the approval decision.
+An `applied` outcome records the declared authoritative commit. It does not grant the caller read access or prove that a permitted read projection is immediately current.
 
 Submission, review, and application use distinct permissions and trusted actor contexts.
 One actor can hold several permissions where institutional policy allows it, but each stage is separately authorised and audited.

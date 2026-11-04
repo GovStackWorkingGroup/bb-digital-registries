@@ -19,11 +19,14 @@ specification start at the [README](README.md).
 | `tools/` | Publication and API artifact validation, separate from implementation assessment |
 | `test/`, `examples/` | Historical generated-CRUD tests and product examples, not current conformance evidence |
 
-The canonical API source remains [api/openapi.yaml](api/openapi.yaml).
+The canonical Registry API source is [api/openapi.yaml](api/openapi.yaml).
 [resources/api.yml](resources/api.yml) is a Git symlink to that file for the
 Specification Framework's authoring entrypoint; it is not a second contract.
 The adjacent `resources/common` symlink points to `api/common` so ordinary
 OpenAPI tools resolve the shared components from either entrypoint.
+[api/write.openapi.yaml](api/write.openapi.yaml) and
+[resources/write-api.yml](resources/write-api.yml) are compatibility aliases to
+the same unified contract. They are not separate Write contracts.
 
 ## Validation
 
@@ -38,8 +41,9 @@ uv run python tools/validate_write.py
 ```
 
 These commands check the publication structure, links, requirement model and
-option applicability, plus the canonical contract and examples. They do not
-exercise a deployed Registry. [Testing](resources/testing.md) describes the
+option applicability, plus the unified canonical contract, its compatibility
+aliases, and the examples. They do not exercise a deployed Registry.
+[Testing](resources/testing.md) describes the
 separate runtime evidence needed for implementation assessment.
 
 ## Publication boundary
