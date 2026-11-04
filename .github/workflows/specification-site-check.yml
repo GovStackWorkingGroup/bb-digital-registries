@@ -22,7 +22,7 @@ permissions:
 
 env:
   RENDERER_REPOSITORY: jeremi/govstack-specification-site
-  RENDERER_REF: ${{ vars.GOVSTACK_SITE_RENDERER_REF || '10dd20b42ff8ffd399e5b9f86ce092aff13f9b54' }}
+  RENDERER_REF: ${{ vars.GOVSTACK_SITE_RENDERER_REF || 'bfa91b536009b9362a946cc356d795ca71639b42' }}
 
 jobs:
   build:
