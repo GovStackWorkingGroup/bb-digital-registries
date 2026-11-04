@@ -6,7 +6,7 @@ description: Draft requirement lifecycle, core variation point, and assessment b
 
 ## Requirement maturity
 
-All requirements and options in the `3.0.0-alpha.2` draft are `DRAFT`. Under the current GovStack Requirements Model, a DRAFT requirement has `id: null`, takes no part in compliance, and can change before acceptance. The previous `fr-core#req-*` and `fr-consultation#req-*` labels are retained only as historical aliases in the [migration ledger](migration-from-3.0.md#replacement-index); they are not current requirement identifiers.
+All requirements and options in the `3.0.0-alpha.2` draft are `DRAFT`. Under the current GovStack Requirements Model, a DRAFT requirement has `id: null`, takes no part in compliance, and can change before acceptance. Previous `fr-core#req-*` and `fr-consultation#req-*` labels are historical aliases, not current requirement identifiers. Previous requirement text is retained in Git history.
 
 Each requirement follows the [agreed GovStack Requirements Model](https://github.com/GovStackWorkingGroup/specification-framework/blob/7322f977a6a74127240cbab5ed9d5ad84b9d5c29/chapters/requirements.md). Requirement levels and other classifiers are interpreted according to that model. Lowercase modal verbs have their ordinary English meaning; this specification does not use BCP 14 keywords to assign requirement levels.
 
@@ -78,4 +78,4 @@ An existing Registry does not need to replace its internal software to implement
 
 [Write requirements](../requirements/registry-services.md) and the [Write verification matrix](write-testing.md) apply to the selected Write options. Their canonical transport entry point is [write-api.yml](write-api.yml). A direct write selection does not require change requests or manual review; a change-request selection does not grant direct mutation authority. Compound changes are available only when the published operation declares its supported boundary and guarantees. Pending review and approval do not establish commitment.
 
-Birth registration, Household, Person, and membership payloads in the [Write examples](../api/examples/README.md) are non-normative profiles. Their fields, vocabularies, local reference mappings, bounds, domain models, and policy rules are not requirements of the shared Write capabilities.
+Birth registration, Household, Person, and membership payloads in the [Write examples](api-examples/README.md) are non-normative profiles. Their fields, vocabularies, local reference mappings, bounds, domain models, and policy rules are not requirements of the shared Write capabilities.

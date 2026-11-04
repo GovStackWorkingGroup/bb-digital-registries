@@ -361,4 +361,4 @@ The same schema document defines `IndividualReference`, whose target Registry is
 
 ## Requirements
 
-The requirements that use this model are in [Discover Registry Services](../requirements/registry-discovery.md) and [Provide Registry Services](../requirements/registry-services.md). Their historical `fr-core#req-1` through `fr-core#req-8` aliases, source wording, and migration disposition are preserved in the [requirement history](history/requirements.md) and [migration ledger](migration-from-3.0.md#replacement-index). Verification procedures remain in [Testing](testing.md#requirement-traceability).
+The requirements that use this model are in [Discover Registry Services](../requirements/registry-discovery.md) and [Provide Registry Services](../requirements/registry-services.md). Verification procedures remain in [Testing](testing.md#requirement-traceability).

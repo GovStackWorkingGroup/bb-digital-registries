@@ -44,16 +44,10 @@ VARIATION_FIELDS = {"id", "status", "level", "observability", "mutability", "key
 OPTION_FIELDS = {"id", "status", "observability", "mutability", "interaction", "key", "option_of", "statement", "test"}
 COMMON_OPTIONAL_FIELDS = {"documentation", "api_operation_id", "contract", "test", "applies_when", "applies_when_all"}
 FORBIDDEN_VARIATION_FIELDS = {"interaction", "api_operation_id", "contract", "test", "option_of"}
-ACTIVE_MARKDOWN_EXCLUSIONS = {".git", ".venv", "node_modules"}
-RAW_MARKDOWN_SNAPSHOTS = {
-    "resources/history/navigation.md",
-    "resources/history/repository-readme.md",
-    "resources/history/requirements.md",
-}
+ACTIVE_MARKDOWN_EXCLUSIONS = {".git", ".local", ".venv", "node_modules"}
 MARKDOWN_LINK = re.compile(r"!?\[[^\]]*\]\((?P<target>[^)\s]+)(?:\s+['\"][^)]*['\"])?\)")
 EXPLICIT_ANCHOR = re.compile(r"<(?:a\s+[^>]*?(?:id|name)|[^>]+\s+id)=[\"']([^\"']+)[\"']", re.IGNORECASE)
 HEADING = re.compile(r"^\s{0,3}#{1,6}\s+(.+?)\s*#*\s*$", re.MULTILINE)
-LEGACY_ID = re.compile(r"govstack-bb-digital-registries-fr-(?:core|consultation)#req-\d+")
 LOCAL_REQUIREMENT_ID = re.compile(r"[1-9]\d*")
 SEMVER = re.compile(
     r"(?:0|[1-9]\d*)\.(?:0|[1-9]\d*)\.(?:0|[1-9]\d*)"
@@ -727,8 +721,6 @@ def active_markdown_files(root: Path) -> Iterable[Path]:
             continue
         if any(part in ACTIVE_MARKDOWN_EXCLUSIONS for part in relative_parts):
             continue
-        if path.relative_to(root).as_posix() in RAW_MARKDOWN_SNAPSHOTS:
-            continue
         yield path
 
 
@@ -751,6 +743,9 @@ def validate_markdown_links(root: Path, errors: list[str]) -> None:
             except ValueError:
                 errors.append(f"{describe(path, root)}: Markdown link leaves repository: {target_reference}")
                 continue
+            if ".local" in target.relative_to(root.resolve()).parts:
+                errors.append(f"{describe(path, root)}: Markdown link targets local working material: {target_reference}")
+                continue
             if not target.is_file() and not target.is_dir():
                 errors.append(f"{describe(path, root)}: broken Markdown link: {target_reference}")
                 continue
@@ -760,88 +755,12 @@ def validate_markdown_links(root: Path, errors: list[str]) -> None:
 
 def validate_svgs(root: Path, errors: list[str]) -> None:
     for path in sorted(root.rglob("*.svg")):
-        if any(part in {".git", ".venv", "node_modules"} for part in path.relative_to(root).parts):
+        if any(part in ACTIVE_MARKDOWN_EXCLUSIONS for part in path.relative_to(root).parts):
             continue
         try:
             ET.parse(path)
         except (ET.ParseError, OSError) as exc:
             errors.append(f"{describe(path, root)}: malformed SVG XML: {exc}")
-
-
-def validate_migration(
-    root: Path,
-    requirements: dict[str, list[dict[str, Any]]],
-    errors: list[str],
-) -> None:
-    migration_path = root / "resources/requirement-migration.yml"
-    migration = load_yaml(migration_path, root, errors)
-    if not isinstance(migration, dict):
-        if migration is not None:
-            errors.append("resources/requirement-migration.yml: root must be a mapping")
-        return
-    if migration.get("version") != 1:
-        errors.append("resources/requirement-migration.yml: version must be 1")
-    mappings = migration.get("mappings")
-    if not isinstance(mappings, list):
-        errors.append("resources/requirement-migration.yml: mappings must be a list")
-        return
-    seen_legacy: set[str] = set()
-    seen_targets: set[tuple[str, str]] = set()
-    mapped_legacy: set[str] = set()
-    for index, mapping in enumerate(mappings):
-        location = f"resources/requirement-migration.yml:mappings[{index}]"
-        if not isinstance(mapping, dict):
-            errors.append(f"{location}: mapping must be a mapping")
-            continue
-        legacy = mapping.get("legacy")
-        if not isinstance(legacy, str) or LEGACY_ID.fullmatch(legacy) is None:
-            errors.append(f"{location}: legacy must be an exact baseline Digital Registries requirement identifier")
-        else:
-            if legacy in seen_legacy:
-                errors.append(f"{location}: duplicate legacy mapping {legacy}")
-            seen_legacy.add(legacy)
-            mapped_legacy.add(legacy)
-        targets = mapping.get("targets")
-        if not isinstance(targets, list) or not targets:
-            errors.append(f"{location}: targets must be a non-empty list")
-            continue
-        for target_index, target in enumerate(targets):
-            target_location = f"{location}:targets[{target_index}]"
-            if not isinstance(target, dict):
-                errors.append(f"{target_location}: target must be a mapping")
-                continue
-            file = target.get("file")
-            statement = target.get("statement")
-            if not isinstance(file, str) or not file:
-                errors.append(f"{target_location}: file must be a non-empty repository path")
-                continue
-            if not isinstance(statement, str) or not statement:
-                errors.append(f"{target_location}: statement must be a non-empty exact statement")
-                continue
-            identity = (file, statement)
-            if identity in seen_targets:
-                errors.append(f"{target_location}: duplicate migration target {file} with exact statement {statement!r}")
-            seen_targets.add(identity)
-            statements = [item.get("statement") for item in requirements.get(file, [])]
-            if file not in requirements:
-                errors.append(f"{target_location}: target requirement file does not exist: {file}")
-            elif statement not in statements:
-                errors.append(f"{target_location}: exact statement does not resolve in {file}: {statement!r}")
-
-    history_path = root / "resources/history/requirements.md"
-    if not history_path.is_file():
-        errors.append("resources/history/requirements.md: required nonnormative legacy archive is missing")
-        return
-    try:
-        history = history_path.read_text()
-    except (OSError, UnicodeError) as exc:
-        errors.append(f"resources/history/requirements.md: cannot be read: {exc}")
-        return
-    archived = set(LEGACY_ID.findall(history))
-    for identifier in sorted(archived - mapped_legacy):
-        errors.append(f"resources/requirement-migration.yml: unmapped archived legacy id {identifier}")
-    for identifier in sorted(mapped_legacy - archived):
-        errors.append(f"resources/requirement-migration.yml: mapped legacy id is absent from archive {identifier}")
 
 
 def validate_repository(root: Path) -> list[str]:
@@ -853,8 +772,7 @@ def validate_repository(root: Path) -> list[str]:
     metadata, capabilities, extensions = validate_root_documents(root, errors)
     validate_extension_dependencies(extensions, errors)
     operation_ids(root, errors)
-    requirements, _keys = validate_functionalities(root, metadata, capabilities, extensions, errors)
-    validate_migration(root, requirements, errors)
+    validate_functionalities(root, metadata, capabilities, extensions, errors)
     validate_markdown_links(root, errors)
     validate_svgs(root, errors)
     return sorted(set(errors))

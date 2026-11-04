@@ -32,9 +32,30 @@ uv sync --frozen
 uv run python -m unittest discover -s tools -p 'test_*.py'
 uv run python tools/validate_specification.py
 uv run python tools/validate_consultation.py
+uv run python tools/validate_write.py
 ```
 
 These commands check the publication structure, links, requirement model and
-migration traceability, plus the canonical contract and examples. They do not
+option applicability, plus the canonical contract and examples. They do not
 exercise a deployed Registry. [Testing](resources/testing.md) describes the
 separate runtime evidence needed for implementation assessment.
+
+## Publication boundary
+
+`toc.yml` lists the specification pages; the root README is the home page.
+Keep contributor build instructions in this file or the
+[site wrapper README](specification-site/README.md). Repository files do not become
+site pages or downloads merely because they exist in the tree.
+
+Select public examples and downloads deliberately. A published page links only to
+other pages in `toc.yml`, external sources, or selected downloadable artifacts.
+Original OpenAPI contracts and their local dependencies remain downloadable with
+their relative paths intact. Required attribution and licence notices accompany
+the examples that use them.
+
+## Local working material
+
+Keep brainstorming, review notes, migration records, and temporary snapshots under
+`.local/working-documents/`. Git ignores `.local/`; source validation and site
+publication exclude it. Do not link published content to that folder or commit it.
+Git history preserves earlier requirement text without duplicate archive pages.

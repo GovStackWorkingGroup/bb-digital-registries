@@ -4,7 +4,6 @@
 from __future__ import annotations
 
 from contextlib import contextmanager
-import hashlib
 import importlib.util
 from pathlib import Path
 import re
@@ -18,28 +17,6 @@ import yaml
 
 ROOT = Path(__file__).resolve().parents[1]
 VALIDATOR = ROOT / "tools/validate_specification.py"
-ARCHIVE = ROOT / "resources/history/requirements.md"
-ARCHIVE_BLOCK = re.compile(r"(?ms)^(### #\d+ .*?)(?=^### #\d+ |^## |\Z)")
-ARCHIVE_IDENTIFIER = re.compile(
-    r"`(govstack-bb-digital-registries-fr-(?:core|consultation)#req-\d+)`"
-)
-BASELINE_REQUIREMENT_HASHES = {
-    "govstack-bb-digital-registries-fr-consultation#req-1": "327b9b5aa871f36fcca8780f73e392f50748cb547a3364e963c70c094fd4fd09",
-    "govstack-bb-digital-registries-fr-consultation#req-2": "866e9cce33f67fe71ba02e348a51794465f3ada2aa297566f218e767e09a03bc",
-    "govstack-bb-digital-registries-fr-consultation#req-3": "ef97daee9e0be07b5d6c8ee911b8ce60e43442b4937b065cac951aeff54b807d",
-    "govstack-bb-digital-registries-fr-consultation#req-4": "65932bc0e3f080b84fd468fba8671b94a916d9c9729057415b66243ab682cee4",
-    "govstack-bb-digital-registries-fr-consultation#req-5": "4c5fcc75fd0521c3fd7df2011cc66b8f14f978f32711b978d68a178a336beafb",
-    "govstack-bb-digital-registries-fr-consultation#req-6": "af673c80f49b1ef4cbc3b059bb9de2dc2416d0cc951e28d8cb853bdfa07b4c36",
-    "govstack-bb-digital-registries-fr-consultation#req-7": "758ede2eb4d59c41662a7873a7e82ae9fb07379ec4e7cd40ae9586f5e93dff84",
-    "govstack-bb-digital-registries-fr-core#req-1": "811f7446db24027554a0e374a67c20e798de8942a32370f8a7d362f4a41b132e",
-    "govstack-bb-digital-registries-fr-core#req-2": "cc9c638bf28801e28d296d61d88caa666b8348a1b2ebca7d3260de4b903aad7d",
-    "govstack-bb-digital-registries-fr-core#req-3": "0be5e1ea4ccf3ab8d19276e9876dafc9ee8e0a99e5a3f8c41b5c194c4ffc2789",
-    "govstack-bb-digital-registries-fr-core#req-4": "938eb7317cb28c1d1c3df4d2d75d85bfe65127e48faa5531a28fc09375f4ccab",
-    "govstack-bb-digital-registries-fr-core#req-5": "7358fb74d0792845501de4ceaf198aae30b00017b135d20f0c73257fc8667953",
-    "govstack-bb-digital-registries-fr-core#req-6": "806fc1e869593d0cb100af6169bfc70d9f4cfa368dedf09d4339f070111a3635",
-    "govstack-bb-digital-registries-fr-core#req-7": "0e015cc88f5c35f15492a9c632c0bbdc44d02a29dc3f93d92b67c43bd19c6ed1",
-    "govstack-bb-digital-registries-fr-core#req-8": "f0e7757adae059bd94fe660e4aac26177b12a9a4d3a1b8b8b733daeb3f055e6e",
-}
 
 
 def load_validator():
@@ -56,34 +33,9 @@ def front_matter(data: dict, body: str = "") -> str:
     return "---\n" + yaml.safe_dump(data, sort_keys=False) + "---\n" + body
 
 
-def archive_source_errors(text: str) -> list[str]:
-    errors: list[str] = []
-    blocks: dict[str, list[str]] = {}
-    for block in ARCHIVE_BLOCK.findall(text):
-        match = ARCHIVE_IDENTIFIER.search(block)
-        if match:
-            blocks.setdefault(match.group(1), []).append(block)
-    expected = set(BASELINE_REQUIREMENT_HASHES)
-    actual = set(blocks)
-    for identifier in sorted(expected - actual):
-        errors.append(f"missing archived source block {identifier}")
-    for identifier in sorted(actual - expected):
-        errors.append(f"unexpected archived source block {identifier}")
-    for identifier in sorted(expected & actual):
-        if len(blocks[identifier]) != 1:
-            errors.append(f"duplicate archived source block {identifier}")
-            continue
-        normalized = re.sub(r"\s+", " ", blocks[identifier][0]).strip()
-        digest = hashlib.sha256(normalized.encode()).hexdigest()
-        if digest != BASELINE_REQUIREMENT_HASHES[identifier]:
-            errors.append(f"changed archived source block {identifier}")
-    return errors
-
-
 class RepositoryFixture:
     """A minimal, valid specification repository used by focused tests."""
 
-    legacy_uri = "govstack-bb-digital-registries-fr-core#req-1"
     statement = "The solution shall publish Registry metadata."
 
     def __init__(self, root: Path):
@@ -170,22 +122,6 @@ class RepositoryFixture:
             ),
         )
         self.write("resources/diagram.svg", '<svg xmlns="http://www.w3.org/2000/svg"><title>Valid</title></svg>\n')
-        self.write("resources/history/requirements.md", f"# Legacy requirements\n\n`{self.legacy_uri}`\n")
-        self.write(
-            "resources/requirement-migration.yml",
-            yaml.safe_dump(
-                {
-                    "version": 1,
-                    "mappings": [
-                        {
-                            "legacy": self.legacy_uri,
-                            "targets": [{"file": "requirements/core.md", "statement": self.statement}],
-                        }
-                    ],
-                },
-                sort_keys=False,
-            ),
-        )
         self.requirements = {
             "title": "Registry service",
             "description": "Publish metadata and provide at least one Registry service operation.",
@@ -278,6 +214,12 @@ class SpecificationValidatorTests(unittest.TestCase):
 
     def test_minimal_draft_repository_is_valid_without_claiming_conformance(self):
         with self.fixture() as fixture:
+            self.assertEqual(self.errors(fixture), [])
+
+    def test_current_draft_does_not_require_duplicate_requirement_history(self):
+        with self.fixture() as fixture:
+            self.assertFalse(fixture.path("resources/history/requirements.md").exists())
+            self.assertFalse(fixture.path("resources/requirement-migration.yml").exists())
             self.assertEqual(self.errors(fixture), [])
 
     def test_requires_root_metadata_authors_and_toc(self):
@@ -695,37 +637,6 @@ class SpecificationValidatorTests(unittest.TestCase):
                 self.errors(fixture), "api/index.yaml", "api/openapi.yaml"
             )
 
-    def test_archive_preserves_all_immutable_baseline_requirement_blocks(self):
-        self.assertEqual(archive_source_errors(ARCHIVE.read_text()), [])
-
-    def test_archive_guard_rejects_removed_or_reworded_source_blocks(self):
-        archive = ARCHIVE.read_text()
-        blocks = {
-            match.group(1): block
-            for block in ARCHIVE_BLOCK.findall(archive)
-            if (match := ARCHIVE_IDENTIFIER.search(block))
-        }
-        removed = archive.replace(
-            blocks["govstack-bb-digital-registries-fr-core#req-1"],
-            "",
-            1,
-        )
-        self.assert_error(
-            archive_source_errors(removed),
-            "missing",
-            "govstack-bb-digital-registries-fr-core#req-1",
-        )
-        reworded = archive.replace(
-            "An implementation publishes machine-readable Registry metadata",
-            "A solution publishes machine-readable Registry metadata",
-            1,
-        )
-        self.assert_error(
-            archive_source_errors(reworded),
-            "changed",
-            "govstack-bb-digital-registries-fr-core#req-1",
-        )
-
     def test_contract_and_test_targets_must_exist_with_valid_anchors(self):
         with self.fixture() as fixture:
             fixture.requirements["requirements"][2]["contract"] = "resources/missing.md"
@@ -743,53 +654,27 @@ class SpecificationValidatorTests(unittest.TestCase):
                 fixture.save_requirements()
                 self.assert_error(self.errors(fixture), field, "leaves repository")
 
-    def test_active_markdown_links_and_anchors_are_checked_but_history_is_excluded(self):
+    def test_active_markdown_links_and_anchors_are_checked(self):
         with self.fixture() as fixture:
             fixture.save_requirements(body="# Workflow\n\nSee [missing](../resources/missing.md).\n")
             self.assert_error(self.errors(fixture), "resources/missing.md")
+
+    def test_local_working_documents_are_excluded_from_validation(self):
         with self.fixture() as fixture:
-            fixture.write(
-                "resources/history/requirements.md",
-                f"# Legacy\n\n`{fixture.legacy_uri}`\n\n[Historical broken link](missing.md)\n",
-            )
+            fixture.write(".local/working-documents/notes.md", "[Unresolved idea](missing.md)\n")
+            fixture.write(".local/working-documents/sketch.svg", "<svg><unfinished>\n")
             self.assertEqual(self.errors(fixture), [])
+
+    def test_public_content_cannot_link_to_local_working_documents(self):
+        with self.fixture() as fixture:
+            fixture.write(".local/working-documents/notes.md", "# Working notes\n")
+            fixture.write("README.md", "[Working notes](.local/working-documents/notes.md)\n")
+            self.assert_error(self.errors(fixture), ".local/working-documents/notes.md", "local working")
 
     def test_svg_assets_must_be_well_formed_xml(self):
         with self.fixture() as fixture:
             fixture.write("resources/diagram.svg", "<svg><g></svg>\n")
             self.assert_error(self.errors(fixture), "diagram.svg", "xml")
-
-    def test_migration_targets_resolve_to_exact_unique_requirement_statements(self):
-        with self.fixture() as fixture:
-            migration = fixture.load_yaml("resources/requirement-migration.yml")
-            migration["mappings"][0]["targets"][0]["statement"] = "Not the exact statement."
-            fixture.save_yaml("resources/requirement-migration.yml", migration)
-            self.assert_error(self.errors(fixture), "exact", "statement")
-        with self.fixture() as fixture:
-            migration = fixture.load_yaml("resources/requirement-migration.yml")
-            migration["mappings"].append(migration["mappings"][0])
-            fixture.save_yaml("resources/requirement-migration.yml", migration)
-            self.assert_error(self.errors(fixture), "duplicate", "legacy")
-
-    def test_every_archived_legacy_identifier_is_mapped(self):
-        with self.fixture() as fixture:
-            fixture.write(
-                "resources/history/requirements.md",
-                f"# Legacy\n\n`{fixture.legacy_uri}`\n\n`govstack-bb-digital-registries-fr-core#req-2`\n",
-            )
-            self.assert_error(self.errors(fixture), "unmapped", "req-2")
-
-    def test_migration_uses_exact_baseline_legacy_identifiers(self):
-        with self.fixture() as fixture:
-            migration = fixture.load_yaml("resources/requirement-migration.yml")
-            migration["mappings"][0]["legacy"] = "https://govstack.global/spec/digital-registries/fr-core#req-1"
-            fixture.save_yaml("resources/requirement-migration.yml", migration)
-            self.assert_error(self.errors(fixture), "exact baseline", "legacy")
-
-    def test_migration_map_is_required(self):
-        with self.fixture() as fixture:
-            fixture.path("resources/requirement-migration.yml").unlink()
-            self.assert_error(self.errors(fixture), "requirement-migration.yml", "missing")
 
     def test_cli_exits_zero_for_valid_repository_and_nonzero_with_sorted_errors(self):
         with self.fixture() as fixture:
@@ -860,7 +745,7 @@ class SpecificationValidatorTests(unittest.TestCase):
         readme = (ROOT / "README.md").read_text()
         contributing = (ROOT / "CONTRIBUTING.md").read_text()
         repository = yaml.safe_load((ROOT / "metadata.yml").read_text())["repository"]
-        self.assertIn(f"]({repository}/blob/main/CONTRIBUTING.md)", readme)
+        self.assertIn(f"]({repository})", readme)
         for heading in ("## Repository layout", "## Validation"):
             with self.subTest(heading=heading):
                 self.assertNotIn(heading, readme)

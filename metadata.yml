@@ -19,5 +19,5 @@ extensions: []
 versions:
   - version: "3.0.0-alpha.2"
     release_date:
-    short_description: Migrates the alpha authoring content, including the revised Core, Consultation, and Write draft, to the Specification Framework without publishing a release.
+    short_description: Defines the draft Registry Core, service discovery, and independently selected Consultation and Write operations.
     latest: true

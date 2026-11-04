@@ -74,7 +74,7 @@ A domain profile records reusable agreements about schemas, terminology, and que
 
 ## Requirements
 
-The requirements that use this binding are in [Provide Registry Services](../requirements/registry-services.md). Their historical `fr-consultation#req-1` through `fr-consultation#req-18` aliases, source wording, and migration disposition are preserved in the [requirement history](history/requirements.md) and [migration ledger](migration-from-3.0.md#replacement-index). Verification procedures remain in [Testing](testing.md#requirement-traceability).
+The requirements that use this binding are in [Provide Registry Services](../requirements/registry-services.md). Verification procedures remain in [Testing](testing.md#requirement-traceability).
 
 ## Selectable read features
 
@@ -114,7 +114,7 @@ POST /v1/collections/households/lookup
 POST /v1/collections/households/search
 ```
 
-These are illustrative Collection names; the published contract defines the supported paths and membership. Collections are logical API resources and need not match tables, source modules, governed datasets, or separate institutional Registries. A Record retains its `(registryId, recordId)` identity across Collections and views within its Registry. [API composition](registry-core-model.md#api-composition) describes how Collections and families share an API; Consultation and Write can share a resource URI with separate methods, schemas, and permissions. The [OpenAPI examples](../api/examples/README.md) illustrate concrete Collections, domain schemas, and response payloads.
+These are illustrative Collection names; the published contract defines the supported paths and membership. Collections are logical API resources and need not match tables, source modules, governed datasets, or separate institutional Registries. A Record retains its `(registryId, recordId)` identity across Collections and views within its Registry. [API composition](registry-core-model.md#api-composition) describes how Collections and families share an API; Consultation and Write can share a resource URI with separate methods, schemas, and permissions. The [OpenAPI examples](api-examples/README.md) illustrate concrete Collections, domain schemas, and response payloads.
 
 ### Operations
 
@@ -262,7 +262,7 @@ The [Core representation rules](registry-core-model.md#structured-values-and-ref
 
 When a related read is offered, the field binding identifies its target collection, read operation, and operational contract, including how the reference supplies the operation's inputs. Consumers follow that binding and the target's access requirements. Record Identifiers remain opaque; reference identity is independent of the target's current availability.
 
-Client-selected expansion, where offered, declares its supported paths, bounds, source currency, and disclosure behaviour in the deployment contract. Expansion embeds related representations inside the declared view; it does not select a different view. The [OpenAPI examples](../api/examples/README.md) demonstrate concrete nested schemas and references.
+Client-selected expansion, where offered, declares its supported paths, bounds, source currency, and disclosure behaviour in the deployment contract. Expansion embeds related representations inside the declared view; it does not select a different view. The [OpenAPI examples](api-examples/README.md) demonstrate concrete nested schemas and references.
 
 ## Conformance
 
@@ -279,4 +279,4 @@ Evaluation identifies the service, specification and contract versions, selected
 
 Each selected selectable read feature additionally applies its requirement: #8 through #11 for conditional, selection, and traversal guarantees; #14 and #15 for temporal selection; and #18 for purpose binding. Offering caller capability discovery applies #17. Capability conformance covers the shared contract and selected operations; additional feature claims establish their stronger guarantees. A shared SDK can handle the common operations, envelopes, errors, and continuation while configuring domain schemas and criteria per Registry. Applications needing complete exports, fixed snapshots, source history, temporal reads, or purpose binding check those declarations explicitly.
 
-Verification checks published contracts and observable exchanges under the stated fixture conditions. The [OpenAPI examples](../api/examples/README.md) and [artifact validation](../api/README.md#validation) support review; deployed behaviour is evaluated separately.
+Verification checks published contracts and observable exchanges under the stated fixture conditions. The [OpenAPI examples](api-examples/README.md) and [artifact validation](testing.md#artifact-validation) support review; deployed behaviour is evaluated separately.

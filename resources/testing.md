@@ -6,7 +6,24 @@ description: Draft verification of mandatory Registry discovery and selected cap
 
 ## Test maturity
 
-The scenarios below define verification intent for the [draft requirements](conformance.md#requirement-maturity). The [Consultation artifact checks](../api/README.md#validation) validate OpenAPI documents, requirement-to-operation mappings, and schema fixtures. They inspect the declared conditional-response headers and body shape, revision parent identity, and rich caller-capability metadata as artifacts. They do not execute cursor replay, protected-history outcomes, or temporal source-unavailability behaviour; those remain implementation scenarios. Passing artifact checks supports contract review only and does not establish deployed runtime behaviour or implementation conformance. Implementation conformance requires separate evaluation of a deployed Registry; an executable suite is pending. Legacy Cucumber tests under `test/openAPI` remain migration evidence for the previous generated CRUD interface.
+The scenarios below define verification intent for the [draft requirements](conformance.md#requirement-maturity). The [Consultation artifact checks](#artifact-validation) validate OpenAPI documents, requirement-to-operation mappings, and schema fixtures. They inspect the declared conditional-response headers and body shape, revision parent identity, and rich caller-capability metadata as artifacts. They do not execute cursor replay, protected-history outcomes, or temporal source-unavailability behaviour; those remain implementation scenarios. Passing artifact checks supports contract review only and does not establish deployed runtime behaviour or implementation conformance. Implementation conformance requires separate evaluation of a deployed Registry; an executable suite is pending. Legacy Cucumber tests under `test/openAPI` remain migration evidence for the previous generated CRUD interface.
+
+## Artifact validation
+
+From the repository root, install the pinned tools and validate the shipped
+specification, Consultation artifacts, and Write artifacts:
+
+```sh
+uv sync --frozen
+uv run python tools/validate_specification.py
+uv run python tools/validate_consultation.py
+uv run python tools/validate_write.py
+```
+
+These checks inspect source structure, local references, requirement-to-operation
+links, schemas, examples, and fixture exchanges. They do not execute a Registry
+implementation or establish conformance. The scenarios below describe the
+separate implementation evidence needed.
 
 ## Applicability and required fixtures
 
@@ -50,7 +67,7 @@ Use synthetic fixtures and record the applicability rationale for each omitted c
 
 ## Requirement traceability
 
-The row anchors below are stable test targets for the functionality files. The displayed `fr-core#req-*` and `fr-consultation#req-*` labels are historical aliases from the source draft, not current requirement identifiers. Current requirements are DRAFT and unnumbered; [Requirement history](history/requirements.md) preserves their source text and [Migration from the 3.0.0-alpha.1 Draft](migration-from-3.0.md#replacement-index) preserves the predecessor ledger.
+The row anchors below are stable test targets for the functionality files. The displayed `fr-core#req-*` and `fr-consultation#req-*` labels are historical aliases from the source draft, not current requirement identifiers. Current requirements are DRAFT and unnumbered. Previous requirement text is retained in Git history.
 
 | Requirement | Applicability | Verification item | Expected result |
 |---|---|---|---|
@@ -81,7 +98,7 @@ The row anchors below are stable test targets for the functionality files. The d
 | <a id="consultation-17"></a>`fr-consultation#req-17` | Caller capability discovery offered | Request `GET /v1/capabilities` under callers and trusted contexts with different permissions; validate required contract, operation ID, capability, and view plus a rich entry containing `readableFields`, selectors, searches, known features, and purpose requirements; test unknown capability and feature annotations, no visible operation, duplicate Collection identifiers, duplicate `(contract, operationId)` pairs, contradictory linked metadata, more than 64 Collections, and more than 16 operations in one Collection; then invoke a discovered operation against permitted and unavailable Records | The bounded `no-store` document references version-specific HTTPS contracts and operation IDs, identifies each operation's view, and filters advisory metadata for the caller. `readableFields` does not imply `field-selection`. Known metadata agrees with the linked operation; unknown capabilities cause clients to skip that entry and unknown advisory features are ignored. Unknown metadata never grants authority, while the normative linked operation extension remains closed. Collection identifiers and operation keys are unique. `collections: []` represents no visible operation. Contradictions and over-bound descriptions fail explicitly without silent merge, truncation, omission, or an empty-array substitute. Invocation reauthorises; the document makes no record-level permission promise. |
 | <a id="consultation-18"></a>`fr-consultation#req-18` | A Record or history operation declares `purpose-bound` | Exercise missing, malformed, untrusted, allowed, disallowed, and changed trusted purpose contexts; replay cursors and validators under another purpose | Missing or unallowed purpose fails before disclosure. Purpose is obtained only from the declared trusted binding, participates in continuation, conditional, temporal, historical, and audit context, and is not treated as consent, authority, or proof of downstream use. Discovery has no purpose feature or request input; it filters under any verified purpose already present in trusted context. |
 
-The abbreviated references in this table preserve the former `govstack-bb-digital-registries` namespaces for traceability only. They link the migrated functionality files to the unchanged fixture and procedure detail without assigning identifiers to DRAFT requirements.
+The abbreviated references in this table preserve the former `govstack-bb-digital-registries` namespaces for traceability only. They are traceability labels for the current verification rows and do not assign identifiers to DRAFT requirements.
 
 ### API catalog HEAD verification
 

@@ -1,8 +1,8 @@
 ---
-description: Coverage, reader guidance, migration material, and references.
+description: Draft coverage, limitations, and reading guidance for adopters.
 ---
 
-# Resources
+# Coverage and reading guide
 
 ## Coverage and limitations
 
@@ -15,13 +15,12 @@ The `3.0.0-alpha.2` specification provides the Registry model, two core function
 | Metadata and discovery | JSON metadata document with schema, RFC 9727 discovery linkset, OpenAPI Registry context extension, examples, and an informative DCAT vocabulary appendix | Vocabulary, context, and schema publication at the assigned `vocab.govstack.global` IRIs; canonical specification-version IRIs |
 | Authority | Registry Authority identity and declared authoritative scope | Delegation, shared responsibility, and a machine-readable mandate model |
 | Operation options | DRAFT Consultation Retrieve, Lookup, List, Search, Revision List, and Revision Retrieve options and requirements, with selectable conditional-read, field-selection, complete-traversal, snapshot-traversal, recorded-time, effective-time, and purpose-bound features; reusable Search semantics and selectable caller capability discovery; four separately selected [Write options](write-binding.md) | Requirements, contracts, and tests for the six roadmap families and Consultation capabilities still described informatively |
-| Service interfaces | [Canonical draft Consultation OpenAPI](api.yml), [Write OpenAPI](write-api.yml), shared schemas, and [concrete example contracts](../api/examples/README.md) | Canonical contracts for the other six API families |
+| Service interfaces | [Canonical draft Consultation OpenAPI](api.yml), [Write OpenAPI](write-api.yml), shared schemas, and [concrete example contracts](api-examples/README.md) | Canonical contracts for the other six API families |
 | Verification | Discovery, Consultation, and Write artifact validation; requirement-to-operation mapping; [Write implementation scenarios](write-testing.md) | End-to-end implementation conformance suite and deployed runtime evidence; artifact checks do not establish runtime behaviour |
-| Migration | Disposition of every previous DRS requirement | None |
 
 Domain-specific semantic models and jurisdiction-specific governance or legal compliance are outside the Building Block's standardisation scope. Registry Authorities and adopting ecosystems supply these as appropriate to their services. Illustrative Collections such as birth, marriage, and death registrations do not define or constrain legal civil-registration scope. Field meanings must be documented even when no formal semantic model is selected. Source revision, lifecycle state, recording time, and effective-time history are not required unless a selected capability or feature requires them.
 
-Identity Federation profile ownership and binding remain subject to agreement with the Identity team.
+The Identity Federation family remains informative. This draft selects no protocol binding for that family.
 
 ## Reading guide
 
@@ -39,17 +38,18 @@ Identity Federation profile ownership and binding remain subject to agreement wi
 | Retrieve, exact Lookup, List, Search, revisions, temporal selection, caller discovery, and purpose binding | [Consultation](consultation-binding.md) |
 | HTTP contract, shared representation and pagination rules, and selectable operation features | [Consultation HTTP binding](consultation-binding.md#http-binding) and [canonical OpenAPI](api.yml) |
 | Direct writes, approval requests, concurrency, and compound changes | [Write binding](write-binding.md), [canonical Write contract](write-api.yml), and [Write verification](write-testing.md) |
-| Non-normative birth registration, households, individuals, and memberships | [Write examples](../api/examples/README.md) and their [binding context](write-binding.md#non-normative-domain-examples) |
-| Structured values and references | [Core representation rules](registry-core-model.md#structured-values-and-references) and [OpenAPI examples](../api/examples/README.md) |
+| Non-normative birth registration, households, individuals, and memberships | [Write examples](api-examples/README.md) and their [binding context](write-binding.md#non-normative-domain-examples) |
+| Structured values and references | [Core representation rules](registry-core-model.md#structured-values-and-references) and [OpenAPI examples](api-examples/README.md) |
 | Concrete adopter schema and fixtures | [Business Registry schema](../api/examples/business-registry.schema.json) and [request/response fixtures](../api/examples/consultation-exchanges.json) |
 | Sectoral authentication and cross-Building-Block ownership | [Identity Federation](roadmap/identity-federation.md) |
 | Verification scenarios | [Testing](testing.md) |
 
-## Migration and history
+## Version history
 
-- [Migration from the 3.0.0-alpha.1 Draft](migration-from-3.0.md) records the disposition of every previous DRS requirement.
-- [Requirement history](history/requirements.md) preserves the complete source text and historical aliases of all 15 migrated DRAFT requirements.
-- [Release Notes](history/release-notes.md) preserve detailed historical contributors and changes.
+The [version history](version-history.md) and [release notes](history/release-notes.md)
+record specification changes and historical contributors. Previous requirement
+text is available in the
+[repository's Git history](https://github.com/GovStackWorkingGroup/bb-digital-registries/commits/main/).
 
 The OpenAPI files under `api/legacy/generated-crud/` and Cucumber scenarios under `test/openAPI/` describe the previous generated CRUD interface. They are legacy artifacts and are not service contracts or conformance tests for this release. The legacy OpenAPI files do not contain a Retrieve-by-Identifier operation.
 

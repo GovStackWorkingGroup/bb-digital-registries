@@ -2,9 +2,9 @@
 description: Choices and guide refinements behind the first Consultation HTTP binding.
 ---
 
-# Read API design decisions
+# Consultation design rationale
 
-Status: accepted direction for the October 2026 draft. The requirements and [HTTP contract](api.yml) remain DRAFT.
+These choices explain the current Consultation HTTP binding. The requirements and [HTTP contract](api.yml) remain DRAFT.
 
 ## A practical shared read contract
 
@@ -109,4 +109,4 @@ These general refinements were introduced in guide and ruleset `0.2.0-draft` and
 
 ## Verification and follow-up boundary
 
-[Testing](testing.md) separates artifact validation from deployed implementation evidence. The [concrete OpenAPI examples](../api/examples/README.md) support contract review. Implementation trials over registries with different source models will provide evidence about Collection mapping, schema publication, history availability, temporal interpretation, purpose binding, declared request limits, continuation, and the cost of selectable guarantees.
+[Testing](testing.md) separates artifact validation from deployed implementation evidence. The [concrete OpenAPI examples](api-examples/README.md) support contract review. Implementation trials over registries with different source models will provide evidence about Collection mapping, schema publication, history availability, temporal interpretation, purpose binding, declared request limits, continuation, and the cost of selectable guarantees.

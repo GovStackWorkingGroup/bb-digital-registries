@@ -92,7 +92,7 @@ The deeper direct action paths retain the guide warning for review; this draft d
 
 ## Non-normative domain examples
 
-The [example contracts and payloads](../api/examples/README.md) demonstrate how institution-selected domain models can bind to Write without becoming shared requirements.
+The [example contracts and payloads](api-examples/README.md) demonstrate how institution-selected domain models can bind to Write without becoming shared requirements.
 Their field names, vocabularies, validation rules, permissions, and review policies are examples only.
 
 A civil-registration declaration or correction can use an operational input shape that differs from the permitted Birth read projection.

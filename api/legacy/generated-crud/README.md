@@ -21,4 +21,4 @@ The original references named UNCTAD eRegistrations, UNCTAD, and the DIAL Digita
 
 ## Current use
 
-The artifacts remain useful for migration analysis and for understanding existing implementations. Known inconsistencies and the disposition of the previous requirements are documented in [Migration from the 3.0.0-alpha.1 Draft](../../../resources/migration-from-3.0.md).
+The artifacts remain useful for migration analysis and for understanding existing implementations. Earlier requirements and interfaces remain available in Git history.

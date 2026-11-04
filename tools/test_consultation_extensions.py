@@ -13,7 +13,6 @@ import unittest
 from urllib.parse import urljoin
 
 from jsonschema import Draft202012Validator, FormatChecker, ValidationError
-import yaml
 
 import validate_consultation as consultation
 from validate_specification import load_functionality
@@ -50,39 +49,68 @@ def requirement_entries(name):
     return data["requirements"]
 
 
-def migrated_requirements():
-    """Map each historical identifier to its migrated requirement entries."""
-    entries = {
-        ("requirements/" + name, entry["statement"]): entry
-        for name in ("registry-discovery.md", "registry-services.md")
-        for entry in requirement_entries(name)
-    }
-    ledger = yaml.safe_load((REPOSITORY / "resources/requirement-migration.yml").read_text())
+def consultation_option_operations(entries):
+    """Return the current Consultation option-to-operation declarations."""
     return {
-        mapping["legacy"]: [entries[(target["file"], target["statement"])] for target in mapping["targets"]]
-        for mapping in ledger["mappings"]
-    }
-
-
-def requirement_operations(entries):
-    """Return the operations an entry covers directly or through its selected options."""
-    options = {
         entry["key"]: entry["api_operation_id"]
-        for entry in requirement_entries("registry-services.md")
-        if entry.get("option_of") and entry.get("api_operation_id")
+        for entry in entries
+        if entry.get("option_of") == "registry-service"
+        and entry.get("key", "").startswith("consultation-")
+        and entry.get("api_operation_id")
     }
+
+
+def requirement_operations(entries, option_operations):
+    """Return operations covered by matching option applicability in the front matter."""
     operations = set()
     for entry in entries:
+        applicable = {
+            option_operations[key]
+            for key in entry.get("applies_when", ())
+            if key in option_operations
+        }
         if entry.get("api_operation_id"):
-            operations.add(entry["api_operation_id"])
+            if entry["api_operation_id"] in applicable:
+                operations.add(entry["api_operation_id"])
         else:
-            operations.update(options[key] for key in entry.get("applies_when", ()) if key in options)
+            operations.update(applicable)
     return operations
 
 
+def requirements_for_test(entries, test):
+    return [entry for entry in entries if entry.get("test") == test]
+
+
+def assert_requirement_coverage(entries, option_operations, test, expected):
+    actual = requirement_operations(requirements_for_test(entries, test), option_operations)
+    missing = sorted(expected - actual)
+    unexpected = sorted(actual - expected)
+    if missing or unexpected:
+        raise AssertionError(
+            f"{test} operation coverage differs: "
+            f"missing={missing or 'none'}, unexpected={unexpected or 'none'}"
+        )
+
+
+def assert_source_verification(entries, test):
+    matched = requirements_for_test(entries, test)
+    if not matched:
+        raise AssertionError(f"{test} has no current requirement entries")
+    for entry in matched:
+        evidence = verification(entry)
+        if not re.search(r"\bsource (?:fixtures|evidence)\b", evidence):
+            operation = entry.get("api_operation_id", "requirement without operationId")
+            raise AssertionError(
+                f"{test} {operation} verification must use source fixtures or source evidence"
+            )
+
+
 def verification(entry):
-    return next(line for line in entry["documentation"].splitlines()
-                if line.startswith("Verification:"))
+    for line in entry["documentation"].splitlines():
+        if line.startswith("Verification:"):
+            return line
+    operation = entry.get("api_operation_id", "requirement without operationId")
+    raise AssertionError(f"{operation} is missing a Verification section")
 
 
 class ConsultationExtensionTests(unittest.TestCase):
@@ -294,34 +322,70 @@ class ConsultationExtensionTests(unittest.TestCase):
             self.assertIn("404", operation["responses"])
             validator(EXTENSION_SCHEMA, "").validate(operation[EXTENSION])
 
-    def test_requirement_coverage_maps_all_read_and_revision_surfaces(self):
+    def test_current_requirement_front_matter_covers_consultation_operations(self):
         coverage = document(API / "coverage.yaml")
         self.assertEqual(coverage["draftRequirements"], [])
-        mappings = migrated_requirements()
-        all_reads = {"retrieveRecord", "lookupRecord", "listRecords", "searchRecords",
-                     "listRecordRevisions", "retrieveRecordRevision"}
-        for requirement in ("govstack-bb-digital-registries-fr-core#req-2",
-                            "govstack-bb-digital-registries-fr-core#req-4",
-                            "govstack-bb-digital-registries-fr-core#req-8",
-                            "govstack-bb-digital-registries-fr-consultation#req-2"):
-            with self.subTest(requirement=requirement):
-                self.assertTrue(all_reads.issubset(requirement_operations(mappings[requirement])))
+
+        entries = requirement_entries("registry-services.md")
+        expected_options = {
+            "consultation-retrieve": "retrieveRecord",
+            "consultation-lookup": "lookupRecord",
+            "consultation-list": "listRecords",
+            "consultation-search": "searchRecords",
+            "consultation-revision-list": "listRecordRevisions",
+            "consultation-revision-retrieve": "retrieveRecordRevision",
+        }
+        options = consultation_option_operations(entries)
+        self.assertEqual(options, expected_options)
+        all_reads = set(expected_options.values())
+        for test in ("resources/testing.md#core-2", "resources/testing.md#core-4",
+                     "resources/testing.md#core-5", "resources/testing.md#core-6",
+                     "resources/testing.md#core-8", "resources/testing.md#consultation-2"):
+            with self.subTest(test=test):
+                assert_requirement_coverage(entries, options, test, all_reads)
+
         protected = {"retrieveRecord", "lookupRecord", "listRecordRevisions",
                      "retrieveRecordRevision"}
-        self.assertTrue(protected.issubset(requirement_operations(
-            mappings["govstack-bb-digital-registries-fr-consultation#req-3"])))
+        assert_requirement_coverage(
+            entries, options, "resources/testing.md#consultation-3", protected)
         paged = {"listRecords", "searchRecords", "listRecordRevisions"}
-        self.assertTrue(paged.issubset(requirement_operations(
-            mappings["govstack-bb-digital-registries-fr-consultation#req-7"])))
-        for requirement in ("govstack-bb-digital-registries-fr-core#req-5",
-                            "govstack-bb-digital-registries-fr-core#req-6"):
-            with self.subTest(requirement=requirement):
-                self.assertEqual(all_reads, requirement_operations(mappings[requirement]))
-                for entry in mappings[requirement]:
-                    self.assertRegex(verification(entry), r"source (fixtures|evidence)")
+        assert_requirement_coverage(
+            entries, options, "resources/testing.md#consultation-7", paged)
+        for test in ("resources/testing.md#core-5", "resources/testing.md#core-6"):
+            with self.subTest(test=test):
+                assert_source_verification(entries, test)
+
         revision_metadata = document(CANONICAL)["components"]["schemas"]["RevisionMetadata"]
         self.assertIn("revisionId", revision_metadata["required"])
         self.assertIn("recordedAt", revision_metadata["properties"])
+
+    def test_current_requirement_checks_detect_missing_applicability_and_source_evidence(self):
+        entries = requirement_entries("registry-services.md")
+        options = consultation_option_operations(entries)
+        all_reads = set(options.values())
+
+        missing_applicability = deepcopy(entries)
+        target = next(
+            entry for entry in missing_applicability
+            if entry.get("test") == "resources/testing.md#core-5"
+            and entry.get("api_operation_id") == "retrieveRecord"
+        )
+        target["applies_when"] = []
+        with self.assertRaisesRegex(AssertionError, r"missing=\['retrieveRecord'\]"):
+            assert_requirement_coverage(
+                missing_applicability, options, "resources/testing.md#core-5", all_reads)
+
+        missing_source_evidence = deepcopy(entries)
+        target = next(
+            entry for entry in missing_source_evidence
+            if entry.get("test") == "resources/testing.md#core-5"
+            and entry.get("api_operation_id") == "retrieveRecord"
+        )
+        target["documentation"] = re.sub(
+            r"\bsource (?:fixtures|evidence)\b", "published examples", target["documentation"])
+        with self.assertRaisesRegex(
+                AssertionError, r"core-5 retrieveRecord verification must use source"):
+            assert_source_verification(missing_source_evidence, "resources/testing.md#core-5")
 
     def test_revision_schema_requires_source_revision_identity(self):
         record = {"recordId": "r_42", "data": {}, "revision": {"revisionId": "rev-2"}}

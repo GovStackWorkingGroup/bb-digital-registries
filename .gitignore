@@ -2,3 +2,7 @@ node_modules
 test/openAPI/result
 .venv
 __pycache__
+
+# Local working material and demo configuration
+/.local/
+/examples/openIMIS/.env

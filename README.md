@@ -43,39 +43,30 @@ remain conditional on the source and the selected capability or feature.
   [Provide Registry Services](requirements/registry-services.md), and the
   [Consultation HTTP binding](resources/consultation-binding.md) or
   [Write HTTP binding](resources/write-binding.md). The
-  [non-normative Write examples](api/examples/README.md) illustrate birth
+  [non-normative Write examples](resources/api-examples/README.md) illustrate birth
   registration and household creation without imposing a domain model.
-- **Assessors:** use the [verification procedures](resources/testing.md),
-  [legacy requirement mapping](resources/requirement-migration.yml), and the
+- **Assessors:** use the [verification procedures](resources/testing.md) and the
   applicability declarations in each functionality file.
 
 <figure><img src="assets/api-families.svg" alt="Digital Registries API-family catalogue"><figcaption>The catalogue retains the previous draft's API-family terminology; selected operations are represented as options in the requirement model.</figcaption></figure>
 
-## Contributing
+## API references
 
-The repository layout and validation commands are in
-[CONTRIBUTING.md](https://github.com/GovStackWorkingGroup/bb-digital-registries/blob/main/CONTRIBUTING.md).
+The [Consultation API](resources/api-reference.md) and
+[Write API](resources/write-api-reference.md) describe the draft transport contracts.
+The [API examples](resources/api-examples/README.md) show illustrative deployment
+bindings and do not add requirements to those contracts.
 
-## Specification site
+## Source and contributions
 
-The [site wrapper](specification-site/README.md) builds this specification with the
-shared GovStack renderer. [Consultation](resources/api-reference.md) and
-[Write](resources/write-api-reference.md) have native API references, with
-illustrative bindings kept separate. Root `api-references.yml` selects the
-contracts; the wrapper documents local use and hosted activation.
+The [Digital Registries repository](https://github.com/GovStackWorkingGroup/bb-digital-registries)
+contains the source, contributor instructions, validation tools, and Git history.
 
-## Publication and attribution
-
-`toc.yml` is the publication content inventory. `SUMMARY.md` and `.gitbook.yaml`
-retain GitBook navigation and redirects for the migrated source. The local
-[validation workflow](.github/workflows/validate.yml) performs checks only.
-This repository does not assume an available central compiler or publish a release.
+## Attribution
 
 Current coordinating authors are Sebastian Leidig, Jeremi Joslin, and David Higgins.
 The [version history](resources/version-history.md) and
 [release notes](resources/history/release-notes.md) retain historical authors,
 coordinators, editors, reviewers, and changes.
 
-The [format migration record](resources/format-migration.md) explains the source
-layout mapping, requirement preservation, publication limits, and how subsequent
-content changes relate to this baseline.
+The [repository licence](LICENSE) applies to the specification source.

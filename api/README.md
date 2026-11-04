@@ -76,12 +76,11 @@ vocabularies: clients skip unknown capability entries and ignore unknown feature
 annotations on recognised capabilities. Current authorisation remains decisive.
 Purpose-bound operations accept purpose only from the declared trusted binding,
 never from a request URI, query, body, or ad hoc header.
-The [OpenAPI examples](examples/README.md) show business reads, household
+The [OpenAPI examples](../resources/api-examples/README.md) show business reads, household
 memberships, and birth-registration parent details.
 
-[coverage.yaml](coverage.yaml) contains no numbered DRAFT claims in the migrated format. Requirement front matter
-provides operation links; the [migration ledger](../resources/requirement-migration.yml)
-preserves the old numbered mappings. [Common component provenance](common/README.md) pins the vendored
+[coverage.yaml](coverage.yaml) contains no numbered DRAFT claims in the current draft. Requirement front matter
+provides operation links. Previous numbered mappings remain in Git history. [Common component provenance](common/README.md) pins the vendored
 schemas for local reference resolution.
 
 ## Validation
@@ -128,7 +127,7 @@ validation uses the artifacts listed above.
 
 [write.openapi.yaml](write.openapi.yaml) defines the DRAFT Write transport separately from the unchanged Consultation contract. Direct creation, update, named transitions, and approval-based change requests are independently selectable. [Write binding](../resources/write-binding.md) documents shared guarantees; [write-coverage.yaml](write-coverage.yaml) maps DRAFT keys to verification and operations. The separate [Write operation extension](extensions/x-govstack-digital-registries-write.schema.json) does not widen the closed Consultation extension.
 
-The [non-normative Write examples](examples/README.md#non-normative-write-examples) illustrate birth registration, household creation using existing and newly created individuals, and later membership additions. Their domain models are illustrative choices and add no requirements to the shared contract.
+The [non-normative Write examples](../resources/api-examples/README.md#non-normative-write-examples) illustrate birth registration, household creation using existing and newly created individuals, and later membership additions. Their domain models are illustrative choices and add no requirements to the shared contract.
 
 Run the Write artifact gate with:
 

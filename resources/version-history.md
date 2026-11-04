@@ -14,7 +14,7 @@ description: Major changes to the Digital Registries Building Block specificatio
 
 ## Current alpha draft revision
 
-The 6 September 2026 revision of the `3.0.0-alpha.2` draft replaced universal Consultation Retrieve with mandatory Registry Core plus at least one selected Registry service operation. The format migration expresses that rule as two core functionalities and the REQUIRED `registry-service` variation point with `select.min: 1`. This remains a revision of the same alpha draft, not a new release; no conformance claim is available.
+The 6 September 2026 revision of the `3.0.0-alpha.2` draft replaced universal Consultation Retrieve with mandatory Registry Core plus at least one selected Registry service operation. The current requirement model expresses that rule as two core functionalities and the REQUIRED `registry-service` variation point with `select.min: 1`. This remains a revision of the same alpha draft, not a new release; no conformance claim is available.
 
 The revision adds DRAFT requirements and a [canonical HTTP contract](api.yml) for four independently selectable Consultation operation options: Retrieve, Lookup, List, and Search. GET serves Retrieve and List; POST carries exact Lookup and Search criteria. All four share a Record representation. List and Search use live cursor pagination with repeated criteria and a fixed effective page size.
 
@@ -60,4 +60,4 @@ The detailed change record is preserved in the [Release Notes](history/release-n
 
 ## 4 November 2026 Write draft revision
 
-The same unreleased alpha now defines separately selectable direct creation, direct update, direct named transitions, and approval-based change requests. The DRAFT [Write binding](write-binding.md) and [contract](write-api.yml) distinguish proposal review from authoritative application, protect source and proposal versions separately, and declare retry, disclosure, and compound-operation guarantees. The [birth and household examples](../api/examples/README.md) remain non-normative and do not select a required domain model. No release, implementation conformance claim, or deployed workflow is established by these artifacts.
+The same unreleased alpha now defines separately selectable direct creation, direct update, direct named transitions, and approval-based change requests. The DRAFT [Write binding](write-binding.md) and [contract](write-api.yml) distinguish proposal review from authoritative application, protect source and proposal versions separately, and declare retry, disclosure, and compound-operation guarantees. The [birth and household examples](api-examples/README.md) remain non-normative and do not select a required domain model. No release, implementation conformance claim, or deployed workflow is established by these artifacts.

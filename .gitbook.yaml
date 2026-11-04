@@ -19,13 +19,13 @@ redirects:
   5-api-families/identity-federation: resources/roadmap/identity-federation.md
   5-api-families/notification: resources/roadmap/notification.md
   5-api-families/provisioning: resources/roadmap/provisioning.md
-  5-api-families/write: resources/roadmap/write.md
+  5-api-families/write: resources/write-binding.md
   6-functional-requirements: resources/family-catalogue.md
   7-cross-functional-requirements: resources/conformance.md
   8-data-structures: resources/registry-core-model.md
   9-service-interfaces: resources/service-interfaces.md
   12-other-resources/historical/future-considerations: resources/README.md
-  12-other-resources/historical/key-decision-log: resources/migration-from-3.0.md
+  12-other-resources/historical/key-decision-log: resources/version-history.md
   README: README.md
   spec/README: README.md
   01-version-history: resources/version-history.md
@@ -56,8 +56,8 @@ redirects:
   spec/12-other-resources/adopter-kit: resources/adopter-kit.md
   12-other-resources/metadata-vocabulary: resources/metadata-vocabulary.md
   spec/12-other-resources/metadata-vocabulary: resources/metadata-vocabulary.md
-  12-other-resources/migration-from-3.0: resources/migration-from-3.0.md
-  spec/12-other-resources/migration-from-3.0: resources/migration-from-3.0.md
+  12-other-resources/migration-from-3.0: resources/version-history.md
+  spec/12-other-resources/migration-from-3.0: resources/version-history.md
   12-other-resources/read-api-design-decisions: resources/read-api-design-decisions.md
   spec/12-other-resources/read-api-design-decisions: resources/read-api-design-decisions.md
   12-other-resources/references: introduction/references.md
@@ -70,8 +70,8 @@ redirects:
   spec/05-api-families/provisioning: resources/roadmap/provisioning.md
   05-api-families/evidence: resources/roadmap/evidence.md
   spec/05-api-families/evidence: resources/roadmap/evidence.md
-  05-api-families/write: resources/roadmap/write.md
-  spec/05-api-families/write: resources/roadmap/write.md
+  05-api-families/write: resources/write-binding.md
+  spec/05-api-families/write: resources/write-binding.md
   05-api-families/notification: resources/roadmap/notification.md
   spec/05-api-families/notification: resources/roadmap/notification.md
   05-api-families/aggregate-data: resources/roadmap/aggregate-data.md
@@ -80,3 +80,4 @@ redirects:
   spec/05-api-families/access-transparency: resources/roadmap/access-transparency.md
   05-api-families/identity-federation: resources/roadmap/identity-federation.md
   spec/05-api-families/identity-federation: resources/roadmap/identity-federation.md
+  resources/roadmap/write: resources/write-binding.md

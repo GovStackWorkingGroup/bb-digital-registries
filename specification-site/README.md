@@ -25,11 +25,10 @@ build, output, and HTTP checks. The wrapper rejects a renderer that would
 silently ignore native API references.
 
 The fork's site-check and preview workflows use the shared build-only action.
-Before hosted activation, publish the reviewed renderer change and set the
-repository variable `GOVSTACK_SITE_RENDERER_REF` to its exact full commit. The
-workflow checks that value, the checked-out commit, and native Scalar support.
-It does not follow a renderer branch. The previous renderer pin lacks this
-feature and is deliberately rejected rather than producing an incomplete site.
+Each workflow pins a published renderer commit in its `RENDERER_REF` default.
+The repository variable `GOVSTACK_SITE_RENDERER_REF` can select another reviewed
+full commit. The workflows verify that value, the checked-out revision, and native
+Scalar support. Use a full commit rather than a renderer branch.
 
 Only the existing preview workflow deploys output, retaining its fork-only,
 unofficial-preview policy. The wrapper and site-check workflow do not deploy.

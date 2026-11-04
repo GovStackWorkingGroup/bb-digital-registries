@@ -8,7 +8,7 @@ An implementation of Registry Core with selected Consultation or Write services 
 
 | Artifact | Where it is served | Start from | Defined by |
 |---|---|---|---|
-| OpenAPI contract, one per API | A stable URL chosen by the deployment | The [example matching the selected capabilities](../api/examples/README.md), using the [Consultation](api.yml) or [Write](write-api.yml) contract as applicable | [Consultation HTTP binding](consultation-binding.md#http-binding) and [API composition](registry-core-model.md#api-composition) |
+| OpenAPI contract, one per API | A stable URL chosen by the deployment | The [example matching the selected capabilities](api-examples/README.md), using the [Consultation](api.yml) or [Write](write-api.yml) contract as applicable | [Consultation HTTP binding](consultation-binding.md#http-binding) and [API composition](registry-core-model.md#api-composition) |
 | Registry metadata document | A stable document URI, served as `application/ld+json` | [Registry metadata example](../api/examples/registry-metadata.jsonld), validated by the [metadata document schema](../api/extensions/registry-metadata.schema.json) | [Registry metadata](registry-core-model.md#registry-metadata) |
 | API catalog linkset | `/.well-known/api-catalog` at the API origin, served as `application/linkset+json` | [API catalog example](../api/examples/api-catalog.linkset.json) and the `/.well-known/api-catalog` path of the [canonical Consultation OpenAPI](api.yml) | [Discovery publication](registry-core-model.md#discovery-publication) |
 | Health endpoint | `/health` relative to the OpenAPI server URL, including any routing prefix | The `/health` path of the [canonical Consultation OpenAPI](api.yml) | GovStack API Design Guide, unversioned health endpoint |
@@ -22,7 +22,7 @@ An implementation of Registry Core with selected Consultation or Write services 
 
 ## Checking the artifacts
 
-The repository's [artifact validator](../tools/validate_consultation.py) checks the example contracts, schemas, fixtures, metadata document, and linkset shipped with this specification; the [validation commands](../api/README.md#validation) show how to run it and how to lint a contract with the GovStack API Design Guide linter. Adopters run the same linter against their own contract and validate their metadata document against the schema. [Testing](testing.md) covers verification of a deployed implementation.
+The repository's artifact validator, `tools/validate_consultation.py`, checks the example contracts, schemas, fixtures, metadata document, and linkset shipped with this specification; the [validation commands](testing.md#artifact-validation) show how to check the shipped artifacts. The API directory's contributor instructions also document the GovStack API Design Guide linter. Adopters run the same linter against their own contract and validate their metadata document against the schema. [Testing](testing.md) covers verification of a deployed implementation.
 
 ## What is not needed
 
@@ -36,4 +36,4 @@ The repository's [artifact validator](../tools/validate_consultation.py) checks 
 
 Select the direct operations or approval-based route the source and policy support, using the [Write contract](write-api.yml) and [binding](write-binding.md). Publish the concrete input schemas, named transitions, grants, trusted purpose rules where selected, strong validator source, idempotency replay contract, and commit boundaries. Approval-only deployments publish request and review operations without granting direct write access. Returned acknowledgements do not imply permission to retrieve every resulting Record.
 
-The [non-normative Write examples](../api/examples/README.md) show one possible set of domain bindings, not a required data model. Document the institution's chosen model version, mappings, extensions, and licence attribution. Validate Write artifacts with `uv run python tools/validate_write.py`; use [Write verification](write-testing.md) for implementation scenarios.
+The [non-normative Write examples](api-examples/README.md) show one possible set of domain bindings, not a required data model. Document the institution's chosen model version, mappings, extensions, and licence attribution. Validate Write artifacts with `uv run python tools/validate_write.py`; use [Write verification](write-testing.md) for implementation scenarios.

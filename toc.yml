@@ -16,10 +16,12 @@ toc:
     - write-api-reference.md
     - write-testing.md
     - api-reference.md
+    - api-examples/README.md
     - api-examples/birth-registration.md
     - api-examples/business.md
     - api-examples/household.md
     - api-examples/write.md
+    - api-examples/schema-attribution.md
     - service-interfaces.md
     - workflows.md
     - testing.md
@@ -27,15 +29,12 @@ toc:
     - family-catalogue.md
     - roadmap/provisioning.md
     - roadmap/evidence.md
-    - roadmap/write.md
     - roadmap/notification.md
     - roadmap/aggregate-data.md
     - roadmap/access-transparency.md
     - roadmap/identity-federation.md
     - README.md
     - metadata-vocabulary.md
-    - migration-from-3.0.md
     - read-api-design-decisions.md
-    - format-migration.md
     - version-history.md
     - history/release-notes.md
