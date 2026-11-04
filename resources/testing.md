@@ -6,7 +6,7 @@ description: Draft verification of mandatory Registry discovery and selected cap
 
 ## Test maturity
 
-The scenarios below define verification intent for the [draft requirements](conformance.md#requirement-maturity). The [Consultation artifact checks](#artifact-validation) validate OpenAPI documents, requirement-to-operation mappings, and schema fixtures. They inspect the declared conditional-response headers and body shape, revision parent identity, and rich caller-capability metadata as artifacts. They do not execute cursor replay, protected-history outcomes, or temporal source-unavailability behaviour; those remain implementation scenarios. Passing artifact checks supports contract review only and does not establish deployed runtime behaviour or implementation conformance. Implementation conformance requires separate evaluation of a deployed Registry; an executable suite is pending. Legacy Cucumber tests under `test/openAPI` remain migration evidence for the previous generated CRUD interface.
+The scenarios below define verification intent for the [draft requirements](../introduction/scope.md#conformance-requirement-maturity). The [Consultation artifact checks](#artifact-validation) validate OpenAPI documents, requirement-to-operation mappings, and schema fixtures. They inspect the declared conditional-response headers and body shape, revision parent identity, and rich caller-capability metadata as artifacts. They do not execute cursor replay, protected-history outcomes, or temporal source-unavailability behaviour; those remain implementation scenarios. Passing artifact checks supports contract review only and does not establish deployed runtime behaviour or implementation conformance. Implementation conformance requires separate evaluation of a deployed Registry; an executable suite is pending. Legacy Cucumber tests under `test/openAPI` remain migration evidence for the previous generated CRUD interface.
 
 ## Artifact validation
 
@@ -27,7 +27,7 @@ separate implementation evidence needed.
 
 ## Applicability and required fixtures
 
-Verification starts with an inventory of the Registry services the implementation exposes to each intended metadata audience and the operation options it declares. Every evaluation covers Registry identity, authoritative scope, specification-version metadata, and service discovery. Operation-specific verification follows the selected option keys and the [draft conformance model](conformance.md#draft-conformance-model).
+Verification starts with an inventory of the Registry services the implementation exposes to each intended metadata audience and the operation options it declares. Every evaluation covers Registry identity, authoritative scope, specification-version metadata, and service discovery. Operation-specific verification follows the selected option keys and the [draft conformance model](../introduction/scope.md#conformance-draft-conformance-model).
 
 Common Record representation requirements are evaluated through each implemented operation that returns Records, using that operation to obtain the fixtures. Identifier lifecycle evidence applies wherever the implementation assigns or maintains Record Identifiers.
 

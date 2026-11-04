@@ -31,8 +31,8 @@ The Registry Authority decides the authoritative scope and the applicable inform
 | Consent | Consent can provide evidence or policy signals used in a disclosure decision. The Registry enforces the decision applicable to each request and supports other lawful bases where relevant. |
 | E-Signature | E-Signature can perform signing operations. The Registry remains responsible for the meaning, issuance, status, and lifecycle of Registry Evidence. |
 | Wallet | A Wallet can hold and present credentials issued through Evidence. The Registry remains the source of the asserted facts and is not required to operate a Wallet. |
-| Identity | The [Identity Building Block](https://github.com/GovStackWorkingGroup/bb-identity/blob/main/spec/2-description.md) defines foundational identity services and describes integration with functional identities. A sectoral Registry owns its functional identifiers. [Identity Federation](../resources/roadmap/identity-federation.md) addresses authentication to Relying Services; Registry API access control is a separate responsibility. |
-| GIS | GIS can provide geospatial processing and visualisation. A spatial Registry remains responsible for its records and can expose an OGC-aligned GIS Query capability. |
+| Identity | The [Identity Building Block](https://github.com/GovStackWorkingGroup/bb-identity/blob/main/spec/2-description.md) defines foundational identity services and describes integration with functional identities. A sectoral Registry owns its functional identifiers. [Identity Federation](scope.md#not-covered) addresses authentication to Relying Services; Registry API access control is a separate responsibility. |
+| GIS | GIS can provide geospatial processing and visualisation. A spatial Registry remains responsible for its records and can expose an OGC-aligned GIS Query operation. |
 
 Reference architectures and domain or jurisdictional implementation guides can place the Digital Registries Building Block in larger systems without changing this specification's conformance contract.
 
@@ -68,7 +68,7 @@ The wire contract retains `capability` as its established field name. In that bi
 | Write `transition` | `write-transition` | `applyRecordTransition` |
 | Write `change-requests` | `write-change-requests` | `submitChangeRequest` |
 
-The Write values belong to the separate Write operation extension; the existing Consultation extension remains closed to its six read capabilities. The binding field does not declare a framework capability. The framework capabilities are the informative outcomes Registry Service Discovery and Authoritative Registry Services.
+The Write values belong to the separate Write operation extension; the existing Consultation extension remains closed to its six read `capability` values. The binding field does not declare a framework capability. The framework capabilities are the informative outcomes Registry Service Discovery and Authoritative Registry Services.
 
 ### Actors
 
@@ -85,9 +85,9 @@ The Registry Authority and Registry Operator can be the same organisation or dif
 | Interface | Counterpart | Direction | Functionality | Type | Contract defined in |
 |---|---|---|---|---|---|
 | Registry service discovery | API Consumer | Inbound request, outbound response | Discover Registry Services | Service API | [`resources/api.yml`](../resources/api.yml), realised by [`requirements/registry-discovery.md`](../requirements/registry-discovery.md) |
-| Registry metadata and operational contracts | API Consumer | Outbound published documents | Discover Registry Services | File | [Registry Core model](../resources/registry-core-model.md#registry-metadata) and the schemas and contracts linked from `resources/api.yml` |
+| Registry metadata and operational contracts | API Consumer | Outbound published documents | Discover Registry Services | File | [Registry Core model](../requirements/registry-discovery.md#core-registry-metadata) and the schemas and contracts linked from `resources/api.yml` |
 | Registry consultation | API Consumer | Inbound request, outbound response | Provide Registry Services | Service API | [`resources/api.yml`](../resources/api.yml), realised by [`requirements/registry-services.md`](../requirements/registry-services.md) |
 | Registry writes and approval requests | API Consumer | Inbound request, outbound response | Provide Registry Services | Service API | [`resources/write-api.yml`](../resources/write-api.yml), realised by the selected Write options in [`requirements/registry-services.md`](../requirements/registry-services.md) |
-| Record schemas and field meanings | API Consumer | Outbound published documents | Provide Registry Services | File | The deployment's linked operational contract and schemas, constrained by the [Registry Core model](../resources/registry-core-model.md#domain-semantics-and-extensions) |
+| Record schemas and field meanings | API Consumer | Outbound published documents | Provide Registry Services | File | The deployment's linked operational contract and schemas, constrained by the [Registry Core model](../requirements/registry-services.md#core-domain-semantics-and-extensions) |
 
 Logging, monitoring, deployment, and other interfaces inherited from the cross-functional requirements are not repeated here.

@@ -52,4 +52,4 @@ These vocabularies and profiles inform the Registry Core metadata model. Externa
 
 ## Historical material
 
-The detailed 3.0.0-alpha.1 [Release Notes](../resources/history/release-notes.md) preserve the prior change record. Previous requirement text remains in Git history. Historical material adds no requirements to this draft.
+The [specification repository](https://github.com/GovStackWorkingGroup/bb-digital-registries) retains release records and historical attribution. Previous requirement text remains in Git history. Historical material adds no requirements to this draft.

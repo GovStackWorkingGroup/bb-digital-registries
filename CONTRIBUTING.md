@@ -9,8 +9,10 @@ specification start at the [README](README.md).
 |---|---|
 | `metadata.yml`, `authors.yml`, `toc.yml` | Publication identity, current-version credits, and ordered content |
 | `introduction/` | Overview, scope, terminology, and references |
-| `requirements/` | Machine-readable DRAFT requirements, options, and applicability |
-| `resources/` | Binding definitions, workflows, verification, adopter guidance, and history |
+| `requirements/` | One file per functionality, with DRAFT requirements in front matter and explanations, workflows, and data structures in the body |
+| `resources/` | API entrypoints, examples, verification procedures, and example attribution |
+| `guides/` | Companion implementation guidance, outside the compiled specification |
+| `RELEASE_NOTES.md` | Release records and complete historical contributor attribution |
 | `assets/` | Diagrams, metadata context, vocabulary, and preserved historical images |
 | `ADR/` | Working Group decision-record location |
 | `api/` | Canonical OpenAPI contract, schemas, examples, and legacy API archives |
@@ -59,3 +61,5 @@ Keep brainstorming, review notes, migration records, and temporary snapshots und
 `.local/working-documents/`. Git ignores `.local/`; source validation and site
 publication exclude it. Do not link published content to that folder or commit it.
 Git history preserves earlier requirement text without duplicate archive pages.
+
+The functionality bodies hold the explanatory model and workflows before the rendered requirement cards. Keep detailed roadmap proposals and review discussions in `.local/working-documents/`. The [adoption guide](guides/adopting-digital-registries.md) and [release history](RELEASE_NOTES.md) remain public repository documents outside `toc.yml`.

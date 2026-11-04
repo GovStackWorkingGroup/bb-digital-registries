@@ -6,7 +6,6 @@ from __future__ import annotations
 from contextlib import contextmanager
 import importlib.util
 from pathlib import Path
-import re
 import subprocess
 import sys
 import tempfile
@@ -697,10 +696,10 @@ class SpecificationValidatorTests(unittest.TestCase):
             lines = [line.removeprefix("ERROR: ") for line in invalid.stdout.splitlines() if line.startswith("ERROR: ")]
             self.assertEqual(lines, sorted(lines))
 
-    def test_reader_reachable_legacy_and_history_pages_have_checked_links(self):
+    def test_reader_reachable_legacy_and_release_pages_have_checked_links(self):
         for relative in (
             "api/legacy/generated-crud/README.md",
-            "resources/history/release-notes.md",
+            "RELEASE_NOTES.md",
         ):
             with self.subTest(relative=relative), self.fixture() as fixture:
                 fixture.write(relative, "See [missing](missing.md).\n")

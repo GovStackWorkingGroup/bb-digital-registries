@@ -32,30 +32,19 @@ remain conditional on the source and the selected capability or feature.
 
 ## Reading guide
 
-- **Government architects:** start with the [overview](introduction/overview.md)
-  and [scope](introduction/scope.md) for the system boundary and neighbouring
-  Building Blocks.
-- **Procurement teams:** read [conformance](resources/conformance.md) and
-  [coverage and limitations](resources/README.md#coverage-and-limitations).
-  Cite an approved specification version when one is available.
-- **Implementers:** start with the [adopter kit](resources/adopter-kit.md), then
-  [Discover Registry Services](requirements/registry-discovery.md),
-  [Provide Registry Services](requirements/registry-services.md), and the
-  [Consultation HTTP binding](resources/consultation-binding.md) or
-  [Write HTTP binding](resources/write-binding.md). The
-  [non-normative Write examples](resources/api-examples/README.md) illustrate birth
-  registration and household creation without imposing a domain model.
-- **Assessors:** use the [verification procedures](resources/testing.md) and the
-  applicability declarations in each functionality file.
-
-<figure><img src="assets/api-families.svg" alt="Digital Registries API-family catalogue"><figcaption>The catalogue retains the previous draft's API-family terminology; selected operations are represented as options in the requirement model.</figcaption></figure>
-
-## API references
-
-The [Consultation API](resources/api-reference.md) and
-[Write API](resources/write-api-reference.md) describe the draft transport contracts.
-The [API examples](resources/api-examples/README.md) show illustrative deployment
-bindings and do not add requirements to those contracts.
+- **Architects and procurement teams:** read the [overview](introduction/overview.md)
+  and [scope](introduction/scope.md) for purpose, boundaries, draft maturity, and
+  conformance conditions.
+- **Implementers:** use [Discover Registry Services](requirements/registry-discovery.md)
+  for metadata and discovery, then [Provide Registry Services](requirements/registry-services.md)
+  for the Record model, Consultation, Write, and workflows.
+- **API consumers:** use the [Consultation](resources/api-reference.md) and
+  [Write](resources/write-api-reference.md) references. The
+  [API examples](resources/api-examples/README.md) illustrate deployment choices
+  and add no requirements to the shared contracts.
+- **Assessors:** use the [verification procedures](resources/testing.md),
+  [Write verification](resources/write-testing.md), and the applicability
+  declarations in the functionality files.
 
 ## Source and contributions
 
@@ -65,8 +54,7 @@ contains the source, contributor instructions, validation tools, and Git history
 ## Attribution
 
 Current coordinating authors are Sebastian Leidig, Jeremi Joslin, and David Higgins.
-The [version history](resources/version-history.md) and
-[release notes](resources/history/release-notes.md) retain historical authors,
-coordinators, editors, reviewers, and changes.
+The repository release history retains historical authors, coordinators,
+editors, reviewers, and changes.
 
 The [repository licence](LICENSE) applies to the specification source.

@@ -6,9 +6,8 @@ from __future__ import annotations
 from copy import deepcopy
 import json
 from pathlib import Path
-import re
 import unittest
-from urllib.parse import urldefrag, urlparse
+from urllib.parse import urldefrag
 
 from jsonschema import Draft202012Validator, FormatChecker, ValidationError
 from referencing.exceptions import Unresolvable
@@ -54,6 +53,26 @@ def values_for_keys(value, keys):
         for child in value:
             found.extend(values_for_keys(child, keys))
     return found
+
+
+def assert_normative_contracts_are_example_independent(functionality):
+    """Reject requirement contracts that promote domain examples to authority."""
+    targets = {
+        urldefrag(requirement["contract"])[0]
+        for requirement in functionality["requirements"]
+        if requirement.get("contract")
+    }
+    invalid = []
+    for target in targets:
+        resolved = (ROOT / target).resolve()
+        if resolved.is_relative_to(API / "examples") or resolved.name == (
+            "publicschema-write-examples.md"
+        ):
+            invalid.append(target)
+    if invalid:
+        raise AssertionError(
+            f"Normative requirement contracts use domain examples: {sorted(invalid)}"
+        )
 
 
 class WriteArtifactTests(unittest.TestCase):
@@ -266,23 +285,16 @@ class WriteArtifactTests(unittest.TestCase):
             )
         )
 
-        normative_documents = (
-            ROOT / "requirements/registry-services.md",
-            ROOT / "resources/write-binding.md",
+        source = (ROOT / "requirements/registry-services.md").read_text()
+        functionality = yaml.safe_load(source.split("---", 2)[1])
+        assert_normative_contracts_are_example_independent(functionality)
+
+        mutated = deepcopy(functionality)
+        mutated["requirements"][0]["contract"] = (
+            "api/examples/write-examples.schema.json"
         )
-        for document in normative_documents:
-            for target in re.findall(r"\]\(([^)]+)\)", document.read_text()):
-                target, _fragment = urldefrag(target)
-                if not target or urlparse(target).scheme:
-                    continue
-                resolved = (document.parent / target).resolve()
-                if resolved.is_relative_to(API / "examples"):
-                    self.assertEqual(
-                        resolved,
-                        API / "examples/README.md",
-                        f"{document.name} must not require a domain-specific example",
-                    )
-                self.assertNotEqual(resolved.name, "publicschema-write-examples.md")
+        with self.assertRaisesRegex(AssertionError, "write-examples.schema.json"):
+            assert_normative_contracts_are_example_independent(mutated)
 
         toc = yaml.safe_load((ROOT / "toc.yml").read_text())
         self.assertNotIn("publicschema-write-examples.md", toc["toc"]["resources"])

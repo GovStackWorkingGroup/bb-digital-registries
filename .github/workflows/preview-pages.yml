@@ -27,7 +27,7 @@ concurrency:
 
 env:
   RENDERER_REPOSITORY: jeremi/govstack-specification-site
-  RENDERER_REF: ${{ vars.GOVSTACK_SITE_RENDERER_REF || 'ab2f9532ff9dc059f2b498530e16e338070e976e' }}
+  RENDERER_REF: ${{ vars.GOVSTACK_SITE_RENDERER_REF || '567eb981cd0c2a1bb9163b2cecbfc12a1b7412fd' }}
 
 jobs:
   build:

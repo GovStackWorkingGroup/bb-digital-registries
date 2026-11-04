@@ -185,7 +185,7 @@ requirements:
     observability: OBSERVABLE
     mutability: EXTENSIBLE
     interaction: FILE
-    contract: resources/write-binding.md#published-write-contract
+    contract: requirements/registry-services.md#write-published-write-contract
     applies_when: [write-create, write-update, write-transition, write-change-requests]
     statement: Every selected Write operation publishes typed input and result schemas, its required operation grant, an unambiguous target Registry and Collection, and a deterministic mapping from every accepted input field into authoritative domain state, retained provenance, or workflow-only context in its machine-readable contract.
     documentation: |
@@ -200,7 +200,7 @@ requirements:
     observability: OBSERVABLE
     mutability: EXTENSIBLE
     interaction: PROTOCOL
-    contract: resources/write-binding.md#atomicity-and-compound-changes
+    contract: requirements/registry-services.md#write-atomicity-and-compound-changes
     applies_when: [write-create, write-update, write-transition, write-change-requests]
     statement: A Write operation commits or records its own declared component atomically, and it claims atomicity across additional Records, Collections, Registries, or external systems only when that compound boundary and its failure guarantees are separately declared.
     documentation: |
@@ -215,7 +215,7 @@ requirements:
     observability: OBSERVABLE
     mutability: EXTENSIBLE
     interaction: PROTOCOL
-    contract: resources/write-binding.md#retries-and-idempotency
+    contract: requirements/registry-services.md#write-retries-and-idempotency
     applies_when: [write-create, write-update, write-transition, write-change-requests]
     statement: Every selected Write operation defines retry and idempotency behaviour, binds an idempotency key to the authenticated consumer, operation, target, and canonical request content, and applies current authentication and authorisation on every attempt without treating the key as authority.
     documentation: |
@@ -230,7 +230,7 @@ requirements:
     observability: OBSERVABLE
     mutability: EXTENSIBLE
     interaction: PROTOCOL
-    contract: resources/write-binding.md#concurrency-and-commit-guards
+    contract: requirements/registry-services.md#write-concurrency-and-commit-guards
     applies_when: [write-update, write-transition, write-change-requests]
     statement: An operation that proposes or commits a change to an existing Record uses a strong precondition bound to the current target representation and re-evaluates that guard at commit, rejecting an omitted, invalid, or stale precondition without overwriting intervening change.
     documentation: |
@@ -245,7 +245,7 @@ requirements:
     observability: AUDITABLE
     mutability: EXTENSIBLE
     interaction: INTERNAL
-    contract: resources/write-binding.md#authority-and-purpose
+    contract: requirements/registry-services.md#write-authority-and-purpose
     applies_when: [write-create, write-update, write-transition, write-change-requests]
     statement: The Digital Registry authorises Write independently from read disclosure, evaluates the selected operation's grant for the current actor and target, and, when purpose is enforced, obtains it only through a separately declared trusted purpose binding.
     documentation: |
@@ -261,7 +261,7 @@ requirements:
     observability: OBSERVABLE
     mutability: EXTENSIBLE
     interaction: PROTOCOL
-    contract: resources/write-binding.md#trusted-context-and-client-input
+    contract: requirements/registry-services.md#write-trusted-context-and-client-input
     applies_when: [write-create, write-update, write-transition, write-change-requests]
     statement: The service never treats client-supplied actor, reviewer, purpose, or approval fields or flags as verified authority and rejects or ignores them according to the published schema without silently bypassing authentication, authorisation, review, or application controls.
     documentation: |
@@ -276,7 +276,7 @@ requirements:
     observability: AUDITABLE
     mutability: EXTENSIBLE
     interaction: INTERNAL
-    contract: resources/write-binding.md#acknowledgement-provenance-and-audit
+    contract: requirements/registry-services.md#write-acknowledgement-provenance-and-audit
     applies_when: [write-create, write-update, write-transition, write-change-requests]
     statement: Every accepted Write uses its HTTP status, response schema, target URI, `Location`, or validator as declared to identify the target, created resource, or asynchronous Operation and distinguish a committed change from accepted work or a non-authoritative request, while the service retains provenance and audit evidence for the actor, operation, target, trusted context, validation, decision, and committed effect within its declared audit scope.
     documentation: |
@@ -292,7 +292,7 @@ requirements:
     observability: OBSERVABLE
     mutability: EXTENSIBLE
     interaction: PROTOCOL
-    contract: resources/write-binding.md#protected-resources
+    contract: requirements/registry-services.md#write-protected-resources
     applies_when: [write-create, write-update, write-transition, write-change-requests]
     statement: When target Record, Collection, Change Request, or operation existence is protected, the Write service gives an unknown and a protected resource the same generic `404` outcome without resource-specific content or a distinguishable workflow, timing, or continuation signal.
     documentation: |
@@ -307,7 +307,7 @@ requirements:
     observability: OBSERVABLE
     mutability: EXTENSIBLE
     interaction: PROTOCOL
-    contract: resources/write-binding.md#preview-and-authoritative-state
+    contract: requirements/registry-services.md#write-preview-and-authoritative-state
     applies_when: [write-create, write-update, write-transition, write-change-requests]
     statement: A validation or preview operation is read-only and labels its result as non-authoritative, never allocates an authoritative Record identity, advances a Change Request, reserves a transition, or presents predicted content as committed state.
     documentation: |
@@ -339,7 +339,7 @@ requirements:
     observability: OBSERVABLE
     mutability: EXTENSIBLE
     interaction: PROTOCOL
-    contract: resources/write-binding.md#change-request-lifecycle
+    contract: requirements/registry-services.md#write-change-request-lifecycle
     applies_when: [write-change-requests]
     statement: Pending and rejected Change Requests, and withdrawn Change Requests when withdrawal is offered, have no authoritative Registry side effect; approval records a decision but does not by itself represent or guarantee application.
     documentation: |
@@ -354,7 +354,7 @@ requirements:
     observability: AUDITABLE
     mutability: EXTENSIBLE
     interaction: INTERNAL
-    contract: resources/write-binding.md#change-request-lifecycle
+    contract: requirements/registry-services.md#write-change-request-lifecycle
     applies_when: [write-change-requests]
     statement: Submission, review, and application use distinct permissions and trusted actor contexts, and no permission or successful decision in one stage grants another stage or makes an approved request equivalent to an applied change.
     documentation: |
@@ -370,7 +370,7 @@ requirements:
     observability: AUDITABLE
     mutability: EXTENSIBLE
     interaction: INTERNAL
-    contract: resources/write-binding.md#application-time-revalidation
+    contract: requirements/registry-services.md#write-application-time-revalidation
     applies_when: [write-change-requests]
     statement: Application of an approved Change Request re-evaluates current authentication, application permission, trusted purpose where required, target availability, source precondition, input validity, and transition policy atomically with commit, and records an explicit unapplied outcome when any check fails.
     documentation: |
@@ -386,7 +386,7 @@ requirements:
     observability: OBSERVABLE
     mutability: EXTENSIBLE
     interaction: PROTOCOL
-    contract: resources/write-binding.md#http-outcomes
+    contract: requirements/registry-services.md#write-http-outcomes
     applies_when: [write-create, write-update, write-transition, write-change-requests]
     statement: A selected Write operation returns `201 Created` only when it creates the identified resource, including a newly submitted Change Request, and, when that operation offers asynchronous execution, returns `202 Accepted` only for separately identifiable background work whose Operation status can be retrieved without implying a committed Record change, review decision, or applied request.
     documentation: |
@@ -402,7 +402,7 @@ requirements:
     observability: OBSERVABLE
     mutability: EXTENSIBLE
     interaction: PROTOCOL
-    contract: resources/write-binding.md#change-request-listing
+    contract: requirements/registry-services.md#write-change-request-listing
     applies_when: [write-change-requests]
     statement: A Change Request listing operation, when offered, returns only permitted requests in deterministic bounded Pages, uses an opaque integrity-protected cursor bound to the caller context, Registry, Collection, filters, ordering, and effective page size, and reauthorises every Page without claiming exhaustive or snapshot traversal unless separately declared.
     documentation: |
@@ -432,7 +432,7 @@ requirements:
     observability: OBSERVABLE
     mutability: EXTENSIBLE
     interaction: FILE
-    contract: resources/registry-core-model.md#domain-semantics-and-extensions
+    contract: requirements/registry-services.md#core-domain-semantics-and-extensions
     statement: The Digital Registry publishes the representation format, unambiguously identified resolvable machine-readable schemas, and documented field meanings for its Registry service operations.
     documentation: |
       Purpose: API consumers can decode, validate, and interpret a representation without knowledge of internal storage.
@@ -1608,10 +1608,770 @@ requirements:
     test: resources/testing.md#consultation-18
 ---
 
-# Consultation workflow (informative)
+## Shared Record model <a href="#core-shared-record-model" id="core-shared-record-model"></a>
 
-The requirement front matter defines conformance. In a consultation workflow, an implementation selects one or more consultation options. A consumer uses [Retrieve](../resources/consultation-binding.md#retrieve) for a known Record Identifier, [Lookup](../resources/consultation-binding.md#lookup) for a declared exact selector, [List](../resources/consultation-binding.md#list) for an ordered collection, [Search](../resources/consultation-binding.md#search) for declared typed criteria, [Revision List](../resources/consultation-binding.md#revision-list) for the retained revisions of one Record, or [Revision Retrieve](../resources/consultation-binding.md#revision-retrieve) for one identified retained revision. List, Search, and Revision List share the [pagination model](../resources/consultation-binding.md#pagination).
+### Common Record context <a href="#core-common-record-context" id="core-common-record-context"></a>
 
-An operation can also declare [selectable read features](../resources/consultation-binding.md#selectable-read-features) in its `features` array: conditional reads, field selection, complete or snapshot traversal, recorded or effective time selection, and purpose binding. Each declared feature adds its own requirements to the claim. Features, and the selectable caller capability discovery operation, do not by themselves satisfy the minimum Registry service choice.
+Every returned Record representation has the following context. The binding defines where it is conveyed: in the representation, response metadata, or the versioned operational contract and its association with the Registry. The Consultation HTTP binding conveys it through the contract: the `x-govstack-digital-registries` extension on each operation names the Registry, logical Collection, capability, and view, and the operation's response schema is the representation schema. A consumer can determine that context without knowing the source's internal storage. Registry-wide information need not be repeated in every Record or Collection item.
 
-All selected operations use the Registry identity, schemas, field meanings, disclosure policy, and source semantics described in the [Registry Core model](../resources/registry-core-model.md#domain-semantics-and-extensions). The source Registry remains authoritative; consultation observes information and does not change the source Record.
+| Concept | Baseline contract |
+|---|---|
+| Registry Identifier | The operational contract binds the operation to one Registry, or the returned Record explicitly identifies its Registry. |
+| Record Identifier | A stable reference unique within that Registry, included in each returned Record. |
+| Representation Format | The binding identifies the serialisation or media type. |
+| Representation Schema | A resolvable, versioned machine-readable schema identifies the permitted representation; schema selection is unambiguous. |
+| Field meanings | Schema descriptions or linked domain documentation explain field meanings, units, code lists, and relevant absence or null semantics. |
+| Registry Authority | The Registry context resolves to the authority and authoritative scope published in Registry metadata. |
+
+The applicable capability determines which domain data and metadata the consumer may receive. Each operation has one declared view schema, named in its Consultation Registry context declaration. Access policy can withhold non-required fields within that schema. An operation selecting the selectable Consultation `field-selection` feature can also let consumers request a subset of its declared selectable `data` fields, while retaining Record identity and the `data` object. Its contract documents the default field set and supported selections. Both default and selected responses validate against the same view schema; field selection never grants disclosure rights. A materially different representation uses a separately declared view and operation or API. The HTTP binding uses the same Record envelope and schema for single results and collection members within a declared view.
+
+Collections organise access to Records within the Registry's identity scope. The same Record retains its identifier across Collections, views, revisions, and temporal selections. Distinct Records have distinct identifiers within that Registry, including when their source Collections use overlapping keys. An adapter can qualify such keys with a stable namespace; consumers continue to treat the resulting identifiers as opaque.
+
+A service returning Records from different Registries or schemas makes the distinction explicit for each affected Record. A shared service URL alone does not establish a unique Registry context. An export or portable representation declares any additional context needed when it leaves its original request context.
+
+Record schemas define [structured values and references](#core-structured-values-and-references), including the identity, ownership, and meaning of embedded data.
+
+**Example: resolving Record context.** In the illustrative business binding, `GET https://registry.example/v1/collections/businesses/records/r_42` returns:
+
+```json
+{
+  "recordId": "r_42",
+  "data": {
+    "legalName": "Example Ltd",
+    "registrationStatus": "DISSOLVED"
+  }
+}
+```
+
+The metadata above associates that service with Registry `https://registry.example/registries/business` and the Business Registration Authority. The Retrieve operation in the linked OpenAPI declares that Registry, the `businesses` collection, and the `business-public` view; its response schema is `BusinessRecord`, whose `data` follows `BusinessData`. A consumer retaining this Record's identity stores the Registry Identifier together with `r_42`.
+
+### Revisions and lifecycle <a href="#core-revisions-and-lifecycle" id="core-revisions-and-lifecycle"></a>
+
+The Record Identifier remains stable when the Record changes. Existing source identifiers may be reused when they satisfy the identity and stability requirements. Core does not require an adapter to introduce revision storage, maintain a journal, or mint aliases for already suitable source identifiers.
+
+Revision identifiers, revision recording times, and lifecycle fields are not required in the baseline. When supplied or required by a selected capability or profile, their schema defines their meaning and availability. A source revision identifies a revision accepted by the source; a response hash or HTTP validator does not by itself establish such an identifier. A response timestamp is not the time a source revision was recorded.
+
+The latest information is the most recent accepted information available through the source interface under its documented currency contract. It need not describe an active entity. Domain status fields retain their documented meaning; omitting a generic lifecycle field does not imply an active state. Consultation revision and temporal capabilities require source-backed history and declared semantics beyond the default latest read. Event occurrence and registration dates are not automatically effective-time coordinates.
+
+**Example: stable identity through a status change.** Two current reads of the same business, before and after its dissolution is accepted by the source, return:
+
+| Read | `recordId` | `data.registrationStatus` |
+|---|---|---|
+| Before dissolution | `r_42` | `ACTIVE` |
+| After dissolution | `r_42` | `DISSOLVED` |
+
+The identifier continues to refer to the same Record; its current domain status changes.
+
+### Domain semantics and extensions <a href="#core-domain-semantics-and-extensions" id="core-domain-semantics-and-extensions"></a>
+
+Adopters should reuse established domain schemas and vocabularies where suitable, including [Schema.org](https://schema.org/), [EU SEMIC Core Vocabularies](https://interoperable-europe.ec.europa.eu/collection/semic-support-centre/solution/core-vocabularies), and schemas defined or adopted by national and sector authorities. The contract identifies adopted models and versions, preserves their concepts' meanings, and documents field meanings, source mappings, local constraints, and extensions. A separately published formal semantic model is not required unless a selected capability or profile requires it. Representations follow the applicable inherited cross-functional requirements.
+
+Extensions preserve the meaning of required Registry and Record metadata. Compatible schema evolution keeps existing fields and context interpretable; an incompatible representation is identified through a new version or an explicitly selected view. The status of broader compatibility rules is documented under [coverage and limitations](../introduction/scope.md#coverage-and-limitations).
+
+#### Structured values and references <a href="#core-structured-values-and-references" id="core-structured-values-and-references"></a>
+
+Domain schemas distinguish values owned by the containing Record, references to other Records, and embedded representations of related Records. Component identifiers have schema-defined scope. Embedded related representations preserve the target Record's identity and Registry context and declare their source currency. Recorded values retain the meaning assigned by their owning source, including its correction rules.
+
+A Record reference identifies its target Record and Registry unambiguously through the field schema or explicit reference context. Adopted domain reference forms can be used with documented identity, target scope, and resolution semantics. When a target read is offered, the field binding identifies the target collection, operational contract and operation, and how the reference supplies the required inputs. A binding with several possible targets defines how to select the applicable read. Target reads follow the Registry's published capabilities and access policy. Profiles declare any referential-integrity guarantees.
+
+Embedded collection schemas declare bounds. Their contracts define complete permitted views, selected subsets, or pages with continuation; omitted, null, and empty values; and overflow outcomes. A collection declared complete contains every component permitted by that view. Each paginated collection has its own continuation context. Disclosure policy applies to references, embedded data, and completeness information.
+
+**Example: related Record identity.** A field using the illustrative `UnscopedRecordReference` [schema](../api/examples/relationship-examples.schema.json) carries the target Registry explicitly:
+
+```json
+{
+  "recordId": "person_42",
+  "registryId": "https://registry.example/registries/individuals"
+}
+```
+
+The same schema document defines `IndividualReference`, whose target Registry is fixed to that IRI. A field using it can carry `{"recordId": "person_42"}`. Its illustrative field binding maps `recordId` to the path parameter of the target service's `GET /v1/collections/individuals/records/{recordId}` operation. Reading that reference therefore uses `GET https://registry.example/v1/collections/individuals/records/person_42`, subject to the target service's published contract and access conditions. The binding supplies the route; the identifier remains opaque.
+
+## Consultation <a href="#consultation-consultation" id="consultation-consultation"></a>
+
+> **Status:** DRAFT requirements and HTTP binding, for review and implementation trials.
+
+### Purpose and capability model <a href="#consultation-purpose-and-capability-model" id="consultation-purpose-and-capability-model"></a>
+
+Consultation defines read access to Registry Records for independently implemented services and API Consumers. A service selects one or more operation options and publishes its operational contract through [Registry Core metadata](registry-discovery.md#core-api-family-discovery). Consumers use that contract to determine available operations and their inputs.
+
+| Capability | Input | Successful result |
+|---|---|---|
+| Retrieve | Record Identifier | One Record |
+| Lookup | Declared exact selector and its complete key | One Record |
+| List | Declared collection and its supported equality filters | Page of Records |
+| Search | Declared search and typed criteria | Page of Records |
+| Revision List | Record Identifier | Page of retained Record revisions |
+| Revision Retrieve | Record Identifier and Revision Identifier | One retained Record revision |
+
+Shared requirements apply to every selected capability; operation requirements apply when that capability is selected. Each operation applies to a declared logical **Collection** with an unambiguous Registry context, representation schema, and access policy. A Collection is an API grouping with declared membership and one stable `collectionId`. It is independent of database tables, source-system modules, governed datasets, and the institutionally defined Registry. One Registry can expose several Collections, and one Record can appear in several Collections without changing its identity. [Selectable read features](#consultation-selectable-read-features) add stronger guarantees only when the operation declares them.
+
+Collection boundaries are adopter choices. For example, a civil-registration service can expose `birth-registrations`, `marriage-registrations`, and `death-registrations` as separate Collections when that arrangement matches its service contract. Those names are illustrative; this specification does not define the legal scope of civil registration or require one Collection per event type.
+
+Consultation interoperates at the level Core defines: operation shapes, the Record envelope, error outcomes, pagination, and discovery are the same for every Registry, while domain fields, selectors, searches, and filters are declared per contract. Consumers can reuse protocol and envelope handling; domain-specific selectors, field meanings, and reference bindings still require integration against the published contract. See the [interoperability boundary](registry-discovery.md#core-purpose-and-applicability) in Core.
+
+### Common read contract <a href="#consultation-common-read-contract" id="consultation-common-read-contract"></a>
+
+A read preserves the source Records. In the absence of an explicit temporal selector, it returns the latest permitted information available under the service's declared currency contract, including replication or cache delay. An operation selecting `recorded-time` or `effective-time` can instead accept the corresponding temporal selector. Snapshot traversal fixes one collection traversal; it does not by itself make historical Record states addressable. The contract documents currency and temporal semantics; verification reviews that documentation and the source arrangement rather than measuring delay. Domain schemas define the meaning of status, validity, event occurrence, and registration fields.
+
+<a id="consultation-retrieve-representation"></a>
+
+**Record representation.** A baseline `Record` contains `recordId` and `data`; a baseline `RecordPage` contains Records and pagination context. Neither baseline schema publishes temporal metadata. A temporally selected response includes the applied `temporal` context at the top level. The canonical `TemporalRecord` and `TemporalRecordPage` wrappers require that metadata; a concrete contract can instead publish one response schema covering current and selected responses when it requires temporal metadata whenever a selector is applied. Page-level echo keeps an empty temporal Search result interpretable without changing the shared item schema. The identifier is stable, unique within its Registry, and never reassigned. It remains the same across Collections, revisions, views, and temporal selections. The [Common Record context](#core-common-record-context) defines how the contract establishes the Registry and the representation schema: each operation declares its Registry, Collection, capability, and view with the `x-govstack-digital-registries` extension, and its response schema defines the view. Retrieve and Lookup return one Record; List and Search use the same Record shape for each item in a Page.
+
+The `data` schema defines domain fields, structured values, references, and their meanings. Revision, lifecycle, and provenance metadata are not required in the baseline; profiles can require source-backed metadata with defined semantics.
+
+**Example: Record representation.** Examples on this page use the [illustrative business Registry binding](../api/examples/business-registry.openapi.yaml), which defines the domain fields, status values, and query names. Its operations declare Registry `https://registry.example/registries/business`, collection `businesses`, and view `business-public`. A Record response contains:
+
+```json
+{
+  "recordId": "r_42",
+  "data": {
+    "legalName": "Example Ltd",
+    "registrationStatus": "DISSOLVED"
+  }
+}
+```
+
+**Consumer guidance (informative).** Consumers retain Registry context when storing or forwarding Record references, treat Record Identifiers as opaque, and interpret `data` using the declared schema. They accept additional response-envelope members and use only the inputs supported by the published contract. This specification places no conformance requirements on consumers.
+
+### Service declarations <a href="#consultation-service-declarations" id="consultation-service-declarations"></a>
+
+The published service contract supplies the following information for its selected capabilities, directly or through versioned references:
+
+| Topic | Declared information |
+|---|---|
+| Registry context | Registry Identifier, logical Collection Identifier, capability, view, and selected selectable read features of each operation, through the Core [extension](registry-discovery.md#core-api-composition). |
+| Representation | JSON Schemas for the Record view and responses; adopted models and versions; mappings, local constraints, and extensions. |
+| Field meanings | Meaning, units, code lists, and omitted, null, or empty values, preserving the semantics of adopted models. |
+| Lookup and Search | Names, typed inputs, required components, comparison and normalisation rules, uniqueness scope, and matching semantics. Reusable Search semantics name the supported equality, range, set-membership, and prefix operators without requiring a universal query language. |
+| Pagination | Supported equality filters and sorting where offered, deterministic default order with a unique tie-breaker, page-size limits, cursor expiry, source consistency and concurrent-change behaviour, and any complete or snapshot traversal guarantee. |
+| Access and currency | Authentication requirements, access policy for the declared view, and source currency, including material replication or cache delay. |
+| Resource limits | Request and response bounds, configured timeout behaviour and failure outcome, and any source-query or scan limits. A page-size limit does not establish a bound on source rows examined or database work. |
+| Field selection | Supported top-level `data` field names, default field set, mandatory fields if any, selection bounds, omission semantics, and response schema. |
+| Revisions and time | Supported revision capabilities, order, retention and gap semantics, schema evolution, recorded-time and effective-time meanings, accepted selector precision, and unavailable-history outcomes. |
+| Purpose binding | When selected, the trusted purpose binding, controlled purpose codes or absolute URIs, permitted values, rejection behaviour, cursor and validator binding, and audit treatment. |
+
+A domain profile records reusable agreements about schemas, terminology, and query semantics. A service contract applies those agreements to the operations it exposes. An implementation can adopt an existing profile or publish a concrete domain binding directly. Both preserve the shared Consultation behaviour. Reuse of domain models, the treatment of structured values, Record references, and embedded collections, and schema evolution follow [Registry Core](#core-domain-semantics-and-extensions).
+
+**List and Search.** List and Search both return Pages, and the split between them follows the API design guide. List carries equality filters on declared non-personal fields as query parameters, one parameter per field (guide §12.8). Personal criteria, composite keys, and non-equality matching belong to Search, whose request body keeps them out of URLs and logs (guide §8.6 and §12.9). A contract that needs neither can select List alone; a contract whose every useful criterion is personal selects Search alone.
+
+**Reusable Search semantics.** A contract publishes named searches whose criteria remain typed by versioned schemas. It can reuse the standard equality, range, set-membership, and prefix meanings defined by this specification, independently selecting only those it supports. The field contract states the applicable operator, comparison type, normalisation, null and absence treatment, and combination rule. A deployment is not required to implement fuzzy matching, full-text search, or a universal query language. The [business binding](../api/examples/business-registry.schema.json) illustrates a concrete selection of reusable semantics.
+
+### Selectable read features <a href="#consultation-selectable-read-features" id="consultation-selectable-read-features"></a>
+
+Each operation selects additional read features through the `features` array of its `x-govstack-digital-registries` declaration. Omission or an empty array selects none. The declaration lets a shared client distinguish ordinary reads and browsing from stronger guarantees without changing the Record and Page envelopes.
+
+| Feature | Applicable operations | Additional requirement |
+|---|---|---|
+| `conditional-read` | Retrieve | #8: ETag and conditional GET. |
+| `field-selection` | Any Consultation read | #9: A requested subset of declared `data` fields. |
+| `complete-traversal` | List or Search | #10: Each permitted match once under unchanged source data and access conditions. |
+| `snapshot-traversal` | List or Search | #11, plus `complete-traversal`: Source membership, order, and data fixed at one evaluation point. |
+| `recorded-time` | Retrieve, Lookup, List, or Search | #14: Selection by the source-accepted knowledge cutoff. |
+| `effective-time` | Retrieve, Lookup, List, or Search | #15: Selection by declared date or instant applicability. |
+| `purpose-bound` | Retrieve, Lookup, List, Search, Revision List, or Revision Retrieve | #18: A trusted, controlled purpose value is required and enforced. |
+
+### Revision and temporal capabilities <a href="#consultation-revision-and-temporal-capabilities" id="consultation-revision-and-temporal-capabilities"></a>
+
+Revision history is selectable and source-backed. A service does not create historical revisions by caching current responses, traversing a collection snapshot, deriving values from event notifications, or assigning identifiers to representations that the source cannot distinguish. Every history request applies current authentication, authorisation, disclosure, and purpose policy. A protected or unavailable revision produces the declared unavailable outcome without revealing whether hidden history exists.
+
+### HTTP binding <a href="#consultation-http-binding" id="consultation-http-binding"></a>
+
+The [canonical OpenAPI](../resources/api.yml) defines the synchronous HTTPS/JSON contract, version `1.0.0-draft`, using API design guide and ruleset `0.3.0-draft`. Its `CollectionId` schema uses the single reference value `records`; concrete examples use literal Collection Identifiers such as `businesses`, `households`, and `birth-registrations`. The `/v1` prefix is the HTTP compatibility line. The BB requirements remain DRAFT. The [read API design decisions](#consultation-consultation) record the binding choices and the shared guide refinements.
+
+#### Deployment contract <a href="#consultation-deployment-contract" id="consultation-deployment-contract"></a>
+
+The server URL identifies the deployment root, which may include a stable routing prefix such as `/registry`. The canonical hierarchy is `/v1/collections/{collectionId}`; with that prefix a household Record is addressed under `/registry/v1/collections/households/records/{recordId}`.
+
+A deployment publishes a concrete OpenAPI contract containing its selected operations and selectable read features, service and authentication endpoints, versioned JSON Schemas for `data` and the complete response, selectors, searches, supported filters and ordering, source currency, access policy, resource limits, temporal and revision semantics where selected, and continuation policy. Every selected Collection-scoped Consultation operation carries the `x-govstack-digital-registries` extension required by [Provide Registry Services](registry-services.md); it names the Registry, Collection, capability, and view, and the operation's response schema defines that view. The `features` array, which can be omitted, declares the additional read guarantees. A `purpose-bound` operation also carries its required `purpose` declaration. The extension is the binding's answer to the Common Record context: the Registry Identifier is not repeated in requests or Records. The cross-Collection caller capability operation uses its own response schema rather than declaring one Collection context.
+
+One API can expose several collections. A shared API can therefore expose:
+
+```http
+GET /v1/collections/businesses/records/{recordId}
+GET /v1/collections/households/records/{recordId}
+GET /v1/collections/birth-registrations/records/{recordId}
+POST /v1/collections/households/lookup
+POST /v1/collections/households/search
+```
+
+These are illustrative Collection names; the published contract defines the supported paths and membership. Collections are logical API resources and need not match tables, source modules, governed datasets, or separate institutional Registries. A Record retains its `(registryId, recordId)` identity across Collections and views within its Registry. [API composition](registry-discovery.md#core-api-composition) describes how Collections and families share an API; Consultation and Write can share a resource URI with separate methods, schemas, and permissions. The [OpenAPI examples](../resources/api-examples/README.md) illustrate concrete Collections, domain schemas, and response payloads.
+
+#### Operations <a href="#consultation-operations" id="consultation-operations"></a>
+
+| Capability | HTTP operation, relative to the deployment root | Successful body | Input contract |
+|---|---|---|---|
+| Retrieve | `GET /v1/collections/{collectionId}/records/{recordId}` | `Record`, or `TemporalRecord` for selected temporal state | Record Identifier in the path; `recordedAsOf` or `effectiveAt` query selector when its feature is declared. |
+| Lookup | `POST /v1/collections/{collectionId}/lookup` | `Record`, or `TemporalRecord` for selected temporal state | `LookupRequest` with `selector`, `values`, and `temporal` when declared. |
+| List | `GET /v1/collections/{collectionId}/records` | `RecordPage`, or `TemporalRecordPage` for selected temporal state | Any `pageSize`, `cursor`, declared filters and sort, plus temporal query selectors when declared. |
+| Search | `POST /v1/collections/{collectionId}/search` | `RecordPage`, or `TemporalRecordPage` for selected temporal state | `SearchRequest` with `search`, `criteria`, pagination controls, and `temporal` when declared. |
+| Revision List | `GET /v1/collections/{collectionId}/records/{recordId}/revisions` | `RevisionPage` | Record Identifier and pagination controls. |
+| Revision Retrieve | `GET /v1/collections/{collectionId}/records/{recordId}/revisions/{revisionId}` | `RecordRevision` | Record and Revision Identifiers. |
+
+
+##### Retrieve <a href="#consultation-retrieve" id="consultation-retrieve"></a>
+
+Retrieve uses `GET /v1/collections/{collectionId}/records/{recordId}` to return the latest permitted Record representation for a stable Record Identifier, or the representation selected by a declared temporal selector.
+
+
+##### Lookup <a href="#consultation-lookup" id="consultation-lookup"></a>
+
+Lookup uses `POST /v1/collections/{collectionId}/lookup` with a declared exact selector and complete key to resolve at most one permitted Record.
+
+
+##### List <a href="#consultation-list" id="consultation-list"></a>
+
+List uses `GET /v1/collections/{collectionId}/records` with declared equality filters and ordering to return a bounded Page of permitted Records.
+
+
+##### Search <a href="#consultation-search" id="consultation-search"></a>
+
+Search uses `POST /v1/collections/{collectionId}/search` with a declared search name and typed criteria to return a bounded Page of permitted matching Records.
+
+
+##### Revision List <a href="#consultation-revision-list" id="consultation-revision-list"></a>
+
+Revision List uses `GET /v1/collections/{collectionId}/records/{recordId}/revisions` to return a bounded Page of retained revisions of one Record.
+
+
+##### Revision Retrieve <a href="#consultation-revision-retrieve" id="consultation-revision-retrieve"></a>
+
+Revision Retrieve uses `GET /v1/collections/{collectionId}/records/{recordId}/revisions/{revisionId}` to return one retained revision of one Record.
+
+Lookup and Search are actions on the Collection resource, while item identifiers are under its separate `/records` child. Consequently, `lookup` and `search` do not collide with `{recordId}` and are not reserved Record Identifier values. Lookup and Search are synchronous reads returning `200`; selector and search values remain in the request body. Lookup uses a declared unique key within its documented scope; Search uses declared named typed criteria. The concrete contract defines comparison and normalisation rules and rejects unsupported inputs. The binding also exposes the guide's unversioned `/health` operation.
+
+The canonical contract can also expose `GET /v1/capabilities` with operation ID `getCallerCapabilities`. Its single bounded `CallerCapabilities` response is caller-filtered, advisory, and `no-store`; each operation entry requires a version-specific HTTPS contract, operation ID, capability annotation, and view, and can include `readableFields`, selector, Search, feature, and purpose annotations. `readableFields` does not imply `field-selection`. Capability and feature annotations are extensible as described in requirement #17, while the linked normative operation extension remains closed for its contract version. The document contains at most 64 Collections and 16 operations per Collection. A deployment fails explicitly when the authorised description exceeds a declared bound; it does not truncate or silently omit it. `collections: []` means no operation is visible to the caller, not overflow.
+
+**Example: exact Lookup.** The business binding names its Collection `businesses`. To resolve a business by its declared registration-number key, send this body to `POST /v1/collections/businesses/lookup`:
+
+```json
+{
+  "selector": "byRegistrationNumber",
+  "values": {
+    "registrationNumber": "BR-000042"
+  }
+}
+```
+
+For the permitted match, the `200` response is the Record shown above.
+
+**Example: Search and collection result.** To find businesses with a declared registration status, send this body to `POST /v1/collections/businesses/search`:
+
+```json
+{
+  "search": "byRegistrationStatus",
+  "criteria": {
+    "registrationStatus": "DISSOLVED"
+  },
+  "pageSize": 20
+}
+```
+
+With one permitted match and traversal complete, the `200` response is:
+
+```json
+{
+  "items": [
+    {
+      "recordId": "r_42",
+      "data": {
+        "legalName": "Example Ltd",
+        "registrationStatus": "DISSOLVED"
+      }
+    }
+  ],
+  "pageInfo": {
+    "nextCursor": null
+  }
+}
+```
+
+List uses the same Page shape for its declared collection.
+
+#### Representation and schema context <a href="#consultation-representation-and-schema-context" id="consultation-representation-and-schema-context"></a>
+
+Retrieve and Lookup return baseline `Record` or, when temporal coordinates are applied, `TemporalRecord`. List and Search return baseline `RecordPage` or `TemporalRecordPage`, with each item using the same Record schema for the declared view. Revision Retrieve returns `RecordRevision`; Revision List returns `RevisionPage`. Empty and single-result Collections retain their Page shape. `TemporalRecord` echoes applied coordinates at Record level. `TemporalRecordPage` echoes them at Page level, including when `items` is empty. Baseline `Record` and `RecordPage` omit temporal metadata.
+
+The operation's Registry context declaration and response schema provide Registry and schema context. Additional source metadata follows [Registry Core](#core-common-record-context). A schema linked with `rel="describedby"` describes the complete response, including its envelope. Different operations can declare different views; operations sharing a collection and view use the same Record schema.
+
+**Audience-dependent fields.** A view schema can mark varying fields as not required so access policy and consumer field selection determine which are returned on the same operation. The contract documents the default field set and omission meanings; the schema alone does not guarantee selectable fields will always be present. A materially different view with different required fields or meanings uses a separately declared operation or API. Records retain their identity across those views.
+
+**Field-selection input.** An operation selecting `field-selection` publishes a `fields` input, which clients can omit, restricted to its declared selectable top-level `data` property names. GET operations use a comma-separated query array, for example `GET /v1/collections/businesses/records/r_42?fields=legalName`. Lookup and Search carry a JSON array in the body, for example `"fields": ["legalName"]`. The input selects existing fields; it does not introduce a query language, nested expansion syntax, or a different view schema. Mandatory `data` fields, if any, remain present as documented. Without this feature, an operation does not accept this input.
+
+#### Temporal selection <a href="#consultation-temporal-selection" id="consultation-temporal-selection"></a>
+
+Timestamp selectors and revision recording times use RFC 3339 UTC instants serialised with uppercase `Z`. Calendar-date applicability coordinates use `format: date` and are not converted into instants. The illustrative birth profile accepts calendar dates only for `effectiveAt`, including its response echo, while its recording-time coordinates remain UTC instants.
+
+GET Retrieve and List carry `recordedAsOf` and `effectiveAt` as query parameters only when the corresponding feature is selected. POST Lookup and Search carry the same coordinates inside the closed, non-empty `temporal` object, when supplied. `recordedAsOf` is a date-time; `effectiveAt` is a date or date-time as the concrete contract declares. The operation can accept either or both coordinates. When both are present, it selects the state applicable at `effectiveAt` using only source knowledge accepted no later than `recordedAsOf`. `TemporalRecord` and `TemporalRecordPage` echo every applied source-backed coordinate, including an empty Page. Absence selects the latest representation and omits temporal metadata; a concrete contract can publish a response schema that covers both cases while enforcing that temporal metadata is present whenever a selector is applied. Revision List and Revision Retrieve do not accept these selectors.
+
+Temporal selection is distinct from traversal consistency. `snapshot-traversal` holds one paged result stable but does not provide recorded-time or effective-time history. Conversely, a temporal selector does not make later continuation Pages a snapshot unless `snapshot-traversal` is also selected.
+
+#### Revision history <a href="#consultation-revision-history" id="consultation-revision-history"></a>
+
+Revision operations use a separately declared history view, such as `record-history`. `RecordRevision.revision` always contains `revisionId` and can contain `recordedAt` when that value is source-backed. The deployment documents revision order, retention, gaps, and schema evolution. A declared history view can normalise older source schemas while preserving their values and meanings; a revision that cannot be mapped faithfully produces the declared explicit failure. Current authorisation and disclosure apply to every request and Page. An unavailable historical state fails with the declared protected outcome; the service does not expose an arbitrary raw schema or synthesise it from current data, snapshots, audit events, registration dates, or event occurrence dates.
+
+<a id="consultation-pagination"></a>
+<a id="consultation-pagination-contract"></a>
+
+#### Continuation <a href="#consultation-continuation" id="consultation-continuation"></a>
+
+The first request selects `pageSize`, defaulting to 20 and bounded to 100 in the canonical contract. A continuation repeats the original criteria, search name where applicable, sorting, temporal selection, and effective field selection with the cursor. Field order does not change the selected set; omission uses the declared default. It can omit `pageSize` to retain the bound value or supply that same value; a different value produces `400 invalid-cursor`. Cursors are opaque, URL-safe, integrity-protected, and exclude personal data. They bind the operation, Registry, Collection, query, view, temporal context, effective field set and size, effective purpose where required, and applicable access context. A Revision List cursor also binds its parent `recordId`; replay under another parent produces `400 invalid-cursor`. Cursors do not grant authority; every Page is reauthorised. The deployment declares expiry and rejects malformed, expired, or mismatched cursors, including continuations whose declared semantics it can no longer preserve. A short or empty Page can carry a non-null `nextCursor` when source processing advances. An adapter can wrap a source offset, page number, or continuation token while preserving these rules.
+
+A non-null `pageInfo.nextCursor` enables continuation; `null` marks completion of the declared traversal. Baseline completion follows the published consistency and result-limit policy. Only `complete-traversal` establishes exhaustive membership, and only `snapshot-traversal` establishes a fixed source snapshot. When supplied, `pageInfo.total` is the exact count of the full permitted query at the documented evaluation point, before applying the continuation boundary: the current page's evaluation for live reads or the fixed source snapshot evaluated under current disclosure rights for snapshot traversal. Disclosure policy decides whether it is offered at all. Services omit an unavailable total. OpenAPI defines the cursor format, limits, and error responses.
+
+#### Outcomes, errors, and caching <a href="#consultation-outcomes-errors-and-caching" id="consultation-outcomes-errors-and-caching"></a>
+
+OpenAPI defines the status codes and RFC 9457 Problem Details for each operation. Retrieve and Lookup share `404 record-not-available` for unknown Records, Records outside the selected Collection, and Records whose existence is protected under [Provide Registry Services](registry-services.md). Revision List and Revision Retrieve use the same outcome for an unknown or protected parent Record; Revision Retrieve also uses it when the revision is unknown or protected, without distinguishing which resource was unavailable. After these protection checks, an authorised operation whose source cannot return retained history uses `409 history-not-available`.
+
+A successful List or Search with zero permitted matches returns `200` with an empty `items` array, including when policy filters every source match. For a temporal item read, a source-backed determination that no item exists at the selected coordinates uses `404 record-not-available`, subject to protected-existence handling. When the authorised source cannot evaluate the requested temporal state or query, the operation uses `409 temporal-state-not-available` and never substitutes current state. These outcomes distinguish proven absence from unavailable historical evaluation.
+
+Structural input errors, invalid query parameters, and invalid pagination controls use `400`. Empty, duplicate, incorrectly typed, or out-of-bounds field selections also use `400`. Structurally valid Lookup and Search bodies with unknown selector, search, or selectable field names or invalid domain values use `422`. Unknown selectable field names in a query use `400`. Malformed, expired, mismatched, or cross-parent Revision List cursors use `400 invalid-cursor`.
+
+Protected reads and errors use `Cache-Control: no-store`. Deployments may declare caching for public or isolated representations. An operation selecting `conditional-read` publishes `If-None-Match` and `304`; its `200` and `304` responses carry the declared ETag header for the permitted representation, and authorisation precedes evaluation of the validator. The matching `304` is bodyless, while `200` carries the declared response body and headers. A baseline Retrieve operation need not publish ETag, `If-None-Match`, or `304`. Authentication, authorisation, and source failures follow the declared OpenAPI responses and the API design guide. The API catalog's conditional responses are independent of the Consultation feature declaration.
+
+When `purpose-bound` is selected, the operation extension identifies a trusted access-token claim or trusted authorisation context and the controlled allowed purpose values. Purpose never comes from an ordinary request parameter. Missing or unallowed purpose fails before disclosure, and the effective purpose participates in cursor and ETag context. This does not replace inherited security or establish consent, institutional authority, or downstream compliance. Operations without `purpose-bound` continue to use their inherited authentication and authorisation requirements without a purpose input.
+
+#### Record references and expansion <a href="#consultation-record-references-and-expansion" id="consultation-record-references-and-expansion"></a>
+
+The [Core representation rules](#core-structured-values-and-references) govern nested data and related Records. The reusable `RecordReference` schema carries `recordId` and, where the field schema leaves the target Registry open, required `registryId`. A field with a fixed target Registry permits omission of `registryId` and accepts an explicit value only when it matches that target.
+
+When a related read is offered, the field binding identifies its target collection, read operation, and operational contract, including how the reference supplies the operation's inputs. Consumers follow that binding and the target's access requirements. Record Identifiers remain opaque; reference identity is independent of the target's current availability.
+
+Client-selected expansion, where offered, declares its supported paths, bounds, source currency, and disclosure behaviour in the deployment contract. Expansion embeds related representations inside the declared view; it does not select a different view. The [OpenAPI examples](../resources/api-examples/README.md) demonstrate concrete nested schemas and references.
+
+### Conformance <a href="#consultation-conformance" id="consultation-conformance"></a>
+
+Evaluation identifies the service, specification and contract versions, selected capabilities, and any adopted domain profile. The service satisfies the common read contract, service declarations, HTTP binding, and the requirements applicable to each selected capability.
+
+| Selected operation option | Applicable behaviour |
+|---|---|
+| `consultation-retrieve` | Retrieve by identifier, permitted representation, and protected-existence handling when policy protects existence. |
+| `consultation-lookup` | Exact selector resolution, permitted representation, and protected-existence handling when policy protects existence. |
+| `consultation-list` | Bounded collection listing, permitted representation, and bounded continuation. |
+| `consultation-search` | Declared typed search with reusable Search semantics, permitted representation, and bounded continuation. |
+| `consultation-revision-list` | Retained revision listing for one Record, permitted representation, bounded continuation, and protected-existence handling when parent Record or history existence is protected. |
+| `consultation-revision-retrieve` | One retained revision of a Record, permitted representation, and protected-existence handling when parent Record or revision existence is protected. |
+
+Each selected selectable read feature additionally applies its requirement: #8 through #11 for conditional, selection, and traversal guarantees; #14 and #15 for temporal selection; and #18 for purpose binding. Offering caller capability discovery applies #17. Capability conformance covers the shared contract and selected operations; additional feature claims establish their stronger guarantees. A shared SDK can handle the common operations, envelopes, errors, and continuation while configuring domain schemas and criteria per Registry. Applications needing complete exports, fixed snapshots, source history, temporal reads, or purpose binding check those declarations explicitly.
+
+Verification checks published contracts and observable exchanges under the stated fixture conditions. The [OpenAPI examples](../resources/api-examples/README.md) and [artifact validation](../resources/testing.md#artifact-validation) support review; deployed behaviour is evaluated separately.
+
+### Resource paths, identity, and API composition <a href="#consultation-resource-paths-identity-and-api-composition" id="consultation-resource-paths-identity-and-api-composition"></a>
+
+Lookup and Search use collection action sub-resources, the convention shared across GovStack BB APIs:
+
+```http
+GET /v1/collections/households/records/{recordId}
+GET /v1/collections/households/records
+POST /v1/collections/households/lookup
+POST /v1/collections/households/search
+```
+
+Lookup and Search are children of the Collection resource, while Record items are children of its `/records` resource. A Record Identifier equal to `lookup` or `search` therefore remains addressable under `/records/{recordId}` and does not collide with either action. The guide's §5.8 reservation rule does not apply because the action names are not used inside the Record collection's identifier namespace.
+
+This hierarchy exceeds the API Design Guide §5.4 preference for at most two nesting levels after `/v1`. Section 5.4 is a SHOULD, not a MUST. The additional depth is deliberate: this specification selects an explicit logical Collection resource so Collection-level actions, Record items, and Record revision sub-resources remain unambiguous while Record identity stays stable across Collections. The contract documents that rationale; it does not claim an approved guide exception.
+
+Collection membership scopes every read. Retrieve and Lookup use the unavailable-Record outcome for Records outside that Collection, and continuation binds the Collection as well as the query. Identity remains `(registryId, recordId)` across Collections, views, revisions, and temporal selections. Source adapters disambiguate overlapping keys for distinct Records in the same Registry with stable identifiers. Field bindings identify target read operations and input mappings for resolvable references.
+
+### Relationship identity, snapshots, and completeness <a href="#consultation-relationship-identity-snapshots-and-completeness" id="consultation-relationship-identity-snapshots-and-completeness"></a>
+
+The [Core representation rules](#core-structured-values-and-references) distinguish owned components, Record references, and related-data views across API families. The [household contract](../api/examples/household-registry.openapi.yaml) embeds membership attributes and references individual Records. The [birth-registration contract](../api/examples/birth-registration.openapi.yaml) owns recorded parent details, with individual references that may be absent.
+
+Each view declares array bounds and completeness for the permitted representation. A complete array exceeding its bound follows the declared failure contract. A separately paginated relationship collection has its own published operation.
+
+## Write <a href="#write-write" id="write-write"></a>
+
+> **Status:** DRAFT requirements and HTTP binding, for review and implementation trials.
+
+### Purpose and capability model <a href="#write-purpose-and-capability-model" id="write-purpose-and-capability-model"></a>
+
+Write defines how an authorised API consumer proposes or commits a change to a Registry Record without depending on the Registry's internal storage or workflow implementation.
+An implementation selects any of the following options independently:
+
+| Option | Primary operation | Outcome |
+|---|---|---|
+| Create | `createRecord` | Atomically creates one authoritative Record. |
+| Update | `updateRecord` | Atomically changes the permitted content of one existing Record. |
+| Transition | `applyRecordTransition` | Atomically applies one declared lifecycle or domain transition to an existing Record. |
+| Change Requests | `submitChangeRequest` | Creates one non-authoritative immutable proposal for later review and application. |
+
+Selecting one option does not select another.
+A Registry can expose direct Create, Update, or Transition without Change Requests, expose Change Requests without public direct mutation endpoints, or expose both under separate grants.
+Defining the four options does not require a deployment to implement every operation.
+
+A governed service can manage review within the Registry or use an external workflow service.
+The external service submits or applies a proposal through the same Registry boundary and does not bypass current Registry validation, authorisation, preconditions, or transition policy.
+This binding does not require a general workflow engine, a particular BReg workflow model, withdrawal, multiple approvers, or atomic changes spanning several Records or systems.
+
+The domain schema, allowed values, transitions, approval policy, and institutional authority remain deployment declarations.
+The shared Write contract does not select or require a domain schema vocabulary.
+Domain-specific models, input forms, projections, and examples are institution-selected and cannot add an undeclared Write permission, mapping, or workflow guarantee.
+
+
+### Published Write contract <a href="#write-published-write-contract" id="write-published-write-contract"></a>
+
+The canonical [Write OpenAPI contract](../resources/write-api.yml) defines the HTTP shapes.
+Every selected primary operation publishes:
+
+- a typed input schema and result schema;
+- its target Registry and logical Collection;
+- the operation grant evaluated for that target;
+- a deterministic mapping from accepted input into authoritative Record state and retained provenance;
+- authentication and any separately declared trusted purpose binding;
+- idempotency, precondition, validation, error, and acknowledgement behaviour; and
+- synchronous or asynchronous success outcomes.
+
+The target is the institutionally governed Registry and a logical API Collection, not an internal table or workflow queue.
+Publishing an operation, grant name, or metadata entry does not grant authority.
+The service evaluates current policy on every attempt.
+
+Write input is an operation contract, not a copy of a Consultation response.
+A Create declaration, correction request, Update, Transition, or governed proposal can use its own typed form and can carry evidence, reasons, attestations, or other intake data that is not part of the public or permitted Record view.
+The operation declares how every accepted field maps to authoritative domain state, retained provenance, or workflow-only context and rejects accepted input for which that mapping is undefined.
+Direct and governed paths that represent the same mutation publish aligned mutation semantics, even when their transport envelopes and workflow metadata differ.
+Consultation projections can omit, transform, or combine authoritative fields under their separately declared view without changing the Write input contract.
+
+The contract also defines supporting operations for retrieving writable context, reading and listing Change Requests, recording review decisions, withdrawing a request where supported, and retrieving asynchronous Operation status where offered.
+These supporting operations do not become additional options of the `registry-service` variation point.
+They support the selected Write option and retain their own access requirements.
+Application can be performed by a Registry-managed or external worker under a distinct application permission and can invoke a selected direct operation when the deployment exposes one to that trusted component.
+The binding does not require a public Change Request application endpoint.
+
+### Direct Write semantics <a href="#write-direct-write-semantics" id="write-direct-write-semantics"></a>
+
+Create accepts the complete typed declaration input published for its Collection and returns a durable acknowledgement only after one Record is created or asynchronous work is accepted.
+The Registry assigns or accepts Record identity only as declared by the contract.
+A preview never allocates authoritative identity.
+
+Update accepts only the fields or components declared by its typed correction or update input.
+The contract states whether an omitted field is unchanged, cleared, defaulted, or invalid.
+The service does not infer generic patch semantics from the HTTP method or schema shape.
+
+Transition accepts one declared transition name and its typed input.
+Each transition declares its valid source conditions, resulting semantics, and operation grant.
+Possession of a transition name or Record Identifier is not authority to apply it.
+
+Create, Update, and Transition are independently selectable.
+The baseline does not require one operation to emulate another, and it does not require a public direct operation merely because an approved Change Request can ultimately cause the same kind of authoritative change.
+
+### Resource path depth <a href="#write-resource-path-depth" id="write-resource-path-depth"></a>
+
+The API Design Guide §5.4 recommends at most two semantic resource levels after `/v1` as a SHOULD, not a MUST.
+A named action after the explicit Collection and Record creates three semantic resource levels.
+That additional depth is deliberate: it preserves the selected Collection boundary, the addressed Record, and the fixed action meaning without placing an action name in the Record identifier namespace or turning it into a caller-selected generic command.
+
+The non-normative examples use the same rationale for fixed correction and add-member actions.
+Supporting paths such as `/v1/change-requests/{changeRequestId}/approve` have only the Change Request and approval-action levels.
+The deeper direct action paths retain the guide warning for review; this draft does not claim an approved exception.
+
+
+### Non-normative domain examples <a href="#write-non-normative-domain-examples" id="write-non-normative-domain-examples"></a>
+
+The [example contracts and payloads](../resources/api-examples/README.md) demonstrate how institution-selected domain models can bind to Write without becoming shared requirements.
+Their field names, vocabularies, validation rules, permissions, and review policies are examples only.
+
+A civil-registration declaration or correction can use an operational input shape that differs from the permitted Birth read projection.
+Reasons, supporting evidence, requester context, fees, review decisions, and application state remain command, provenance, or workflow information rather than Birth facts.
+Only successfully applied authoritative content enters the read projection; a pending, rejected, withdrawn, blocked, or failed proposal does not alter it.
+
+A Household can be created using references to existing people.
+A profile can also create people and the Household together only when it separately declares and verifies one atomic transaction within the same authoritative source.
+Request-local references resolve to authoritative Record identifiers only after that compound commit succeeds.
+The same boundary applies when adding a member later: adding an existing person needs no compound creation guarantee, while creating and adding a new person together requires the declared same-source transaction guarantee.
+
+These examples do not require a civil-registration or household model, combine those domains under one authority, define a generic batch language, or promise a distributed transaction.
+
+
+### Atomicity and compound changes <a href="#write-atomicity-and-compound-changes" id="write-atomicity-and-compound-changes"></a>
+
+Each operation declares its own component boundary.
+Within that boundary, success is all or nothing: a Create does not leave a partial Record, an Update does not commit only some declared components, a Transition does not advance state without its associated committed data, and a Change Request submission does not create a partially stored proposal.
+
+Atomicity across additional Records, Collections, Registries, messages, credentials, or external systems is a stronger guarantee that a deployment declares and verifies separately.
+The baseline permits a workflow to coordinate several independently committed components and report an explicit partial or compensating outcome, provided it does not label that sequence atomic.
+
+
+### Retries and idempotency <a href="#write-retries-and-idempotency" id="write-retries-and-idempotency"></a>
+
+Every selected primary operation accepts the contract's idempotency key and binds it to the authenticated consumer, operation, Registry, Collection, target where present, trusted purpose where required, and canonical request content.
+The contract declares key syntax, retention, the replay response, and the conflict returned when the key is reused with different bound content.
+
+A retry with the same key and content cannot create a second committed effect.
+The service still applies current authentication and authorisation before executing or disclosing the replayed result.
+An idempotency key is neither a credential nor a reservation of future authority.
+After the declared retention period, a consumer cannot assume that repeating a mutation is safe and obtains current state before deciding how to recover.
+
+
+### Concurrency and commit guards <a href="#write-concurrency-and-commit-guards" id="write-concurrency-and-commit-guards"></a>
+
+Update and Transition require a strong opaque precondition for the current target representation.
+A Change Request that proposes a change to an existing Record captures the same source precondition at submission.
+The service rejects an omitted, malformed, or stale required precondition and checks a matching precondition atomically with commit.
+
+The commit guard protects the current target representation.
+It does not require a public revision-history operation, retained historical representations, or reconstruction of a revision sequence.
+If two writers start from the same target state, at most one can commit under that guard.
+
+
+### Authority and purpose <a href="#write-authority-and-purpose" id="write-authority-and-purpose"></a>
+
+Read and Write permissions are separate.
+A consumer can be allowed to write information it cannot read back, or to read a Record it cannot change.
+Create, Update, Transition, Change Request submission, review, and application each have separately evaluated grants and target scopes.
+
+A deployment that enforces purpose declares one trusted binding and controlled values for each affected operation.
+Purpose comes from the trusted authentication or authorisation context, not an ordinary query or body field.
+Purpose supplements the operation grant and is not consent, institutional authority, approval, or proof of downstream use.
+
+
+### Trusted context and client input <a href="#write-trusted-context-and-client-input" id="write-trusted-context-and-client-input"></a>
+
+Actor, reviewer, purpose, approval, and application status are derived from trusted security and workflow context.
+The service rejects or ignores client-supplied control fields according to the published schema and never treats them as verified authority.
+A domain schema can contain fields with similar names as Record data, but those values do not authenticate an actor, select a reviewer, satisfy a purpose rule, approve a request, or apply a change.
+
+
+### Acknowledgement, provenance, and audit <a href="#write-acknowledgement-provenance-and-audit" id="write-acknowledgement-provenance-and-audit"></a>
+
+Every accepted Write uses its declared HTTP status, response schema, target URI, `Location`, or validator to identify the target, created resource, or asynchronous Operation and to distinguish authoritative commit, non-authoritative request creation, and accepted asynchronous work.
+A bodyless successful response can identify its existing target through the request URI and validator and does not need an invented response body.
+The response does not claim that queued work committed, that a submitted proposal was approved, or that an approved request was applied.
+Correlation follows the inherited API guidance and the deployment's published policy rather than requiring a new Write-specific identifier in every response.
+
+The service retains provenance and audit evidence for the trusted actor, selected operation, Registry, Collection, Record or Change Request target, trusted purpose where present, validated input identity, precondition, decision, and committed effect.
+The deployment declares retention, integrity, clock, redaction, and access boundaries.
+Source or recording time is exposed only when the source provides it with documented source-backed semantics; this binding does not require a new history timestamp.
+Audit evidence is protected according to its sensitivity and does not prove legal authority, consent, downstream use, or source facts outside the declared validation scope.
+
+
+### Protected resources <a href="#write-protected-resources" id="write-protected-resources"></a>
+
+An authenticated caller receives the same generic `404` outcome for an unknown resource and a resource whose existence is protected.
+This rule covers protected Records, Collections, Change Requests, Operations, and operation availability where the access policy protects them.
+The outcome does not reveal the protected resource through body content, security-relevant headers, workflow state, validation detail, conflict detail, precondition detail, timing classes, counts, or continuation behaviour.
+Independently generated trace and correlation values can differ.
+
+Authentication can fail before resource resolution.
+After protected resolution begins, the service does not return a more specific conflict or workflow outcome unless the caller is permitted to know that resource and context.
+
+
+### Preview and authoritative state <a href="#write-preview-and-authoritative-state" id="write-preview-and-authoritative-state"></a>
+
+Validation or preview, when offered, is read-only.
+Its response is explicitly non-authoritative and states the policy and source evaluation point used.
+It does not allocate an authoritative Record Identifier, advance a Change Request, reserve a transition, or guarantee that a later Write will succeed.
+
+A later Write repeats current authentication, authorisation, input validation, source precondition, trusted-purpose, and transition-policy checks.
+Clients distinguish preview data from the authoritative acknowledgement and from Consultation of committed Registry state.
+
+
+### Change Request lifecycle <a href="#write-change-request-lifecycle" id="write-change-request-lifecycle"></a>
+
+Submitting a Change Request creates an immutable non-authoritative resource.
+Its stable identifier and version or content digest bind later decisions to the exact proposal content, target, source precondition, submitter context, and provenance reviewed.
+Changing any bound proposal content creates another request or version that requires its own decision.
+Appending a review note or decision does not change the bound proposal.
+
+Pending and rejected requests have no authoritative Registry side effect.
+A withdrawn request also has no authoritative side effect when withdrawal is offered.
+Withdrawal is optional, as are multiple reviewers and particular decision rules.
+
+Approval records a decision about the immutable proposal.
+Approval alone does not constitute commit and does not guarantee application.
+A published review operation can also trigger separately authorised and revalidated application, either synchronously or through an automatic worker, without another public application endpoint.
+Its response and request representation distinguish approval with application not started, application processing, applied, blocked, and failed outcomes as supported by the contract.
+Only an explicitly acknowledged successful application changes authoritative Registry state.
+An approved request can therefore remain unapplied or record an application failure without rewriting the approval decision.
+
+Submission, review, and application use distinct permissions and trusted actor contexts.
+One actor can hold several permissions where institutional policy allows it, but each stage is separately authorised and audited.
+Distinct permissions do not require distinct HTTP calls.
+The workflow can be Registry-managed or external, provided the Registry commit boundary applies the same current checks.
+
+
+### Application-time revalidation <a href="#write-application-time-revalidation" id="write-application-time-revalidation"></a>
+
+Application rechecks current authentication, application permission, trusted purpose where required, target availability, the retained source precondition, typed input validity, and transition policy.
+These checks are atomic with the authoritative commit.
+A stale precondition is not weakened, current content is not silently substituted, and changed proposal content is not applied under an earlier decision.
+
+If any check fails, the service records an explicit unapplied outcome and leaves authoritative state unchanged.
+The request's approval decision and application outcome remain separately visible to permitted actors.
+
+
+### HTTP outcomes <a href="#write-http-outcomes" id="write-http-outcomes"></a>
+
+Asynchronous execution is optional for each operation and is independent of selecting direct Write, Change Requests, or both.
+A synchronous-only deployment omits `202` from its selected operations and, when no Write operation runs asynchronously, need not expose `getOperation`.
+The specification defines no separate asynchronous capability flag.
+
+| Situation | Response | Identified resource | Meaning |
+|---|---|---|---|
+| Authoritative Record created synchronously | `201 Created` | Record | The Record commit completed. |
+| Update or Transition committed synchronously | Contract-defined `200` or `204` | Target URI and any declared validator or representation | The authoritative change completed. |
+| Change Request submitted for later review | `201 Created` | Change Request | One non-authoritative proposal was created. Waiting for review is not background processing. |
+| Review-only approval | `200 OK` | Change Request with approved review and application not started | The decision was recorded; no application work was accepted or completed. |
+| Background execution accepted | `202 Accepted` | Operation identified by `Location` | Processing was accepted, but commit, approval, and application remain unproven. |
+
+Every offered `202` path publishes an Operation representation retrievable through `getOperation`, terminal success and failure outcomes, and a retention policy.
+An Operation reports execution status only.
+It does not replace the Change Request, carry its review authority, or become the source of its review and application state.
+The Change Request remains the workflow resource before, during, and after any background application.
+
+A review operation can return `202` only when it also accepts actual background application work.
+A review-only decision does not return `202` merely because application might happen later.
+An accepted background job can be queued for a worker or scheduled execution and still correctly return `202`.
+Update and Transition use their contract-defined synchronous success only after authoritative commit.
+
+
+### Change Request listing <a href="#write-change-request-listing" id="write-change-request-listing"></a>
+
+`listChangeRequests`, when offered, returns only requests permitted for the current caller and context.
+It uses deterministic ordering with a unique tie-breaker, bounded Pages, a declared default and maximum size, and opaque integrity-protected continuation.
+The cursor is bound to caller context, Registry, Collection, filters, order, and effective page size and expires under the published policy.
+Every Page reauthorises.
+
+Malformed, tampered, expired, or context-mismatched cursors fail explicitly and never restart silently.
+Empty and short advancing Pages retain the Page shape.
+A non-null cursor advances, and `null` marks completion under the declared consistency and result-window policy.
+Baseline listing does not promise exhaustive traversal or a fixed source snapshot.
+
+### Conformance boundary <a href="#write-conformance-boundary" id="write-conformance-boundary"></a>
+
+The four Write options are DRAFT and independently selectable under the existing `registry-service` variation point.
+Only requirements conditioned on a selected option apply to that option.
+Conditional facilities such as preview, withdrawal, asynchronous processing, and request listing apply only when offered.
+Stronger compound atomicity, exhaustive listing, snapshot listing, multi-approver policy, and domain-specific state machines are not baseline guarantees.
+
+The OpenAPI contract and examples support artifact review.
+They do not establish that a deployed implementation enforces authorisation, atomicity, preconditions, idempotency, workflow separation, protected existence, or crash recovery.
+Those claims require the pending runtime scenarios in [Write testing](../resources/write-testing.md).
+
+## Service workflows <a href="#workflow-workflows" id="workflow-workflows"></a>
+
+### Retrieve a permitted Record representation <a href="#workflow-retrieve-a-permitted-record-representation" id="workflow-retrieve-a-permitted-record-representation"></a>
+
+This workflow applies to implementations selecting Retrieve. The [HTTP binding](../api/openapi.yaml) defines request and response details.
+
+#### Preconditions <a href="#workflow-preconditions-1" id="workflow-preconditions-1"></a>
+
+1. The published service contract exposes Retrieve and identifies its Registry, collection membership, representation schema, and any selectable features.
+2. The consumer has the credentials and request context required by the deployment.
+
+#### Interaction <a href="#workflow-interaction-1" id="workflow-interaction-1"></a>
+
+1. The consumer sends a request to the declared item path, such as `GET /v1/collections/businesses/records/{recordId}`, with a Record Identifier within the Registry. When the operation declares `field-selection`, the consumer may also request declared selectable top-level `data` fields with `fields`. When a temporal feature is declared, the consumer can explicitly supply `recordedAsOf` or `effectiveAt`; omission requests the latest representation.
+2. The Registry evaluates authentication, access, and disclosure policy.
+3. The Registry resolves the latest or explicitly selected source-backed Record state within the Collection and constructs its permitted baseline `Record` or selected `TemporalRecord` representation. Latest Records may include inactive Records.
+4. The Registry returns that representation or the declared unsuccessful outcome.
+
+#### Outcomes <a href="#workflow-outcomes-1" id="workflow-outcomes-1"></a>
+
+| Condition | Observable outcome |
+|---|---|
+| Latest Record state is accessible without temporal selection | The latest permitted representation is returned without temporal metadata. |
+| Explicitly selected Record state is accessible | A `TemporalRecord` echoing the applied temporal context is returned. |
+| Consumer has narrower disclosure rights | The returned representation satisfies both disclosure policy and its schema. |
+| Identifier is unknown, belongs to a Record outside the collection, or has protected existence | The same `record-not-available` outcome is returned. |
+| Source proves no Record exists at the selected temporal coordinates | `404 record-not-available`, subject to protected-existence handling. |
+| Authorised source cannot evaluate the selected temporal state | `409 temporal-state-not-available`; current state is not substituted. |
+| Operation declares `conditional-read` and an authorised `If-None-Match` validator matches | A bodyless `304` with the selected representation's ETag is returned. |
+
+#### Postconditions <a href="#workflow-postconditions-1" id="workflow-postconditions-1"></a>
+
+- The source Record is unchanged.
+- The returned identifier matches the requested identifier.
+- Registry, schema, and authority context are unambiguous; any additional source metadata follows the published contract.
+- Field selection retains `recordId` and `data`, uses the operation's one declared view schema, and cannot widen disclosure. Unsupported fields produce the declared validation error.
+
+### Look up a Record using an exact selector <a href="#workflow-look-up-a-record-using-an-exact-selector" id="workflow-look-up-a-record-using-an-exact-selector"></a>
+
+This workflow applies to implementations selecting Lookup.
+
+#### Preconditions <a href="#workflow-preconditions-2" id="workflow-preconditions-2"></a>
+
+1. The contract exposes a Lookup operation, such as `POST /v1/collections/businesses/lookup`, and declares the Collection, selectable features, and selector's typed components, comparison rules, and uniqueness scope.
+2. The consumer has the required credentials and request context.
+
+#### Interaction <a href="#workflow-interaction-2" id="workflow-interaction-2"></a>
+
+1. The consumer sends `{selector, values}` using the declared schema. A composite selector supplies every key component. When the operation declares `field-selection`, the body may also carry a `fields` array of declared selectable top-level `data` fields. A declared temporal selection is carried in the body `temporal` object.
+2. The Registry validates the input and evaluates access and disclosure policy.
+3. The Registry resolves the selector within its declared scope, checks uniqueness, and applies collection membership.
+4. One permitted match returns the common Record representation. Other outcomes follow the contract, including protected-existence handling and source uniqueness failures.
+
+#### Postconditions <a href="#workflow-postconditions-2" id="workflow-postconditions-2"></a>
+
+- The source Record is unchanged.
+- A successful Lookup returns the same Record schema and field meanings as other reads of that view.
+- Multiple source matches fail without selecting an arbitrary Record.
+
+### Page through a declared collection or search result <a href="#workflow-page-through-a-declared-collection-or-search-result" id="workflow-page-through-a-declared-collection-or-search-result"></a>
+
+This workflow applies independently to List and Search. For the business example, List uses `GET /v1/collections/businesses/records`; Search uses `POST /v1/collections/businesses/search`.
+
+#### Preconditions <a href="#workflow-preconditions-3" id="workflow-preconditions-3"></a>
+
+1. The contract declares the collection or search, accepted inputs, deterministic ordering with a unique tie breaker, page and resource limits, timeout outcome, cursor lifetime, and any selectable features.
+2. The consumer has the required credentials and request context.
+
+#### Interaction <a href="#workflow-interaction-3" id="workflow-interaction-3"></a>
+
+1. The consumer sends the first request without a cursor, supplying the declared criteria and any supported ordering, page size, temporal selection, and field selection. GET List uses query parameters; POST Search carries temporal and field selection in its body.
+2. The Registry validates the request and evaluates current access and disclosure policy. A current-state request returns the latest permitted Page without temporal metadata; an applied temporal selection echoes its context at Page level even when `items` is empty. Items use the same Record schema for the selected view.
+3. For a non-null `nextCursor`, the consumer repeats the criteria, ordering, temporal selection, and effective field selection with that cursor. It may omit `pageSize` or repeat the effective size established by the first request.
+4. The Registry reauthorises the continuation and verifies its cursor binding, including the Collection, query, view, temporal context, effective field set, effective page size, and effective purpose when required. An invalid, expired, or mismatched cursor produces the declared failure.
+5. The consumer continues until `nextCursor` is `null`, including after short or empty Pages with a continuing cursor.
+
+#### Outcomes and limits <a href="#workflow-outcomes-and-limits" id="workflow-outcomes-and-limits"></a>
+
+- Every Page respects the effective size bound, every continuation advances, and request processing respects the declared resource limits or returns the declared timeout outcome. The page-size bound does not claim that backend work scales with the number of returned items.
+- An evaluable List or Search with zero permitted matches, including one whose source matches are all filtered by policy, returns `200` with an empty `items` array. A source that cannot evaluate a requested temporal query returns `409 temporal-state-not-available`; it does not report an empty successful result.
+- Live-data changes follow the published pagination and source-currency policy. Baseline pagination does not promise that one traversal exhaustively observes an unchanged result.
+- When the operation declares `complete-traversal`, an unchanged source result and unchanged access conditions yield every permitted match exactly once before completion. An internal result window or limit that prevents this produces the declared failure instead of a completion signal.
+- When the operation declares `snapshot-traversal`, the first request fixes source membership, ordering, and Record data at its documented evaluation point. Every Page still applies current authorisation. The service returns `400 invalid-cursor` if it cannot preserve the snapshot, and its contract documents snapshot reference and availability semantics.
+- When supplied, `pageInfo.total` is the exact count of the full permitted query at its declared evaluation point. Live traversal evaluates it for the current Page; snapshot traversal uses the fixed source point and filters it through current rights.
+- Revoked access applies to subsequent requests. A failed continuation allows the consumer to start a fresh request when permitted.
+
+### Retrieve retained history <a href="#workflow-retrieve-retained-history" id="workflow-retrieve-retained-history"></a>
+
+This workflow applies when Revision List or Revision Retrieve is selected.
+
+1. The consumer inspects the contract's history view, revision ordering, retention, gap, schema-evolution, access, and purpose rules.
+2. The consumer requests `GET /v1/collections/{collectionId}/records/{recordId}/revisions` and follows bounded continuation under current authorisation. Every continuation cursor remains bound to that parent `recordId`; replay under another parent returns `400 invalid-cursor`.
+3. Each returned `RecordRevision.recordId` equals the parent path identifier and carries a source-backed `revisionId`, plus `recordedAt` only when the source supports it.
+4. The consumer can retrieve one retained revision at `GET /v1/collections/{collectionId}/records/{recordId}/revisions/{revisionId}`.
+5. Unknown or protected parent Records and revisions use the same `404 record-not-available`, without identifying which resource was unavailable. Only after these protection checks can authorised source inability return `409 history-not-available`. The service does not substitute current state or fabricate a revision.
+
+Revision history and snapshot traversal answer different questions. History exposes source-distinguishable retained states; snapshot traversal holds one collection result stable while it is paged.
+
+### Apply a required purpose <a href="#workflow-apply-a-required-purpose" id="workflow-apply-a-required-purpose"></a>
+
+This workflow applies only to operations declaring `purpose-bound`.
+
+1. The consumer obtains credentials or trusted authorisation context carrying one of the controlled purpose codes or absolute URIs allowed by the operation's `purpose` declaration.
+2. The consumer invokes the operation without adding purpose to the URL or request body.
+3. The service validates the trusted binding before disclosing Records and rejects missing, malformed, untrusted, or unallowed values.
+4. The service binds the effective purpose to continuation, conditional validation, temporal and historical reads, and audit evidence.
+
+Purpose is a declared request context. It is not proof of consent, institutional authority, or actual downstream use. Operations that do not declare `purpose-bound` continue to use their inherited authentication and authorisation contract without this additional requirement.
+
+### Read a household and interpret its relationships <a href="#workflow-read-a-household-and-interpret-its-relationships" id="workflow-read-a-household-and-interpret-its-relationships"></a>
+
+This workflow uses the [household OpenAPI](../api/examples/household-registry.openapi.yaml).
+
+1. The consumer sends `GET /v1/collections/households/records/{recordId}` and receives a household containing its declared address and membership components.
+2. The consumer interprets membership attributes as relationship facts. A `membershipId` identifies a component within that household.
+3. The `individualRef` field schema fixes the target Individuals Registry, allowing the reference to omit `registryId`.
+4. Where an individual read is offered, the consumer follows the field's declared target collection and operation binding through the target Registry's published service contract. The binding explains how to use the reference as input; the consumer follows the operation's access requirements.
+5. The related read follows the target's authorisation and source-currency contract. An unavailable target leaves the household's membership facts unchanged.
+
+A predefined household view may instead include permitted individual summaries, with declared fields, bounds, and source currency.
+
+The [birth-registration OpenAPI](../api/examples/birth-registration.openapi.yaml) illustrates recorded parent details. `nameAtRegistration` belongs to the birth-registration Record, with a reference to the individual, which may be absent. Changes to the individual's current Record leave this recorded value unchanged; accepted corrections to the birth-registration source may update it.
+
+### Direct and approval-based Write <a href="#workflow-direct-and-approval-based-write" id="workflow-direct-and-approval-based-write"></a>
+
+The [Write binding](#write-write) describes direct mutations and separately selected change requests. An authorised direct operation commits its declared change and returns a committed result, or acknowledges actual asynchronous processing through an Operation resource. A submitted change request instead remains non-authoritative until the required review and application succeed. Reviewers act on the exact proposal version; commitment rechecks applicable source preconditions and permissions.
+
+The binding's [non-normative domain examples](#write-non-normative-domain-examples) and the [example contracts](../resources/api-examples/README.md) show birth registration, household creation referencing existing individuals, compound household and individual creation, and members added later. Existing references, temporary request-local references, review outcomes, and result mappings have explicit meanings. The [Write test matrix](../resources/write-testing.md) separates artifact checks from required implementation evidence.

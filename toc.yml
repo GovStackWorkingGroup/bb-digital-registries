@@ -9,32 +9,13 @@ toc:
     - registry-discovery.md
     - registry-services.md
   resources:
-    - conformance.md
-    - registry-core-model.md
-    - consultation-binding.md
-    - write-binding.md
-    - write-api-reference.md
-    - write-testing.md
     - api-reference.md
+    - write-api-reference.md
     - api-examples/README.md
     - api-examples/birth-registration.md
     - api-examples/business.md
     - api-examples/household.md
     - api-examples/write.md
     - api-examples/schema-attribution.md
-    - service-interfaces.md
-    - workflows.md
     - testing.md
-    - adopter-kit.md
-    - family-catalogue.md
-    - roadmap/provisioning.md
-    - roadmap/evidence.md
-    - roadmap/notification.md
-    - roadmap/aggregate-data.md
-    - roadmap/access-transparency.md
-    - roadmap/identity-federation.md
-    - README.md
-    - metadata-vocabulary.md
-    - read-api-design-decisions.md
-    - version-history.md
-    - history/release-notes.md
+    - write-testing.md

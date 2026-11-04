@@ -60,8 +60,7 @@ containing Record views.
 | [Registry metadata](../../api/examples/registry-metadata.jsonld) | Compacted JSON-LD document for the business Registry, validated against the [metadata document schema](../../api/extensions/registry-metadata.schema.json) |
 | [API catalog linkset](../../api/examples/api-catalog.linkset.json) | RFC 9727 `/.well-known/api-catalog` response linking the three contracts and the metadata document |
 
-The Registry Core page embeds both documents; the validator checks that the
-embedded copies and these files are identical.
+[Discover Registry Services](../../requirements/registry-discovery.md#core-api-family-discovery) includes both discovery examples. The artifact checks verify that the embedded examples match these files.
 
 Named exchanges represent independent fixture states, except
 `emptySearchContinuation` and `finalSearchPage`, which form one traversal.

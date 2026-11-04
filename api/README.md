@@ -36,7 +36,7 @@ The default response language is English (`en`). A deployment may select another
 default or localise Problem `title` and `detail`; it then declares that default and
 follows API Design Guide §19 for `Accept-Language`, `Content-Language`, and `Vary`.
 
-The shared Record schemas apply the [Registry Core](../resources/registry-core-model.md)
+The shared Record schemas apply the [Registry Core](../requirements/registry-discovery.md#core-registry-core)
 representation rules. Core metadata is published as a JSON-LD document that the
 RFC 9727 `/.well-known/api-catalog` linkset locates. It identifies the Registry and
 its authority and links each service to its deployed OpenAPI contract. Every
@@ -112,7 +112,7 @@ source behaviour, and cursor guarantees.
 
 The guide's shallow-path recommendation (§5.4) reports the selected Collection,
 Record, and revision hierarchy on the canonical and concrete Revision List and
-Revision Retrieve paths. The [binding rationale](../resources/read-api-design-decisions.md#resource-paths-identity-and-api-composition)
+Revision Retrieve paths. The [binding rationale](../requirements/registry-services.md#consultation-resource-paths-identity-and-api-composition)
 explains that deliberate depth. These warnings are retained for review; no
 approved guide exception is claimed.
 
@@ -125,7 +125,7 @@ validation uses the artifacts listed above.
 
 ## Write contract
 
-[write.openapi.yaml](write.openapi.yaml) defines the DRAFT Write transport separately from the unchanged Consultation contract. Direct creation, update, named transitions, and approval-based change requests are independently selectable. [Write binding](../resources/write-binding.md) documents shared guarantees; [write-coverage.yaml](write-coverage.yaml) maps DRAFT keys to verification and operations. The separate [Write operation extension](extensions/x-govstack-digital-registries-write.schema.json) does not widen the closed Consultation extension.
+[write.openapi.yaml](write.openapi.yaml) defines the DRAFT Write transport separately from the unchanged Consultation contract. Direct creation, update, named transitions, and approval-based change requests are independently selectable. [Write binding](../requirements/registry-services.md#write-write) documents shared guarantees; [write-coverage.yaml](write-coverage.yaml) maps DRAFT keys to verification and operations. The separate [Write operation extension](extensions/x-govstack-digital-registries-write.schema.json) does not widen the closed Consultation extension.
 
 The [non-normative Write examples](../resources/api-examples/README.md#non-normative-write-examples) illustrate birth registration, household creation using existing and newly created individuals, and later membership additions. Their domain models are illustrative choices and add no requirements to the shared contract.
 

@@ -41,10 +41,9 @@ METADATA_SCHEMA = API / "extensions/registry-metadata.schema.json"
 METADATA_EXAMPLE = API / "examples/registry-metadata.jsonld"
 LINKSET_EXAMPLE = API / "examples/api-catalog.linkset.json"
 CONTEXT = ROOT / "assets/registry-core-context.jsonld"
-CORE_PAGE = ROOT / "resources/registry-core-model.md"
-RESOURCES = ROOT / "resources"
-ADOPTER_KIT = RESOURCES / "adopter-kit.md"
-VOCABULARY_APPENDIX = RESOURCES / "metadata-vocabulary.md"
+DISCOVERY_PAGE = ROOT / "requirements/registry-discovery.md"
+SERVICES_PAGE = ROOT / "requirements/registry-services.md"
+ADOPTION_GUIDE = ROOT / "guides/adopting-digital-registries.md"
 CONTEXT_URI = "https://vocab.govstack.global/digital-registries/context/v1"
 API_FAMILY_PREFIX = "apif:"
 CAPABILITY_BY_ROUTE = {
@@ -447,23 +446,85 @@ def validate_caller_capabilities(value: dict) -> None:
                 raise ValueError("Caller capability names an undeclared search")
 
 
-def fenced_json_blocks(markdown: str, heading: str) -> list[dict]:
-    """Parse every ```json block between the named heading and the next heading of equal or higher level."""
+def fenced_json_blocks(markdown: str, anchor: str) -> list[dict]:
+    """Parse JSON fences in the section identified by a stable explicit anchor."""
     lines = markdown.splitlines()
-    level = heading.count("#", 0, heading.find(" "))
-    start = lines.index(heading)
+    anchor_marker = re.compile(rf'\bid=["\']{re.escape(anchor)}["\']')
+    headings = [
+        (index, match)
+        for index, line in enumerate(lines)
+        if (match := re.match(r"^(#{1,6})\s+", line))
+        and anchor_marker.search(line)
+    ]
+    if len(headings) != 1:
+        raise ValueError(
+            f"Expected one heading with anchor {anchor}, found {len(headings)}"
+        )
+    start, heading_match = headings[0]
+    level = len(heading_match.group(1))
     blocks, current = [], None
     for line in lines[start + 1:]:
-        if line.startswith("#") and line.count("#", 0, line.find(" ")) <= level:
+        next_heading = re.match(r"^(#{1,6})\s+", line)
+        if next_heading and len(next_heading.group(1)) <= level:
             break
         if line.strip() == "```json":
+            if current is not None:
+                raise ValueError(f"Nested JSON fence under {anchor}")
             current = []
         elif line.strip() == "```" and current is not None:
-            blocks.append(json.loads("\n".join(current)))
+            try:
+                blocks.append(json.loads("\n".join(current)))
+            except json.JSONDecodeError as error:
+                raise ValueError(f"Invalid JSON fence under {anchor}: {error}") from error
             current = None
         elif current is not None:
             current.append(line)
+    if current is not None:
+        raise ValueError(f"Unclosed JSON fence under {anchor}")
     return blocks
+
+
+def exact_fenced_json_example(markdown: str, anchor: str, expected: dict) -> dict:
+    """Require one authoritative JSON example with the shipped artifact value."""
+    blocks = fenced_json_blocks(markdown, anchor)
+    if blocks != [expected]:
+        raise ValueError(
+            f"{anchor} must contain exactly the authoritative JSON example"
+        )
+    return blocks[0]
+
+
+PUBLICATION_GUIDANCE_MARKERS = (
+    "api.yml",
+    "registry-metadata.jsonld",
+    "registry-metadata.schema.json",
+    "api-catalog.linkset.json",
+    "/.well-known/api-catalog",
+    "/health",
+    "validate_consultation.py",
+)
+PUBLICATION_GUIDANCE_LINKS = (
+    "../resources/api.yml",
+    "../api/examples/registry-metadata.jsonld",
+    "../api/extensions/registry-metadata.schema.json",
+    "../api/examples/api-catalog.linkset.json",
+)
+
+
+def validate_publication_guidance(markdown: str) -> None:
+    """Reject adoption guidance that omits a required publication artifact."""
+    missing = [marker for marker in PUBLICATION_GUIDANCE_MARKERS if marker not in markdown]
+    if missing:
+        raise ValueError(f"Adoption guide omits publication guidance: {missing}")
+    links = {
+        urldefrag(target)[0]
+        for target in re.findall(r"\]\(([^)]+)\)", markdown)
+    }
+    wrong_links = [target for target in PUBLICATION_GUIDANCE_LINKS if target not in links]
+    if wrong_links:
+        raise ValueError(
+            f"Adoption guide does not link the published artifacts: {wrong_links}"
+        )
 
 
 class ConsultationContractTests(unittest.TestCase):
@@ -1126,31 +1187,107 @@ class ConsultationContractTests(unittest.TestCase):
                     with self.assertRaises(AssertionError):
                         self.assert_registry_associations(broken, metadata)
 
-    def test_core_page_examples_match_discovery_artifacts(self):
-        page = CORE_PAGE.read_text()
-        metadata_blocks = fenced_json_blocks(page, "### Informative JSON-LD example")
-        self.assertEqual(metadata_blocks, [json.loads(METADATA_EXAMPLE.read_text())])
-        linkset_blocks = fenced_json_blocks(page, "### Discovery publication")
-        self.assertEqual(linkset_blocks, [json.loads(LINKSET_EXAMPLE.read_text())])
+    def test_requirement_pages_match_discovery_and_schema_examples(self):
+        discovery = DISCOVERY_PAGE.read_text()
+        metadata = exact_fenced_json_example(
+            discovery,
+            "core-informative-json-ld-example",
+            json.loads(METADATA_EXAMPLE.read_text()),
+        )
+        validator(METADATA_SCHEMA, "").validate(metadata)
+        linkset = exact_fenced_json_example(
+            discovery,
+            "core-discovery-publication",
+            json.loads(LINKSET_EXAMPLE.read_text()),
+        )
+        validator(CANONICAL, "/components/schemas/ApiCatalog").validate(linkset)
 
-    def test_adopter_kit_names_the_published_artifacts_and_links_resolve(self):
-        page = ADOPTER_KIT.read_text()
-        for artifact in ("api.yml", "registry-metadata.jsonld", "registry-metadata.schema.json",
-                         "api-catalog.linkset.json", "/.well-known/api-catalog", "/health", "validate_consultation.py"):
-            self.assertIn(artifact, page)
-        for source in (ADOPTER_KIT, VOCABULARY_APPENDIX):
-            for target in re.findall(r"\]\(([^)#\s]+)(?:#[^)]*)?\)", source.read_text()):
-                if target.startswith("http"):
-                    continue
-                self.assertTrue((source.parent / target).exists(), f"{source.name} links to missing {target}")
-        for navigation in (ROOT / "SUMMARY.md", ROOT / "README.md", RESOURCES / "README.md", CORE_PAGE):
-            self.assertIn("adopter-kit.md", navigation.read_text(), navigation.name)
-        for navigation in (ROOT / "SUMMARY.md", RESOURCES / "README.md", CORE_PAGE):
-            self.assertIn("metadata-vocabulary.md", navigation.read_text(), navigation.name)
-        core = CORE_PAGE.read_text()
-        self.assertIn("| Concept | JSON key | Status | Meaning |", core, "Core describes metadata by JSON key")
-        self.assertNotIn("### External alignments", core, "RDF alignments live in the appendix")
-        self.assertIn("### External alignments", VOCABULARY_APPENDIX.read_text())
+        services = SERVICES_PAGE.read_text()
+        business_example = document(BINDING)["$defs"]["BusinessRecord"]["examples"][0]
+        business = exact_fenced_json_example(
+            services, "core-common-record-context", business_example)
+        validator(BINDING, "/$defs/BusinessRecord").validate(business)
+
+        reference_example = document(RELATIONSHIPS)["$defs"]["UnscopedRecordReference"]["examples"][0]
+        reference = exact_fenced_json_example(
+            services,
+            "core-structured-values-and-references",
+            reference_example,
+        )
+        validator(RELATIONSHIPS, "/$defs/UnscopedRecordReference").validate(
+            reference)
+
+    def test_relocated_example_checks_reject_mutated_json(self):
+        discovery = DISCOVERY_PAGE.read_text()
+        expected_metadata = json.loads(METADATA_EXAMPLE.read_text())
+        mutated_discovery = discovery.replace(
+            '"@context": "https://vocab.govstack.global/digital-registries/context/v1"',
+            '"@context": "https://vocab.govstack.global/digital-registries/context/v2"',
+            1,
+        )
+        self.assertNotEqual(mutated_discovery, discovery)
+        with self.assertRaisesRegex(ValueError, "authoritative JSON example"):
+            exact_fenced_json_example(
+                mutated_discovery,
+                "core-informative-json-ld-example",
+                expected_metadata,
+            )
+
+        services = SERVICES_PAGE.read_text()
+        expected_record = document(BINDING)["$defs"]["BusinessRecord"]["examples"][0]
+        mutated_services = services.replace('"recordId": "r_42"', '"recordId": "r_43"', 1)
+        self.assertNotEqual(mutated_services, services)
+        with self.assertRaisesRegex(ValueError, "authoritative JSON example"):
+            exact_fenced_json_example(
+                mutated_services,
+                "core-common-record-context",
+                expected_record,
+            )
+
+    def test_adoption_guide_names_the_published_artifacts_and_links_resolve(self):
+        page = ADOPTION_GUIDE.read_text()
+        validate_publication_guidance(page)
+        for target in re.findall(r"\]\(([^)#\s]+)(?:#[^)]*)?\)", page):
+            if target.startswith("http"):
+                continue
+            self.assertTrue(
+                (ADOPTION_GUIDE.parent / target).exists(),
+                f"{ADOPTION_GUIDE.name} links to missing {target}",
+            )
+
+    def test_publication_guidance_check_rejects_an_omitted_artifact(self):
+        guidance = "\n".join(
+            (*PUBLICATION_GUIDANCE_MARKERS,
+             *(f"[artifact]({target})" for target in PUBLICATION_GUIDANCE_LINKS))
+        )
+        validate_publication_guidance(guidance)
+        with self.assertRaisesRegex(ValueError, "api-catalog.linkset.json"):
+            validate_publication_guidance(
+                guidance.replace("api-catalog.linkset.json", "catalog.json")
+            )
+        with self.assertRaisesRegex(ValueError, "does not link"):
+            validate_publication_guidance(
+                guidance.replace(
+                    "../api/examples/registry-metadata.jsonld",
+                    "../resources/registry-metadata.jsonld",
+                )
+            )
+
+    def test_discovery_page_contains_the_metadata_vocabulary_guidance(self):
+        discovery = DISCOVERY_PAGE.read_text()
+        for anchor in (
+            "vocabulary-key-to-term-mapping",
+            "vocabulary-govstack-vocabulary-terms",
+            "vocabulary-dcat-composition",
+            "vocabulary-processing-as-rdf",
+        ):
+            with self.subTest(anchor=anchor):
+                self.assertIn(f'id="{anchor}"', discovery)
+        self.assertIn(
+            "| Concept | JSON key | Status | Meaning |",
+            discovery,
+            "Discovery describes metadata by JSON key",
+        )
 
 
 if __name__ == "__main__":

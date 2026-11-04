@@ -2,23 +2,26 @@
 description: Terms with a specific meaning in this specification.
 ---
 
-# 3 Terminology
+# Terminology
 
 This specification uses the [GovStack Common Terminology](https://specs.govstack.global/architecture/2-common-terminology). The following terms have a specific meaning for Digital Registries.
 
 | Term | Definition |
 |---|---|
 | API Consumer | A system authorised to invoke a Registry service interface. |
-| API Family | A coherent group of related Registry capabilities and operations. |
+| API Family | A coherent group of related Registry operations. |
 | Authoritative Source | A source for which a named authority accepts responsibility within a declared domain and scope. Authoritative does not imply error-free. |
 | Binding | A mapping of abstract operations to a transport or established protocol. |
-| Capability | An independently selectable operation pattern within an API family, such as Retrieve or Search. |
-| Capability Claim | A declaration that an implementation supports a specified API family, capability, and binding and meets the requirements attached to that claim. |
+| Binding Capability | An operation pattern named by `capability` in the normative operation extension, such as `retrieve` or `create`. The defined values map to operation option keys. |
+| Capability | An informative business outcome declared in `metadata.yml` and realised by one or more functionalities. A capability does not carry requirements. |
+| Conformance Declaration | An implementation's statement of its selected operation options and any claimed extensions. This draft defines no standard declaration format or approved conformance target. |
 | Collection | A logical API grouping of Records with declared membership and a stable Collection Identifier. It need not correspond to one database table, governed dataset, source module, or institutionally separate Registry. |
 | Effective At | When selected, the date or instant at which the source declares represented information applicable. Event occurrence and registration dates are not automatically effective-time coordinates. |
+| Functionality | A service provided to an external actor and realised by a set of requirements. Its file contains the requirement metadata and explains the service, workflows, and data structures. |
 | Functional Identifier | An identifier issued and lifecycle-managed for a sector-specific purpose, such as a farmer, student, health, or professional identifier. |
 | Lifecycle State | When supplied, the state of a Record under a documented vocabulary. A current Record is not necessarily active. |
 | Lookup | Resolution of a Record using a declared exact selector, such as a registration number or a defined combination of fields. It does not imply general search or approximate matching. |
+| Option | A choice permitted by a variation point. Its key identifies the selection and determines which conditional requirements apply. |
 | Permitted Representation | The record data and metadata an API consumer is authorised to receive. It may be filtered or redacted and need not contain the complete stored record. |
 | Record | The Registry's representation of an entity, place, asset, or event within its declared scope. |
 | Record Identifier | A stable identifier unique within its Registry. It may reuse a suitable source identifier; the Registry context and identifier together identify the Record. |
