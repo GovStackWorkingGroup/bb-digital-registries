@@ -1,0 +1,218 @@
+{
+  "description": "Positive and negative schema fixtures for selectable Consultation history, temporal, reusable search, purpose and caller-discovery contracts.",
+  "schemas": [
+    {
+      "schema": "TemporalSelection",
+      "valid": [
+        {"recordedAsOf": "2026-04-20T00:00:00Z"},
+        {"effectiveAt": "2026-04-10"},
+        {"recordedAsOf": "2026-06-03T00:00:00Z", "effectiveAt": "2026-04-10T12:00:00Z"}
+      ],
+      "invalid": [
+        {},
+        {"recordedAsOf": "2026-04-20"},
+        {"recordedAsOf": "2026-04-20T00:00:00+07:00"},
+        {"recordedAsOf": "2026-04-20T00:00:00+00:00"},
+        {"recordedAsOf": "2026-04-20T00:00:00z"},
+        {"effectiveAt": "2026-04-10T12:00:00+07:00"},
+        {"effectiveAt": "2026-02-30"},
+        {"effectiveAt": "2026-04-10", "purpose": "benefit-eligibility"}
+      ]
+    },
+    {
+      "schema": "RecordRevision",
+      "valid": [
+        {"recordId": "r_42", "revision": {"revisionId": "rev-2", "recordedAt": "2026-06-02T09:00:00Z"}, "data": {}}
+      ],
+      "invalid": [
+        {"recordId": "r_42", "data": {}},
+        {"recordId": "r_42", "revision": {}, "data": {}},
+        {"recordId": "r_42", "revision": {"revisionId": ""}, "data": {}},
+        {"recordId": "r_42", "revision": {"revisionId": "rev-2", "recordedAt": "2026-06-02T09:00:00+07:00"}, "data": {}},
+        {"recordId": "r_42", "revision": {"revisionId": "rev-2", "recordedAt": "2026-06-02T09:00:00z"}, "data": {}}
+      ]
+    },
+    {
+      "schema": "SearchRange",
+      "valid": [
+        {"from": "2020-06-01"},
+        {"to": "2020-06-30"},
+        {"from": "2020-06-01", "to": "2020-06-30"}
+      ],
+      "invalid": [
+        {},
+        {"from": "2020-06-01", "unexpected": true}
+      ]
+    },
+    {
+      "schema": "SearchSet",
+      "valid": [
+        ["REGISTERED", "AMENDED"]
+      ],
+      "invalid": [
+        [],
+        ["REGISTERED", "REGISTERED"]
+      ]
+    },
+    {
+      "schema": "SearchPrefix",
+      "valid": [
+        "Example"
+      ],
+      "invalid": [
+        "",
+        null
+      ]
+    },
+    {
+      "schema": "CallerCapabilities",
+      "valid": [
+        {
+          "collections": [
+            {
+              "collectionId": "records",
+              "registry": "https://registry.example/registries/records",
+              "operations": [
+                {
+                  "operationId": "retrieveRecord",
+                  "contract": "https://registry.example/contracts/1.0.0-draft/openapi.yaml",
+                  "capability": "retrieve",
+                  "view": "record-public"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "collections": [
+            {
+              "collectionId": "businesses",
+              "registry": "https://registry.example/registries/business",
+              "operations": [
+                {
+                  "operationId": "retrieveBusiness",
+                  "contract": "https://registry.example/contracts/1.0.0-draft/examples/business-registry.openapi.yaml",
+                  "capability": "retrieve",
+                  "view": "business-public",
+                  "features": ["conditional-read", "field-selection"],
+                  "readableFields": ["legalName", "registrationStatus"]
+                },
+                {
+                  "operationId": "lookupBusiness",
+                  "contract": "https://registry.example/contracts/1.0.0-draft/examples/business-registry.openapi.yaml",
+                  "capability": "lookup",
+                  "view": "business-public",
+                  "features": ["field-selection"],
+                  "selectors": ["byRegistrationNumber", "byJurisdictionNumber"]
+                },
+                {
+                  "operationId": "searchBusinesses",
+                  "contract": "https://registry.example/contracts/1.0.0-draft/examples/business-registry.openapi.yaml",
+                  "capability": "search",
+                  "view": "business-public",
+                  "features": ["field-selection", "complete-traversal"],
+                  "searches": ["byRegistrationStatus", "byFields"]
+                }
+              ]
+            },
+            {
+              "collectionId": "birth-registrations",
+              "registry": "https://registry.example/registries/birth-registrations",
+              "operations": [
+                {
+                  "operationId": "retrieveBirthRegistration",
+                  "contract": "https://registry.example/contracts/1.0.0-draft/examples/birth-registration.openapi.yaml",
+                  "capability": "retrieve",
+                  "view": "birth-registration-with-recorded-parents",
+                  "features": ["recorded-time", "effective-time", "purpose-bound"],
+                  "purpose": {
+                    "required": true,
+                    "binding": "access-token-claim",
+                    "claim": "purpose",
+                    "allowedPurposes": ["benefit-eligibility"]
+                  }
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "collections": [
+            {
+              "collectionId": "records",
+              "registry": "https://registry.example/registries/records",
+              "operations": [
+                {
+                  "operationId": "futureRecordRead",
+                  "contract": "https://registry.example/contracts/1.1.0/openapi.yaml",
+                  "capability": "future-capability",
+                  "view": "record-public",
+                  "features": ["conditional-read"]
+                },
+                {
+                  "operationId": "retrieveRecordWithFutureAdvice",
+                  "contract": "https://registry.example/contracts/1.1.0/openapi.yaml",
+                  "capability": "retrieve",
+                  "view": "record-public",
+                  "features": ["future-advisory-feature"]
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "invalid": [
+        {},
+        {"collections": [{"collectionId": "records", "registry": "https://registry.example/registries/records", "operations": []}]},
+        {"collections": [{"collectionId": "records", "registry": "https://registry.example/registries/records", "operations": [{"contract": "https://registry.example/contracts/1.0.0-draft/openapi.yaml", "capability": "retrieve", "view": "record-public"}]}]},
+        {"collections": [{"collectionId": "records", "registry": "https://registry.example/registries/records", "operations": [{"operationId": "searchRecords", "contract": "https://registry.example/contracts/1.0.0-draft/openapi.yaml", "capability": "search", "view": "record-public", "features": ["conditional-read"]}]}]},
+        {"collections": [{"collectionId": "records", "registry": "https://registry.example/registries/records", "operations": [{"operationId": "listRecords", "contract": "https://registry.example/contracts/1.0.0-draft/openapi.yaml", "capability": "list", "view": "record-public", "features": ["snapshot-traversal"]}]}]},
+        {"collections": [{"collectionId": "records", "registry": "https://registry.example/registries/records", "operations": [{"operationId": "retrieveRecord", "contract": "https://registry.example/contracts/1.0.0-draft/openapi.yaml", "capability": "retrieve", "view": "record-public", "features": ["purpose-bound"]}]}]}
+      ]
+    }
+  ],
+  "extension": {
+    "valid": [
+      {
+        "registry": "https://registry.example/registries/birth-registrations",
+        "collection": "birth-registrations",
+        "capability": "retrieve",
+        "view": "birth-registration-history",
+        "features": ["recorded-time", "effective-time", "purpose-bound"],
+        "purpose": {
+          "required": true,
+          "binding": "access-token-claim",
+          "claim": "purpose",
+          "allowedPurposes": ["benefit-eligibility"]
+        }
+      },
+      {
+        "registry": "https://registry.example/registries/birth-registrations",
+        "collection": "birth-registrations",
+        "capability": "revision-list",
+        "view": "birth-registration-history"
+      }
+    ],
+    "invalid": [
+      {
+        "registry": "https://registry.example/registries/birth-registrations",
+        "collection": "birth-registrations",
+        "capability": "retrieve",
+        "view": "birth-registration-history",
+        "features": ["purpose-bound"]
+      },
+      {
+        "registry": "https://registry.example/registries/birth-registrations",
+        "collection": "birth-registrations",
+        "capability": "retrieve",
+        "view": "birth-registration-history",
+        "features": ["purpose-bound"],
+        "purpose": {
+          "required": true,
+          "binding": "request-query",
+          "allowedPurposes": ["benefit-eligibility"]
+        }
+      }
+    ]
+  }
+}

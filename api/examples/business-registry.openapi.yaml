@@ -1,0 +1,382 @@
+# Illustrative deployment binding; api/openapi.yaml remains the normative transport entrypoint.
+openapi: 3.1.2
+info:
+  title: 'Business registry Consultation: concrete illustrative binding'
+  version: 1.0.0-draft
+  description: >-
+    Illustrative businesses collection for Registry https://registry.example/registries/business.
+    Its membership is all business registration Records in that Registry, including dissolved
+    registrations. Operations select the business-public view. Record.data follows
+    business-registry.schema.json, published with dependencies at
+    https://registry.example/contracts/1.0.0-draft/examples/business-registry.schema.json.
+    Retrieve, Lookup, List, and Search are selected; Revision List and Revision Retrieve are
+    not. Reads synchronously query the authoritative source and apply the caller’s permitted view.
+    Access tokens use issuer https://identity.example, the stable logical service audience
+    https://registry.example/business and the declared read scope. TLS is 1.3 or later.
+    Example endpoints are non-production. The gateway allows 60 requests per authenticated
+    client per minute and an 8 KiB request body.
+    The published field-selection set is legalName and registrationStatus, with both returned
+    by default. Pages use live ascending ASCII recordId order. The initial pageSize defaults to 20,
+    maximum 100; continuations retain that effective value. Cursors expire 15 minutes after
+    traversal creation and bind the effective field selection. List and Search declare
+    complete-traversal: while source data and access remain unchanged, every permitted match
+    is returned exactly once. This deployment additionally limits each page to scanning 1000
+    candidates or two seconds of source work; its cursor advances beyond the last scanned
+    candidate, so a non-final page can be short or empty. Disclosure policy permits these
+    progress patterns. The service never reports completion merely because it reaches an
+    internal result window. If a resource limit prevents progress or complete traversal, it
+    returns the declared 503 failure. total is exact for permitted matches at page evaluation and is omitted
+    when unavailable within budget. Typed request schemas declare accepted inputs. Malformed
+    or structurally invalid input, unsupported query parameters and invalid pagination
+    controls use 400. Structurally valid bodies with unknown selector, search, or field names,
+    or invalid domain values use 422.
+  contact:
+    name: GovStack Digital Registries Working Group
+    url: https://github.com/GovStackWorkingGroup/bb-digital-registries
+  x-govstack-api-guide:
+    version: 0.3.0-draft
+    rulesetVersion: 0.3.0-draft
+servers:
+- url: https://{gatewayHost}
+  description: Non-production deployment root. The businesses collection declares its Registry
+    association, membership and representation independently of this root.
+  variables:
+    gatewayHost:
+      default: registry.example
+      description: Non-production reserved documentation-domain default.
+security:
+- citizenOAuth:
+  - bb:digital-registries:record:read
+- serviceOAuth:
+  - bb:digital-registries:record:read
+tags:
+- name: Consultation
+  description: Read authorised Records from the businesses collection.
+- name: Health
+  description: Bounded operational liveness without registry information.
+- name: Discovery
+  description: Locate the origin's API contracts and Registry metadata through the RFC 9727 API catalog.
+paths:
+  /health:
+    $ref: ../openapi.yaml#/paths/~1health
+  /.well-known/api-catalog:
+    $ref: ../openapi.yaml#/paths/~1.well-known~1api-catalog
+  /v1/collections/businesses/records/{recordId}:
+    get:
+      operationId: retrieveBusiness
+      summary: Retrieve one record by its stable identifier
+      description: >-
+        Retrieve the permitted business-public view by source recordId within the businesses
+        collection. Absent Records, Records outside this collection and protected existence
+        share 404 record-not-available. The response uses no-store. Conditional retrieval
+        uses the representation’s ETag after authorisation. Empty, duplicate, unknown, or
+        incorrectly typed fields query values use 400.
+      tags:
+      - Consultation
+      x-govstack-digital-registries:
+        registry: https://registry.example/registries/business
+        collection: businesses
+        capability: retrieve
+        view: business-public
+        features: [conditional-read, field-selection]
+      parameters:
+      - $ref: ../openapi.yaml#/components/parameters/RecordId
+      - $ref: ../openapi.yaml#/components/parameters/Traceparent
+      - $ref: ../openapi.yaml#/components/parameters/IfNoneMatch
+      - $ref: '#/components/parameters/BusinessFields'
+      responses:
+        '200':
+          description: One authorised business-public record.
+          headers:
+            Cache-Control:
+              $ref: ../openapi.yaml#/components/headers/CacheControl
+            ETag:
+              $ref: ../openapi.yaml#/components/headers/ConditionalETag
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BusinessRecord'
+              example:
+                recordId: r_42
+                data:
+                  legalName: Example Ltd
+        '304':
+          $ref: ../openapi.yaml#/components/responses/NotModified
+        '400':
+          $ref: ../openapi.yaml#/components/responses/BadRequest
+        '401':
+          $ref: ../openapi.yaml#/components/responses/Unauthorized
+        '403':
+          $ref: ../openapi.yaml#/components/responses/Forbidden
+        '404':
+          $ref: ../openapi.yaml#/components/responses/RecordNotAvailable
+        '406':
+          $ref: ../openapi.yaml#/components/responses/NotAcceptable
+        '429':
+          $ref: ../openapi.yaml#/components/responses/TooManyRequests
+        '500':
+          $ref: ../openapi.yaml#/components/responses/InternalError
+        '502':
+          $ref: ../openapi.yaml#/components/responses/BadGateway
+        '503':
+          $ref: ../openapi.yaml#/components/responses/ServiceUnavailable
+        '504':
+          $ref: ../openapi.yaml#/components/responses/GatewayTimeout
+  /v1/collections/businesses/records:
+    get:
+      operationId: listBusinesses
+      summary: List an authorised page of records
+      description: >-
+        Return permitted Records from the businesses collection in ascending ASCII recordId
+        order using the declared live pagination policy. Continue with cursor and the retained
+        effective pageSize and field selection. Only nextCursor null ends traversal. Empty,
+        duplicate, unknown, or incorrectly typed fields query values use 400.
+      tags:
+      - Consultation
+      x-govstack-digital-registries:
+        registry: https://registry.example/registries/business
+        collection: businesses
+        capability: list
+        view: business-public
+        features: [field-selection, complete-traversal]
+      parameters:
+      - $ref: ../openapi.yaml#/components/parameters/Traceparent
+      - $ref: ../openapi.yaml#/components/parameters/PageSize
+      - $ref: ../openapi.yaml#/components/parameters/Cursor
+      - $ref: '#/components/parameters/BusinessFields'
+      responses:
+        '200':
+          description: A bounded page of business-public records in ascending ASCII recordId
+            order.
+          headers:
+            Cache-Control:
+              $ref: ../openapi.yaml#/components/headers/CacheControl
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BusinessPage'
+              example:
+                items:
+                - recordId: r_42
+                  data:
+                    registrationStatus: DISSOLVED
+                pageInfo:
+                  nextCursor: null
+        '400':
+          $ref: ../openapi.yaml#/components/responses/BadRequest
+        '401':
+          $ref: ../openapi.yaml#/components/responses/Unauthorized
+        '403':
+          $ref: ../openapi.yaml#/components/responses/Forbidden
+        '406':
+          $ref: ../openapi.yaml#/components/responses/NotAcceptable
+        '429':
+          $ref: ../openapi.yaml#/components/responses/TooManyRequests
+        '500':
+          $ref: ../openapi.yaml#/components/responses/InternalError
+        '502':
+          $ref: ../openapi.yaml#/components/responses/BadGateway
+        '503':
+          $ref: ../openapi.yaml#/components/responses/ServiceUnavailable
+        '504':
+          $ref: ../openapi.yaml#/components/responses/GatewayTimeout
+  /v1/collections/businesses/lookup:
+    post:
+      operationId: lookupBusiness
+      summary: Look up one record using a declared exact selector
+      description: >-
+        Resolve byRegistrationNumber or the composite byJurisdictionNumber key within the
+        businesses collection using byte-for-byte string matching. BusinessLookupRequest
+        defines their fields and uniqueness scopes. Return the permitted Record, 404 for an
+        unavailable match, or generic 500 for a uniqueness violation. Malformed or structurally invalid input uses
+        400; structurally valid input with an unknown selector, unknown field name, or invalid
+        domain value uses 422. Protected-existence policy applies before Record-specific
+        diagnostics.
+      tags:
+      - Consultation
+      x-govstack-digital-registries:
+        registry: https://registry.example/registries/business
+        collection: businesses
+        capability: lookup
+        view: business-public
+        features: [field-selection]
+      parameters:
+      - $ref: ../openapi.yaml#/components/parameters/Traceparent
+      requestBody:
+        required: true
+        description: One published exact selector and all its typed key values.
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BusinessLookupRequest'
+            examples:
+              byRegistrationNumber:
+                summary: Declared selector requesting only the legal name
+                value:
+                  selector: byRegistrationNumber
+                  values:
+                    registrationNumber: BR-000042
+                  fields: [legalName]
+              composite:
+                summary: Exact composite key
+                value:
+                  selector: byJurisdictionNumber
+                  values:
+                    jurisdictionCode: AA
+                    localNumber: '00000042'
+      responses:
+        '200':
+          description: One authorised business-public record.
+          headers:
+            Cache-Control:
+              $ref: ../openapi.yaml#/components/headers/CacheControl
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BusinessRecord'
+              example:
+                recordId: r_42
+                data:
+                  legalName: Example Ltd
+        '400':
+          $ref: ../openapi.yaml#/components/responses/BadRequest
+        '401':
+          $ref: ../openapi.yaml#/components/responses/Unauthorized
+        '403':
+          $ref: ../openapi.yaml#/components/responses/Forbidden
+        '404':
+          $ref: ../openapi.yaml#/components/responses/RecordNotAvailable
+        '406':
+          $ref: ../openapi.yaml#/components/responses/NotAcceptable
+        '413':
+          $ref: ../openapi.yaml#/components/responses/ContentTooLarge
+        '415':
+          $ref: ../openapi.yaml#/components/responses/UnsupportedMediaType
+        '422':
+          $ref: ../openapi.yaml#/components/responses/InvalidField
+        '429':
+          $ref: ../openapi.yaml#/components/responses/TooManyRequests
+        '500':
+          $ref: ../openapi.yaml#/components/responses/InternalError
+        '502':
+          $ref: ../openapi.yaml#/components/responses/BadGateway
+        '503':
+          $ref: ../openapi.yaml#/components/responses/ServiceUnavailable
+        '504':
+          $ref: ../openapi.yaml#/components/responses/GatewayTimeout
+  /v1/collections/businesses/search:
+    post:
+      operationId: searchBusinesses
+      summary: Execute one declared search and return a page
+      description: >-
+        Search the businesses collection byRegistrationStatus, or byFields with any non-empty
+        combination of legalName and registrationStatus, using exact equality. Repeat
+        search and criteria with cursor on continuation; pageSize may be omitted to retain its
+        bound value. Apply the declared live pagination policy. Malformed or structurally invalid input and invalid
+        pagination controls use 400. Structurally valid input with an unknown search, unknown
+        field name, or invalid domain value uses 422; malformed, expired or mismatched
+        continuations use 400 invalid-cursor.
+      tags:
+      - Consultation
+      x-govstack-digital-registries:
+        registry: https://registry.example/registries/business
+        collection: businesses
+        capability: search
+        view: business-public
+        features: [field-selection, complete-traversal]
+      parameters:
+      - $ref: ../openapi.yaml#/components/parameters/Traceparent
+      requestBody:
+        required: true
+        description: One declared search with criteria and body-carried pagination controls.
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BusinessSearchRequest'
+            examples:
+              byRegistrationStatus:
+                summary: First page using the business binding's status search
+                value:
+                  search: byRegistrationStatus
+                  criteria:
+                    registrationStatus: DISSOLVED
+                  fields: [legalName]
+                  pageSize: 20
+              byFields:
+                summary: Equality on a combination of declared fields
+                value:
+                  search: byFields
+                  criteria:
+                    legalName: Example Ltd
+                    registrationStatus: DISSOLVED
+      responses:
+        '200':
+          description: A bounded page of business-public records in ascending ASCII recordId
+            order.
+          headers:
+            Cache-Control:
+              $ref: ../openapi.yaml#/components/headers/CacheControl
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BusinessPage'
+              example:
+                items:
+                - recordId: r_42
+                  data:
+                    legalName: Example Ltd
+                pageInfo:
+                  nextCursor: null
+        '400':
+          $ref: ../openapi.yaml#/components/responses/BadRequest
+        '401':
+          $ref: ../openapi.yaml#/components/responses/Unauthorized
+        '403':
+          $ref: ../openapi.yaml#/components/responses/Forbidden
+        '406':
+          $ref: ../openapi.yaml#/components/responses/NotAcceptable
+        '413':
+          $ref: ../openapi.yaml#/components/responses/ContentTooLarge
+        '415':
+          $ref: ../openapi.yaml#/components/responses/UnsupportedMediaType
+        '422':
+          $ref: ../openapi.yaml#/components/responses/InvalidField
+        '429':
+          $ref: ../openapi.yaml#/components/responses/TooManyRequests
+        '500':
+          $ref: ../openapi.yaml#/components/responses/InternalError
+        '502':
+          $ref: ../openapi.yaml#/components/responses/BadGateway
+        '503':
+          $ref: ../openapi.yaml#/components/responses/ServiceUnavailable
+        '504':
+          $ref: ../openapi.yaml#/components/responses/GatewayTimeout
+components:
+  securitySchemes:
+    citizenOAuth:
+      $ref: ../openapi.yaml#/components/securitySchemes/citizenOAuth
+    serviceOAuth:
+      $ref: ../openapi.yaml#/components/securitySchemes/serviceOAuth
+  parameters:
+    BusinessFields:
+      name: fields
+      in: query
+      required: false
+      style: form
+      explode: false
+      description: >-
+        Comma-separated top-level business-public fields. Omission selects both legalName
+        and registrationStatus. Continuations repeat the effective selection unchanged.
+      schema:
+        $ref: '#/components/schemas/BusinessFields'
+  schemas:
+    BusinessFields:
+      $ref: ./business-registry.schema.json#/$defs/BusinessFields
+    BusinessRecord:
+      $ref: ./business-registry.schema.json#/$defs/BusinessRecord
+    BusinessPage:
+      $ref: ./business-registry.schema.json#/$defs/BusinessPage
+    BusinessLookupRequest:
+      $ref: ./business-registry.schema.json#/$defs/BusinessLookupRequest
+    BusinessSearchRequest:
+      $ref: ./business-registry.schema.json#/$defs/BusinessSearchRequest

@@ -1,0 +1,297 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Person",
+  "description": "The unique individual human being who is a subject of record. Person is the persistent, indivisible unit of identity in registries; operational statuses such as Registrant, Applicant, or Beneficiary are transient roles defined by the person's relationship to a specific Program, not properties of the person themselves. A person who runs a business that the register of its jurisdiction does not treat as a distinct body, such as many sole traders, remains a Person; the business is an Organization only where the register treats it as one.\n",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "The full display name of the record. Depending on the concept, this is a person's or group's name, or the title of a program, instrument, scoring rule, or software product."
+    },
+    "identifiers": {
+      "type": "array",
+      "items": {
+        "oneOf": [
+          {
+            "$ref": "./Identifier.schema.json"
+          },
+          {
+            "type": "string",
+            "description": "URI or identifier reference"
+          }
+        ],
+        "description": "Identifiers carried by this entity, such as national ID numbers, program IDs, or identifiers asserted by an identity document."
+      }
+    },
+    "identity_documents": {
+      "type": "array",
+      "items": {
+        "oneOf": [
+          {
+            "$ref": "./IdentityDocument.schema.json"
+          },
+          {
+            "type": "string",
+            "description": "URI or identifier reference"
+          }
+        ],
+        "description": "Identity documents held by this party, such as passports, national identity cards, civil registration certificates, and program-issued beneficiary cards, or, for an organization, a certificate of registration."
+      }
+    },
+    "date_of_birth": {
+      "type": "string",
+      "format": "date",
+      "description": "The date on which the person was born."
+    },
+    "date_of_death": {
+      "type": "string",
+      "format": "date",
+      "description": "The date on which the person died."
+    },
+    "country_of_birth": {
+      "type": "string",
+      "$comment": "https://publicschema.org/vocab/country",
+      "description": "The country where the person was born, expressed as an ISO 3166-1 code."
+    },
+    "given_name": {
+      "type": "string",
+      "description": "The given (first) name of the person."
+    },
+    "family_name": {
+      "type": "string",
+      "description": "The family (last) name or surname of the person."
+    },
+    "family_name_at_birth": {
+      "type": "string",
+      "description": "The family name of the person at the time of birth, before any change due to marriage or other legal event."
+    },
+    "given_name_at_birth": {
+      "type": "string",
+      "description": "The given name of the person at the time of birth, before any legal name change."
+    },
+    "preferred_name": {
+      "type": "string",
+      "description": "The name a person is commonly known by, when it differs from their legal name. Covers chosen names, professional names, and naming conventions where given name plus family name is insufficient."
+    },
+    "patronymic_name": {
+      "type": "string",
+      "description": "A name derived from the given name of the person's father or a paternal ancestor, used in naming conventions where patronymics are a distinct component of a person's full name."
+    },
+    "matronymic_name": {
+      "type": "string",
+      "description": "A name derived from the given name of the person's mother."
+    },
+    "gender": {
+      "type": "string",
+      "enum": [
+        "male",
+        "female",
+        "other",
+        "not_stated"
+      ],
+      "$comment": "https://publicschema.org/vocab/gender-type",
+      "description": "The gender of the person as recorded in a social protection registry or identity document."
+    },
+    "nationality": {
+      "type": "string",
+      "$comment": "https://publicschema.org/vocab/country",
+      "description": "The country of citizenship or nationality, expressed as an ISO 3166-1 alpha-2 code where possible."
+    },
+    "sex": {
+      "type": "string",
+      "enum": [
+        "not_known",
+        "male",
+        "female",
+        "not_applicable"
+      ],
+      "$comment": "https://publicschema.org/vocab/sex",
+      "description": "The biological sex of a person as recorded in an official register or identity document."
+    },
+    "marital_status": {
+      "type": "string",
+      "enum": [
+        "never_married",
+        "married",
+        "widowed",
+        "divorced",
+        "legally_separated",
+        "consensual_union"
+      ],
+      "$comment": "https://publicschema.org/vocab/marital-status",
+      "description": "The marital or civil status of a person as recorded in an administrative system."
+    },
+    "number_of_spouses": {
+      "type": "integer",
+      "description": "The number of current spouses the person has. Captures polygamous or polyandrous union type separately from marital status, following the UN census framework and DHS approach."
+    },
+    "education_level": {
+      "type": "string",
+      "enum": [
+        "none",
+        "early_childhood",
+        "primary",
+        "lower_secondary",
+        "upper_secondary",
+        "post_secondary_non_tertiary",
+        "short_cycle_tertiary",
+        "bachelor",
+        "master",
+        "doctoral"
+      ],
+      "$comment": "https://publicschema.org/vocab/education-level",
+      "description": "The highest level of formal education completed by a person."
+    },
+    "preferred_language": {
+      "type": "string",
+      "$comment": "https://publicschema.org/vocab/language",
+      "description": "The preferred language of communication for a person, using ISO 639-3 codes."
+    },
+    "occupation": {
+      "type": "string",
+      "$comment": "https://publicschema.org/vocab/occupation",
+      "description": "The person's primary occupation, classified according to the ISCO-08 sub-major groups."
+    },
+    "literacy": {
+      "type": "string",
+      "enum": [
+        "literate",
+        "illiterate"
+      ],
+      "$comment": "https://publicschema.org/vocab/literacy",
+      "description": "Whether the person can, with understanding, both read and write a short simple statement on everyday life."
+    },
+    "religion": {
+      "type": "string",
+      "description": "The religion, religious denomination, or sect of the person, as self-identified. No international classification exists; countries define their own value sets."
+    },
+    "ethnic_group": {
+      "type": "string",
+      "description": "The ethnic or cultural group of the person, as self-identified. The UNSD recommends nationally defined categories based on self-identification; no international classification exists."
+    },
+    "employment_status": {
+      "type": "string",
+      "enum": [
+        "employed",
+        "unemployed",
+        "outside_labour_force"
+      ],
+      "$comment": "https://publicschema.org/vocab/employment-status",
+      "description": "The labour force participation status of the person: whether they are employed, unemployed, or outside the labour force."
+    },
+    "status_in_employment": {
+      "type": "string",
+      "enum": [
+        "employee",
+        "employer",
+        "own_account_worker",
+        "dependent_contractor",
+        "contributing_family_worker",
+        "cooperative_member"
+      ],
+      "$comment": "https://publicschema.org/vocab/status-in-employment",
+      "description": "The type of employment relationship: whether the person is an employee, employer, own-account worker, contributing family worker, or cooperative member."
+    },
+    "industry": {
+      "type": "string",
+      "description": "The branch of economic activity in which the person works, classified according to the International Standard Industrial Classification (ISIC Rev.4). Too large to enumerate; countries use national adaptations."
+    },
+    "phone_number": {
+      "type": "string",
+      "description": "A contact phone number for the person, including country code."
+    },
+    "email_address": {
+      "type": "string",
+      "description": "An email address through which the person can be contacted."
+    },
+    "domicile": {
+      "oneOf": [
+        {
+          "$ref": "./Address.schema.json"
+        },
+        {
+          "type": "string",
+          "description": "URI or identifier reference"
+        }
+      ],
+      "description": "The place that the person treats as their permanent home, which may differ from the address of their current household."
+    },
+    "group_memberships": {
+      "type": "array",
+      "items": {
+        "oneOf": [
+          {
+            "$ref": "./GroupMembership.schema.json"
+          },
+          {
+            "type": "string",
+            "description": "URI or identifier reference"
+          }
+        ],
+        "description": "Group memberships held by this person, linking them to households, families, or other groups."
+      }
+    },
+    "biometric_samples": {
+      "type": "array",
+      "items": {
+        "oneOf": [
+          {
+            "$ref": "./BiometricSample.schema.json"
+          },
+          {
+            "type": "string",
+            "description": "URI or identifier reference"
+          }
+        ],
+        "description": "Biometric samples associated with this person, linking to fingerprint, iris, face, and other biometric records."
+      }
+    },
+    "pregnancy_status": {
+      "type": "string",
+      "enum": [
+        "not_pregnant",
+        "pregnant",
+        "postpartum",
+        "unknown"
+      ],
+      "$comment": "https://publicschema.org/vocab/pregnancy-status",
+      "description": "The current pregnancy status of the person."
+    },
+    "displacement_status": {
+      "type": "string",
+      "enum": [
+        "resident",
+        "idp",
+        "idp_returnee",
+        "refugee",
+        "asylum_seeker",
+        "returnee_from_abroad",
+        "international_migrant",
+        "stateless"
+      ],
+      "$comment": "https://publicschema.org/vocab/displacement-status",
+      "description": "The legal, administrative, or protection status of the person with respect to displacement and migration."
+    },
+    "functioning_status": {
+      "type": "string",
+      "enum": [
+        "no_difficulty",
+        "some_difficulty",
+        "a_lot_of_difficulty",
+        "cannot_do"
+      ],
+      "$comment": "https://publicschema.org/vocab/functional-difficulty-severity",
+      "description": "A coarse current-state summary of the person's functioning difficulty, used by operational systems for targeting and eligibility queries. This is NOT a Washington Group or Child Functioning Module classification of the person: WG and CFM items are measured at the point of administration through a FunctioningProfile, and deriving a disability identifier requires applying a documented cutoff rule. Populate functioning_status from a FunctioningProfile only by citing the cutoff rule alongside; otherwise treat it as a self-declared or enumerator-judged summary."
+    },
+    "nutrition_status": {
+      "type": "string",
+      "enum": [
+        "adequate",
+        "moderate_acute_malnutrition",
+        "severe_acute_malnutrition"
+      ],
+      "$comment": "https://publicschema.org/vocab/acute-malnutrition-severity",
+      "description": "A coarse current-state summary of the person's acute malnutrition status, used by operational systems for targeting and referral queries. This is NOT a z-score classification on a specific measurement: band classifications depend on a growth reference, an age at measurement, and oedema status captured on a dedicated anthropometric profile published in a sibling schema (see ADR-011). Populate nutrition_status from an anthropometric profile only by citing the cutoff rule alongside."
+    }
+  }
+}

@@ -1,0 +1,2269 @@
+{
+  "description": "Independent non-normative PublicSchema Write exchanges. Paired pending and review-action fixtures show state progression; pending and rejected proposals have no authoritative Record effect.",
+  "exchanges": [
+    {
+      "name": "birthDeclarationDirectApplied",
+      "operationId": "createBirthRegistration",
+      "request": {
+        "path": "/v1/collections/birth-registrations/records",
+        "headers": {
+          "Content-Type": "application/json",
+          "Idempotency-Key": "\"birth-declaration-direct-018f47d2\""
+        },
+        "body": {
+          "data": {
+            "transactionId": "tx-birth-declaration-001",
+            "birth": {
+              "@context": "https://publicschema.org/ctx/draft.jsonld",
+              "@id": "urn:request-local:birth-event",
+              "@type": "https://publicschema.org/crvs/Birth",
+              "event_date": "2026-10-30",
+              "event_location": {
+                "location_name": "Example District Hospital"
+              },
+              "child": {
+                "@type": "https://publicschema.org/crvs/Person",
+                "person": {
+                  "@context": "https://publicschema.org/ctx/draft.jsonld",
+                  "@type": "https://publicschema.org/Person",
+                  "given_name": "Nok",
+                  "family_name": "Example",
+                  "@id": "urn:request-local:child",
+                  "date_of_birth": "2026-10-30"
+                },
+                "place_of_usual_residence": "https://registry.example/locations/example-town",
+                "age_at_event": 0
+              },
+              "parents": [
+                {
+                  "@type": "https://publicschema.org/crvs/Parent",
+                  "person": "https://registry.example/v1/collections/individuals/records/person_42",
+                  "parental_role": "gestational",
+                  "establishment_basis": "voluntary_recognition",
+                  "certificate_label": "mother"
+                },
+                {
+                  "@type": "https://publicschema.org/crvs/Parent",
+                  "person": "https://registry.example/v1/collections/individuals/records/person_57",
+                  "parental_role": "legal",
+                  "establishment_basis": "voluntary_recognition",
+                  "certificate_label": "parent 2"
+                }
+              ],
+              "sex_at_birth": "female",
+              "place_type": "health_facility",
+              "birth_type": "single",
+              "weight_at_birth": 3180,
+              "attendant_at_birth": "midwife"
+            },
+            "annotation": {
+              "reasonCode": "initial_declaration",
+              "statement": "Birth declared by the recorded informant.",
+              "supportingEvidence": [
+                {
+                  "evidenceType": "proof_of_birth",
+                  "reference": "https://registry.example/evidence/proof_842",
+                  "issuedAt": "2026-10-30T09:30:00Z"
+                }
+              ]
+            }
+          }
+        }
+      },
+      "response": {
+        "status": 201,
+        "headers": {
+          "Cache-Control": "no-store",
+          "ETag": "\"birth-v1\"",
+          "Location": "https://registry.example/v1/collections/birth-registrations/records/birth_20"
+        },
+        "body": {
+          "collectionId": "birth-registrations",
+          "recordId": "birth_20",
+          "etag": "\"birth-v1\"",
+          "requestLocalReferences": [
+            {
+              "requestLocalId": "urn:request-local:birth-event",
+              "collectionId": "birth-registrations",
+              "recordId": "birth_20"
+            },
+            {
+              "requestLocalId": "urn:request-local:child",
+              "collectionId": "individuals",
+              "recordId": "person_101"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "birthDeclarationApprovalPending",
+      "operationId": "submitChangeRequest",
+      "request": {
+        "path": "/v1/change-requests",
+        "headers": {
+          "Content-Type": "application/json",
+          "Idempotency-Key": "\"birth-declaration-proposal-018f47d2a\""
+        },
+        "body": {
+          "kind": "create",
+          "target": {
+            "collectionId": "birth-registrations"
+          },
+          "input": {
+            "data": {
+              "transactionId": "tx-birth-declaration-review-001",
+              "birth": {
+                "@context": "https://publicschema.org/ctx/draft.jsonld",
+                "@id": "urn:request-local:birth-event",
+                "@type": "https://publicschema.org/crvs/Birth",
+                "event_date": "2026-10-30",
+                "event_location": {
+                  "location_name": "Example District Hospital"
+                },
+                "child": {
+                  "@type": "https://publicschema.org/crvs/Person",
+                  "person": {
+                    "@context": "https://publicschema.org/ctx/draft.jsonld",
+                    "@type": "https://publicschema.org/Person",
+                    "given_name": "Nok",
+                    "family_name": "Example",
+                    "@id": "urn:request-local:child",
+                    "date_of_birth": "2026-10-30"
+                  },
+                  "place_of_usual_residence": "https://registry.example/locations/example-town",
+                  "age_at_event": 0
+                },
+                "parents": [
+                  {
+                    "@type": "https://publicschema.org/crvs/Parent",
+                    "person": "https://registry.example/v1/collections/individuals/records/person_42",
+                    "parental_role": "gestational",
+                    "establishment_basis": "voluntary_recognition",
+                    "certificate_label": "mother"
+                  },
+                  {
+                    "@type": "https://publicschema.org/crvs/Parent",
+                    "person": "https://registry.example/v1/collections/individuals/records/person_57",
+                    "parental_role": "legal",
+                    "establishment_basis": "voluntary_recognition",
+                    "certificate_label": "parent 2"
+                  }
+                ],
+                "sex_at_birth": "female",
+                "place_type": "health_facility",
+                "birth_type": "single",
+                "weight_at_birth": 3180,
+                "attendant_at_birth": "midwife"
+              },
+              "annotation": {
+                "reasonCode": "initial_declaration",
+                "statement": "Birth declared by the recorded informant.",
+                "supportingEvidence": [
+                  {
+                    "evidenceType": "proof_of_birth",
+                    "reference": "https://registry.example/evidence/proof_842",
+                    "issuedAt": "2026-10-30T09:30:00Z"
+                  }
+                ]
+              }
+            }
+          }
+        }
+      },
+      "response": {
+        "status": 201,
+        "headers": {
+          "Cache-Control": "no-store",
+          "ETag": "\"cr-birth-declaration-v1\"",
+          "Location": "https://registry.example/v1/change-requests/cr_birth_declaration_1"
+        },
+        "body": {
+          "changeRequestId": "cr_birth_declaration_1",
+          "proposalVersion": 1,
+          "kind": "create",
+          "target": {
+            "collectionId": "birth-registrations"
+          },
+          "input": {
+            "data": {
+              "transactionId": "tx-birth-declaration-review-001",
+              "birth": {
+                "@context": "https://publicschema.org/ctx/draft.jsonld",
+                "@id": "urn:request-local:birth-event",
+                "@type": "https://publicschema.org/crvs/Birth",
+                "event_date": "2026-10-30",
+                "event_location": {
+                  "location_name": "Example District Hospital"
+                },
+                "child": {
+                  "@type": "https://publicschema.org/crvs/Person",
+                  "person": {
+                    "@context": "https://publicschema.org/ctx/draft.jsonld",
+                    "@type": "https://publicschema.org/Person",
+                    "given_name": "Nok",
+                    "family_name": "Example",
+                    "@id": "urn:request-local:child",
+                    "date_of_birth": "2026-10-30"
+                  },
+                  "place_of_usual_residence": "https://registry.example/locations/example-town",
+                  "age_at_event": 0
+                },
+                "parents": [
+                  {
+                    "@type": "https://publicschema.org/crvs/Parent",
+                    "person": "https://registry.example/v1/collections/individuals/records/person_42",
+                    "parental_role": "gestational",
+                    "establishment_basis": "voluntary_recognition",
+                    "certificate_label": "mother"
+                  },
+                  {
+                    "@type": "https://publicschema.org/crvs/Parent",
+                    "person": "https://registry.example/v1/collections/individuals/records/person_57",
+                    "parental_role": "legal",
+                    "establishment_basis": "voluntary_recognition",
+                    "certificate_label": "parent 2"
+                  }
+                ],
+                "sex_at_birth": "female",
+                "place_type": "health_facility",
+                "birth_type": "single",
+                "weight_at_birth": 3180,
+                "attendant_at_birth": "midwife"
+              },
+              "annotation": {
+                "reasonCode": "initial_declaration",
+                "statement": "Birth declared by the recorded informant.",
+                "supportingEvidence": [
+                  {
+                    "evidenceType": "proof_of_birth",
+                    "reference": "https://registry.example/evidence/proof_842",
+                    "issuedAt": "2026-10-30T09:30:00Z"
+                  }
+                ]
+              }
+            }
+          },
+          "reviewState": "pending",
+          "applicationState": "not-started",
+          "submittedAt": "2026-11-04T02:00:00Z",
+          "updatedAt": "2026-11-04T02:00:00Z"
+        }
+      }
+    },
+    {
+      "name": "birthDeclarationApprovalDecision",
+      "operationId": "approveChangeRequest",
+      "request": {
+        "path": "/v1/change-requests/cr_birth_declaration_1/approve",
+        "headers": {
+          "Content-Type": "application/json",
+          "Idempotency-Key": "\"birth-declaration-approve-018f47d2b\"",
+          "If-Match": "\"cr-birth-declaration-v1\""
+        }
+      },
+      "response": {
+        "status": 200,
+        "headers": {
+          "Cache-Control": "no-store",
+          "ETag": "\"cr-birth-declaration-v2\""
+        },
+        "body": {
+          "changeRequestId": "cr_birth_declaration_1",
+          "proposalVersion": 1,
+          "kind": "create",
+          "target": {
+            "collectionId": "birth-registrations"
+          },
+          "input": {
+            "data": {
+              "transactionId": "tx-birth-declaration-review-001",
+              "birth": {
+                "@context": "https://publicschema.org/ctx/draft.jsonld",
+                "@id": "urn:request-local:birth-event",
+                "@type": "https://publicschema.org/crvs/Birth",
+                "event_date": "2026-10-30",
+                "event_location": {
+                  "location_name": "Example District Hospital"
+                },
+                "child": {
+                  "@type": "https://publicschema.org/crvs/Person",
+                  "person": {
+                    "@context": "https://publicschema.org/ctx/draft.jsonld",
+                    "@type": "https://publicschema.org/Person",
+                    "given_name": "Nok",
+                    "family_name": "Example",
+                    "@id": "urn:request-local:child",
+                    "date_of_birth": "2026-10-30"
+                  },
+                  "place_of_usual_residence": "https://registry.example/locations/example-town",
+                  "age_at_event": 0
+                },
+                "parents": [
+                  {
+                    "@type": "https://publicschema.org/crvs/Parent",
+                    "person": "https://registry.example/v1/collections/individuals/records/person_42",
+                    "parental_role": "gestational",
+                    "establishment_basis": "voluntary_recognition",
+                    "certificate_label": "mother"
+                  },
+                  {
+                    "@type": "https://publicschema.org/crvs/Parent",
+                    "person": "https://registry.example/v1/collections/individuals/records/person_57",
+                    "parental_role": "legal",
+                    "establishment_basis": "voluntary_recognition",
+                    "certificate_label": "parent 2"
+                  }
+                ],
+                "sex_at_birth": "female",
+                "place_type": "health_facility",
+                "birth_type": "single",
+                "weight_at_birth": 3180,
+                "attendant_at_birth": "midwife"
+              },
+              "annotation": {
+                "reasonCode": "initial_declaration",
+                "statement": "Birth declared by the recorded informant.",
+                "supportingEvidence": [
+                  {
+                    "evidenceType": "proof_of_birth",
+                    "reference": "https://registry.example/evidence/proof_842",
+                    "issuedAt": "2026-10-30T09:30:00Z"
+                  }
+                ]
+              }
+            }
+          },
+          "reviewState": "approved",
+          "applicationState": "not-started",
+          "submittedAt": "2026-11-04T02:00:00Z",
+          "updatedAt": "2026-11-04T02:08:00Z"
+        }
+      }
+    },
+    {
+      "name": "birthDeclarationApplicationApplied",
+      "operationId": "getChangeRequest",
+      "request": {
+        "path": "/v1/change-requests/cr_birth_declaration_1"
+      },
+      "response": {
+        "status": 200,
+        "headers": {
+          "Cache-Control": "no-store",
+          "ETag": "\"cr-birth-declaration-v3\""
+        },
+        "body": {
+          "changeRequestId": "cr_birth_declaration_1",
+          "proposalVersion": 1,
+          "kind": "create",
+          "target": {
+            "collectionId": "birth-registrations"
+          },
+          "input": {
+            "data": {
+              "transactionId": "tx-birth-declaration-review-001",
+              "birth": {
+                "@context": "https://publicschema.org/ctx/draft.jsonld",
+                "@id": "urn:request-local:birth-event",
+                "@type": "https://publicschema.org/crvs/Birth",
+                "event_date": "2026-10-30",
+                "event_location": {
+                  "location_name": "Example District Hospital"
+                },
+                "child": {
+                  "@type": "https://publicschema.org/crvs/Person",
+                  "person": {
+                    "@context": "https://publicschema.org/ctx/draft.jsonld",
+                    "@type": "https://publicschema.org/Person",
+                    "given_name": "Nok",
+                    "family_name": "Example",
+                    "@id": "urn:request-local:child",
+                    "date_of_birth": "2026-10-30"
+                  },
+                  "place_of_usual_residence": "https://registry.example/locations/example-town",
+                  "age_at_event": 0
+                },
+                "parents": [
+                  {
+                    "@type": "https://publicschema.org/crvs/Parent",
+                    "person": "https://registry.example/v1/collections/individuals/records/person_42",
+                    "parental_role": "gestational",
+                    "establishment_basis": "voluntary_recognition",
+                    "certificate_label": "mother"
+                  },
+                  {
+                    "@type": "https://publicschema.org/crvs/Parent",
+                    "person": "https://registry.example/v1/collections/individuals/records/person_57",
+                    "parental_role": "legal",
+                    "establishment_basis": "voluntary_recognition",
+                    "certificate_label": "parent 2"
+                  }
+                ],
+                "sex_at_birth": "female",
+                "place_type": "health_facility",
+                "birth_type": "single",
+                "weight_at_birth": 3180,
+                "attendant_at_birth": "midwife"
+              },
+              "annotation": {
+                "reasonCode": "initial_declaration",
+                "statement": "Birth declared by the recorded informant.",
+                "supportingEvidence": [
+                  {
+                    "evidenceType": "proof_of_birth",
+                    "reference": "https://registry.example/evidence/proof_842",
+                    "issuedAt": "2026-10-30T09:30:00Z"
+                  }
+                ]
+              }
+            }
+          },
+          "reviewState": "approved",
+          "applicationState": "applied",
+          "submittedAt": "2026-11-04T02:00:00Z",
+          "updatedAt": "2026-11-04T02:09:00Z",
+          "result": {
+            "collectionId": "birth-registrations",
+            "recordId": "birth_21",
+            "etag": "\"birth-v1\"",
+            "requestLocalReferences": [
+              {
+                "requestLocalId": "urn:request-local:birth-event",
+                "collectionId": "birth-registrations",
+                "recordId": "birth_21"
+              },
+              {
+                "requestLocalId": "urn:request-local:child",
+                "collectionId": "individuals",
+                "recordId": "person_107"
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "name": "birthCorrectionDirectApplied",
+      "operationId": "correctBirth",
+      "request": {
+        "path": "/v1/collections/birth-registrations/records/birth_19/correct-birth",
+        "headers": {
+          "Content-Type": "application/json",
+          "Idempotency-Key": "\"birth-correction-direct-018f47d3\"",
+          "If-Match": "\"birth-v7\""
+        },
+        "body": {
+          "name": "correct-birth",
+          "parameters": {
+            "transactionId": "tx-birth-correction-direct-001",
+            "birthPatch": {
+              "event_location": {
+                "location_name": "Corrected District Hospital"
+              }
+            },
+            "annotation": {
+              "reasonCode": "clerical_error",
+              "statement": "Correct the place of occurrence from the supporting facility record.",
+              "supportingEvidence": [
+                {
+                  "evidenceType": "facility_record",
+                  "reference": "https://registry.example/evidence/facility_record_991",
+                  "issuedAt": "2026-10-30T09:30:00Z"
+                }
+              ]
+            }
+          }
+        }
+      },
+      "response": {
+        "status": 200,
+        "headers": {
+          "Cache-Control": "no-store",
+          "ETag": "\"birth-v8\""
+        },
+        "body": {
+          "collectionId": "birth-registrations",
+          "recordId": "birth_19",
+          "etag": "\"birth-v8\""
+        }
+      }
+    },
+    {
+      "name": "birthCorrectionApprovalPending",
+      "operationId": "submitChangeRequest",
+      "request": {
+        "path": "/v1/change-requests",
+        "headers": {
+          "Content-Type": "application/json",
+          "Idempotency-Key": "\"birth-correction-proposal-018f47d4\""
+        },
+        "body": {
+          "kind": "transition",
+          "target": {
+            "collectionId": "birth-registrations",
+            "recordId": "birth_19"
+          },
+          "baseETag": "\"birth-v8\"",
+          "input": {
+            "name": "correct-birth",
+            "parameters": {
+              "transactionId": "tx-birth-correction-review-001",
+              "birthPatch": {
+                "event_location": {
+                  "location_name": "North District Hospital"
+                }
+              },
+              "annotation": {
+                "reasonCode": "clerical_error",
+                "statement": "Correct the place of occurrence from the supporting facility record.",
+                "supportingEvidence": [
+                  {
+                    "evidenceType": "facility_record",
+                    "reference": "https://registry.example/evidence/facility_record_991",
+                    "issuedAt": "2026-10-30T09:30:00Z"
+                  }
+                ]
+              }
+            }
+          }
+        }
+      },
+      "response": {
+        "status": 201,
+        "headers": {
+          "Cache-Control": "no-store",
+          "ETag": "\"cr-birth-correction-v1\"",
+          "Location": "https://registry.example/v1/change-requests/cr_birth_correction_2"
+        },
+        "body": {
+          "changeRequestId": "cr_birth_correction_2",
+          "proposalVersion": 1,
+          "kind": "transition",
+          "target": {
+            "collectionId": "birth-registrations",
+            "recordId": "birth_19"
+          },
+          "baseETag": "\"birth-v8\"",
+          "input": {
+            "name": "correct-birth",
+            "parameters": {
+              "transactionId": "tx-birth-correction-review-001",
+              "birthPatch": {
+                "event_location": {
+                  "location_name": "North District Hospital"
+                }
+              },
+              "annotation": {
+                "reasonCode": "clerical_error",
+                "statement": "Correct the place of occurrence from the supporting facility record.",
+                "supportingEvidence": [
+                  {
+                    "evidenceType": "facility_record",
+                    "reference": "https://registry.example/evidence/facility_record_991",
+                    "issuedAt": "2026-10-30T09:30:00Z"
+                  }
+                ]
+              }
+            }
+          },
+          "reviewState": "pending",
+          "applicationState": "not-started",
+          "submittedAt": "2026-11-04T03:00:00Z",
+          "updatedAt": "2026-11-04T03:00:00Z"
+        }
+      }
+    },
+    {
+      "name": "birthCorrectionApprovalDecision",
+      "operationId": "approveChangeRequest",
+      "request": {
+        "path": "/v1/change-requests/cr_birth_correction_2/approve",
+        "headers": {
+          "Content-Type": "application/json",
+          "Idempotency-Key": "\"birth-correction-approve-018f47d5\"",
+          "If-Match": "\"cr-birth-correction-v1\""
+        }
+      },
+      "response": {
+        "status": 200,
+        "headers": {
+          "Cache-Control": "no-store",
+          "ETag": "\"cr-birth-correction-v2\""
+        },
+        "body": {
+          "changeRequestId": "cr_birth_correction_2",
+          "proposalVersion": 1,
+          "kind": "transition",
+          "target": {
+            "collectionId": "birth-registrations",
+            "recordId": "birth_19"
+          },
+          "baseETag": "\"birth-v8\"",
+          "input": {
+            "name": "correct-birth",
+            "parameters": {
+              "transactionId": "tx-birth-correction-review-001",
+              "birthPatch": {
+                "event_location": {
+                  "location_name": "North District Hospital"
+                }
+              },
+              "annotation": {
+                "reasonCode": "clerical_error",
+                "statement": "Correct the place of occurrence from the supporting facility record.",
+                "supportingEvidence": [
+                  {
+                    "evidenceType": "facility_record",
+                    "reference": "https://registry.example/evidence/facility_record_991",
+                    "issuedAt": "2026-10-30T09:30:00Z"
+                  }
+                ]
+              }
+            }
+          },
+          "reviewState": "approved",
+          "applicationState": "not-started",
+          "submittedAt": "2026-11-04T03:00:00Z",
+          "updatedAt": "2026-11-04T03:12:00Z"
+        }
+      }
+    },
+    {
+      "name": "birthCorrectionApplicationApplied",
+      "operationId": "getChangeRequest",
+      "request": {
+        "path": "/v1/change-requests/cr_birth_correction_2"
+      },
+      "response": {
+        "status": 200,
+        "headers": {
+          "Cache-Control": "no-store",
+          "ETag": "\"cr-birth-correction-v3\""
+        },
+        "body": {
+          "changeRequestId": "cr_birth_correction_2",
+          "proposalVersion": 1,
+          "kind": "transition",
+          "target": {
+            "collectionId": "birth-registrations",
+            "recordId": "birth_19"
+          },
+          "baseETag": "\"birth-v8\"",
+          "input": {
+            "name": "correct-birth",
+            "parameters": {
+              "transactionId": "tx-birth-correction-review-001",
+              "birthPatch": {
+                "event_location": {
+                  "location_name": "North District Hospital"
+                }
+              },
+              "annotation": {
+                "reasonCode": "clerical_error",
+                "statement": "Correct the place of occurrence from the supporting facility record.",
+                "supportingEvidence": [
+                  {
+                    "evidenceType": "facility_record",
+                    "reference": "https://registry.example/evidence/facility_record_991",
+                    "issuedAt": "2026-10-30T09:30:00Z"
+                  }
+                ]
+              }
+            }
+          },
+          "reviewState": "approved",
+          "applicationState": "applied",
+          "submittedAt": "2026-11-04T03:00:00Z",
+          "updatedAt": "2026-11-04T03:13:00Z",
+          "result": {
+            "collectionId": "birth-registrations",
+            "recordId": "birth_19",
+            "etag": "\"birth-v9\""
+          }
+        }
+      }
+    },
+    {
+      "name": "birthCorrectionApprovalRejected",
+      "operationId": "rejectChangeRequest",
+      "request": {
+        "path": "/v1/change-requests/cr_birth_correction_3/reject",
+        "headers": {
+          "Content-Type": "application/json",
+          "Idempotency-Key": "\"birth-correction-reject-018f47d6\"",
+          "If-Match": "\"cr-birth-reject-v1\""
+        }
+      },
+      "response": {
+        "status": 200,
+        "headers": {
+          "Cache-Control": "no-store",
+          "ETag": "\"cr-birth-reject-v2\""
+        },
+        "body": {
+          "changeRequestId": "cr_birth_correction_3",
+          "proposalVersion": 1,
+          "kind": "transition",
+          "target": {
+            "collectionId": "birth-registrations",
+            "recordId": "birth_19"
+          },
+          "baseETag": "\"birth-v9\"",
+          "input": {
+            "name": "correct-birth",
+            "parameters": {
+              "transactionId": "tx-birth-correction-review-002",
+              "birthPatch": {
+                "event_location": {
+                  "location_name": "Unverified Place"
+                }
+              },
+              "annotation": {
+                "reasonCode": "clerical_error",
+                "statement": "Correct the place of occurrence from the supporting facility record.",
+                "supportingEvidence": [
+                  {
+                    "evidenceType": "facility_record",
+                    "reference": "https://registry.example/evidence/facility_record_991",
+                    "issuedAt": "2026-10-30T09:30:00Z"
+                  }
+                ]
+              }
+            }
+          },
+          "reviewState": "rejected",
+          "applicationState": "not-started",
+          "submittedAt": "2026-11-04T04:00:00Z",
+          "updatedAt": "2026-11-04T04:08:00Z"
+        }
+      }
+    },
+    {
+      "name": "birthCorrectionBlockedApprovalDecision",
+      "operationId": "approveChangeRequest",
+      "request": {
+        "path": "/v1/change-requests/cr_birth_correction_4/approve",
+        "headers": {
+          "Content-Type": "application/json",
+          "Idempotency-Key": "\"birth-correction-blocked-018f47d7\"",
+          "If-Match": "\"cr-birth-blocked-v1\""
+        }
+      },
+      "response": {
+        "status": 200,
+        "headers": {
+          "Cache-Control": "no-store",
+          "ETag": "\"cr-birth-blocked-v2\""
+        },
+        "body": {
+          "changeRequestId": "cr_birth_correction_4",
+          "proposalVersion": 1,
+          "kind": "transition",
+          "target": {
+            "collectionId": "birth-registrations",
+            "recordId": "birth_19"
+          },
+          "baseETag": "\"birth-v8\"",
+          "input": {
+            "name": "correct-birth",
+            "parameters": {
+              "transactionId": "tx-birth-correction-review-003",
+              "birthPatch": {
+                "event_location": {
+                  "location_name": "South District Hospital"
+                }
+              },
+              "annotation": {
+                "reasonCode": "clerical_error",
+                "statement": "Correct the place of occurrence from the supporting facility record.",
+                "supportingEvidence": [
+                  {
+                    "evidenceType": "facility_record",
+                    "reference": "https://registry.example/evidence/facility_record_991",
+                    "issuedAt": "2026-10-30T09:30:00Z"
+                  }
+                ]
+              }
+            }
+          },
+          "reviewState": "approved",
+          "applicationState": "not-started",
+          "submittedAt": "2026-11-04T05:00:00Z",
+          "updatedAt": "2026-11-04T05:10:00Z"
+        }
+      }
+    },
+    {
+      "name": "birthCorrectionApplicationBlockedByTargetPrecondition",
+      "operationId": "getChangeRequest",
+      "request": {
+        "path": "/v1/change-requests/cr_birth_correction_4"
+      },
+      "response": {
+        "status": 200,
+        "headers": {
+          "Cache-Control": "no-store",
+          "ETag": "\"cr-birth-blocked-v3\""
+        },
+        "body": {
+          "changeRequestId": "cr_birth_correction_4",
+          "proposalVersion": 1,
+          "kind": "transition",
+          "target": {
+            "collectionId": "birth-registrations",
+            "recordId": "birth_19"
+          },
+          "baseETag": "\"birth-v8\"",
+          "input": {
+            "name": "correct-birth",
+            "parameters": {
+              "transactionId": "tx-birth-correction-review-003",
+              "birthPatch": {
+                "event_location": {
+                  "location_name": "South District Hospital"
+                }
+              },
+              "annotation": {
+                "reasonCode": "clerical_error",
+                "statement": "Correct the place of occurrence from the supporting facility record.",
+                "supportingEvidence": [
+                  {
+                    "evidenceType": "facility_record",
+                    "reference": "https://registry.example/evidence/facility_record_991",
+                    "issuedAt": "2026-10-30T09:30:00Z"
+                  }
+                ]
+              }
+            }
+          },
+          "reviewState": "approved",
+          "applicationState": "blocked",
+          "submittedAt": "2026-11-04T05:00:00Z",
+          "updatedAt": "2026-11-04T05:11:00Z",
+          "error": {
+            "type": "https://registry.example/problems/source-precondition-failed",
+            "title": "Source Record changed before commit",
+            "detail": "The stored baseETag no longer matches the authoritative birth registration.",
+            "traceId": "0123456789abcdef0123456789abcdef"
+          }
+        }
+      }
+    },
+    {
+      "name": "householdExistingPersonsDirectApplied",
+      "operationId": "createHousehold",
+      "request": {
+        "path": "/v1/collections/households/records",
+        "headers": {
+          "Content-Type": "application/json",
+          "Idempotency-Key": "\"household-existing-018f47d8\""
+        },
+        "body": {
+          "data": {
+            "@context": "https://publicschema.org/ctx/draft.jsonld",
+            "@id": "urn:request-local:household-existing",
+            "@type": "https://publicschema.org/Household",
+            "name": "Example household",
+            "group_type": "household",
+            "formation_date": "2026-10-01",
+            "member_count": 2,
+            "memberships": [
+              {
+                "person": "https://registry.example/v1/collections/individuals/records/person_42",
+                "group": "urn:request-local:household-existing",
+                "role": "head",
+                "start_date": "2026-10-01",
+                "is_active": true
+              },
+              {
+                "person": "https://registry.example/v1/collections/individuals/records/person_57",
+                "group": "urn:request-local:household-existing",
+                "role": "spouse",
+                "start_date": "2026-10-01",
+                "is_active": true
+              }
+            ],
+            "address": {
+              "full_address": "12 Example Street, Example Town",
+              "country": "TH"
+            }
+          }
+        }
+      },
+      "response": {
+        "status": 201,
+        "headers": {
+          "Cache-Control": "no-store",
+          "ETag": "\"household-v1\"",
+          "Location": "https://registry.example/v1/collections/households/records/household_8"
+        },
+        "body": {
+          "collectionId": "households",
+          "recordId": "household_8",
+          "etag": "\"household-v1\"",
+          "requestLocalReferences": [
+            {
+              "requestLocalId": "urn:request-local:household-existing",
+              "collectionId": "households",
+              "recordId": "household_8"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "householdExistingPersonsApprovalPending",
+      "operationId": "submitChangeRequest",
+      "request": {
+        "path": "/v1/change-requests",
+        "headers": {
+          "Content-Type": "application/json",
+          "Idempotency-Key": "\"household-existing-proposal-018f47d8a\""
+        },
+        "body": {
+          "kind": "create",
+          "target": {
+            "collectionId": "households"
+          },
+          "input": {
+            "data": {
+              "@context": "https://publicschema.org/ctx/draft.jsonld",
+              "@id": "urn:request-local:household-existing-review",
+              "@type": "https://publicschema.org/Household",
+              "name": "Example household",
+              "group_type": "household",
+              "formation_date": "2026-10-01",
+              "member_count": 2,
+              "memberships": [
+                {
+                  "person": "https://registry.example/v1/collections/individuals/records/person_42",
+                  "group": "urn:request-local:household-existing-review",
+                  "role": "head",
+                  "start_date": "2026-10-01",
+                  "is_active": true
+                },
+                {
+                  "person": "https://registry.example/v1/collections/individuals/records/person_57",
+                  "group": "urn:request-local:household-existing-review",
+                  "role": "spouse",
+                  "start_date": "2026-10-01",
+                  "is_active": true
+                }
+              ],
+              "address": {
+                "full_address": "12 Example Street, Example Town",
+                "country": "TH"
+              }
+            }
+          }
+        }
+      },
+      "response": {
+        "status": 201,
+        "headers": {
+          "Cache-Control": "no-store",
+          "ETag": "\"cr-household-existing-v1\"",
+          "Location": "https://registry.example/v1/change-requests/cr_household_existing_1"
+        },
+        "body": {
+          "changeRequestId": "cr_household_existing_1",
+          "proposalVersion": 1,
+          "kind": "create",
+          "target": {
+            "collectionId": "households"
+          },
+          "input": {
+            "data": {
+              "@context": "https://publicschema.org/ctx/draft.jsonld",
+              "@id": "urn:request-local:household-existing-review",
+              "@type": "https://publicschema.org/Household",
+              "name": "Example household",
+              "group_type": "household",
+              "formation_date": "2026-10-01",
+              "member_count": 2,
+              "memberships": [
+                {
+                  "person": "https://registry.example/v1/collections/individuals/records/person_42",
+                  "group": "urn:request-local:household-existing-review",
+                  "role": "head",
+                  "start_date": "2026-10-01",
+                  "is_active": true
+                },
+                {
+                  "person": "https://registry.example/v1/collections/individuals/records/person_57",
+                  "group": "urn:request-local:household-existing-review",
+                  "role": "spouse",
+                  "start_date": "2026-10-01",
+                  "is_active": true
+                }
+              ],
+              "address": {
+                "full_address": "12 Example Street, Example Town",
+                "country": "TH"
+              }
+            }
+          },
+          "reviewState": "pending",
+          "applicationState": "not-started",
+          "submittedAt": "2026-11-04T05:20:00Z",
+          "updatedAt": "2026-11-04T05:20:00Z"
+        }
+      }
+    },
+    {
+      "name": "householdExistingPersonsApprovalDecision",
+      "operationId": "approveChangeRequest",
+      "request": {
+        "path": "/v1/change-requests/cr_household_existing_1/approve",
+        "headers": {
+          "Content-Type": "application/json",
+          "Idempotency-Key": "\"household-existing-approve-018f47d8b\"",
+          "If-Match": "\"cr-household-existing-v1\""
+        }
+      },
+      "response": {
+        "status": 200,
+        "headers": {
+          "Cache-Control": "no-store",
+          "ETag": "\"cr-household-existing-v2\""
+        },
+        "body": {
+          "changeRequestId": "cr_household_existing_1",
+          "proposalVersion": 1,
+          "kind": "create",
+          "target": {
+            "collectionId": "households"
+          },
+          "input": {
+            "data": {
+              "@context": "https://publicschema.org/ctx/draft.jsonld",
+              "@id": "urn:request-local:household-existing-review",
+              "@type": "https://publicschema.org/Household",
+              "name": "Example household",
+              "group_type": "household",
+              "formation_date": "2026-10-01",
+              "member_count": 2,
+              "memberships": [
+                {
+                  "person": "https://registry.example/v1/collections/individuals/records/person_42",
+                  "group": "urn:request-local:household-existing-review",
+                  "role": "head",
+                  "start_date": "2026-10-01",
+                  "is_active": true
+                },
+                {
+                  "person": "https://registry.example/v1/collections/individuals/records/person_57",
+                  "group": "urn:request-local:household-existing-review",
+                  "role": "spouse",
+                  "start_date": "2026-10-01",
+                  "is_active": true
+                }
+              ],
+              "address": {
+                "full_address": "12 Example Street, Example Town",
+                "country": "TH"
+              }
+            }
+          },
+          "reviewState": "approved",
+          "applicationState": "not-started",
+          "submittedAt": "2026-11-04T05:20:00Z",
+          "updatedAt": "2026-11-04T05:28:00Z"
+        }
+      }
+    },
+    {
+      "name": "householdExistingPersonsApplicationApplied",
+      "operationId": "getChangeRequest",
+      "request": {
+        "path": "/v1/change-requests/cr_household_existing_1"
+      },
+      "response": {
+        "status": 200,
+        "headers": {
+          "Cache-Control": "no-store",
+          "ETag": "\"cr-household-existing-v3\""
+        },
+        "body": {
+          "changeRequestId": "cr_household_existing_1",
+          "proposalVersion": 1,
+          "kind": "create",
+          "target": {
+            "collectionId": "households"
+          },
+          "input": {
+            "data": {
+              "@context": "https://publicschema.org/ctx/draft.jsonld",
+              "@id": "urn:request-local:household-existing-review",
+              "@type": "https://publicschema.org/Household",
+              "name": "Example household",
+              "group_type": "household",
+              "formation_date": "2026-10-01",
+              "member_count": 2,
+              "memberships": [
+                {
+                  "person": "https://registry.example/v1/collections/individuals/records/person_42",
+                  "group": "urn:request-local:household-existing-review",
+                  "role": "head",
+                  "start_date": "2026-10-01",
+                  "is_active": true
+                },
+                {
+                  "person": "https://registry.example/v1/collections/individuals/records/person_57",
+                  "group": "urn:request-local:household-existing-review",
+                  "role": "spouse",
+                  "start_date": "2026-10-01",
+                  "is_active": true
+                }
+              ],
+              "address": {
+                "full_address": "12 Example Street, Example Town",
+                "country": "TH"
+              }
+            }
+          },
+          "reviewState": "approved",
+          "applicationState": "applied",
+          "submittedAt": "2026-11-04T05:20:00Z",
+          "updatedAt": "2026-11-04T05:29:00Z",
+          "result": {
+            "collectionId": "households",
+            "recordId": "household_11",
+            "etag": "\"household-v1\"",
+            "requestLocalReferences": [
+              {
+                "requestLocalId": "urn:request-local:household-existing-review",
+                "collectionId": "households",
+                "recordId": "household_11"
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "name": "householdCompoundDirectApplied",
+      "operationId": "createHousehold",
+      "request": {
+        "path": "/v1/collections/households/records",
+        "headers": {
+          "Content-Type": "application/json",
+          "Idempotency-Key": "\"household-compound-direct-018f47d9\""
+        },
+        "body": {
+          "data": {
+            "@context": "https://publicschema.org/ctx/draft.jsonld",
+            "@id": "urn:request-local:household-compound",
+            "@type": "https://publicschema.org/Household",
+            "name": "New applicant household",
+            "group_type": "household",
+            "formation_date": "2026-11-04",
+            "member_count": 2,
+            "memberships": [
+              {
+                "person": {
+                  "@context": "https://publicschema.org/ctx/draft.jsonld",
+                  "@type": "https://publicschema.org/Person",
+                  "given_name": "Mali",
+                  "family_name": "Example",
+                  "@id": "urn:request-local:person-mali",
+                  "date_of_birth": "2018-03-14"
+                },
+                "group": "urn:request-local:household-compound",
+                "role": "head",
+                "start_date": "2026-11-04",
+                "is_active": true
+              },
+              {
+                "person": "https://registry.example/v1/collections/individuals/records/person_57",
+                "group": "urn:request-local:household-compound",
+                "role": "spouse",
+                "start_date": "2026-11-04",
+                "is_active": true
+              }
+            ]
+          }
+        }
+      },
+      "response": {
+        "status": 201,
+        "headers": {
+          "Cache-Control": "no-store",
+          "ETag": "\"household-v1\"",
+          "Location": "https://registry.example/v1/collections/households/records/household_9"
+        },
+        "body": {
+          "collectionId": "households",
+          "recordId": "household_9",
+          "etag": "\"household-v1\"",
+          "requestLocalReferences": [
+            {
+              "requestLocalId": "urn:request-local:household-compound",
+              "collectionId": "households",
+              "recordId": "household_9"
+            },
+            {
+              "requestLocalId": "urn:request-local:person-mali",
+              "collectionId": "individuals",
+              "recordId": "person_102"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "householdCompoundApprovalPending",
+      "operationId": "submitChangeRequest",
+      "request": {
+        "path": "/v1/change-requests",
+        "headers": {
+          "Content-Type": "application/json",
+          "Idempotency-Key": "\"household-compound-proposal-018f47da\""
+        },
+        "body": {
+          "kind": "create",
+          "target": {
+            "collectionId": "households"
+          },
+          "input": {
+            "data": {
+              "@context": "https://publicschema.org/ctx/draft.jsonld",
+              "@id": "urn:request-local:household-review",
+              "@type": "https://publicschema.org/Household",
+              "name": "New applicant household",
+              "group_type": "household",
+              "formation_date": "2026-11-04",
+              "member_count": 2,
+              "memberships": [
+                {
+                  "person": {
+                    "@context": "https://publicschema.org/ctx/draft.jsonld",
+                    "@type": "https://publicschema.org/Person",
+                    "given_name": "Mali",
+                    "family_name": "Example",
+                    "@id": "urn:request-local:person-review",
+                    "date_of_birth": "2018-03-14"
+                  },
+                  "group": "urn:request-local:household-review",
+                  "role": "head",
+                  "start_date": "2026-11-04",
+                  "is_active": true
+                },
+                {
+                  "person": "https://registry.example/v1/collections/individuals/records/person_57",
+                  "group": "urn:request-local:household-review",
+                  "role": "spouse",
+                  "start_date": "2026-11-04",
+                  "is_active": true
+                }
+              ]
+            }
+          }
+        }
+      },
+      "response": {
+        "status": 201,
+        "headers": {
+          "Cache-Control": "no-store",
+          "ETag": "\"cr-household-compound-v1\"",
+          "Location": "https://registry.example/v1/change-requests/cr_household_compound_1"
+        },
+        "body": {
+          "changeRequestId": "cr_household_compound_1",
+          "proposalVersion": 1,
+          "kind": "create",
+          "target": {
+            "collectionId": "households"
+          },
+          "input": {
+            "data": {
+              "@context": "https://publicschema.org/ctx/draft.jsonld",
+              "@id": "urn:request-local:household-review",
+              "@type": "https://publicschema.org/Household",
+              "name": "New applicant household",
+              "group_type": "household",
+              "formation_date": "2026-11-04",
+              "member_count": 2,
+              "memberships": [
+                {
+                  "person": {
+                    "@context": "https://publicschema.org/ctx/draft.jsonld",
+                    "@type": "https://publicschema.org/Person",
+                    "given_name": "Mali",
+                    "family_name": "Example",
+                    "@id": "urn:request-local:person-review",
+                    "date_of_birth": "2018-03-14"
+                  },
+                  "group": "urn:request-local:household-review",
+                  "role": "head",
+                  "start_date": "2026-11-04",
+                  "is_active": true
+                },
+                {
+                  "person": "https://registry.example/v1/collections/individuals/records/person_57",
+                  "group": "urn:request-local:household-review",
+                  "role": "spouse",
+                  "start_date": "2026-11-04",
+                  "is_active": true
+                }
+              ]
+            }
+          },
+          "reviewState": "pending",
+          "applicationState": "not-started",
+          "submittedAt": "2026-11-04T06:00:00Z",
+          "updatedAt": "2026-11-04T06:00:00Z"
+        }
+      }
+    },
+    {
+      "name": "householdCompoundApprovalDecision",
+      "operationId": "approveChangeRequest",
+      "request": {
+        "path": "/v1/change-requests/cr_household_compound_1/approve",
+        "headers": {
+          "Content-Type": "application/json",
+          "Idempotency-Key": "\"household-compound-approve-018f47db\"",
+          "If-Match": "\"cr-household-compound-v1\""
+        }
+      },
+      "response": {
+        "status": 200,
+        "headers": {
+          "Cache-Control": "no-store",
+          "ETag": "\"cr-household-compound-v2\""
+        },
+        "body": {
+          "changeRequestId": "cr_household_compound_1",
+          "proposalVersion": 1,
+          "kind": "create",
+          "target": {
+            "collectionId": "households"
+          },
+          "input": {
+            "data": {
+              "@context": "https://publicschema.org/ctx/draft.jsonld",
+              "@id": "urn:request-local:household-review",
+              "@type": "https://publicschema.org/Household",
+              "name": "New applicant household",
+              "group_type": "household",
+              "formation_date": "2026-11-04",
+              "member_count": 2,
+              "memberships": [
+                {
+                  "person": {
+                    "@context": "https://publicschema.org/ctx/draft.jsonld",
+                    "@type": "https://publicschema.org/Person",
+                    "given_name": "Mali",
+                    "family_name": "Example",
+                    "@id": "urn:request-local:person-review",
+                    "date_of_birth": "2018-03-14"
+                  },
+                  "group": "urn:request-local:household-review",
+                  "role": "head",
+                  "start_date": "2026-11-04",
+                  "is_active": true
+                },
+                {
+                  "person": "https://registry.example/v1/collections/individuals/records/person_57",
+                  "group": "urn:request-local:household-review",
+                  "role": "spouse",
+                  "start_date": "2026-11-04",
+                  "is_active": true
+                }
+              ]
+            }
+          },
+          "reviewState": "approved",
+          "applicationState": "not-started",
+          "submittedAt": "2026-11-04T06:00:00Z",
+          "updatedAt": "2026-11-04T06:15:00Z"
+        }
+      }
+    },
+    {
+      "name": "householdCompoundApprovalApplied",
+      "operationId": "getChangeRequest",
+      "request": {
+        "path": "/v1/change-requests/cr_household_compound_1"
+      },
+      "response": {
+        "status": 200,
+        "headers": {
+          "Cache-Control": "no-store",
+          "ETag": "\"cr-household-compound-v3\""
+        },
+        "body": {
+          "changeRequestId": "cr_household_compound_1",
+          "proposalVersion": 1,
+          "kind": "create",
+          "target": {
+            "collectionId": "households"
+          },
+          "input": {
+            "data": {
+              "@context": "https://publicschema.org/ctx/draft.jsonld",
+              "@id": "urn:request-local:household-review",
+              "@type": "https://publicschema.org/Household",
+              "name": "New applicant household",
+              "group_type": "household",
+              "formation_date": "2026-11-04",
+              "member_count": 2,
+              "memberships": [
+                {
+                  "person": {
+                    "@context": "https://publicschema.org/ctx/draft.jsonld",
+                    "@type": "https://publicschema.org/Person",
+                    "given_name": "Mali",
+                    "family_name": "Example",
+                    "@id": "urn:request-local:person-review",
+                    "date_of_birth": "2018-03-14"
+                  },
+                  "group": "urn:request-local:household-review",
+                  "role": "head",
+                  "start_date": "2026-11-04",
+                  "is_active": true
+                },
+                {
+                  "person": "https://registry.example/v1/collections/individuals/records/person_57",
+                  "group": "urn:request-local:household-review",
+                  "role": "spouse",
+                  "start_date": "2026-11-04",
+                  "is_active": true
+                }
+              ]
+            }
+          },
+          "reviewState": "approved",
+          "applicationState": "applied",
+          "submittedAt": "2026-11-04T06:00:00Z",
+          "updatedAt": "2026-11-04T06:16:00Z",
+          "result": {
+            "collectionId": "households",
+            "recordId": "household_10",
+            "etag": "\"household-v1\"",
+            "requestLocalReferences": [
+              {
+                "requestLocalId": "urn:request-local:household-review",
+                "collectionId": "households",
+                "recordId": "household_10"
+              },
+              {
+                "requestLocalId": "urn:request-local:person-review",
+                "collectionId": "individuals",
+                "recordId": "person_103"
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "name": "householdAddExistingMemberDirectApplied",
+      "operationId": "addHouseholdMember",
+      "request": {
+        "path": "/v1/collections/households/records/household_8/add-member",
+        "headers": {
+          "Content-Type": "application/json",
+          "Idempotency-Key": "\"household-add-existing-018f47dc\"",
+          "If-Match": "\"household-v1\""
+        },
+        "body": {
+          "name": "add-member",
+          "parameters": {
+            "membership": {
+              "person": "https://registry.example/v1/collections/individuals/records/person_88",
+              "group": "https://registry.example/v1/collections/households/records/household_8",
+              "role": "child",
+              "start_date": "2026-11-04",
+              "is_active": true
+            }
+          }
+        }
+      },
+      "response": {
+        "status": 200,
+        "headers": {
+          "Cache-Control": "no-store",
+          "ETag": "\"household-v2\""
+        },
+        "body": {
+          "collectionId": "households",
+          "recordId": "household_8",
+          "etag": "\"household-v2\""
+        }
+      }
+    },
+    {
+      "name": "householdAddExistingMemberApprovalPending",
+      "operationId": "submitChangeRequest",
+      "request": {
+        "path": "/v1/change-requests",
+        "headers": {
+          "Content-Type": "application/json",
+          "Idempotency-Key": "\"household-add-existing-proposal-018f47dca\""
+        },
+        "body": {
+          "kind": "transition",
+          "target": {
+            "collectionId": "households",
+            "recordId": "household_8"
+          },
+          "baseETag": "\"household-v2\"",
+          "input": {
+            "name": "add-member",
+            "parameters": {
+              "membership": {
+                "person": "https://registry.example/v1/collections/individuals/records/person_88",
+                "group": "https://registry.example/v1/collections/households/records/household_8",
+                "role": "child",
+                "start_date": "2026-11-04",
+                "is_active": true
+              }
+            }
+          }
+        }
+      },
+      "response": {
+        "status": 201,
+        "headers": {
+          "Cache-Control": "no-store",
+          "ETag": "\"cr-household-add-existing-v1\"",
+          "Location": "https://registry.example/v1/change-requests/cr_household_add_existing_1"
+        },
+        "body": {
+          "changeRequestId": "cr_household_add_existing_1",
+          "proposalVersion": 1,
+          "kind": "transition",
+          "target": {
+            "collectionId": "households",
+            "recordId": "household_8"
+          },
+          "baseETag": "\"household-v2\"",
+          "input": {
+            "name": "add-member",
+            "parameters": {
+              "membership": {
+                "person": "https://registry.example/v1/collections/individuals/records/person_88",
+                "group": "https://registry.example/v1/collections/households/records/household_8",
+                "role": "child",
+                "start_date": "2026-11-04",
+                "is_active": true
+              }
+            }
+          },
+          "reviewState": "pending",
+          "applicationState": "not-started",
+          "submittedAt": "2026-11-04T06:30:00Z",
+          "updatedAt": "2026-11-04T06:30:00Z"
+        }
+      }
+    },
+    {
+      "name": "householdAddExistingMemberApprovalDecision",
+      "operationId": "approveChangeRequest",
+      "request": {
+        "path": "/v1/change-requests/cr_household_add_existing_1/approve",
+        "headers": {
+          "Content-Type": "application/json",
+          "Idempotency-Key": "\"household-add-existing-approve-018f47dcb\"",
+          "If-Match": "\"cr-household-add-existing-v1\""
+        }
+      },
+      "response": {
+        "status": 200,
+        "headers": {
+          "Cache-Control": "no-store",
+          "ETag": "\"cr-household-add-existing-v2\""
+        },
+        "body": {
+          "changeRequestId": "cr_household_add_existing_1",
+          "proposalVersion": 1,
+          "kind": "transition",
+          "target": {
+            "collectionId": "households",
+            "recordId": "household_8"
+          },
+          "baseETag": "\"household-v2\"",
+          "input": {
+            "name": "add-member",
+            "parameters": {
+              "membership": {
+                "person": "https://registry.example/v1/collections/individuals/records/person_88",
+                "group": "https://registry.example/v1/collections/households/records/household_8",
+                "role": "child",
+                "start_date": "2026-11-04",
+                "is_active": true
+              }
+            }
+          },
+          "reviewState": "approved",
+          "applicationState": "not-started",
+          "submittedAt": "2026-11-04T06:30:00Z",
+          "updatedAt": "2026-11-04T06:38:00Z"
+        }
+      }
+    },
+    {
+      "name": "householdAddExistingMemberApplicationApplied",
+      "operationId": "getChangeRequest",
+      "request": {
+        "path": "/v1/change-requests/cr_household_add_existing_1"
+      },
+      "response": {
+        "status": 200,
+        "headers": {
+          "Cache-Control": "no-store",
+          "ETag": "\"cr-household-add-existing-v3\""
+        },
+        "body": {
+          "changeRequestId": "cr_household_add_existing_1",
+          "proposalVersion": 1,
+          "kind": "transition",
+          "target": {
+            "collectionId": "households",
+            "recordId": "household_8"
+          },
+          "baseETag": "\"household-v2\"",
+          "input": {
+            "name": "add-member",
+            "parameters": {
+              "membership": {
+                "person": "https://registry.example/v1/collections/individuals/records/person_88",
+                "group": "https://registry.example/v1/collections/households/records/household_8",
+                "role": "child",
+                "start_date": "2026-11-04",
+                "is_active": true
+              }
+            }
+          },
+          "reviewState": "approved",
+          "applicationState": "applied",
+          "submittedAt": "2026-11-04T06:30:00Z",
+          "updatedAt": "2026-11-04T06:39:00Z",
+          "result": {
+            "collectionId": "households",
+            "recordId": "household_8",
+            "etag": "\"household-v3\""
+          }
+        }
+      }
+    },
+    {
+      "name": "householdAddNewPersonDirectApplied",
+      "operationId": "addHouseholdMember",
+      "request": {
+        "path": "/v1/collections/households/records/household_8/add-member",
+        "headers": {
+          "Content-Type": "application/json",
+          "Idempotency-Key": "\"household-add-new-direct-018f47dcc\"",
+          "If-Match": "\"household-v3\""
+        },
+        "body": {
+          "name": "add-member",
+          "parameters": {
+            "membership": {
+              "person": {
+                "@context": "https://publicschema.org/ctx/draft.jsonld",
+                "@type": "https://publicschema.org/Person",
+                "given_name": "Dao",
+                "family_name": "Example",
+                "@id": "urn:request-local:person-direct-new",
+                "date_of_birth": "2018-03-14"
+              },
+              "group": "https://registry.example/v1/collections/households/records/household_8",
+              "role": "child",
+              "start_date": "2026-11-04",
+              "is_active": true
+            }
+          }
+        }
+      },
+      "response": {
+        "status": 200,
+        "headers": {
+          "Cache-Control": "no-store",
+          "ETag": "\"household-v4\""
+        },
+        "body": {
+          "collectionId": "households",
+          "recordId": "household_8",
+          "etag": "\"household-v4\"",
+          "requestLocalReferences": [
+            {
+              "requestLocalId": "urn:request-local:person-direct-new",
+              "collectionId": "individuals",
+              "recordId": "person_108"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "householdAddNewPersonApprovalPending",
+      "operationId": "submitChangeRequest",
+      "request": {
+        "path": "/v1/change-requests",
+        "headers": {
+          "Content-Type": "application/json",
+          "Idempotency-Key": "\"household-add-new-proposal-018f47dd\""
+        },
+        "body": {
+          "kind": "transition",
+          "target": {
+            "collectionId": "households",
+            "recordId": "household_8"
+          },
+          "baseETag": "\"household-v2\"",
+          "input": {
+            "name": "add-member",
+            "parameters": {
+              "membership": {
+                "person": {
+                  "@context": "https://publicschema.org/ctx/draft.jsonld",
+                  "@type": "https://publicschema.org/Person",
+                  "given_name": "Dao",
+                  "family_name": "Example",
+                  "@id": "urn:request-local:person-dao",
+                  "date_of_birth": "2018-03-14"
+                },
+                "group": "https://registry.example/v1/collections/households/records/household_8",
+                "role": "child",
+                "start_date": "2026-11-04",
+                "is_active": true
+              }
+            }
+          }
+        }
+      },
+      "response": {
+        "status": 201,
+        "headers": {
+          "Cache-Control": "no-store",
+          "ETag": "\"cr-household-add-v1\"",
+          "Location": "https://registry.example/v1/change-requests/cr_household_add_2"
+        },
+        "body": {
+          "changeRequestId": "cr_household_add_2",
+          "proposalVersion": 1,
+          "kind": "transition",
+          "target": {
+            "collectionId": "households",
+            "recordId": "household_8"
+          },
+          "baseETag": "\"household-v2\"",
+          "input": {
+            "name": "add-member",
+            "parameters": {
+              "membership": {
+                "person": {
+                  "@context": "https://publicschema.org/ctx/draft.jsonld",
+                  "@type": "https://publicschema.org/Person",
+                  "given_name": "Dao",
+                  "family_name": "Example",
+                  "@id": "urn:request-local:person-dao",
+                  "date_of_birth": "2018-03-14"
+                },
+                "group": "https://registry.example/v1/collections/households/records/household_8",
+                "role": "child",
+                "start_date": "2026-11-04",
+                "is_active": true
+              }
+            }
+          },
+          "reviewState": "pending",
+          "applicationState": "not-started",
+          "submittedAt": "2026-11-04T07:00:00Z",
+          "updatedAt": "2026-11-04T07:00:00Z"
+        }
+      }
+    },
+    {
+      "name": "householdAddNewPersonApprovalDecision",
+      "operationId": "approveChangeRequest",
+      "request": {
+        "path": "/v1/change-requests/cr_household_add_2/approve",
+        "headers": {
+          "Content-Type": "application/json",
+          "Idempotency-Key": "\"household-add-new-approve-018f47de\"",
+          "If-Match": "\"cr-household-add-v1\""
+        }
+      },
+      "response": {
+        "status": 200,
+        "headers": {
+          "Cache-Control": "no-store",
+          "ETag": "\"cr-household-add-v2\""
+        },
+        "body": {
+          "changeRequestId": "cr_household_add_2",
+          "proposalVersion": 1,
+          "kind": "transition",
+          "target": {
+            "collectionId": "households",
+            "recordId": "household_8"
+          },
+          "baseETag": "\"household-v2\"",
+          "input": {
+            "name": "add-member",
+            "parameters": {
+              "membership": {
+                "person": {
+                  "@context": "https://publicschema.org/ctx/draft.jsonld",
+                  "@type": "https://publicschema.org/Person",
+                  "given_name": "Dao",
+                  "family_name": "Example",
+                  "@id": "urn:request-local:person-dao",
+                  "date_of_birth": "2018-03-14"
+                },
+                "group": "https://registry.example/v1/collections/households/records/household_8",
+                "role": "child",
+                "start_date": "2026-11-04",
+                "is_active": true
+              }
+            }
+          },
+          "reviewState": "approved",
+          "applicationState": "not-started",
+          "submittedAt": "2026-11-04T07:00:00Z",
+          "updatedAt": "2026-11-04T07:09:00Z"
+        }
+      }
+    },
+    {
+      "name": "householdAddNewPersonApplicationApplied",
+      "operationId": "getChangeRequest",
+      "request": {
+        "path": "/v1/change-requests/cr_household_add_2"
+      },
+      "response": {
+        "status": 200,
+        "headers": {
+          "Cache-Control": "no-store",
+          "ETag": "\"cr-household-add-v3\""
+        },
+        "body": {
+          "changeRequestId": "cr_household_add_2",
+          "proposalVersion": 1,
+          "kind": "transition",
+          "target": {
+            "collectionId": "households",
+            "recordId": "household_8"
+          },
+          "baseETag": "\"household-v2\"",
+          "input": {
+            "name": "add-member",
+            "parameters": {
+              "membership": {
+                "person": {
+                  "@context": "https://publicschema.org/ctx/draft.jsonld",
+                  "@type": "https://publicschema.org/Person",
+                  "given_name": "Dao",
+                  "family_name": "Example",
+                  "@id": "urn:request-local:person-dao",
+                  "date_of_birth": "2018-03-14"
+                },
+                "group": "https://registry.example/v1/collections/households/records/household_8",
+                "role": "child",
+                "start_date": "2026-11-04",
+                "is_active": true
+              }
+            }
+          },
+          "reviewState": "approved",
+          "applicationState": "applied",
+          "submittedAt": "2026-11-04T07:00:00Z",
+          "updatedAt": "2026-11-04T07:10:00Z",
+          "result": {
+            "collectionId": "households",
+            "recordId": "household_8",
+            "etag": "\"household-v3\"",
+            "requestLocalReferences": [
+              {
+                "requestLocalId": "urn:request-local:person-dao",
+                "collectionId": "individuals",
+                "recordId": "person_104"
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "name": "individualDirectApplied",
+      "operationId": "createIndividual",
+      "request": {
+        "path": "/v1/collections/individuals/records",
+        "headers": {
+          "Content-Type": "application/json",
+          "Idempotency-Key": "\"individual-direct-018f47df\""
+        },
+        "body": {
+          "data": {
+            "@context": "https://publicschema.org/ctx/draft.jsonld",
+            "@type": "https://publicschema.org/Person",
+            "given_name": "Somchai",
+            "family_name": "Example",
+            "date_of_birth": "1990-02-12"
+          }
+        }
+      },
+      "response": {
+        "status": 201,
+        "headers": {
+          "Cache-Control": "no-store",
+          "ETag": "\"person-v1\"",
+          "Location": "https://registry.example/v1/collections/individuals/records/person_105"
+        },
+        "body": {
+          "collectionId": "individuals",
+          "recordId": "person_105",
+          "etag": "\"person-v1\""
+        }
+      }
+    },
+    {
+      "name": "individualUpdateDirectApplied",
+      "operationId": "updateRecord",
+      "request": {
+        "path": "/v1/collections/individuals/records/person_105",
+        "headers": {
+          "Content-Type": "application/merge-patch+json",
+          "Idempotency-Key": "\"individual-update-018f47df\"",
+          "If-Match": "\"person-v1\""
+        },
+        "body": {
+          "data": {
+            "preferred_name": "Som"
+          }
+        }
+      },
+      "response": {
+        "status": 204,
+        "headers": {
+          "Cache-Control": "no-store",
+          "ETag": "\"person-v2\""
+        }
+      }
+    },
+    {
+      "name": "individualApprovalPending",
+      "operationId": "submitChangeRequest",
+      "request": {
+        "path": "/v1/change-requests",
+        "headers": {
+          "Content-Type": "application/json",
+          "Idempotency-Key": "\"individual-proposal-018f47e0\""
+        },
+        "body": {
+          "kind": "create",
+          "target": {
+            "collectionId": "individuals"
+          },
+          "input": {
+            "data": {
+              "@context": "https://publicschema.org/ctx/draft.jsonld",
+              "@type": "https://publicschema.org/Person",
+              "given_name": "Arun",
+              "family_name": "Example",
+              "date_of_birth": "1984-07-22"
+            }
+          }
+        }
+      },
+      "response": {
+        "status": 201,
+        "headers": {
+          "Cache-Control": "no-store",
+          "ETag": "\"cr-individual-v1\"",
+          "Location": "https://registry.example/v1/change-requests/cr_individual_1"
+        },
+        "body": {
+          "changeRequestId": "cr_individual_1",
+          "proposalVersion": 1,
+          "kind": "create",
+          "target": {
+            "collectionId": "individuals"
+          },
+          "input": {
+            "data": {
+              "@context": "https://publicschema.org/ctx/draft.jsonld",
+              "@type": "https://publicschema.org/Person",
+              "given_name": "Arun",
+              "family_name": "Example",
+              "date_of_birth": "1984-07-22"
+            }
+          },
+          "reviewState": "pending",
+          "applicationState": "not-started",
+          "submittedAt": "2026-11-04T08:00:00Z",
+          "updatedAt": "2026-11-04T08:00:00Z"
+        }
+      }
+    },
+    {
+      "name": "individualApprovalDecision",
+      "operationId": "approveChangeRequest",
+      "request": {
+        "path": "/v1/change-requests/cr_individual_1/approve",
+        "headers": {
+          "Content-Type": "application/json",
+          "Idempotency-Key": "\"individual-approve-018f47e1\"",
+          "If-Match": "\"cr-individual-v1\""
+        }
+      },
+      "response": {
+        "status": 200,
+        "headers": {
+          "Cache-Control": "no-store",
+          "ETag": "\"cr-individual-v2\""
+        },
+        "body": {
+          "changeRequestId": "cr_individual_1",
+          "proposalVersion": 1,
+          "kind": "create",
+          "target": {
+            "collectionId": "individuals"
+          },
+          "input": {
+            "data": {
+              "@context": "https://publicschema.org/ctx/draft.jsonld",
+              "@type": "https://publicschema.org/Person",
+              "given_name": "Arun",
+              "family_name": "Example",
+              "date_of_birth": "1984-07-22"
+            }
+          },
+          "reviewState": "approved",
+          "applicationState": "not-started",
+          "submittedAt": "2026-11-04T08:00:00Z",
+          "updatedAt": "2026-11-04T08:10:00Z"
+        }
+      }
+    },
+    {
+      "name": "individualApplicationApplied",
+      "operationId": "getChangeRequest",
+      "request": {
+        "path": "/v1/change-requests/cr_individual_1"
+      },
+      "response": {
+        "status": 200,
+        "headers": {
+          "Cache-Control": "no-store",
+          "ETag": "\"cr-individual-v3\""
+        },
+        "body": {
+          "changeRequestId": "cr_individual_1",
+          "proposalVersion": 1,
+          "kind": "create",
+          "target": {
+            "collectionId": "individuals"
+          },
+          "input": {
+            "data": {
+              "@context": "https://publicschema.org/ctx/draft.jsonld",
+              "@type": "https://publicschema.org/Person",
+              "given_name": "Arun",
+              "family_name": "Example",
+              "date_of_birth": "1984-07-22"
+            }
+          },
+          "reviewState": "approved",
+          "applicationState": "applied",
+          "submittedAt": "2026-11-04T08:00:00Z",
+          "updatedAt": "2026-11-04T08:11:00Z",
+          "result": {
+            "collectionId": "individuals",
+            "recordId": "person_106",
+            "etag": "\"person-v1\""
+          }
+        }
+      }
+    },
+    {
+      "name": "individualCreateMissingIdempotencyKey",
+      "operationId": "createIndividual",
+      "expectedRequestFailure": "missing-required-header",
+      "request": {
+        "path": "/v1/collections/individuals/records",
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "body": {
+          "data": {
+            "@context": "https://publicschema.org/ctx/draft.jsonld",
+            "@type": "https://publicschema.org/Person",
+            "given_name": "Somchai",
+            "family_name": "Example",
+            "date_of_birth": "1990-02-12"
+          }
+        }
+      },
+      "response": {
+        "status": 400,
+        "mediaType": "application/problem+json",
+        "headers": {
+          "Cache-Control": "no-store"
+        },
+        "body": {
+          "type": "https://govstack.global/problems/digital-registries/bad-request",
+          "title": "Bad request",
+          "status": 400,
+          "traceId": "11111111111111111111111111111111"
+        }
+      }
+    },
+    {
+      "name": "individualCreateIdempotencyFingerprintMismatch",
+      "operationId": "createIndividual",
+      "request": {
+        "path": "/v1/collections/individuals/records",
+        "headers": {
+          "Content-Type": "application/json",
+          "Idempotency-Key": "\"individual-direct-018f47df\""
+        },
+        "body": {
+          "data": {
+            "@context": "https://publicschema.org/ctx/draft.jsonld",
+            "@type": "https://publicschema.org/Person",
+            "given_name": "Different",
+            "family_name": "Payload",
+            "date_of_birth": "1992-01-02"
+          }
+        }
+      },
+      "response": {
+        "status": 422,
+        "mediaType": "application/problem+json",
+        "headers": {
+          "Cache-Control": "no-store"
+        },
+        "body": {
+          "type": "https://govstack.global/problems/digital-registries/idempotency-fingerprint-mismatch",
+          "title": "Idempotency key fingerprint mismatch",
+          "status": 422,
+          "traceId": "22222222222222222222222222222222"
+        }
+      }
+    },
+    {
+      "name": "individualCreateSemanticValidationFailure",
+      "operationId": "createIndividual",
+      "expectedRequestFailure": "schema-validation",
+      "request": {
+        "path": "/v1/collections/individuals/records",
+        "headers": {
+          "Content-Type": "application/json",
+          "Idempotency-Key": "\"individual-invalid-018f47e2\""
+        },
+        "body": {
+          "data": {
+            "@context": "https://publicschema.org/ctx/draft.jsonld",
+            "@type": "https://publicschema.org/Person",
+            "given_name": "Missing family name"
+          }
+        }
+      },
+      "response": {
+        "status": 422,
+        "mediaType": "application/problem+json",
+        "headers": {
+          "Cache-Control": "no-store"
+        },
+        "body": {
+          "type": "https://govstack.global/problems/digital-registries/invalid-content",
+          "title": "Invalid content",
+          "status": 422,
+          "traceId": "33333333333333333333333333333333",
+          "errors": [
+            {
+              "pointer": "/data/family_name",
+              "message": "family_name is required."
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "birthCorrectionProtectedTargetNotAvailable",
+      "operationId": "submitChangeRequest",
+      "request": {
+        "path": "/v1/change-requests",
+        "headers": {
+          "Content-Type": "application/json",
+          "Idempotency-Key": "\"protected-target-018f47e3\""
+        },
+        "body": {
+          "kind": "transition",
+          "target": {
+            "collectionId": "birth-registrations",
+            "recordId": "protected_birth"
+          },
+          "baseETag": "\"birth-protected-v1\"",
+          "input": {
+            "name": "correct-birth",
+            "parameters": {
+              "transactionId": "tx-protected-target-001",
+              "birthPatch": {
+                "event_location": {
+                  "location_name": "Example District Hospital"
+                }
+              },
+              "annotation": {
+                "reasonCode": "clerical_error",
+                "statement": "Correct the place of occurrence from the supporting facility record.",
+                "supportingEvidence": [
+                  {
+                    "evidenceType": "facility_record",
+                    "reference": "https://registry.example/evidence/facility_record_991",
+                    "issuedAt": "2026-10-30T09:30:00Z"
+                  }
+                ]
+              }
+            }
+          }
+        }
+      },
+      "response": {
+        "status": 404,
+        "mediaType": "application/problem+json",
+        "headers": {
+          "Cache-Control": "no-store"
+        },
+        "body": {
+          "type": "https://govstack.global/problems/digital-registries/not-available",
+          "title": "Not available",
+          "status": 404,
+          "traceId": "44444444444444444444444444444444"
+        }
+      }
+    },
+    {
+      "name": "birthCorrectionApprovalStaleProposalVersion",
+      "operationId": "approveChangeRequest",
+      "request": {
+        "path": "/v1/change-requests/cr_birth_correction_2/approve",
+        "headers": {
+          "Content-Type": "application/json",
+          "Idempotency-Key": "\"birth-correction-stale-approve-018f47e4\"",
+          "If-Match": "\"cr-birth-correction-stale-v0\""
+        }
+      },
+      "response": {
+        "status": 412,
+        "mediaType": "application/problem+json",
+        "headers": {
+          "Cache-Control": "no-store"
+        },
+        "body": {
+          "type": "https://govstack.global/problems/digital-registries/precondition-failed",
+          "title": "Change request version changed",
+          "status": 412,
+          "traceId": "55555555555555555555555555555555"
+        }
+      }
+    }
+  ]
+}

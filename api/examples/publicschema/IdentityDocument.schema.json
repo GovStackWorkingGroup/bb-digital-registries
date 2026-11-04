@@ -1,0 +1,71 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://publicschema.org/IdentityDocument.schema.json",
+  "title": "IdentityDocument",
+  "description": "A physical or digital document that asserts one or more identifiers about a party (person, household, group, or organization). Distinct from the identifier itself: the number on a passport is an Identifier; the passport book is an IdentityDocument. Documents have their own lifecycle (issue date, expiry, issuing authority) independent of the identifier value, and the same identifier may appear on successive documents. Distinct from Certificate (a re-issuable extract of a civil-status record under CIEC conventions) and from IdentityCredential (the Verifiable Credential envelope that may attest an IdentityDocument in digital form).\n",
+  "type": "object",
+  "properties": {
+    "identifiers": {
+      "type": "array",
+      "items": {
+        "oneOf": [
+          {
+            "$ref": "https://publicschema.org/Identifier.schema.json"
+          },
+          {
+            "type": "string",
+            "description": "URI or identifier reference"
+          }
+        ],
+        "description": "Identifiers carried by this entity, such as national ID numbers, program IDs, or identifiers asserted by an identity document."
+      }
+    },
+    "document_type": {
+      "type": "string",
+      "enum": [
+        "passport",
+        "national_id_card",
+        "drivers_license",
+        "voter_id_card",
+        "digital_identity_credential",
+        "birth_certificate",
+        "marriage_certificate",
+        "death_certificate",
+        "program_beneficiary_card",
+        "other"
+      ],
+      "$comment": "https://publicschema.org/vocab/document-type",
+      "description": "The category of identity document (passport, national ID card, beneficiary card, etc.)."
+    },
+    "issued_to": {
+      "oneOf": [
+        {
+          "$ref": "https://publicschema.org/Party.schema.json"
+        },
+        {
+          "type": "string",
+          "description": "URI or identifier reference"
+        }
+      ],
+      "description": "The party (person, household, group, or organization) to whom the document, voucher, or credential is issued."
+    },
+    "issuing_authority": {
+      "type": "string",
+      "description": "The organization or government body that issued the document or credential."
+    },
+    "issuing_jurisdiction": {
+      "type": "string",
+      "description": "The geographic jurisdiction under which the document or credential was issued, expressed as an ISO 3166-2 subdivision code or ISO 3166-1 country code."
+    },
+    "issue_date": {
+      "type": "string",
+      "format": "date",
+      "description": "The date on which this record or document was issued."
+    },
+    "expiry_date": {
+      "type": "string",
+      "format": "date",
+      "description": "The date on which this record or document expires or becomes invalid."
+    }
+  }
+}

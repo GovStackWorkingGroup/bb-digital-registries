@@ -1,0 +1,18 @@
+# Table of contents
+
+* [Digital Registries Building Block Specification](README.md)
+* [Overview](introduction/overview.md)
+* [Scope](introduction/scope.md)
+* [Terminology](introduction/terminology.md)
+* [References](introduction/references.md)
+* [Discover Registry Services](requirements/registry-discovery.md)
+* [Provide Registry Services](requirements/registry-services.md)
+* [Registry API reference](resources/api-reference.md)
+* [API examples](resources/api-examples/README.md)
+  * [Birth registration](resources/api-examples/birth-registration.md)
+  * [Business registry](resources/api-examples/business.md)
+  * [Household registry](resources/api-examples/household.md)
+  * [Write API example](resources/api-examples/write.md)
+  * [Schema attribution](resources/api-examples/schema-attribution.md)
+* [Verification](resources/testing.md)
+* [Write verification](resources/write-testing.md)

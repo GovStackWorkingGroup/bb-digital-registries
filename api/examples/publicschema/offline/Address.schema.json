@@ -1,0 +1,57 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Address",
+  "description": "A structured physical or postal location used to reach a person, household, or organization. Addresses combine spatial and administrative components such as street, settlement, district, and postal code.\n",
+  "type": "object",
+  "properties": {
+    "full_address": {
+      "type": "string",
+      "description": "The complete address written as a single text string. Coexists with structured address components for systems that store addresses as free text."
+    },
+    "street_address": {
+      "type": "string",
+      "description": "The street name, number, and any apartment or building identifiers."
+    },
+    "house_number": {
+      "type": "string",
+      "description": "The house, building, or plot number within a street or road."
+    },
+    "building_name": {
+      "type": "string",
+      "description": "The name of a building, estate, or compound, used in contexts where locations are identified by name rather than street number."
+    },
+    "address_area": {
+      "type": "string",
+      "description": "The name of a geographic area such as a neighborhood, quarter, or ward that groups addresses below the city level."
+    },
+    "city": {
+      "type": "string",
+      "description": "The city, town, or village component of the address."
+    },
+    "administrative_area": {
+      "type": "string",
+      "description": "The first-level administrative subdivision (province, state, region) containing the address."
+    },
+    "postal_code": {
+      "type": "string",
+      "description": "The postal or zip code of the address."
+    },
+    "country": {
+      "type": "string",
+      "$comment": "https://publicschema.org/vocab/country",
+      "description": "The country, expressed as an ISO 3166-1 alpha-2 code where possible."
+    },
+    "location": {
+      "oneOf": [
+        {
+          "$ref": "./Location.schema.json"
+        },
+        {
+          "type": "string",
+          "description": "URI or identifier reference"
+        }
+      ],
+      "description": "The geographic location of the subject of this record, captured as coordinates or administrative area."
+    }
+  }
+}

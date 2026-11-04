@@ -1,0 +1,569 @@
+{
+  "description": "Executable, domain-neutral lifecycle fixtures for the unified Read and Write contract. They validate static artifacts only and do not claim deployed runtime conformance, immediate consistency for ordinary reads, or one retained revision per Write. Companion-guard ETag comparisons declare a current-authoritative body-and-ETag evaluation under the exact same effective authorization and disclosure, purpose, and field selection after the deployment's declared companion currency has caught up.",
+  "journeys": [
+    {
+      "name": "create-then-retrieve-a-permitted-view",
+      "kind": "create-retrieve",
+      "steps": [
+        {
+          "step": "create",
+          "operationId": "createRecord",
+          "request": {
+            "path": {"collectionId": "records"},
+            "headers": {"Idempotency-Key": "\"journey-create-1\""},
+            "body": {"data": {"label": "Reference record"}}
+          },
+          "response": {
+            "status": 201,
+            "headers": {
+              "Location": "/v1/collections/records/records/r_42",
+              "ETag": "\"record-write-v1\"",
+              "Cache-Control": "no-store"
+            },
+            "body": {
+              "collectionId": "records",
+              "recordId": "r_42",
+              "etag": "\"record-write-v1\""
+            }
+          }
+        },
+        {
+          "step": "retrieve",
+          "operationId": "retrieveRecord",
+          "view": "record-public",
+          "request": {
+            "path": {"collectionId": "records", "recordId": "r_42"}
+          },
+          "response": {
+            "status": 200,
+            "headers": {
+              "ETag": "\"permitted-view-v7\"",
+              "Cache-Control": "no-store"
+            },
+            "body": {
+              "recordId": "r_42",
+              "data": {"label": "Reference record"}
+            }
+          }
+        }
+      ],
+      "links": [
+        {"from": "create", "to": "retrieve", "identity": true}
+      ]
+    },
+    {
+      "name": "retrieve-update-retrieve-and-reject-stale-write",
+      "kind": "conditional-update",
+      "observation": {
+        "companionCurrency": "settled",
+        "committedGuardState": "exact",
+        "interveningMutationRelevantChange": false
+      },
+      "steps": [
+        {
+          "step": "retrieve-before",
+          "operationId": "retrieveRecord",
+          "view": "record-public",
+          "guardEvaluation": {
+            "id": "guard-r_42-v1",
+            "currency": "current-authoritative",
+            "bodyAndETag": "same-evaluation"
+          },
+          "effectiveContext": {
+            "authorization": "records-maintainer-r_42",
+            "disclosure": "record-public",
+            "purpose": "record-correction",
+            "fieldSelection": ["recordId", "data"]
+          },
+          "request": {
+            "path": {"collectionId": "records", "recordId": "r_42"}
+          },
+          "response": {
+            "status": 200,
+            "headers": {
+              "ETag": "\"record-v1\"",
+              "Cache-Control": "no-store"
+            },
+            "body": {
+              "recordId": "r_42",
+              "data": {"label": "Original label"}
+            }
+          }
+        },
+        {
+          "step": "update",
+          "operationId": "updateRecord",
+          "view": "record-public",
+          "preconditionGuardEvaluationId": "guard-r_42-v1",
+          "committedGuardEvaluationId": "guard-r_42-v2",
+          "effectiveContext": {
+            "authorization": "records-maintainer-r_42",
+            "disclosure": "record-public",
+            "purpose": "record-correction",
+            "fieldSelection": ["recordId", "data"]
+          },
+          "request": {
+            "path": {"collectionId": "records", "recordId": "r_42"},
+            "headers": {
+              "If-Match": "\"record-v1\"",
+              "Idempotency-Key": "\"journey-update-1\""
+            },
+            "mediaType": "application/merge-patch+json",
+            "body": {"data": {"label": "Corrected label"}}
+          },
+          "response": {
+            "status": 204,
+            "headers": {
+              "ETag": "\"record-v2\"",
+              "Cache-Control": "no-store"
+            }
+          }
+        },
+        {
+          "step": "retrieve-after",
+          "operationId": "retrieveRecord",
+          "view": "record-public",
+          "guardEvaluation": {
+            "id": "guard-r_42-v2",
+            "currency": "current-authoritative",
+            "bodyAndETag": "same-evaluation"
+          },
+          "effectiveContext": {
+            "authorization": "records-maintainer-r_42",
+            "disclosure": "record-public",
+            "purpose": "record-correction",
+            "fieldSelection": ["recordId", "data"]
+          },
+          "request": {
+            "path": {"collectionId": "records", "recordId": "r_42"}
+          },
+          "response": {
+            "status": 200,
+            "headers": {
+              "ETag": "\"record-v2\"",
+              "Cache-Control": "no-store"
+            },
+            "body": {
+              "recordId": "r_42",
+              "data": {"label": "Corrected label"}
+            }
+          }
+        },
+        {
+          "step": "stale-update",
+          "operationId": "updateRecord",
+          "view": "record-public",
+          "preconditionGuardEvaluationId": "guard-r_42-v1",
+          "effectiveContext": {
+            "authorization": "records-maintainer-r_42",
+            "disclosure": "record-public",
+            "purpose": "record-correction",
+            "fieldSelection": ["recordId", "data"]
+          },
+          "request": {
+            "path": {"collectionId": "records", "recordId": "r_42"},
+            "headers": {
+              "If-Match": "\"record-v1\"",
+              "Idempotency-Key": "\"journey-update-stale-1\""
+            },
+            "mediaType": "application/merge-patch+json",
+            "body": {"data": {"label": "Stale correction"}}
+          },
+          "response": {
+            "status": 412,
+            "headers": {"Cache-Control": "no-store"},
+            "mediaType": "application/problem+json",
+            "body": {
+              "type": "https://govstack.global/problems/digital-registries/precondition-failed",
+              "title": "Source state changed",
+              "status": 412,
+              "traceId": "6f1c3f0e2a9b4c8d7e6f5a4b3c2d1e0f"
+            }
+          }
+        },
+        {
+          "step": "retrieve-after-hidden-relevant-change",
+          "operationId": "retrieveRecord",
+          "view": "record-public",
+          "fixtureCondition": "mutation-relevant-hidden-state-changed",
+          "guardEvaluation": {
+            "id": "guard-r_42-v3-hidden-relevant",
+            "currency": "current-authoritative",
+            "bodyAndETag": "same-evaluation"
+          },
+          "effectiveContext": {
+            "authorization": "records-maintainer-r_42",
+            "disclosure": "record-public",
+            "purpose": "record-correction",
+            "fieldSelection": ["recordId", "data"]
+          },
+          "request": {
+            "path": {"collectionId": "records", "recordId": "r_42"}
+          },
+          "response": {
+            "status": 200,
+            "headers": {
+              "ETag": "\"record-v3-hidden-guard\"",
+              "Cache-Control": "no-store"
+            },
+            "body": {
+              "recordId": "r_42",
+              "data": {"label": "Corrected label"}
+            }
+          }
+        },
+        {
+          "step": "hidden-change-stale-update",
+          "operationId": "updateRecord",
+          "view": "record-public",
+          "fixtureCondition": "previous-token-after-mutation-relevant-hidden-change",
+          "preconditionGuardEvaluationId": "guard-r_42-v2",
+          "effectiveContext": {
+            "authorization": "records-maintainer-r_42",
+            "disclosure": "record-public",
+            "purpose": "record-correction",
+            "fieldSelection": ["recordId", "data"]
+          },
+          "request": {
+            "path": {"collectionId": "records", "recordId": "r_42"},
+            "headers": {
+              "If-Match": "\"record-v2\"",
+              "Idempotency-Key": "\"journey-update-hidden-stale-1\""
+            },
+            "mediaType": "application/merge-patch+json",
+            "body": {"data": {"label": "Overwrite hidden condition"}}
+          },
+          "response": {
+            "status": 412,
+            "headers": {"Cache-Control": "no-store"},
+            "mediaType": "application/problem+json",
+            "body": {
+              "type": "https://govstack.global/problems/digital-registries/precondition-failed",
+              "title": "Source state changed",
+              "status": 412,
+              "traceId": "7a2d4e6f8b1c3d5e9f0a2b4c6d8e1f3a"
+            }
+          }
+        }
+      ],
+      "links": [
+        {
+          "from": "retrieve-before",
+          "to": "update",
+          "identity": true,
+          "version": "if-match",
+          "sameEffectiveContext": true
+        },
+        {
+          "from": "update",
+          "to": "retrieve-after",
+          "identity": true,
+          "version": "response-etag",
+          "sameView": true,
+          "sameEffectiveContext": true
+        },
+        {
+          "from": "retrieve-before",
+          "to": "stale-update",
+          "identity": true,
+          "version": "if-match",
+          "sameEffectiveContext": true
+        },
+        {
+          "from": "retrieve-after",
+          "to": "hidden-change-stale-update",
+          "identity": true,
+          "version": "if-match",
+          "sameEffectiveContext": true
+        },
+        {
+          "from": "retrieve-after-hidden-relevant-change",
+          "to": "hidden-change-stale-update",
+          "identity": true,
+          "hiddenRelevantChange": true,
+          "sameEffectiveContext": true
+        }
+      ]
+    },
+    {
+      "name": "transition-then-read-the-same-view",
+      "kind": "transition-read",
+      "observation": {
+        "companionCurrency": "settled",
+        "committedGuardState": "exact",
+        "interveningMutationRelevantChange": false
+      },
+      "steps": [
+        {
+          "step": "transition",
+          "operationId": "applyRecordTransition",
+          "view": "record-public",
+          "committedGuardEvaluationId": "guard-r_42-v3",
+          "effectiveContext": {
+            "authorization": "records-maintainer-r_42",
+            "disclosure": "record-public",
+            "purpose": "lifecycle-transition",
+            "fieldSelection": ["recordId", "data"]
+          },
+          "request": {
+            "path": {"collectionId": "records", "recordId": "r_42"},
+            "headers": {
+              "If-Match": "\"record-v2\"",
+              "Idempotency-Key": "\"journey-transition-1\""
+            },
+            "body": {
+              "name": "activate",
+              "parameters": {"reason": "verified-source"}
+            }
+          },
+          "response": {
+            "status": 200,
+            "headers": {
+              "ETag": "\"record-v3\"",
+              "Cache-Control": "no-store"
+            },
+            "body": {
+              "collectionId": "records",
+              "recordId": "r_42",
+              "etag": "\"record-v3\""
+            }
+          }
+        },
+        {
+          "step": "retrieve",
+          "operationId": "retrieveRecord",
+          "view": "record-public",
+          "guardEvaluation": {
+            "id": "guard-r_42-v3",
+            "currency": "current-authoritative",
+            "bodyAndETag": "same-evaluation"
+          },
+          "effectiveContext": {
+            "authorization": "records-maintainer-r_42",
+            "disclosure": "record-public",
+            "purpose": "lifecycle-transition",
+            "fieldSelection": ["recordId", "data"]
+          },
+          "request": {
+            "path": {"collectionId": "records", "recordId": "r_42"}
+          },
+          "response": {
+            "status": 200,
+            "headers": {
+              "ETag": "\"record-v3\"",
+              "Cache-Control": "no-store"
+            },
+            "body": {
+              "recordId": "r_42",
+              "data": {"label": "Reference record", "status": "active"}
+            }
+          }
+        }
+      ],
+      "links": [
+        {
+          "from": "transition",
+          "to": "retrieve",
+          "identity": true,
+          "version": "response-etag",
+          "sameView": true,
+          "sameEffectiveContext": true
+        }
+      ]
+    },
+    {
+      "name": "asynchronous-create-completes-before-read",
+      "kind": "async-completion-read",
+      "steps": [
+        {
+          "step": "accepted",
+          "operationId": "createRecord",
+          "request": {
+            "path": {"collectionId": "records"},
+            "headers": {"Idempotency-Key": "\"journey-async-create-1\""},
+            "body": {"data": {"label": "Queued record"}}
+          },
+          "response": {
+            "status": 202,
+            "headers": {
+              "Location": "/v1/operations/op_7",
+              "Cache-Control": "no-store"
+            },
+            "body": {
+              "operationId": "op_7",
+              "status": "pending",
+              "createdAt": "2026-11-04T08:00:00Z",
+              "updatedAt": "2026-11-04T08:00:00Z"
+            }
+          }
+        },
+        {
+          "step": "completed",
+          "operationId": "getOperation",
+          "request": {"path": {"operationId": "op_7"}},
+          "response": {
+            "status": 200,
+            "headers": {"Cache-Control": "no-store"},
+            "body": {
+              "operationId": "op_7",
+              "status": "succeeded",
+              "createdAt": "2026-11-04T08:00:00Z",
+              "updatedAt": "2026-11-04T08:00:05Z",
+              "result": {
+                "collectionId": "records",
+                "recordId": "r_43",
+                "etag": "\"record-v1\""
+              }
+            }
+          }
+        },
+        {
+          "step": "retrieve",
+          "operationId": "retrieveRecord",
+          "view": "record-public",
+          "request": {
+            "path": {"collectionId": "records", "recordId": "r_43"}
+          },
+          "response": {
+            "status": 200,
+            "headers": {
+              "ETag": "\"permitted-view-v1\"",
+              "Cache-Control": "no-store"
+            },
+            "body": {
+              "recordId": "r_43",
+              "data": {"label": "Queued record"}
+            }
+          }
+        }
+      ],
+      "links": [
+        {"from": "completed", "to": "retrieve", "identity": true}
+      ]
+    },
+    {
+      "name": "governed-update-applies-only-after-approval",
+      "kind": "governed-application-read",
+      "steps": [
+        {
+          "step": "submit",
+          "operationId": "submitChangeRequest",
+          "request": {
+            "headers": {"Idempotency-Key": "\"journey-change-request-1\""},
+            "body": {
+              "kind": "update",
+              "target": {"collectionId": "records", "recordId": "r_42"},
+              "baseETag": "\"record-v3\"",
+              "inputMediaType": "application/merge-patch+json",
+              "input": {"data": {"label": "Governed correction"}}
+            }
+          },
+          "response": {
+            "status": 201,
+            "headers": {
+              "Location": "/v1/change-requests/cr_7",
+              "ETag": "\"change-request-v1\"",
+              "Cache-Control": "no-store"
+            },
+            "body": {
+              "changeRequestId": "cr_7",
+              "proposalVersion": 1,
+              "kind": "update",
+              "target": {"collectionId": "records", "recordId": "r_42"},
+              "baseETag": "\"record-v3\"",
+              "inputMediaType": "application/merge-patch+json",
+              "input": {"data": {"label": "Governed correction"}},
+              "reviewState": "pending",
+              "applicationState": "not-started",
+              "submittedAt": "2026-11-04T08:00:00Z",
+              "updatedAt": "2026-11-04T08:00:00Z"
+            }
+          }
+        },
+        {
+          "step": "approve",
+          "operationId": "approveChangeRequest",
+          "request": {
+            "path": {"changeRequestId": "cr_7"},
+            "headers": {
+              "If-Match": "\"change-request-v1\"",
+              "Idempotency-Key": "\"journey-approve-1\""
+            }
+          },
+          "response": {
+            "status": 200,
+            "headers": {
+              "ETag": "\"change-request-v2\"",
+              "Cache-Control": "no-store"
+            },
+            "body": {
+              "changeRequestId": "cr_7",
+              "proposalVersion": 1,
+              "kind": "update",
+              "target": {"collectionId": "records", "recordId": "r_42"},
+              "baseETag": "\"record-v3\"",
+              "inputMediaType": "application/merge-patch+json",
+              "input": {"data": {"label": "Governed correction"}},
+              "reviewState": "approved",
+              "applicationState": "not-started",
+              "submittedAt": "2026-11-04T08:00:00Z",
+              "updatedAt": "2026-11-04T08:01:00Z"
+            }
+          }
+        },
+        {
+          "step": "applied",
+          "operationId": "getChangeRequest",
+          "request": {"path": {"changeRequestId": "cr_7"}},
+          "response": {
+            "status": 200,
+            "headers": {
+              "ETag": "\"change-request-v3\"",
+              "Cache-Control": "no-store"
+            },
+            "body": {
+              "changeRequestId": "cr_7",
+              "proposalVersion": 1,
+              "kind": "update",
+              "target": {"collectionId": "records", "recordId": "r_42"},
+              "baseETag": "\"record-v3\"",
+              "inputMediaType": "application/merge-patch+json",
+              "input": {"data": {"label": "Governed correction"}},
+              "reviewState": "approved",
+              "applicationState": "applied",
+              "result": {
+                "collectionId": "records",
+                "recordId": "r_42",
+                "etag": "\"record-v4\""
+              },
+              "submittedAt": "2026-11-04T08:00:00Z",
+              "updatedAt": "2026-11-04T08:02:00Z"
+            }
+          }
+        },
+        {
+          "step": "retrieve",
+          "operationId": "retrieveRecord",
+          "view": "record-public",
+          "request": {
+            "path": {"collectionId": "records", "recordId": "r_42"}
+          },
+          "response": {
+            "status": 200,
+            "headers": {
+              "ETag": "\"permitted-view-v4\"",
+              "Cache-Control": "no-store"
+            },
+            "body": {
+              "recordId": "r_42",
+              "data": {"label": "Governed correction"}
+            }
+          }
+        }
+      ],
+      "links": [
+        {"from": "applied", "to": "retrieve", "identity": true}
+      ]
+    }
+  ]
+}

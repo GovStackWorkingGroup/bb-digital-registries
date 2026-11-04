@@ -1,0 +1,16 @@
+[project]
+name = "govstack-digital-registries-specification-tools"
+version = "0.1.0"
+description = "Validation tools for the GovStack Digital Registries specification"
+requires-python = ">=3.11"
+dependencies = [
+  "jsonschema==4.26.0",
+  "openapi-spec-validator==0.9.0",
+  "PyLD==2.0.4",
+  "PyYAML==6.0.3",
+  "referencing==0.37.0",
+  "rfc3987-syntax==1.1.0",
+]
+
+[tool.uv]
+package = false

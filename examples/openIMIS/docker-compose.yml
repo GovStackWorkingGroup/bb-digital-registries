@@ -5,7 +5,7 @@ services:
     container_name: ${PROJECT_NAME:-openimis}-db
     image: ghcr.io/openimis/openimis-pgsql:${DB_TAG:-latest}
     environment:
-      - POSTGRES_PASSWORD=${DB_PASSWORD}
+      - POSTGRES_PASSWORD=${DB_PASSWORD:?Set DB_PASSWORD in examples/openIMIS/.env}
       - POSTGRES_DB=${DB_NAME}
       - POSTGRES_USER=${DB_USER}
     healthcheck:
@@ -35,12 +35,12 @@ services:
       - DB_NAME=${DB_NAME}
       - DB_USER=${DB_USER}
       - DB_ENGINE=${DB_ENGINE}
-      - DB_PASSWORD=${DB_PASSWORD}
+      - DB_PASSWORD=${DB_PASSWORD:?Set DB_PASSWORD in examples/openIMIS/.env}
       - SITE_ROOT=api
       - DJANGO_LOG_LEVEL=DEBUG
       - SITE_URL=${NEW_OPENIMIS_HOST}
-      - login_openIMIS=Admin
-      - password_openIMIS=admin123
+      - login_openIMIS=${OPENIMIS_ADMIN_USERNAME:?Set OPENIMIS_ADMIN_USERNAME in examples/openIMIS/.env}
+      - password_openIMIS=${OPENIMIS_ADMIN_PASSWORD:?Set OPENIMIS_ADMIN_PASSWORD in examples/openIMIS/.env}
       - IM_CLIENT=eGovStack/GOV/90000009/digitalregistries
     depends_on:  
       db:

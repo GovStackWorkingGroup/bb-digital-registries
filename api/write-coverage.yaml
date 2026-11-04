@@ -1,0 +1,83 @@
+version: 1
+contract: openapi.yaml
+description: >-
+  Draft traceability for the independently selectable Digital Registries Write capabilities.
+  An entry establishes contract coverage only; it is not implementation, deployment, or
+  conformance evidence.
+capabilities:
+  - key: write-create
+    metadataCapability: create
+    path: /v1/collections/{collectionId}/records
+    method: post
+    operationId: createRecord
+  - key: write-update
+    metadataCapability: update
+    path: /v1/collections/{collectionId}/records/{recordId}
+    method: patch
+    operationId: updateRecord
+  - key: write-transition
+    metadataCapability: transition
+    path: /v1/collections/{collectionId}/records/{recordId}/transition
+    method: post
+    operationId: applyRecordTransition
+  - key: write-change-requests
+    metadataCapability: change-requests
+    path: /v1/change-requests
+    method: post
+    operationId: submitChangeRequest
+supportingOperations:
+  - operationId: retrieveRecord
+    purpose: Obtain the strong Record validator required by conditional direct mutations.
+  - operationId: listChangeRequests
+    purpose: List caller-visible governed proposals.
+  - operationId: getChangeRequest
+    purpose: Read proposal, review, and application state with a strong request validator.
+  - operationId: approveChangeRequest
+    purpose: Approve the exact proposal version without implying application completion.
+  - operationId: rejectChangeRequest
+    purpose: Reject the exact proposal version.
+  - operationId: withdrawChangeRequest
+    purpose: Withdraw the exact proposal version when current policy permits.
+  - operationId: getOperation
+    purpose: Poll actual asynchronous authoritative work accepted with 202.
+dispositions:
+  operation: The listed OpenAPI operations carry the machine-readable portion of this draft requirement.
+  review: Runtime, policy, or audit evidence is required in addition to the published contract.
+draftRequirements:
+  - {key: write-1, test: resources/write-testing.md#write-1, disposition: operation, operations: [createRecord, getOperation]}
+  - {key: write-2, test: resources/write-testing.md#write-2, disposition: operation, operations: [retrieveRecord, updateRecord]}
+  - {key: write-3, test: resources/write-testing.md#write-3, disposition: operation, operations: [retrieveRecord, applyRecordTransition, getOperation]}
+  - {key: write-4, test: resources/write-testing.md#write-4, disposition: operation, operations: [submitChangeRequest, getChangeRequest, approveChangeRequest, rejectChangeRequest, withdrawChangeRequest]}
+  - {key: write-5, test: resources/write-testing.md#write-5, disposition: operation, operations: [createRecord, updateRecord, applyRecordTransition, submitChangeRequest]}
+  - key: write-6
+    test: resources/write-testing.md#write-6
+    disposition: review
+    rationale: Atomic commit and any separately declared compound guarantee require failure-injection evidence.
+  - {key: write-7, test: resources/write-testing.md#write-7, disposition: operation, operations: [createRecord, updateRecord, applyRecordTransition, submitChangeRequest, approveChangeRequest, rejectChangeRequest, withdrawChangeRequest]}
+  - {key: write-8, test: resources/write-testing.md#write-8, disposition: operation, operations: [retrieveRecord, updateRecord, applyRecordTransition, submitChangeRequest, approveChangeRequest]}
+  - key: write-9
+    test: resources/write-testing.md#write-9
+    disposition: review
+    rationale: Operation scopes and optional purpose metadata are contract evidence; current policy enforcement needs actor-and-target tests.
+  - {key: write-10, test: resources/write-testing.md#write-10, disposition: operation, operations: [createRecord, updateRecord, applyRecordTransition, submitChangeRequest, approveChangeRequest, rejectChangeRequest, withdrawChangeRequest]}
+  - key: write-11
+    test: resources/write-testing.md#write-11
+    disposition: review
+    rationale: Protocol acknowledgements are declared, while provenance and audit correlation require retained implementation evidence.
+  - {key: write-12, test: resources/write-testing.md#write-12, disposition: operation, operations: [createRecord, retrieveRecord, updateRecord, applyRecordTransition, submitChangeRequest, getChangeRequest, approveChangeRequest, rejectChangeRequest, withdrawChangeRequest, getOperation]}
+  - key: write-13
+    test: resources/write-testing.md#write-13
+    disposition: review
+    rationale: The canonical contract offers no preview operation; deployments that add one must assess its non-authoritative behavior.
+  - {key: write-14, test: resources/write-testing.md#write-14, disposition: operation, operations: [submitChangeRequest, getChangeRequest, approveChangeRequest, rejectChangeRequest, withdrawChangeRequest]}
+  - {key: write-15, test: resources/write-testing.md#write-15, disposition: operation, operations: [submitChangeRequest, getChangeRequest, approveChangeRequest, rejectChangeRequest, withdrawChangeRequest, getOperation]}
+  - key: write-16
+    test: resources/write-testing.md#write-16
+    disposition: review
+    rationale: Distinct submit, review, withdraw, and apply grants are declared; stage enforcement and trusted actors require policy evidence.
+  - key: write-17
+    test: resources/write-testing.md#write-17
+    disposition: review
+    rationale: Commit-time revalidation of authority, purpose, target, input, and source guard requires runtime and audit evidence.
+  - {key: write-18, test: resources/write-testing.md#write-18, disposition: operation, operations: [createRecord, updateRecord, applyRecordTransition, submitChangeRequest, getOperation]}
+  - {key: write-19, test: resources/write-testing.md#write-19, disposition: operation, operations: [listChangeRequests]}

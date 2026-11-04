@@ -1,0 +1,157 @@
+@prefix apif: <https://vocab.govstack.global/digital-registries/api-families#> .
+@prefix dcat: <http://www.w3.org/ns/dcat#> .
+@prefix dct: <http://purl.org/dc/terms/> .
+@prefix govreg: <https://vocab.govstack.global/digital-registries#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix prov: <http://www.w3.org/ns/prov#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix skos: <http://www.w3.org/2004/02/skos/core#> .
+
+<https://vocab.govstack.global/digital-registries>
+    a owl:Ontology ;
+    dct:title "Digital Registries Registry Core Vocabulary"@en ;
+    dct:description
+        "Defines the Registry class, its authority, dataset, and data-service relationships, and the controlled API-family concepts used in Digital Registries metadata."@en ;
+    dct:hasPart
+        <https://vocab.govstack.global/digital-registries/api-families> .
+
+govreg:Registry
+    a owl:Class ;
+    rdfs:label "Registry"@en ;
+    rdfs:comment
+        "An institutionally governed system that maintains authoritative Records within a declared scope."@en ;
+    rdfs:isDefinedBy <https://vocab.govstack.global/digital-registries> ;
+    rdfs:subClassOf dcat:Resource .
+
+govreg:authority
+    a owl:ObjectProperty ;
+    rdfs:label "registry authority"@en ;
+    rdfs:comment
+        "Relates a Registry to the institution accountable for it and its authoritative scope."@en ;
+    rdfs:domain govreg:Registry ;
+    rdfs:isDefinedBy <https://vocab.govstack.global/digital-registries> ;
+    rdfs:range prov:Agent .
+
+govreg:dataset
+    a owl:ObjectProperty ;
+    rdfs:label "governed dataset"@en ;
+    rdfs:comment
+        "Relates a Registry to a governed collection described as a DCAT Dataset."@en ;
+    rdfs:domain govreg:Registry ;
+    rdfs:isDefinedBy <https://vocab.govstack.global/digital-registries> ;
+    rdfs:range dcat:Dataset .
+
+govreg:dataService
+    a owl:ObjectProperty ;
+    rdfs:label "data service"@en ;
+    rdfs:comment
+        "Relates a Registry to a technical interface described as a DCAT Data Service."@en ;
+    rdfs:domain govreg:Registry ;
+    rdfs:isDefinedBy <https://vocab.govstack.global/digital-registries> ;
+    rdfs:range dcat:DataService .
+
+<https://vocab.govstack.global/digital-registries/api-families>
+    a skos:ConceptScheme ;
+    dct:title "Digital Registries API Families"@en ;
+    dct:description
+        "Controlled concepts used to identify the API families supported by a Digital Registries Data Service."@en ;
+    dct:isPartOf <https://vocab.govstack.global/digital-registries> ;
+    skos:scopeNote
+        "When used as a dct:type value on a dcat:DataService, an API-family concept asserts that the service exposes at least one operation assigned to that family. It does not assert support for every capability pattern in the family or conformance to a GovStack profile."@en ;
+    skos:hasTopConcept
+        apif:access-transparency,
+        apif:aggregate-data,
+        apif:consultation,
+        apif:evidence,
+        apif:identity-federation,
+        apif:notification,
+        apif:provisioning,
+        apif:write .
+
+apif:consultation
+    a skos:Concept ;
+    skos:prefLabel "Consultation"@en ;
+    skos:notation "consultation" ;
+    skos:definition
+        "Capabilities through which a consumer obtains a permitted representation of Registry information."@en ;
+    skos:inScheme
+        <https://vocab.govstack.global/digital-registries/api-families> ;
+    skos:topConceptOf
+        <https://vocab.govstack.global/digital-registries/api-families> .
+
+apif:provisioning
+    a skos:Concept ;
+    skos:prefLabel "Provisioning"@en ;
+    skos:notation "provisioning" ;
+    skos:definition
+        "Capabilities for configuring a Registry service and publishing its externally visible contracts."@en ;
+    skos:inScheme
+        <https://vocab.govstack.global/digital-registries/api-families> ;
+    skos:topConceptOf
+        <https://vocab.govstack.global/digital-registries/api-families> .
+
+apif:evidence
+    a skos:Concept ;
+    skos:prefLabel "Evidence"@en ;
+    skos:notation "evidence" ;
+    skos:definition
+        "Capabilities through which a consumer obtains a signed assertion derived from authoritative Registry information."@en ;
+    skos:inScheme
+        <https://vocab.govstack.global/digital-registries/api-families> ;
+    skos:topConceptOf
+        <https://vocab.govstack.global/digital-registries/api-families> .
+
+apif:write
+    a skos:Concept ;
+    skos:prefLabel "Write"@en ;
+    skos:notation "write" ;
+    skos:definition
+        "Capabilities for creating a Record or accepting a new authoritative revision."@en ;
+    skos:inScheme
+        <https://vocab.govstack.global/digital-registries/api-families> ;
+    skos:topConceptOf
+        <https://vocab.govstack.global/digital-registries/api-families> .
+
+apif:notification
+    a skos:Concept ;
+    skos:prefLabel "Notification"@en ;
+    skos:notation "notification" ;
+    skos:definition
+        "Capabilities for informing authorised subscribers that Registry state changed."@en ;
+    skos:inScheme
+        <https://vocab.govstack.global/digital-registries/api-families> ;
+    skos:topConceptOf
+        <https://vocab.govstack.global/digital-registries/api-families> .
+
+apif:aggregate-data
+    a skos:Concept ;
+    skos:prefLabel "Aggregate Data"@en ;
+    skos:notation "aggregate-data" ;
+    skos:definition
+        "Capabilities through which a consumer obtains approved statistics derived from Registry Records."@en ;
+    skos:inScheme
+        <https://vocab.govstack.global/digital-registries/api-families> ;
+    skos:topConceptOf
+        <https://vocab.govstack.global/digital-registries/api-families> .
+
+apif:access-transparency
+    a skos:Concept ;
+    skos:prefLabel "Access Transparency"@en ;
+    skos:notation "access-transparency" ;
+    skos:definition
+        "Capabilities through which a consumer obtains a permitted view of access to a related Record."@en ;
+    skos:inScheme
+        <https://vocab.govstack.global/digital-registries/api-families> ;
+    skos:topConceptOf
+        <https://vocab.govstack.global/digital-registries/api-families> .
+
+apif:identity-federation
+    a skos:Concept ;
+    skos:prefLabel "Identity Federation"@en ;
+    skos:notation "identity-federation" ;
+    skos:definition
+        "Capabilities for authenticating a person represented by a sectoral Registry Record and releasing authorised claims to a Relying Service."@en ;
+    skos:inScheme
+        <https://vocab.govstack.global/digital-registries/api-families> ;
+    skos:topConceptOf
+        <https://vocab.govstack.global/digital-registries/api-families> .

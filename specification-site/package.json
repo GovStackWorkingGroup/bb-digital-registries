@@ -1,0 +1,19 @@
+{
+  "name": "govstack-building-block-specification-site",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=24.11.0"
+  },
+  "scripts": {
+    "generate": "node scripts/site.mjs generate",
+    "build": "node scripts/site.mjs build",
+    "check": "node scripts/site.mjs check",
+    "preview": "node scripts/site.mjs preview",
+    "check:built": "node scripts/site.mjs check-built",
+    "test:served": "node scripts/site.mjs test-served",
+    "test": "node --test test/*.test.mjs"
+  },
+  "description": "Thin wrapper for the shared GovStack framework specification renderer"
+}

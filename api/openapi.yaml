@@ -1,0 +1,4060 @@
+openapi: 3.1.2
+info:
+  title: GovStack Digital Registries API
+  version: 1.0.0-draft
+  description: |-
+    This draft reference describes how clients read and change Registry Records through declared
+    collections. A deployment selects the operations it supports and publishes its own
+    OpenAPI contract with concrete collection paths and schemas. The `records` collection
+    and `https://registry.example/registries/records` Registry Identifier are generic
+    reference values.
+
+    ### Understand the data
+
+    - A **Registry** holds records for which a named authority accepts responsibility
+      within a declared scope.
+    - A **Record** represents an entity, place, asset, or event within that Registry.
+    - A **Collection** groups Records for API access and declares its Registry, membership,
+      supported operations, and representation schemas or views. It need not correspond
+      to a database table. One API can expose several collections.
+    - A **permitted view** contains the Record data and metadata that the caller is
+      authorised to receive. It can be filtered or redacted.
+
+    Deployments select at least one Consultation or Write capability. Consultation provides:
+
+    | Capability | Use it to |
+    | --- | --- |
+    | Retrieve | Read one Record by its stable identifier. |
+    | Lookup | Read one Record using a declared exact selector, such as a registration number. |
+    | List | Read a page of Records in a declared order. |
+    | Search | Run a declared typed search and read a page of results. |
+    | Revision List | Read a page of retained source revisions for one Record. |
+    | Revision Retrieve | Read one retained source revision by its identifier. |
+
+    Write independently provides direct Create, direct Update, named Transition, and governed
+    Change Requests. Selecting one capability selects no other. A submitted Change Request is
+    immutable and non-authoritative until separately authorised application succeeds. A 202
+    response identifies actual background work and never proves a Record commit, approval, or
+    application.
+
+    ### Find a deployed API
+
+    Start with `/.well-known/api-catalog` at the API origin (scheme, host, and port, without
+    a path). This RFC 9727 linkset is a document containing links to the deployed OpenAPI
+    contract and Registry Core metadata. The metadata identifies the
+    Registry, its name, authority, authoritative scope, and specification version. It also
+    associates the service with its Registry, supported API families, endpoint, and deployed
+    contract. The contract declares the Registry Identifier from this metadata. An external
+    catalogue can repeat the metadata but does not replace the origin's linkset.
+
+    Use the deployed contract to find typed data and input schemas, field meanings,
+    authorisation, pagination policy, and source currency. Source currency describes how
+    up to date the returned information is, including any material replication or cache
+    delay. Where caller discovery is supported, it provides metadata about collections and
+    operations visible to the authenticated caller. Discovery does not grant access to
+    Records; authorisation is evaluated on every read.
+
+    ### Read within the declared limits
+
+    Each read applies the caller's permitted view. Only when Update or Transition designates the
+    canonical Retrieve through `companionRead` does that Retrieve become its current authoritative
+    guard view. It returns a strong ETag without granting mutation authority or widening the
+    permitted representation. Operations can additionally declare
+    `conditional-read`, `field-selection`, `complete-traversal`, `snapshot-traversal`,
+    `recorded-time`, `effective-time`, or `purpose-bound` features. Omission selects none.
+    This combined reference contract selects conditional-read on Retrieve. Read-only deployment
+    profiles can omit that feature and its validator. Ordinary pagination limits
+    the response size, with declared resource limits and source consistency. It does not
+    promise exhaustive traversal, a snapshot, or bounded database work. Public operations
+    declare `security: []`.
+
+    Transport uses TLS 1.3 or later. The `/v1` paths identify this API compatibility line;
+    `info.version` versions the draft HTTP contract.
+
+    The default response language is English (`en`). A deployment may select another default
+    or localise Problem `title` and `detail`. It then declares that default and follows API
+    Design Guide section 19 for `Accept-Language`, `Content-Language`, and `Vary`.
+  contact:
+    name: GovStack Digital Registries Working Group
+    url: https://github.com/GovStackWorkingGroup/bb-digital-registries
+  x-govstack-api-guide:
+    version: 0.3.0-draft
+    rulesetVersion: 0.3.0-draft
+servers:
+  - url: https://{gatewayHost}
+    description: >-
+      Deployment root; registry.example is non-production. A deployment may add a stable
+      routing prefix, such as /registry, before the versioned resource paths. Each collection's
+      contract supplies its Registry association and selected view; callers do not repeat
+      registryId on each request. API-family labels classify operations independently of paths.
+    variables:
+      gatewayHost:
+        default: registry.example
+        description: Deployment gateway hostname; registry.example is non-production.
+security:
+  - citizenOAuth: [bb:digital-registries:record:read]
+  - serviceOAuth: [bb:digital-registries:record:read]
+tags:
+  - name: Read
+    description: Read authorised Records from declared collections and their associated Registries.
+  - name: Health
+    description: Bounded operational liveness without registry information.
+  - name: Discovery
+    description: Locate the origin's API contracts and Registry metadata through the RFC 9727 API catalog.
+  - name: Write
+    description: Authoritative Record mutations performed without a governed proposal.
+  - name: Change Requests
+    description: Immutable proposals, review decisions, and separately observable application state.
+  - name: Operations
+    description: Optional background execution tracking, independent of Change Request review.
+paths:
+  /health:
+    get:
+      operationId: getHealth
+      summary: Check service liveness
+      description: |-
+        Returns HTTP `200` when the service can accept work and `503` otherwise. This bounded, unauthenticated check exposes only a public service label. Dependency checks are limited to those that determine service availability.
+      tags: [Health]
+      security: []
+      parameters:
+        - $ref: '#/components/parameters/Traceparent'
+      responses:
+        '200':
+          description: The service is healthy and able to accept work.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Health'
+        '500':
+          $ref: '#/components/responses/InternalError'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
+  /.well-known/api-catalog:
+    servers:
+      - url: https://{gatewayHost}
+        description: >-
+          Origin root. RFC 8615 fixes well-known URIs at the origin, so a deployment routing
+          prefix does not apply to this path.
+        variables:
+          gatewayHost:
+            default: registry.example
+            description: Deployment gateway hostname; registry.example is non-production.
+    get:
+      operationId: getApiCatalog
+      summary: Get the API catalog
+      description: |-
+        Returns the RFC 9727 API catalog for this origin as an RFC 9264 linkset. For each
+        Digital Registries API at the origin, a `service-desc` link targets its OpenAPI
+        contract and a `service-meta` link, typed `application/ld+json`, targets the Registry
+        metadata document.
+
+        A deployment that restricts the catalog to an intended audience declares that access
+        requirement instead of `security: []`.
+      tags: [Discovery]
+      security: []
+      parameters:
+        - $ref: '#/components/parameters/Traceparent'
+        - $ref: '#/components/parameters/IfNoneMatch'
+      responses:
+        '200':
+          $ref: '#/components/responses/ApiCatalog'
+        '304':
+          $ref: '#/components/responses/ApiCatalogNotModified'
+        '500':
+          $ref: '#/components/responses/InternalError'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
+    head:
+      operationId: headApiCatalog
+      summary: Check the API catalog
+      description: |-
+        Returns the API catalog response headers without a body, including the `Link` header with the `api-catalog` relation that RFC 9727 requires for `HEAD` requests.
+      tags: [Discovery]
+      security: []
+      parameters:
+        - $ref: '#/components/parameters/Traceparent'
+      responses:
+        '200':
+          $ref: '#/components/responses/ApiCatalogHeaders'
+        '500':
+          $ref: '#/components/responses/InternalErrorHeaders'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailableHeaders'
+  /v1/capabilities:
+    get:
+      operationId: getCallerCapabilities
+      summary: Discover caller-visible Registry operations
+      description: |-
+        Returns only Consultation, Write, and supporting operations discoverable to the
+        authenticated caller. Discovery requires authentication but no particular Record read or
+        Write scope; caller filtering evaluates the complete trusted authorisation context.
+        The document links the versioned OpenAPI contract and names operations by
+        operationId. It describes operation families, capabilities, read-view metadata, Write
+        metadata, features, and purpose requirements; it never promises access to any particular
+        Record, field, or mutation. Authorisation is evaluated again on every operation request.
+
+        Caller filtering uses the trusted authentication and authorisation context of this
+        discovery request. No purpose value supplied to discovery grants visibility or access.
+
+        If generated capability metadata exceeds a published bound or contains contradictory
+        collection or operation identities, the operation returns `500 InternalError`. It
+        never truncates or silently deduplicates the metadata.
+
+        Capability and feature annotations are advisory. Clients skip an operation whose
+        capability value they do not recognise and ignore feature values they do not
+        recognise. Neither behaviour grants authority, and current authorisation is still
+        evaluated on every operation request. The response uses `Cache-Control: no-store`.
+      tags: [Discovery]
+      security:
+        - citizenOAuth: []
+        - serviceOAuth: []
+      parameters:
+        - $ref: '#/components/parameters/Traceparent'
+      responses:
+        '200':
+          description: Bounded caller-filtered capability document.
+          headers:
+            Cache-Control:
+              $ref: '#/components/headers/CallerCapabilitiesCacheControl'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CallerCapabilities'
+              examples:
+                selectedOperations:
+                  summary: Caller can discover the reference Retrieve operation
+                  value:
+                    collections:
+                      - collectionId: records
+                        registry: https://registry.example/registries/records
+                        operations:
+                          - operationId: retrieveRecord
+                            family: consultation
+                            capability: retrieve
+                            view: record-public
+                            features: [conditional-read]
+                            contract: https://registry.example/contracts/1.0.0-draft/openapi.yaml
+                    operations: []
+                noVisibleOperations:
+                  summary: Authenticated caller has no discoverable Registry operations
+                  value:
+                    collections: []
+                    operations: []
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '406':
+          $ref: '#/components/responses/NotAcceptable'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalError'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
+  /v1/collections/{collectionId}/records/{recordId}:
+    get:
+      operationId: retrieveRecord
+      summary: Retrieve one Record by its stable identifier
+      description: |-
+        Returns the permitted Record view for a stable identifier within this collection's
+        declared membership. Encode `recordId` as one path segment.
+
+        An absent Record, a Record outside the collection, and a Record whose existence
+        cannot be disclosed to the caller share the same `404` response. The response does
+        not reveal which condition applied. This baseline operation selects current state
+        and no selectable temporal feature.
+
+        When a Write operation selects this exact operation and view through `companionRead`,
+        the body and strong ETag come from one current authoritative guard evaluation. That
+        constraint applies only to the selected companion use, not to ordinary read-only
+        projections. The tag remains disclosure-controlled response metadata; a deployment
+        cannot select this operation as a companion when revealing the tag or its change cadence
+        is forbidden in the effective authorisation, disclosure, purpose, and field-selection
+        context.
+      tags: [Read]
+      x-govstack-digital-registries:
+        registry: https://registry.example/registries/records
+        collection: records
+        capability: retrieve
+        view: record-public
+        features: [conditional-read]
+      parameters:
+        - $ref: '#/components/parameters/CollectionId'
+        - $ref: '#/components/parameters/RecordId'
+        - $ref: '#/components/parameters/Traceparent'
+        - $ref: '#/components/parameters/IfNoneMatch'
+      responses:
+        '200':
+          $ref: '#/components/responses/StrongRecord'
+        '304':
+          $ref: '#/components/responses/StrongNotModified'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+          description: |-
+            `bad-request` identifies malformed or structurally invalid input, including invalid or unsupported query parameters. This operation has no request body or pagination controls.
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/RecordNotAvailable'
+        '406':
+          $ref: '#/components/responses/NotAcceptable'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalError'
+        '502':
+          $ref: '#/components/responses/BadGateway'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
+        '504':
+          $ref: '#/components/responses/GatewayTimeout'
+    patch:
+      operationId: updateRecord
+      summary: Update one Record directly
+      description: >-
+        Applies `UpdateInput` to the writable Record representation as an RFC 7396 JSON Merge
+        Patch. Only `data` is writable. The closed schema rejects `recordId`, source evidence,
+        authority-owned state, and other control members. This reference contract leaves domain
+        members below `data` unconstrained; each deployment narrows them in its published contract.
+        Under RFC 7396, a null domain member removes that member. Send the strong `ETag` from the
+        companion read in `If-Match`; weak validators are not accepted. Authorisation, policy,
+        target state, and the guard are re-evaluated atomically with commit. A mismatch returns
+        generic `412` without identifying changed guard state. A synchronous commit returns
+        bodyless `204` with the new strong `ETag`.
+      tags: [Write]
+      security:
+        - citizenOAuth: [bb:digital-registries:record:update]
+        - serviceOAuth: [bb:digital-registries:record:update]
+      x-govstack-digital-registries-write:
+        registry: https://registry.example/registries/records
+        collection: records
+        capability: update
+        inputSchema: '#/components/schemas/UpdateInput'
+        inputMediaType: application/merge-patch+json
+        companionRead:
+          operationId: retrieveRecord
+          view: record-public
+      parameters:
+        - $ref: '#/components/parameters/CollectionId'
+        - $ref: '#/components/parameters/RecordId'
+        - $ref: '#/components/parameters/Traceparent'
+        - $ref: '#/components/parameters/IfMatch'
+        - $ref: '#/components/parameters/IdempotencyKey'
+      requestBody:
+        required: true
+        content:
+          application/merge-patch+json:
+            schema:
+              $ref: '#/components/schemas/UpdateInput'
+            example:
+              data:
+                label: Corrected label
+      responses:
+        '204':
+          $ref: '#/components/responses/RecordUpdated'
+        '400':
+          $ref: '#/components/responses/WriteBadRequest'
+        '401':
+          $ref: '#/components/responses/WriteUnauthorized'
+        '403':
+          $ref: '#/components/responses/WriteForbidden'
+        '404':
+          $ref: '#/components/responses/WriteRecordNotAvailable'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '415':
+          $ref: '#/components/responses/WriteUnsupportedMediaType'
+        '422':
+          $ref: '#/components/responses/UnprocessableContent'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+        '429':
+          $ref: '#/components/responses/WriteTooManyRequests'
+        '500':
+          $ref: '#/components/responses/WriteInternalError'
+        '503':
+          $ref: '#/components/responses/WriteServiceUnavailable'
+  /v1/collections/{collectionId}/records:
+    get:
+      operationId: listRecords
+      summary: List an authorised page of Records
+      description: |-
+        Returns permitted Records from this collection in the deployment’s deterministic
+        default order with a unique tie-breaker. Deployments offering `sort` declare its
+        allowed fields and directions.
+
+        Each declared equality filter is one query parameter for a non-personal field.
+        A field named `pageSize`, `cursor`, `offset`, `limit`, `sort`, or `fields` uses another
+        declared parameter name.
+
+        Each request is authorised. Unsupported query parameters return `400`. Continuations
+        follow the Cursor and PageSize rules. Omit `cursor` for the first page. A request
+        sample containing a cursor illustrates a continuation request.
+      tags: [Read]
+      x-govstack-digital-registries:
+        registry: https://registry.example/registries/records
+        collection: records
+        capability: list
+        view: record-public
+      parameters:
+        - $ref: '#/components/parameters/CollectionId'
+        - $ref: '#/components/parameters/Traceparent'
+        - $ref: '#/components/parameters/PageSize'
+        - $ref: '#/components/parameters/Cursor'
+        - $ref: '#/components/parameters/Sort'
+      responses:
+        '200':
+          $ref: '#/components/responses/RecordPage'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+          description: |-
+            `bad-request` identifies invalid or unsupported query parameters or invalid pagination controls, including an out-of-range `pageSize`. `invalid-cursor` identifies a malformed, expired, or mismatched continuation. Keep the original path, filters, sort order, and effective `pageSize` when continuing.
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/CollectionNotAvailable'
+        '406':
+          $ref: '#/components/responses/NotAcceptable'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalError'
+        '502':
+          $ref: '#/components/responses/BadGateway'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
+        '504':
+          $ref: '#/components/responses/GatewayTimeout'
+    post:
+      operationId: createRecord
+      summary: Create one Record directly
+      description: >-
+        Creates one Record in the selected Collection. A synchronous `201` response means that the
+        authoritative commit has completed and returns the new Record URI in `Location`. The
+        operation returns `202` only when it accepts actual commit work for asynchronous execution.
+        The deployment replaces `CreateInput.data` with its domain schema. Retries follow the
+        shared `Idempotency-Key` contract.
+      tags: [Write]
+      security:
+        - citizenOAuth: [bb:digital-registries:record:create]
+        - serviceOAuth: [bb:digital-registries:record:create]
+      x-govstack-digital-registries-write:
+        registry: https://registry.example/registries/records
+        collection: records
+        capability: create
+        inputSchema: '#/components/schemas/CreateInput'
+      parameters:
+        - $ref: '#/components/parameters/CollectionId'
+        - $ref: '#/components/parameters/Traceparent'
+        - $ref: '#/components/parameters/IdempotencyKey'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateInput'
+            example:
+              data:
+                label: Reference record
+      responses:
+        '201':
+          $ref: '#/components/responses/RecordCreated'
+        '202':
+          $ref: '#/components/responses/WriteAccepted'
+        '400':
+          $ref: '#/components/responses/WriteBadRequest'
+        '401':
+          $ref: '#/components/responses/WriteUnauthorized'
+        '403':
+          $ref: '#/components/responses/WriteForbidden'
+        '404':
+          $ref: '#/components/responses/WriteCollectionNotAvailable'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '415':
+          $ref: '#/components/responses/WriteUnsupportedMediaType'
+        '422':
+          $ref: '#/components/responses/UnprocessableContent'
+        '429':
+          $ref: '#/components/responses/WriteTooManyRequests'
+        '500':
+          $ref: '#/components/responses/WriteInternalError'
+        '503':
+          $ref: '#/components/responses/WriteServiceUnavailable'
+  /v1/collections/{collectionId}/lookup:
+    post:
+      operationId: lookupRecord
+      summary: Look up one Record using a declared exact selector
+      description: |-
+        Resolves one declared exact selector to a permitted Record in this collection. Each
+        selector specifies typed key fields, normalisation, uniqueness scope, and permitted
+        callers. Matching respects the declared collection membership and uniqueness scope.
+        Keys may be composite or derived from declared verified caller context.
+
+        If no matching Record can be disclosed to the caller, the operation uses `404`.
+        A uniqueness violation uses generic `500`, subject to the policy on disclosing
+        whether a Record exists. Malformed or structurally invalid input uses `400`.
+        Structurally valid input with an unknown selector or invalid domain values uses `422`.
+
+        This synchronous read is retryable without an `Idempotency-Key`. Selector values
+        remain confined to the request body.
+      tags: [Read]
+      x-govstack-digital-registries:
+        registry: https://registry.example/registries/records
+        collection: records
+        capability: lookup
+        view: record-public
+      parameters:
+        - $ref: '#/components/parameters/CollectionId'
+        - $ref: '#/components/parameters/Traceparent'
+      requestBody:
+        required: true
+        description: One published exact selector and all its typed key values.
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LookupRequest'
+            examples:
+              byRegistrationNumber:
+                summary: Illustrative declared selector from the business binding
+                value:
+                  selector: byRegistrationNumber
+                  values:
+                    registrationNumber: BR-000042
+      responses:
+        '200':
+          $ref: '#/components/responses/Record'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+          description: |-
+            `bad-request` identifies malformed JSON, missing or undeclared body members, incorrect JSON types, or invalid or unsupported query parameters. Structurally valid input with an unknown selector or invalid domain values uses `422` instead.
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/RecordNotAvailable'
+        '406':
+          $ref: '#/components/responses/NotAcceptable'
+        '413':
+          $ref: '#/components/responses/ContentTooLarge'
+        '415':
+          $ref: '#/components/responses/UnsupportedMediaType'
+        '422':
+          $ref: '#/components/responses/InvalidField'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalError'
+        '502':
+          $ref: '#/components/responses/BadGateway'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
+        '504':
+          $ref: '#/components/responses/GatewayTimeout'
+  /v1/collections/{collectionId}/search:
+    post:
+      operationId: searchRecords
+      summary: Run one declared search and return a page
+      description: |-
+        Runs one declared typed search within this collection and returns a RecordPage.
+        Continue with a `POST` request containing the same search, criteria, and any sort
+        values, plus the returned cursor. Criteria equality follows declared type semantics,
+        independent of JSON property order.
+
+        Malformed or structurally invalid input and invalid pagination controls use `400`.
+        Structurally valid input with an unknown search or invalid domain values uses `422`.
+        Invalid continuations use `400 invalid-cursor`.
+
+        This synchronous read is retryable without an `Idempotency-Key`. Search values
+        remain confined to the request body.
+      tags: [Read]
+      x-govstack-digital-registries:
+        registry: https://registry.example/registries/records
+        collection: records
+        capability: search
+        view: record-public
+      parameters:
+        - $ref: '#/components/parameters/CollectionId'
+        - $ref: '#/components/parameters/Traceparent'
+      requestBody:
+        required: true
+        description: One declared search with criteria and body-carried pagination controls.
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SearchRequest'
+            examples:
+              byRegistrationStatus:
+                summary: First page using the business binding's status search
+                value:
+                  search: byRegistrationStatus
+                  criteria:
+                    registrationStatus: DISSOLVED
+                  pageSize: 20
+      responses:
+        '200':
+          $ref: '#/components/responses/RecordPage'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+          description: |-
+            `bad-request` identifies malformed JSON, missing or undeclared body members, incorrect JSON types, invalid or unsupported query parameters, or invalid body-carried pagination controls, including an out-of-range `pageSize`. `invalid-cursor` identifies a malformed, expired, or mismatched continuation. Repeat the original search, criteria, any sort values, and effective `pageSize` when continuing. Structurally valid input with an unknown search or invalid domain values uses `422` instead.
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/CollectionNotAvailable'
+        '406':
+          $ref: '#/components/responses/NotAcceptable'
+        '413':
+          $ref: '#/components/responses/ContentTooLarge'
+        '415':
+          $ref: '#/components/responses/UnsupportedMediaType'
+        '422':
+          $ref: '#/components/responses/InvalidField'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalError'
+        '502':
+          $ref: '#/components/responses/BadGateway'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
+        '504':
+          $ref: '#/components/responses/GatewayTimeout'
+  /v1/collections/{collectionId}/records/{recordId}/revisions:
+    get:
+      operationId: listRecordRevisions
+      summary: List disclosed retained revisions for one Record
+      description: |-
+        Returns a bounded page of retained source revisions for the identified Record in the
+        deployment's declared stable source revision order, newest first, with a documented
+        unique tie-breaker. Clients follow that order without interpreting opaque `revisionId`
+        values as timestamps or sequence numbers, or assuming `recordedAt` is always available.
+
+        Each item is evaluated under current authorisation and disclosure policy. The cursor
+        is bound to this path's parent `recordId` and every other request selector. Replay
+        against a different parent Record or changed selector returns `400 invalid-cursor`.
+        The operation neither fabricates history nor implies that revisions absent from the
+        source were retained.
+
+        An absent parent Record, a Record outside this collection, and a parent Record whose
+        existence cannot be disclosed to the caller use the same generic `404` response.
+        Only after authorisation and checks on whether existence can be disclosed may source
+        inability to return retained history use `409 history-not-available`.
+      tags: [Read]
+      x-govstack-digital-registries:
+        registry: https://registry.example/registries/records
+        collection: records
+        capability: revision-list
+        view: record-history
+      parameters:
+        - $ref: '#/components/parameters/CollectionId'
+        - $ref: '#/components/parameters/RecordId'
+        - $ref: '#/components/parameters/Traceparent'
+        - $ref: '#/components/parameters/PageSize'
+        - $ref: '#/components/parameters/Cursor'
+      responses:
+        '200':
+          $ref: '#/components/responses/RevisionPage'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+          description: |-
+            `bad-request` identifies invalid or unsupported query parameters or invalid pagination controls, including an out-of-range `pageSize`. `invalid-cursor` identifies a malformed, expired, or mismatched continuation, including reuse under a different parent `recordId`. Keep the original path, request selectors, and effective `pageSize` when continuing.
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/RecordNotAvailable'
+        '406':
+          $ref: '#/components/responses/NotAcceptable'
+        '409':
+          $ref: '#/components/responses/HistoryNotAvailable'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalError'
+        '502':
+          $ref: '#/components/responses/BadGateway'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
+        '504':
+          $ref: '#/components/responses/GatewayTimeout'
+  /v1/collections/{collectionId}/records/{recordId}/revisions/{revisionId}:
+    get:
+      operationId: retrieveRecordRevision
+      summary: Retrieve one disclosed retained Record revision
+      description: |-
+        Returns one retained source revision under current authorisation and disclosure
+        policy. `revisionId` is opaque and source-backed.
+
+        An unavailable or protected revision, absent or protected parent Record, or parent
+        Record outside the collection uses the same `404` response. The API does not reveal
+        which condition applied.
+
+        Only after authorisation and checks on whether existence can be disclosed may source
+        inability to return known retained history use `409 history-not-available`. The
+        operation never reconstructs or fabricates a missing historical state.
+      tags: [Read]
+      x-govstack-digital-registries:
+        registry: https://registry.example/registries/records
+        collection: records
+        capability: revision-retrieve
+        view: record-history
+      parameters:
+        - $ref: '#/components/parameters/CollectionId'
+        - $ref: '#/components/parameters/RecordId'
+        - $ref: '#/components/parameters/RevisionId'
+        - $ref: '#/components/parameters/Traceparent'
+      responses:
+        '200':
+          $ref: '#/components/responses/RecordRevision'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+          description: |-
+            `bad-request` identifies malformed or structurally invalid input, including invalid or unsupported query parameters. This operation has no request body or pagination controls.
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/RecordNotAvailable'
+        '406':
+          $ref: '#/components/responses/NotAcceptable'
+        '409':
+          $ref: '#/components/responses/HistoryNotAvailable'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalError'
+        '502':
+          $ref: '#/components/responses/BadGateway'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
+        '504':
+          $ref: '#/components/responses/GatewayTimeout'
+  /v1/collections/{collectionId}/records/{recordId}/transition:
+    post:
+      operationId: applyRecordTransition
+      summary: Apply the published Record transition
+      description: >-
+        Applies the named transition profile published for this operation. This reference fixes
+        the action path as `transition`. A deployment narrows `TransitionInput.name` to a constant
+        or closed enumeration and publishes closed, typed parameters instead of accepting an
+        arbitrary action or workflow expression. `If-Match` guards the source Record. At commit,
+        the service atomically rechecks current authorisation, trusted purpose, grants, target
+        state, and the source guard. A mismatch returns generic `412` without identifying changed
+        guard state. Unknown and protected Records both return `404`. The operation returns `202`
+        only for actual asynchronous transition work.
+      tags: [Write]
+      security:
+        - citizenOAuth: [bb:digital-registries:record:transition]
+        - serviceOAuth: [bb:digital-registries:record:transition]
+      x-govstack-digital-registries-write:
+        registry: https://registry.example/registries/records
+        collection: records
+        capability: transition
+        inputSchema: '#/components/schemas/TransitionInput'
+        action: transition
+        transitionProfile: record-transition
+        companionRead:
+          operationId: retrieveRecord
+          view: record-public
+      parameters:
+        - $ref: '#/components/parameters/CollectionId'
+        - $ref: '#/components/parameters/RecordId'
+        - $ref: '#/components/parameters/Traceparent'
+        - $ref: '#/components/parameters/IfMatch'
+        - $ref: '#/components/parameters/IdempotencyKey'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TransitionInput'
+            example:
+              name: transition
+              parameters:
+                reason: verified-source
+      responses:
+        '200':
+          $ref: '#/components/responses/TransitionApplied'
+        '202':
+          $ref: '#/components/responses/WriteAccepted'
+        '400':
+          $ref: '#/components/responses/WriteBadRequest'
+        '401':
+          $ref: '#/components/responses/WriteUnauthorized'
+        '403':
+          $ref: '#/components/responses/WriteForbidden'
+        '404':
+          $ref: '#/components/responses/WriteRecordNotAvailable'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '415':
+          $ref: '#/components/responses/WriteUnsupportedMediaType'
+        '422':
+          $ref: '#/components/responses/UnprocessableContent'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+        '429':
+          $ref: '#/components/responses/WriteTooManyRequests'
+        '500':
+          $ref: '#/components/responses/WriteInternalError'
+        '503':
+          $ref: '#/components/responses/WriteServiceUnavailable'
+  /v1/change-requests:
+    post:
+      operationId: submitChangeRequest
+      summary: Submit an immutable change proposal
+      description: >-
+        Creates one immutable, non-authoritative proposal in pending review, with no Record side
+        effect. It uses the corresponding direct operation's typed `CreateInput`, `UpdateInput`, or
+        `TransitionInput`. Update and transition proposals bind the source Record's strong
+        validator in `baseETag`; update also declares `inputMediaType`. Trusted actor and purpose
+        come from verified authorisation context, never client-supplied actor, approval, decision,
+        or review-state fields. Completed creation returns `201` with `Location`; waiting for
+        review is not asynchronous execution.
+      tags: [Change Requests]
+      security:
+        - citizenOAuth: [bb:digital-registries:change-request:submit]
+        - serviceOAuth: [bb:digital-registries:change-request:submit]
+      x-govstack-digital-registries-write:
+        registry: https://registry.example/registries/records
+        capability: change-requests
+        inputSchema: '#/components/schemas/CreateChangeRequest'
+      parameters:
+        - $ref: '#/components/parameters/Traceparent'
+        - $ref: '#/components/parameters/IdempotencyKey'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateChangeRequest'
+            example:
+              kind: update
+              target:
+                collectionId: records
+                recordId: r_42
+              baseETag: '"record-7fa9"'
+              inputMediaType: application/merge-patch+json
+              input:
+                data:
+                  label: Corrected label
+      responses:
+        '201':
+          $ref: '#/components/responses/ChangeRequestCreated'
+        '400':
+          $ref: '#/components/responses/WriteBadRequest'
+        '401':
+          $ref: '#/components/responses/WriteUnauthorized'
+        '403':
+          $ref: '#/components/responses/WriteForbidden'
+        '404':
+          $ref: '#/components/responses/TargetNotAvailable'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '415':
+          $ref: '#/components/responses/WriteUnsupportedMediaType'
+        '422':
+          $ref: '#/components/responses/UnprocessableContent'
+        '429':
+          $ref: '#/components/responses/WriteTooManyRequests'
+        '500':
+          $ref: '#/components/responses/WriteInternalError'
+        '503':
+          $ref: '#/components/responses/WriteServiceUnavailable'
+    get:
+      operationId: listChangeRequests
+      summary: List caller-visible change requests
+      description: >-
+        Returns a bounded page of Change Requests visible to the current caller and context. Empty
+        results return `200` with an empty `items` array. Order is ascending `submittedAt`, with
+        `changeRequestId` as the unique tie-breaker. The integrity-protected cursor binds the
+        authenticated actor and tenant partition, trusted purpose, Registry and Collection scope,
+        filters, order, and effective page size; it expires under `changeRequestCursorLifetime`.
+        Malformed, expired, tampered, or context-mismatched cursors return `400` and never restart
+        traversal. Every page is reauthorised under current policy. Traversal reads current state,
+        not a snapshot: new requests can appear later in order, but state changes do not reorder an
+        existing request. The
+        deployment publishes `changeRequestResultWindow` and a processing-time bound; exceeding the
+        latter returns `503` with `Retry-After`. A null `nextCursor` marks completion. Responses use
+        `no-store` and disclose no protected requests through counts, ordering, or errors.
+      tags: [Change Requests]
+      security:
+        - citizenOAuth: [bb:digital-registries:change-request:read]
+        - serviceOAuth: [bb:digital-registries:change-request:read]
+      parameters:
+        - $ref: '#/components/parameters/Traceparent'
+        - $ref: '#/components/parameters/ChangeRequestPageSize'
+        - $ref: '#/components/parameters/ChangeRequestCursor'
+      responses:
+        '200':
+          $ref: '#/components/responses/ChangeRequestPage'
+        '400':
+          $ref: '#/components/responses/WriteBadRequest'
+          description: >-
+            Malformed or structurally invalid request, including invalid pagination controls or a malformed, expired, tampered, or context-mismatched cursor. This read does not require `Idempotency-Key`.
+        '401':
+          $ref: '#/components/responses/WriteUnauthorized'
+        '403':
+          $ref: '#/components/responses/WriteForbidden'
+        '406':
+          $ref: '#/components/responses/WriteNotAcceptable'
+        '429':
+          $ref: '#/components/responses/WriteTooManyRequests'
+        '500':
+          $ref: '#/components/responses/WriteInternalError'
+        '503':
+          $ref: '#/components/responses/WriteServiceUnavailable'
+  /v1/change-requests/{changeRequestId}:
+    get:
+      operationId: getChangeRequest
+      summary: Retrieve one change request
+      description: >-
+        Returns one caller-visible Change Request. Unknown and protected requests both return
+        `404`. Its strong `ETag` identifies the immutable proposal version with current review and
+        application state. `If-None-Match` enables conditional reading but does not replace the
+        strong `If-Match` required for review.
+      tags: [Change Requests]
+      security:
+        - citizenOAuth: [bb:digital-registries:change-request:read]
+        - serviceOAuth: [bb:digital-registries:change-request:read]
+      parameters:
+        - $ref: '#/components/parameters/ChangeRequestId'
+        - $ref: '#/components/parameters/Traceparent'
+        - $ref: '#/components/parameters/IfNoneMatch'
+      responses:
+        '200':
+          $ref: '#/components/responses/ChangeRequest'
+        '304':
+          $ref: '#/components/responses/WriteNotModified'
+        '400':
+          $ref: '#/components/responses/WriteBadRequest'
+          description: >-
+            Malformed or structurally invalid request. This read has no request body and does not require `Idempotency-Key`.
+        '401':
+          $ref: '#/components/responses/WriteUnauthorized'
+        '403':
+          $ref: '#/components/responses/WriteForbidden'
+        '404':
+          $ref: '#/components/responses/ChangeRequestNotAvailable'
+        '406':
+          $ref: '#/components/responses/WriteNotAcceptable'
+        '429':
+          $ref: '#/components/responses/WriteTooManyRequests'
+        '500':
+          $ref: '#/components/responses/WriteInternalError'
+        '503':
+          $ref: '#/components/responses/WriteServiceUnavailable'
+  /v1/change-requests/{changeRequestId}/approve:
+    post:
+      operationId: approveChangeRequest
+      summary: Approve the exact proposal version
+      description: >-
+        Approves the proposal version selected by the request resource's strong `If-Match`.
+        `If-Match` guards the Change Request representation; the stored `baseETag` independently
+        guards the source Record at commit. Approval cannot create trusted purpose, extend grants,
+        or bypass current authorisation. This review-only operation returns `200` with approval
+        recorded and application `not-started`. An internal worker with the independent
+        `bb:digital-registries:change-request:apply` grant can later attempt application; review
+        authority alone cannot. Optional `ReviewDecisionInput` can retain a human comment as
+        governance context, not Record data, authority, purpose, or a decision selector.
+      tags: [Change Requests]
+      security:
+        - citizenOAuth: [bb:digital-registries:change-request:review]
+        - serviceOAuth: [bb:digital-registries:change-request:review]
+      x-govstack-digital-registries-write:
+        registry: https://registry.example/registries/records
+        capability: change-requests
+      parameters:
+        - $ref: '#/components/parameters/ChangeRequestId'
+        - $ref: '#/components/parameters/Traceparent'
+        - $ref: '#/components/parameters/IfMatch'
+        - $ref: '#/components/parameters/IdempotencyKey'
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/ReviewDecisionInput'}
+            example: {comment: Reviewed against the submitted evidence.}
+      responses:
+        '200':
+          $ref: '#/components/responses/ChangeRequestApproved'
+        '400':
+          $ref: '#/components/responses/WriteBadRequest'
+        '401':
+          $ref: '#/components/responses/WriteUnauthorized'
+        '403':
+          $ref: '#/components/responses/WriteForbidden'
+        '404':
+          $ref: '#/components/responses/ChangeRequestNotAvailable'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '422':
+          $ref: '#/components/responses/UnprocessableContent'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+        '429':
+          $ref: '#/components/responses/WriteTooManyRequests'
+        '500':
+          $ref: '#/components/responses/WriteInternalError'
+        '503':
+          $ref: '#/components/responses/WriteServiceUnavailable'
+  /v1/change-requests/{changeRequestId}/reject:
+    post:
+      operationId: rejectChangeRequest
+      summary: Reject the exact proposal version
+      description: >-
+        Rejects the pending proposal version selected by the request resource's strong `If-Match`.
+        Optional `ReviewDecisionInput` can retain a comment but cannot alter the proposal or supply
+        authority. Unknown and protected requests both return `404`.
+      tags: [Change Requests]
+      security:
+        - citizenOAuth: [bb:digital-registries:change-request:review]
+        - serviceOAuth: [bb:digital-registries:change-request:review]
+      x-govstack-digital-registries-write:
+        registry: https://registry.example/registries/records
+        capability: change-requests
+      parameters:
+        - $ref: '#/components/parameters/ChangeRequestId'
+        - $ref: '#/components/parameters/Traceparent'
+        - $ref: '#/components/parameters/IfMatch'
+        - $ref: '#/components/parameters/IdempotencyKey'
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/ReviewDecisionInput'}
+            example: {comment: Submitted evidence does not support the proposed change.}
+      responses:
+        '200':
+          $ref: '#/components/responses/ChangeRequestRejected'
+        '400':
+          $ref: '#/components/responses/WriteBadRequest'
+        '401':
+          $ref: '#/components/responses/WriteUnauthorized'
+        '403':
+          $ref: '#/components/responses/WriteForbidden'
+        '404':
+          $ref: '#/components/responses/ChangeRequestNotAvailable'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '422':
+          $ref: '#/components/responses/UnprocessableContent'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+        '429':
+          $ref: '#/components/responses/WriteTooManyRequests'
+        '500':
+          $ref: '#/components/responses/WriteInternalError'
+        '503':
+          $ref: '#/components/responses/WriteServiceUnavailable'
+  /v1/change-requests/{changeRequestId}/withdraw:
+    post:
+      operationId: withdrawChangeRequest
+      summary: Withdraw the exact proposal version
+      description: >-
+        Withdraws the pending proposal version selected by the request resource's strong
+        `If-Match`. Current policy must authorise the caller; the request identifier or an earlier
+        proposal grant confers no authority. Optional `ReviewDecisionInput` can retain a governance
+        comment but cannot alter the proposal.
+      tags: [Change Requests]
+      security:
+        - citizenOAuth: [bb:digital-registries:change-request:withdraw]
+        - serviceOAuth: [bb:digital-registries:change-request:withdraw]
+      x-govstack-digital-registries-write:
+        registry: https://registry.example/registries/records
+        capability: change-requests
+      parameters:
+        - $ref: '#/components/parameters/ChangeRequestId'
+        - $ref: '#/components/parameters/Traceparent'
+        - $ref: '#/components/parameters/IfMatch'
+        - $ref: '#/components/parameters/IdempotencyKey'
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/ReviewDecisionInput'}
+            example: {comment: Proposal withdrawn before review.}
+      responses:
+        '200':
+          $ref: '#/components/responses/ChangeRequestWithdrawn'
+        '400':
+          $ref: '#/components/responses/WriteBadRequest'
+        '401':
+          $ref: '#/components/responses/WriteUnauthorized'
+        '403':
+          $ref: '#/components/responses/WriteForbidden'
+        '404':
+          $ref: '#/components/responses/ChangeRequestNotAvailable'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '422':
+          $ref: '#/components/responses/UnprocessableContent'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+        '429':
+          $ref: '#/components/responses/WriteTooManyRequests'
+        '500':
+          $ref: '#/components/responses/WriteInternalError'
+        '503':
+          $ref: '#/components/responses/WriteServiceUnavailable'
+  /v1/operations/{operationId}:
+    get:
+      operationId: getOperation
+      summary: Retrieve asynchronous write status
+      description: >-
+        Available only with background processing. Returns execution work accepted with `202`;
+        `operationId` identifies a background job, not an OpenAPI operation name. `pending` means
+        queued execution, not pending approval. Review and application states remain on the Change
+        Request. A successful `GET` can report failed work; failure of this `GET` uses HTTP Problem
+        Details. Non-terminal responses can include `Retry-After`. Unknown and protected Operations
+        both return `404`. Published `operationRetention` controls result retention.
+      tags: [Operations]
+      security:
+        - citizenOAuth: [bb:digital-registries:operation:read]
+        - serviceOAuth: [bb:digital-registries:operation:read]
+      parameters:
+        - $ref: '#/components/parameters/OperationId'
+        - $ref: '#/components/parameters/Traceparent'
+      responses:
+        '200':
+          $ref: '#/components/responses/Operation'
+        '400':
+          $ref: '#/components/responses/WriteBadRequest'
+          description: >-
+            Malformed or structurally invalid request. This supporting read has no request body and does not require `Idempotency-Key`.
+        '401':
+          $ref: '#/components/responses/WriteUnauthorized'
+        '403':
+          $ref: '#/components/responses/WriteForbidden'
+        '404':
+          $ref: '#/components/responses/OperationNotAvailable'
+        '406':
+          $ref: '#/components/responses/WriteNotAcceptable'
+        '429':
+          $ref: '#/components/responses/WriteTooManyRequests'
+        '500':
+          $ref: '#/components/responses/WriteInternalError'
+        '503':
+          $ref: '#/components/responses/WriteServiceUnavailable'
+components:
+  securitySchemes:
+    citizenOAuth:
+      type: oauth2
+      description: >-
+        Citizen access-token authorisation backed by OpenID Connect. Authorization-code clients
+        use PKCE S256. Deployments publish issuer and audience. ID Tokens are rejected.
+      flows:
+        authorizationCode:
+          authorizationUrl: https://identity.example/authorize
+          tokenUrl: https://identity.example/token
+          scopes:
+            bb:digital-registries:record:read: Read an authorised write-capable Record view.
+            bb:digital-registries:record:create: Attempt authorised direct Record creation.
+            bb:digital-registries:record:update: Attempt authorised direct Record update.
+            bb:digital-registries:record:transition: Attempt an authorised named Record transition.
+            bb:digital-registries:change-request:submit: Submit an authorised immutable proposal.
+            bb:digital-registries:change-request:read: Read caller-visible proposals and states.
+            bb:digital-registries:change-request:review: Approve or reject an exact proposal version.
+            bb:digital-registries:change-request:withdraw: Withdraw a proposal when policy permits.
+            bb:digital-registries:change-request:apply: Execute an approved proposal under current policy.
+            bb:digital-registries:operation:read: Read caller-visible asynchronous operation state.
+    serviceOAuth:
+      type: oauth2
+      description: >-
+        Confidential inter-BB client credentials. Tokens are audience- and scope-restricted;
+        sender-constrained access tokens are recommended.
+      flows:
+        clientCredentials:
+          tokenUrl: https://identity.example/token
+          scopes:
+            bb:digital-registries:record:read: Read an authorised write-capable Record view.
+            bb:digital-registries:record:create: Attempt authorised direct Record creation.
+            bb:digital-registries:record:update: Attempt authorised direct Record update.
+            bb:digital-registries:record:transition: Attempt an authorised named Record transition.
+            bb:digital-registries:change-request:submit: Submit an authorised immutable proposal.
+            bb:digital-registries:change-request:read: Read caller-visible proposals and states.
+            bb:digital-registries:change-request:review: Approve or reject an exact proposal version.
+            bb:digital-registries:change-request:withdraw: Withdraw a proposal when policy permits.
+            bb:digital-registries:change-request:apply: Execute an approved proposal under current policy.
+            bb:digital-registries:operation:read: Read caller-visible asynchronous operation state.
+  parameters:
+    CollectionId:
+      name: collectionId
+      in: path
+      required: true
+      description: |-
+        Collection selected by this reference catalogue. A deployed contract replaces the enum with its declared literal collection identifiers. In example URLs such as `/collections/records/records/r_42`, the first `records` is the collection identifier; the second names the Record resource within that collection.
+      schema:
+        $ref: '#/components/schemas/CollectionId'
+    RecordId:
+      name: recordId
+      in: path
+      required: true
+      description: Stable opaque identifier within the selected registry, encoded as one path segment.
+      schema:
+        $ref: '#/components/schemas/RecordId'
+    RevisionId:
+      name: revisionId
+      in: path
+      required: true
+      description: Opaque identifier of one retained source revision, encoded as one path segment.
+      schema:
+        $ref: '#/components/schemas/RevisionId'
+    Traceparent:
+      name: traceparent
+      in: header
+      required: false
+      description: >-
+        W3C Trace Context. Propagate valid context; create context when absent or invalid.
+        Problem traceId is the effective trace-id. Trace metadata excludes personal data.
+      schema:
+        type: string
+    IfNoneMatch:
+      name: If-None-Match
+      in: header
+      required: false
+      description: >-
+        Conditional request against the selected representation's ETag. Authorisation
+        precedes evaluation of the validator.
+      schema:
+        type: string
+    PageSize:
+      name: pageSize
+      in: query
+      required: false
+      description: |-
+        Maximum number of items returned in a page.
+      schema:
+        $ref: '#/components/schemas/PageSize'
+    Cursor:
+      name: cursor
+      in: query
+      required: false
+      description: |-
+        Continuation from the previous page. Omit for the first page.
+      schema:
+        $ref: '#/components/schemas/Cursor'
+    RecordedAsOf:
+      name: recordedAsOf
+      in: query
+      required: false
+      description: |-
+        Selects source state recorded no later than this RFC 3339 instant. Omission selects the current recorded state unless another temporal coordinate is supplied. Declare only when recorded-time is selected.
+      schema:
+        $ref: '#/components/schemas/RecordedAsOf'
+    EffectiveAt:
+      name: effectiveAt
+      in: query
+      required: false
+      description: |-
+        Selects source state applicable at this calendar date or RFC 3339 instant. Omission selects the currently applicable state unless another temporal coordinate is supplied. Declare only when effective-time is selected.
+      schema:
+        $ref: '#/components/schemas/EffectiveAt'
+    Sort:
+      name: sort
+      in: query
+      required: false
+      description: |-
+        Fields to sort by. Omit to use the deployment's default order; keep the same sort
+        input on continuation requests.
+      schema:
+        $ref: '#/components/schemas/Sort'
+    Fields:
+      name: fields
+      in: query
+      required: false
+      style: form
+      explode: false
+      description: |-
+        Deployments declare this parameter only when `field-selection` is selected. It accepts comma-separated top-level data field names, narrowed to the deployment's supported enum. Omission uses the declared default field set; `recordId`, `data`, and documented mandatory data fields remain present. Disclosure policy governs every selected field.
+      schema:
+        $ref: '#/components/schemas/FieldSelection'
+    ChangeRequestId:
+      name: changeRequestId
+      in: path
+      required: true
+      description: Opaque change-request identifier encoded as one path segment.
+      schema:
+        $ref: '#/components/schemas/OpaqueId'
+    OperationId:
+      name: operationId
+      in: path
+      required: true
+      description: Opaque asynchronous Operation identifier encoded as one path segment.
+      schema:
+        $ref: '#/components/schemas/OpaqueId'
+    IfMatch:
+      name: If-Match
+      in: header
+      required: true
+      description: >-
+        One strong `ETag` for the target representation; weak validators and wildcards are not
+        accepted. For a Record mutation, the service compares the companion guard atomically with
+        commit and returns generic `412` on mismatch without disclosing which guard state changed.
+        For review, it guards the Change Request, not the proposal's `baseETag`, which guards the
+        source Record at commit.
+      schema:
+        $ref: '#/components/schemas/StrongETag'
+    IdempotencyKey:
+      name: Idempotency-Key
+      in: header
+      required: true
+      description: >-
+        Opaque, client-generated, high-entropy Structured Field String, including quotation marks,
+        with at most 200 characters inside them; UUID values are recommended. Replay lookup binds
+        the method, canonical target URI, authenticated client, tenant or equivalent authorisation
+        partition, and effective trusted purpose. The fingerprint binds the method, canonical
+        target URI, content type, canonical body, and every declared semantic header. A missing,
+        malformed, or oversized key returns `400` before processing. The deployment publishes
+        `idempotencyReplayWindow`; after expiry, it may process the key as new only if its profile
+        permits. Within the window, a completed matching retry returns the original status, body,
+        `Content-Type`, and `Location`, with per-attempt headers regenerated. Fingerprint mismatch
+        returns `422`; a matching in-flight retry returns `409`. Before disclosing a stored result,
+        the service rechecks current authorisation, effective trusted purpose, and disclosure
+        policy. A purpose change cannot select the stored result because purpose is in the lookup
+        scope. The key never preserves or creates a grant.
+      schema:
+        type: string
+        minLength: 3
+        maxLength: 202
+        pattern: '^"(?:[\x20-\x21\x23-\x5B\x5D-\x7E]|\\["\\]){1,200}"$'
+      example: '"018f47d2-4c42-7ca4-bf47-2bd31f88b922"'
+    ChangeRequestPageSize:
+      name: pageSize
+      in: query
+      required: false
+      description: Maximum items in this bounded page; default 20 and maximum 100.
+      schema:
+        type: integer
+        minimum: 1
+        maximum: 100
+        default: 20
+    ChangeRequestCursor:
+      name: cursor
+      in: query
+      required: false
+      description: >-
+        Opaque, integrity-protected continuation from the preceding Change Request page; omit it
+        for the first page. It binds caller context, trusted purpose, Registry and Collection
+        scope, filters, deterministic order, and effective page size, and expires under
+        `changeRequestCursorLifetime`. Invalid continuation returns `400` and never restarts
+        traversal.
+      schema:
+        type: string
+        minLength: 1
+        maxLength: 2048
+  headers:
+    CacheControl:
+      description: >-
+        Protected reads and errors use no-store. Deployments may publish another caching
+        policy for public or properly isolated representations while preserving authorisation.
+      schema:
+        type: string
+        const: no-store
+    WriteCacheControl:
+      description: Required no-store policy for protected Write and workflow responses.
+      required: true
+      schema:
+        type: string
+        const: no-store
+    CallerCapabilitiesCacheControl:
+      description: >-
+        Required no-store policy for the authenticated, caller-filtered capability document.
+      required: true
+      schema:
+        type: string
+        const: no-store
+    ETag:
+      description: HTTP representation validator, which may be omitted; it is not a source revision identifier.
+      schema:
+        type: string
+      example: 'W/"representation-7fa9"'
+    ApiCatalogETag:
+      description: Required HTTP representation validator for the API catalog linkset.
+      required: true
+      schema:
+        type: string
+      example: 'W/"representation-7fa9"'
+    ConditionalETag:
+      description: >-
+        Required representation validator on 200 and 304 responses of Retrieve selecting
+        conditional-read. It identifies the permitted representation, effective field and
+        temporal selection, and effective trusted purpose context, not a source revision.
+      required: true
+      schema:
+        type: string
+      example: 'W/"representation-7fa9"'
+    ApiCatalogLink:
+      description: >-
+        Web Link with the api-catalog relation. Its target is this well-known URI or the
+        publisher's API catalog document location.
+      required: true
+      schema:
+        type: string
+        pattern: ';\s*rel\s*=\s*(?:api-catalog|"(?:[^"]*\s)?api-catalog(?:\s[^"]*)?")\s*(?:[;,]|(?![\s\S]))'
+      example: '</.well-known/api-catalog>; rel="api-catalog"'
+    RetryAfter:
+      description: Delay in seconds or HTTP-date before retrying; authoritative over any advisory quota fields.
+      schema:
+        type: string
+      example: '30'
+    WwwAuthenticate:
+      description: Bearer authentication challenge, with no record-specific facts.
+      schema:
+        type: string
+      example: Bearer
+    StrongETag:
+      description: >-
+        Strong validator suitable for If-Match; weak validators are forbidden. On a selected
+        Record companion read it is also an opaque mutation guard, without encoded source values
+        or any grant of authority.
+      required: true
+      schema:
+        $ref: '#/components/schemas/StrongETag'
+      example: '"record-7fa9"'
+    Location:
+      description: URI of the created Record, change request, or asynchronous Operation.
+      required: true
+      schema:
+        type: string
+        format: uri-reference
+  schemas:
+    CollectionId:
+      type: string
+      enum: [records]
+      description: >-
+        Canonical reference collection identifier. Deployment bindings define their own
+        bounded collection identifier enum and use literal values in concrete paths.
+    RevisionId:
+      type: string
+      minLength: 1
+      maxLength: 256
+      pattern: '^[A-Za-z0-9][A-Za-z0-9._~-]{0,255}(?![\s\S])'
+      description: Opaque source-backed identifier for one retained revision of a Record.
+      examples: [rev_2024_07]
+    RecordId:
+      type: string
+      minLength: 1
+      description: >-
+        Stable opaque identifier unique across all collections in the selected Registry,
+        unchanged throughout the Record's lifecycle and never reassigned to a different Record.
+        The same Record retains its identifier across collections and views. Suitable source
+        identifiers are retained. Exposed identifiers are non-personal and safe for URL
+        references. Collection actions occupy a separate namespace, so source identifiers such
+        as lookup and search remain valid Record Identifiers.
+      examples: [r_42]
+    RecordedAsOf:
+      type: string
+      format: date-time
+      pattern: 'Z(?![\s\S])'
+      minLength: 20
+      maxLength: 35
+      description: RFC 3339 UTC instant serialised with Z, bounding source recording time for a read.
+      examples: ['2026-03-01T12:00:00Z']
+    EffectiveAt:
+      type: string
+      minLength: 10
+      maxLength: 35
+      description: Calendar date or RFC 3339 UTC instant serialised with Z at which the requested state applies.
+      oneOf:
+        - format: date
+          minLength: 10
+          maxLength: 10
+          description: Calendar-date applicability coordinate.
+        - format: date-time
+          pattern: 'Z(?![\s\S])'
+          minLength: 20
+          maxLength: 35
+          description: UTC instant applicability coordinate serialised with Z.
+      examples: ['2026-02-15']
+    TemporalSelection:
+      type: object
+      additionalProperties: false
+      minProperties: 1
+      maxProperties: 2
+      description: |-
+        Temporal coordinates, when supplied, for a declared recorded-time or effective-time read.
+        At least one coordinate is required when the object is present. Omission selects the
+        operation's documented current state.
+
+        - `recordedAsOf` alone applies a knowledge cut with no effective-time filter.
+        - `effectiveAt` alone selects the state applicable then using the latest recorded knowledge.
+        - Both coordinates intersect those selections.
+      properties:
+        recordedAsOf:
+          $ref: '#/components/schemas/RecordedAsOf'
+        effectiveAt:
+          $ref: '#/components/schemas/EffectiveAt'
+      examples:
+        - recordedAsOf: '2026-03-01T12:00:00Z'
+        - effectiveAt: '2026-02-15'
+        - recordedAsOf: '2026-03-01T12:00:00Z'
+          effectiveAt: '2026-02-15'
+    TemporalMetadata:
+      type: object
+      additionalProperties: false
+      minProperties: 1
+      maxProperties: 2
+      description: >-
+        Source-backed temporal coordinates actually used to produce this representation. It
+        echoes every requested temporal coordinate after validation and is omitted only for a
+        current-state request with no temporal selection.
+      properties:
+        recordedAsOf:
+          $ref: '#/components/schemas/RecordedAsOf'
+        effectiveAt:
+          $ref: '#/components/schemas/EffectiveAt'
+      examples:
+        - recordedAsOf: '2026-03-01T12:00:00Z'
+          effectiveAt: '2026-02-15'
+    RevisionMetadata:
+      type: object
+      additionalProperties: false
+      required: [revisionId]
+      description: Source-backed identity and, when supplied, recording instant for one retained revision.
+      properties:
+        revisionId:
+          $ref: '#/components/schemas/RevisionId'
+        recordedAt:
+          type: string
+          format: date-time
+          pattern: 'Z(?![\s\S])'
+          minLength: 20
+          maxLength: 35
+          description: RFC 3339 UTC instant serialised with Z at which the source recorded this revision, when available.
+    Record:
+      type: object
+      description: >-
+        Record identity and its typed, permitted domain view. Registry identity, data schema
+        and field meanings are supplied by the collection and operation binding. data may include
+        nested objects, embedded relationship components, references and predefined
+        related-data views with declared ownership and temporal semantics. Revision,
+        lifecycle and provenance fields, when supplied, are source-backed. Readers accept additive envelope
+        fields.
+      required: [recordId, data]
+      properties:
+        recordId:
+          $ref: '#/components/schemas/RecordId'
+        data:
+          type: object
+          description: >-
+            Caller-authorised domain view. A field-selection operation admits omission of
+            selectable fields within this same schema and always retains recordId
+            and data. Deployments should reuse suitable established
+            domain schemas and vocabularies, including national or sector schemas. The contract
+            identifies adopted models and versions and binds their concepts to a concrete JSON
+            Schema, documenting mappings, local constraints and extensions. The view may contain
+            typed nested structures and relationships.
+      examples:
+        - recordId: r_42
+          data:
+            legalName: Example Ltd
+            registrationStatus: DISSOLVED
+    TemporalRecord:
+      description: >-
+        Record wrapper for an operation that selected temporal coordinates. The source-backed
+        temporal metadata echoes the effective selection.
+      allOf:
+        - $ref: '#/components/schemas/Record'
+        - type: object
+          description: A temporally selected Record requires top-level temporal metadata.
+          required: [temporal]
+          properties:
+            temporal:
+              $ref: '#/components/schemas/TemporalMetadata'
+    RecordRevision:
+      description: >-
+        One retained source revision disclosed under current authorisation. revision is always
+        present. Revision operations do not accept temporal selection.
+      allOf:
+        - $ref: '#/components/schemas/Record'
+        - type: object
+          description: Revision metadata required in addition to the common Record envelope.
+          required: [revision]
+          properties:
+            revision:
+              $ref: '#/components/schemas/RevisionMetadata'
+      examples:
+        - recordId: r_42
+          revision:
+            revisionId: rev_2024_07
+            recordedAt: '2024-07-01T09:30:00Z'
+          data:
+            legalName: Example Ltd
+    RevisionPage:
+      description: Bounded page of retained revisions under current disclosure policy.
+      allOf:
+        - $ref: '#/components/schemas/RecordPage'
+        - type: object
+          description: Revision pages narrow each item to the RecordRevision schema.
+          properties:
+            items:
+              type: array
+              maxItems: 100
+              description: Retained revisions in the operation's declared deterministic order.
+              items:
+                $ref: '#/components/schemas/RecordRevision'
+      examples:
+        - items: []
+          pageInfo:
+            nextCursor: null
+    RecordReference:
+      type: object
+      description: >-
+        Identity of a related Record. The field or deployment schema fixes the target
+        Registry; otherwise registryId is required. An explicit registryId must agree with the
+        fixed target. Concrete fields encode these constraints. When a target read is
+        offered, the field binding identifies the target collection, contract and operation,
+        and maps the referenced identifier to its input. Target reads follow the target
+        Registry's published capabilities and access policy. Profiles declare any
+        referential-integrity guarantees. Adopted domain reference forms may be used with
+        declared target semantics.
+      required: [recordId]
+      properties:
+        recordId:
+          $ref: '#/components/schemas/RecordId'
+        registryId:
+          type: string
+          format: iri
+          minLength: 1
+          pattern: '^[A-Za-z][A-Za-z0-9+.-]*:'
+          description: >-
+            Stable absolute IRI of the target Registry; service endpoints are discovered
+            separately.
+      examples:
+        - recordId: person_42
+          registryId: https://registry.example/registries/individuals
+    RecordPage:
+      type: object
+      description: |-
+        Response-bounded page in the declared deterministic order. Baseline traversal follows
+        the published source consistency, result limits, and resource policy. It does not
+        establish an exhaustive export, snapshot, or bound on database work.
+
+        `complete-traversal` additionally returns each permitted match once under unchanged
+        data and access. `snapshot-traversal` fixes source membership, order, and data at one
+        evaluation point.
+
+        Every page applies current authorisation and disclosure. A short or empty page may
+        continue; `nextCursor` set to `null` ends the declared traversal. When present, `total`
+        is exact for the full permitted query at its declared evaluation point, before the
+        continuation boundary.
+      required: [items, pageInfo]
+      properties:
+        items:
+          type: array
+          maxItems: 100
+          description: Authorised records in the deployment's declared deterministic order.
+          items:
+            $ref: '#/components/schemas/Record'
+        pageInfo:
+          $ref: '#/components/schemas/PageInfo'
+      examples:
+        - items: []
+          pageInfo:
+            nextCursor: null
+    TemporalRecordPage:
+      description: >-
+        RecordPage wrapper for a request that selected temporal coordinates. Metadata remains
+        present when the page has no items.
+      allOf:
+        - $ref: '#/components/schemas/RecordPage'
+        - type: object
+          description: A temporally selected page requires top-level temporal metadata.
+          required: [temporal]
+          properties:
+            temporal:
+              $ref: '#/components/schemas/TemporalMetadata'
+    PageSize:
+      type: integer
+      minimum: 1
+      maximum: 100
+      default: 20
+      description: |-
+        Defaults to 20 on the first request. Values outside the declared bounds return
+        `400 bad-request`. With a cursor, omit `pageSize` to keep its bound value or repeat
+        that value; changing it returns `400 invalid-cursor`.
+      examples: [20]
+    PageInfo:
+      description: |-
+        Continuation metadata. Returned cursors satisfy the Cursor input constraints.
+        When supplied, `total` is exact for the full permitted query at the declared evaluation
+        point, before applying the continuation boundary:
+
+        - Current page evaluation for live reads.
+        - The fixed source snapshot evaluated under current rights for `snapshot-traversal`.
+      allOf:
+        - $ref: './common/govstack-openapi-common.yaml#/components/schemas/PageInfo'
+        - type: object
+          description: The continuation obeys the same length and alphabet constraints as the request cursor.
+          properties:
+            nextCursor:
+              description: Opaque continuation accepted by the next request, or null on the final page.
+              anyOf:
+                - $ref: '#/components/schemas/Cursor'
+                - type: 'null'
+                  description: No continuation remains for this traversal.
+      examples:
+        - nextCursor: null
+        - nextCursor: pgn_7JpQ9m2W4xK8fR3cT6vN1
+    Cursor:
+      type: string
+      minLength: 1
+      maxLength: 4096
+      pattern: '^[A-Za-z0-9_-]+(?![\s\S])'
+      description: |-
+        Return this URL-safe, opaque, integrity-protected token unchanged. It contains no
+        personal data and is bound to:
+
+        - Service, Registry, collection, selected view, applicable access context, and operation.
+        - All path selectors, including the parent `recordId` for `revision-list`.
+        - Search name, criteria, ordering, effective field and temporal selection, effective
+          trusted purpose, and `pageSize`.
+
+        Repeat the same path and request selectors. Malformed, expired, or mismatched cursors,
+        including reuse for another parent Record, return `400 invalid-cursor`.
+
+        The service rechecks current authorisation for every page; the cursor grants no authority.
+        Source-metadata
+        fallback never changes the effective purpose. Deployments publish expiry.
+
+        A cursor can wrap a source offset, page number, or token without strengthening the source's
+        guarantees.
+      examples: [pgn_7JpQ9m2W4xK8fR3cT6vN1]
+    Sort:
+      type: string
+      minLength: 1
+      pattern: '^-?[A-Za-z][A-Za-z0-9_]*(\.[A-Za-z][A-Za-z0-9_]*)*(,-?[A-Za-z][A-Za-z0-9_]*(\.[A-Za-z][A-Za-z0-9_]*)*)*(?![\s\S])'
+      description: |-
+        Comma-separated field names using the schema's spelling; prefix `-` for descending
+        order, and use `.` between nested fields. Deployments narrow this schema to supported
+        fields and directions, publish a unique tie-breaker, and omit the input when only
+        default ordering is available.
+      examples: [recordId]
+    FieldSelection:
+      type: array
+      minItems: 1
+      uniqueItems: true
+      description: >-
+        Non-empty set of declared selectable top-level data field names. A deployment
+        narrows items to its supported enum, declares bounds and a default field set,
+        and makes selectable fields not required in its response schema. No nested query
+        or expansion syntax is implied. Always retain recordId and data.
+      items:
+        type: string
+        minLength: 1
+        description: A selectable top-level data property name published by the contract.
+      examples: [[legalName]]
+    LookupRequest:
+      type: object
+      additionalProperties: false
+      description: >-
+        One declared exact selector with its typed key values. Deployments bind each selector
+        name to a closed values schema, such as oneOf branches with const names. Context-only
+        selectors use an empty values object; other selectors require their declared
+        client-supplied fields.
+      required: [selector, values]
+      properties:
+        selector:
+          type: string
+          minLength: 1
+          description: Name of a deployment-declared exact key selector.
+        values:
+          type: object
+          description: All declared client-supplied key fields, or an empty object for a context-only selector.
+      examples:
+        - selector: byRegistrationNumber
+          values:
+            registrationNumber: BR-000042
+    SearchRequest:
+      type: object
+      additionalProperties: false
+      description: >-
+        One declared search with typed criteria and continuation controls. Deployments bind
+        each name to a closed criteria schema and declare sort when supported.
+      required: [search, criteria]
+      properties:
+        search:
+          type: string
+          minLength: 1
+          description: Name of a deployment-declared search.
+        criteria:
+          type: object
+          description: The closed typed criteria for this search, repeated on continuation.
+        pageSize:
+          $ref: '#/components/schemas/PageSize'
+        cursor:
+          $ref: '#/components/schemas/Cursor'
+        sort:
+          $ref: '#/components/schemas/Sort'
+      examples:
+        - search: byRegistrationStatus
+          criteria:
+            registrationStatus: DISSOLVED
+          pageSize: 20
+    SearchRange:
+      type: object
+      additionalProperties: false
+      minProperties: 1
+      maxProperties: 2
+      description: >-
+        Reusable inclusive or exclusive range shape. A deployment narrows bound value schemas
+        to one comparable domain type and requires at least one bound.
+      properties:
+        from:
+          description: Lower bound, with type and inclusion semantics declared by the named search.
+        to:
+          description: Upper bound, with type and inclusion semantics declared by the named search.
+    SearchSet:
+      type: array
+      minItems: 1
+      maxItems: 100
+      uniqueItems: true
+      description: >-
+        Reusable non-empty set-membership shape. A deployment narrows item types and matching
+        semantics independently for each named search.
+      items:
+        description: One typed member accepted by the named search.
+    SearchPrefix:
+      type: string
+      minLength: 1
+      maxLength: 256
+      description: >-
+        Reusable string-prefix value. A deployment declares normalisation, collation, and case
+        handling for each named search. This shape does not define a query language.
+    PurposeAccessTokenClaimBinding:
+      type: object
+      additionalProperties: false
+      required: [required, binding, claim, allowedPurposes]
+      description: Purpose is derived from a trusted access-token claim and checked against a closed allowed set.
+      properties:
+        required:
+          type: boolean
+          const: true
+          description: Purpose evaluation is mandatory for this operation.
+        binding:
+          type: string
+          const: access-token-claim
+          description: Purpose is read from the named verified access-token claim.
+        claim:
+          type: string
+          minLength: 1
+          maxLength: 128
+          pattern: '^[A-Za-z][A-Za-z0-9._:-]{0,127}(?![\s\S])'
+          description: Verified access-token claim carrying the caller's declared purpose.
+        allowedPurposes:
+          type: array
+          minItems: 1
+          maxItems: 32
+          uniqueItems: true
+          description: Purpose values accepted by this operation after policy evaluation.
+          items:
+            description: Controlled purpose code or absolute purpose URI accepted by policy.
+            anyOf:
+              - type: string
+                minLength: 1
+                maxLength: 128
+                pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}(?![\s\S])'
+                description: Bounded controlled purpose code.
+              - type: string
+                format: uri
+                minLength: 1
+                maxLength: 2048
+                pattern: '^\S+(?![\s\S])'
+                description: Absolute purpose URI.
+    PurposeRequirement:
+      description: >-
+        Trusted purpose binding for a purpose-bound operation. Purpose never arrives in a URI,
+        query parameter, request body, or ad hoc header, and does not itself grant access.
+      oneOf:
+        - $ref: '#/components/schemas/PurposeAccessTokenClaimBinding'
+        - type: object
+          description: Purpose supplied by a governed trusted authorisation context.
+          additionalProperties: false
+          required: [required, binding, allowedPurposes]
+          properties:
+            required:
+              type: boolean
+              const: true
+              description: Purpose evaluation is mandatory for this operation.
+            binding:
+              type: string
+              const: trusted-authorization-context
+              description: Purpose is supplied by a separately governed trusted authorisation context.
+            allowedPurposes:
+              type: array
+              minItems: 1
+              maxItems: 32
+              uniqueItems: true
+              description: Purpose values accepted from the trusted authorisation context.
+              items:
+                description: Controlled purpose code or absolute purpose URI accepted by policy.
+                anyOf:
+                  - type: string
+                    minLength: 1
+                    maxLength: 128
+                    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}(?![\s\S])'
+                    description: Bounded controlled purpose code.
+                  - type: string
+                    format: uri
+                    minLength: 1
+                    maxLength: 2048
+                    pattern: '^\S+(?![\s\S])'
+                    description: Absolute purpose URI.
+    CompanionReadIdentity:
+      type: object
+      additionalProperties: false
+      required: [operationId, view]
+      description: >-
+        Machine-readable identity of the one GET and view whose body and strong ETag come from the
+        same current authoritative guard evaluation for a separately authorised Update or
+        Transition. A deployment cannot designate the read when its effective disclosure policy
+        forbids revealing the tag or its change cadence.
+      properties:
+        operationId:
+          type: string
+          minLength: 1
+          maxLength: 128
+          pattern: '^[A-Za-z][A-Za-z0-9]{0,127}(?![\s\S])'
+          description: operationId of the companion GET in the linked contract.
+        view:
+          type: string
+          minLength: 1
+          maxLength: 128
+          pattern: '^[a-z][a-z0-9-]{0,127}(?![\s\S])'
+          description: >-
+            Exact permitted Record view returned by that GET. In companion use, its writable data
+            and guard-relevant state are evaluated at the same current authoritative point as the
+            strong ETag.
+    DiscoveredWriteMetadata:
+      type: object
+      additionalProperties: false
+      minProperties: 1
+      description: Advisory Write metadata copied from the linked operation contract.
+      properties:
+        companionRead:
+          $ref: '#/components/schemas/CompanionReadIdentity'
+    CapabilityOperation:
+      type: object
+      additionalProperties: false
+      required: [operationId, contract, capability]
+      description: >-
+        One operation visible to the caller; this is not permission for any particular Record.
+        A client skips the complete entry when capability is unknown and ignores unknown feature
+        annotations on a recognised capability. Discovery metadata never creates authority, and
+        current authorisation applies to every operation request.
+      properties:
+        operationId:
+          type: string
+          minLength: 1
+          maxLength: 128
+          pattern: '^[A-Za-z][A-Za-z0-9]{0,127}(?![\s\S])'
+          description: Stable operationId in the linked versioned contract.
+        contract:
+          type: string
+          format: uri
+          minLength: 1
+          maxLength: 2048
+          pattern: '^https://\S+(?![\s\S])'
+          description: Absolute URI of the versioned OpenAPI contract containing operationId.
+        family:
+          type: string
+          enum: [consultation, write]
+          description: API family of the linked operation.
+        capability:
+          type: string
+          minLength: 1
+          maxLength: 128
+          pattern: '^[a-z][a-z0-9-]{0,127}(?![\s\S])'
+          x-extensible-enum:
+            - retrieve
+            - lookup
+            - list
+            - search
+            - revision-list
+            - revision-retrieve
+            - create
+            - update
+            - transition
+            - change-requests
+            - change-request-list
+            - change-request-retrieve
+            - change-request-approve
+            - change-request-reject
+            - change-request-withdraw
+            - operation-retrieve
+          description: >-
+            Consultation, Write, or supporting capability implemented by the linked operation. The listed values are
+            known to this contract version; clients skip an operation entry with an unknown value.
+        view:
+          type: string
+          minLength: 1
+          maxLength: 128
+          pattern: '^[a-z][a-z0-9-]{0,127}(?![\s\S])'
+          description: Record view returned by the linked operation.
+        features:
+          type: array
+          maxItems: 8
+          uniqueItems: true
+          description: Selectable features selected by this operation.
+          items:
+            type: string
+            minLength: 1
+            maxLength: 128
+            pattern: '^[a-z][a-z0-9-]{0,127}(?![\s\S])'
+            x-extensible-enum: [conditional-read, field-selection, complete-traversal, snapshot-traversal, recorded-time, effective-time, purpose-bound]
+            description: >-
+              Advisory selectable feature known to this contract version. Clients ignore unknown
+              feature values. conditional-read uses representation validators;
+              field-selection projects declared fields; complete- and snapshot-traversal add
+              traversal guarantees; recorded-time and effective-time select temporal state;
+              purpose-bound requires the declared trusted purpose binding.
+        purpose:
+          $ref: '#/components/schemas/PurposeRequirement'
+        write:
+          $ref: '#/components/schemas/DiscoveredWriteMetadata'
+        readableFields:
+          type: array
+          maxItems: 128
+          uniqueItems: true
+          description: >-
+            Field names this caller may request from the operation. Names refer to the linked
+            contract and do not promise access for any particular Record.
+          items:
+            type: string
+            minLength: 1
+            maxLength: 256
+            description: Declared response field name visible to this caller.
+        searches:
+          type: array
+          maxItems: 64
+          uniqueItems: true
+          description: Named searches visible to the caller and declared by the linked operation.
+          items:
+            type: string
+            minLength: 1
+            maxLength: 128
+            pattern: '^[A-Za-z][A-Za-z0-9_-]{0,127}(?![\s\S])'
+            description: Named search from the linked contract.
+        selectors:
+          type: array
+          maxItems: 64
+          uniqueItems: true
+          description: Exact selector names visible to the caller and declared by the linked operation.
+          items:
+            type: string
+            minLength: 1
+            maxLength: 128
+            pattern: '^[A-Za-z][A-Za-z0-9_-]{0,127}(?![\s\S])'
+            description: Exact selector name from the linked contract.
+      allOf:
+        - description: Recognised Consultation operations declare the Record view they return.
+          if:
+            description: Match capabilities recognised as Consultation by this contract version.
+            required: [capability]
+            properties:
+              capability:
+                enum: [retrieve, lookup, list, search, revision-list, revision-retrieve]
+                description: Capability recognised as Consultation by this contract version.
+          then:
+            description: Require a read view and preserve legacy family omission.
+            required: [view]
+            allOf:
+              - anyOf:
+                  - description: Accept a legacy Consultation entry without family.
+                    not:
+                      required: [family]
+                      description: Legacy Consultation entries may omit family.
+                  - description: Accept an explicitly classified Consultation entry.
+                    properties:
+                      family:
+                        const: consultation
+                        description: Explicit family for a Consultation operation.
+              - not:
+                  required: [write]
+                  description: Consultation discovery does not carry Write metadata.
+        - description: Recognised Write and supporting operations declare their family explicitly.
+          if:
+            description: Match capabilities recognised as Write or supporting operations.
+            required: [capability]
+            properties:
+              capability:
+                enum:
+                  - create
+                  - update
+                  - transition
+                  - change-requests
+                  - change-request-list
+                  - change-request-retrieve
+                  - change-request-approve
+                  - change-request-reject
+                  - change-request-withdraw
+                  - operation-retrieve
+                description: Capability recognised as Write or supporting by this contract version.
+          then:
+            description: Require the explicit Write family classification.
+            required: [family]
+            properties:
+              family:
+                const: write
+                description: Explicit family for a Write or supporting operation.
+        - description: Write operations do not present read-view annotations as mutation authority.
+          if:
+            description: Match entries explicitly classified in the Write family.
+            required: [family]
+            properties:
+              family: {const: write, description: Match Write and supporting operations.}
+          then:
+            description: Forbid Consultation-only annotations on Write entries.
+            not:
+              anyOf:
+                - {required: [view], description: Write operations do not return a Record read view.}
+                - {required: [features], description: Read features belong to Consultation operations.}
+                - {required: [purpose], description: Read purpose metadata belongs to Consultation operations.}
+                - {required: [readableFields], description: Readable fields belong to Consultation operations.}
+                - {required: [searches], description: Search names belong to Consultation operations.}
+                - {required: [selectors], description: Selector names belong to Consultation operations.}
+        - description: Update and Transition discovery identify their exact strong-validator read.
+          if:
+            description: Match guarded mutation capabilities in the Write family.
+            required: [family, capability]
+            properties:
+              family: {const: write, description: Match Write operations.}
+              capability: {enum: [update, transition], description: Match guarded mutations.}
+          then:
+            description: Require metadata identifying the exact companion read.
+            required: [write]
+            properties:
+              write:
+                description: Write metadata required for a guarded mutation.
+                required: [companionRead]
+        - description: Conditional-read is available only on Retrieve.
+          if:
+            description: Detect conditional-read on a recognised capability.
+            required: [capability, features]
+            properties:
+              capability:
+                description: Capability recognised by this contract version.
+                enum: [retrieve, lookup, list, search, revision-list, revision-retrieve]
+              features:
+                description: Selected features tested for conditional-read.
+                contains:
+                  description: Conditional-read feature marker.
+                  const: conditional-read
+          then:
+            description: Restrict the operation capability to Retrieve.
+            properties:
+              capability:
+                description: Retrieve is the only capability supporting conditional-read.
+                const: retrieve
+        - description: Traversal guarantees are available only on List and Search.
+          if:
+            description: Detect complete- or snapshot-traversal on a recognised capability.
+            required: [capability, features]
+            properties:
+              capability:
+                description: Capability recognised by this contract version.
+                enum: [retrieve, lookup, list, search, revision-list, revision-retrieve]
+              features:
+                description: Selected features tested for traversal guarantees.
+                contains:
+                  description: Complete- or snapshot-traversal feature marker.
+                  enum: [complete-traversal, snapshot-traversal]
+          then:
+            description: Restrict traversal guarantees to collection-returning operations.
+            properties:
+              capability:
+                description: List and Search are the collection-returning capabilities.
+                enum: [list, search]
+        - description: Snapshot traversal depends on complete traversal.
+          if:
+            description: Detect snapshot-traversal on a recognised capability.
+            required: [capability, features]
+            properties:
+              capability:
+                description: Capability recognised by this contract version.
+                enum: [retrieve, lookup, list, search, revision-list, revision-retrieve]
+              features:
+                description: Selected features tested for snapshot-traversal.
+                contains:
+                  description: Snapshot-traversal feature marker.
+                  const: snapshot-traversal
+          then:
+            description: Require complete-traversal in the same feature set.
+            properties:
+              features:
+                description: Snapshot traversal's required companion feature.
+                contains:
+                  description: Complete-traversal feature marker.
+                  const: complete-traversal
+        - description: Temporal selection is limited to ordinary reads, not revision reads.
+          if:
+            description: Detect temporal selection on a recognised capability.
+            required: [capability, features]
+            properties:
+              capability:
+                description: Capability recognised by this contract version.
+                enum: [retrieve, lookup, list, search, revision-list, revision-retrieve]
+              features:
+                description: Selected features tested for temporal selection.
+                contains:
+                  description: Recorded-time or effective-time feature marker.
+                  enum: [recorded-time, effective-time]
+          then:
+            description: Restrict temporal selection to ordinary read capabilities.
+            properties:
+              capability:
+                description: Ordinary read capability supporting temporal selection.
+                enum: [retrieve, lookup, list, search]
+        - description: Purpose-bound selection requires a trusted purpose declaration.
+          if:
+            description: Detect purpose-bound on a recognised capability.
+            required: [capability, features]
+            properties:
+              capability:
+                description: Capability recognised by this contract version.
+                enum: [retrieve, lookup, list, search, revision-list, revision-retrieve]
+              features:
+                description: Selected features tested for purpose binding.
+                contains:
+                  description: Purpose-bound feature marker.
+                  const: purpose-bound
+          then:
+            description: Require the trusted purpose declaration.
+            required: [purpose]
+        - description: A purpose declaration is valid only with purpose-bound selected.
+          if:
+            description: Detect a purpose declaration on a recognised capability.
+            required: [capability, purpose]
+            properties:
+              capability:
+                description: Capability recognised by this contract version.
+                enum: [retrieve, lookup, list, search, revision-list, revision-retrieve]
+          then:
+            description: Require purpose-bound in the same feature set.
+            required: [features]
+            properties:
+              features:
+                description: Selected features tested for the purpose-bound marker.
+                contains:
+                  description: Purpose-bound feature marker.
+                  const: purpose-bound
+    RootCapabilityOperation:
+      type: object
+      additionalProperties: false
+      required: [registry, operation]
+      description: >-
+        Caller-visible Registry operation that is not scoped beneath one Collection path, such as
+        a cross-Collection Change Request or asynchronous Operation resource.
+      properties:
+        registry:
+          type: string
+          format: iri
+          minLength: 1
+          maxLength: 2048
+          description: Registry Identifier governed by this operation.
+        operation:
+          $ref: '#/components/schemas/CapabilityOperation'
+    CapabilityCollection:
+      type: object
+      additionalProperties: false
+      required: [collectionId, registry, operations]
+      description: Caller-visible operations for one declared collection.
+      properties:
+        collectionId:
+          type: string
+          minLength: 1
+          maxLength: 128
+          pattern: '^[a-z][a-z0-9-]{0,127}(?![\s\S])'
+          description: Literal collection identifier used by the linked contract.
+        registry:
+          type: string
+          format: iri
+          minLength: 1
+          maxLength: 2048
+          description: Stable Registry Identifier associated with this collection.
+        operations:
+          type: array
+          minItems: 1
+          maxItems: 16
+          uniqueItems: true
+          description: >-
+            Bounded caller-visible operation catalogue for this collection. Each
+            (contract, operationId) pair is unique; contradictory duplicates are an error and
+            are never silently deduplicated.
+          items:
+            $ref: '#/components/schemas/CapabilityOperation'
+    CallerCapabilities:
+      type: object
+      required: [collections]
+      description: >-
+        Caller-filtered discovery document. It is a bounded catalogue of selectable operations,
+        not a promise of per-Record, per-field, or future authorisation. When the complete
+        caller-visible result exceeds any declared bound, the operation fails with its declared
+        error response and never silently truncates the catalogue. Clients skip entries with an
+        unknown capability and ignore unknown feature annotations on recognised capabilities;
+        current authorisation remains authoritative for every request.
+      properties:
+        collections:
+          type: array
+          maxItems: 64
+          uniqueItems: true
+          description: >-
+            Caller-visible collections; an empty array reveals no collection operations.
+            collectionId values are unique; contradictory duplicates are an error and are never
+            silently deduplicated.
+          items:
+            $ref: '#/components/schemas/CapabilityCollection'
+        operations:
+          type: array
+          maxItems: 64
+          uniqueItems: true
+          description: >-
+            Caller-visible operations outside a Collection resource path. An empty array reveals
+            none; omission has the same meaning and does not change the meaning of collections.
+          items:
+            $ref: '#/components/schemas/RootCapabilityOperation'
+      examples:
+        - collections:
+            - collectionId: records
+              registry: https://registry.example/registries/records
+              operations:
+                - operationId: retrieveRecord
+                  contract: https://registry.example/contracts/1.0.0-draft/openapi.yaml
+                  family: consultation
+                  capability: retrieve
+                  view: record-public
+                  features: [conditional-read]
+                - operationId: listRecords
+                  contract: https://registry.example/contracts/1.0.0-draft/openapi.yaml
+                  family: consultation
+                  capability: list
+                  view: record-public
+                - operationId: lookupRecord
+                  contract: https://registry.example/contracts/1.0.0-draft/openapi.yaml
+                  family: consultation
+                  capability: lookup
+                  view: record-public
+                - operationId: searchRecords
+                  contract: https://registry.example/contracts/1.0.0-draft/openapi.yaml
+                  family: consultation
+                  capability: search
+                  view: record-public
+                - operationId: listRecordRevisions
+                  contract: https://registry.example/contracts/1.0.0-draft/openapi.yaml
+                  family: consultation
+                  capability: revision-list
+                  view: record-history
+                - operationId: retrieveRecordRevision
+                  contract: https://registry.example/contracts/1.0.0-draft/openapi.yaml
+                  family: consultation
+                  capability: revision-retrieve
+                  view: record-history
+                - operationId: createRecord
+                  contract: https://registry.example/contracts/1.0.0-draft/openapi.yaml
+                  family: write
+                  capability: create
+                - operationId: updateRecord
+                  contract: https://registry.example/contracts/1.0.0-draft/openapi.yaml
+                  family: write
+                  capability: update
+                  write:
+                    companionRead:
+                      operationId: retrieveRecord
+                      view: record-public
+                - operationId: applyRecordTransition
+                  contract: https://registry.example/contracts/1.0.0-draft/openapi.yaml
+                  family: write
+                  capability: transition
+                  write:
+                    companionRead:
+                      operationId: retrieveRecord
+                      view: record-public
+          operations:
+            - registry: https://registry.example/registries/records
+              operation:
+                operationId: submitChangeRequest
+                contract: https://registry.example/contracts/1.0.0-draft/openapi.yaml
+                family: write
+                capability: change-requests
+            - registry: https://registry.example/registries/records
+              operation:
+                operationId: listChangeRequests
+                contract: https://registry.example/contracts/1.0.0-draft/openapi.yaml
+                family: write
+                capability: change-request-list
+            - registry: https://registry.example/registries/records
+              operation:
+                operationId: getChangeRequest
+                contract: https://registry.example/contracts/1.0.0-draft/openapi.yaml
+                family: write
+                capability: change-request-retrieve
+            - registry: https://registry.example/registries/records
+              operation:
+                operationId: approveChangeRequest
+                contract: https://registry.example/contracts/1.0.0-draft/openapi.yaml
+                family: write
+                capability: change-request-approve
+            - registry: https://registry.example/registries/records
+              operation:
+                operationId: rejectChangeRequest
+                contract: https://registry.example/contracts/1.0.0-draft/openapi.yaml
+                family: write
+                capability: change-request-reject
+            - registry: https://registry.example/registries/records
+              operation:
+                operationId: withdrawChangeRequest
+                contract: https://registry.example/contracts/1.0.0-draft/openapi.yaml
+                family: write
+                capability: change-request-withdraw
+            - registry: https://registry.example/registries/records
+              operation:
+                operationId: getOperation
+                contract: https://registry.example/contracts/1.0.0-draft/openapi.yaml
+                family: write
+                capability: operation-retrieve
+        - collections: []
+          operations: []
+    Problem:
+      $ref: './common/govstack-openapi-common.yaml#/components/schemas/Problem'
+    ValidationProblem:
+      $ref: './common/govstack-openapi-common.yaml#/components/schemas/ValidationProblem'
+    ApiCatalog:
+      type: object
+      description: >-
+        RFC 9264 linkset listing the APIs at this origin. Each Digital Registries API has a
+        service-desc link to its OpenAPI contract and a service-meta link to its Registry
+        metadata document.
+      required: [linkset]
+      properties:
+        linkset:
+          type: array
+          minItems: 1
+          description: Link context objects, such as one per API anchor.
+          items:
+            $ref: '#/components/schemas/LinkContext'
+    LinkContext:
+      type: object
+      description: >-
+        One RFC 9264 link context. Members other than anchor are link relation types, such
+        as item, service-desc and service-meta.
+      properties:
+        anchor:
+          type: string
+          format: uri-reference
+          description: The link context URI.
+      additionalProperties:
+        type: array
+        minItems: 1
+        description: Target links for one relation type.
+        items:
+          $ref: '#/components/schemas/LinkTarget'
+    LinkTarget:
+      type: object
+      description: One RFC 9264 target link; further target attributes follow RFC 9264.
+      required: [href]
+      properties:
+        href:
+          type: string
+          format: uri-reference
+          description: The target URI.
+        type:
+          type: string
+          description: Media type hint for the target.
+        title:
+          type: string
+          description: Human-readable target label.
+    Health:
+      type: object
+      description: Informational body, which may be omitted; only the HTTP status determines liveness.
+      properties:
+        description:
+          type: string
+          description: Public human-readable service label with no internal details.
+      examples:
+        - description: Digital Registries API
+    OpaqueId:
+      type: string
+      minLength: 1
+      maxLength: 256
+      pattern: '^[A-Za-z0-9][A-Za-z0-9._~-]{0,255}(?![\s\S])'
+      description: Opaque, non-personal identifier with no client-inferred internal format.
+      examples: [op_7]
+    StrongETag:
+      type: string
+      minLength: 3
+      maxLength: 258
+      pattern: '^"[\x21\x23-\x7E]{1,256}"(?![\s\S])'
+      description: >-
+        GovStack Write profile of one quoted strong entity tag using bounded visible ASCII
+        opaque-tag characters. Weak W/ validators, wildcard, lists, spaces, controls, non-ASCII,
+        and trailing input are not admitted.
+      examples: ['"record-7fa9"']
+    SourceReference:
+      type: object
+      additionalProperties: false
+      required: [system, revision]
+      description: >-
+        Optional source-backed audit reference supplied with a mutation. Its presence does not
+        require event sourcing or a history API, and the server validates it under source policy.
+      properties:
+        system:
+          type: string
+          format: uri
+          maxLength: 2048
+          description: Stable identifier of the source system or authority.
+        revision:
+          type: string
+          minLength: 1
+          maxLength: 256
+          description: Source-backed revision identifier.
+        recordedAt:
+          type: string
+          format: date-time
+          pattern: 'Z(?![\s\S])'
+          description: UTC instant at which the source recorded this revision, when supplied.
+      examples:
+        - system: https://source.example/systems/register
+          revision: source-revision-17
+          recordedAt: '2026-11-04T08:00:00Z'
+    CreateInput:
+      type: object
+      additionalProperties: false
+      required: [data]
+      description: >-
+        Semantic input shared by direct and governed creation. Deployments replace or narrow
+        `data` with their domain schema; this reference contract defines no domain fields.
+      properties:
+        data:
+          type: object
+          additionalProperties: true
+          description: Typed domain data in a concrete deployment contract.
+        source:
+          $ref: '#/components/schemas/SourceReference'
+      examples:
+        - data:
+            label: Reference record
+    UpdateInput:
+      type: object
+      additionalProperties: false
+      required: [data]
+      description: >-
+        RFC 7396 JSON Merge Patch shared by direct and governed update. It applies to the writable
+        Record representation. Only `data` is mutable; the closed schema rejects `recordId`, source
+        evidence, and authority-owned control fields. Null domain members are removed.
+      properties:
+        data:
+          type: object
+          additionalProperties: true
+          minProperties: 1
+          description: Domain merge patch, narrowed by the concrete deployment's domain schema.
+      examples:
+        - data:
+            label: Corrected label
+    TransitionInput:
+      type: object
+      additionalProperties: false
+      required: [name]
+      description: >-
+        Input shared by direct and governed transition. Concrete profiles narrow `name` to a
+        constant or closed enumeration, narrow `parameters` to a closed typed schema, and publish
+        allowed names. This is not an arbitrary runtime action selector.
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 128
+          pattern: '^[a-z][a-z0-9-]{0,127}(?![\s\S])'
+          description: >-
+            Catalog transition identifier. A concrete operation narrows this property to a const
+            or closed enum of names it publishes; arbitrary runtime action names are forbidden.
+        parameters:
+          type: object
+          additionalProperties: true
+          description: Transition-profile parameters, closed and typed by a concrete contract.
+        source:
+          $ref: '#/components/schemas/SourceReference'
+      examples:
+        - name: transition
+          parameters:
+            reason: verified-source
+    CreateTarget:
+      type: object
+      additionalProperties: false
+      required: [collectionId]
+      properties:
+        collectionId:
+          $ref: '#/components/schemas/CollectionId'
+      description: Target Collection for creation. recordId is forbidden by the closed shape.
+      examples:
+        - collectionId: records
+    RecordTarget:
+      type: object
+      additionalProperties: false
+      required: [collectionId, recordId]
+      properties:
+        collectionId:
+          $ref: '#/components/schemas/CollectionId'
+        recordId:
+          $ref: '#/components/schemas/RecordId'
+      description: Existing source Record targeted by update or transition.
+      examples:
+        - collectionId: records
+          recordId: r_42
+    CreateChangeRequest:
+      description: >-
+        Immutable submitted proposal. Closed shapes reject client-supplied actor, purpose, review
+        state, approval, and decision fields. Update and transition bind a strong source
+        `baseETag`.
+      oneOf:
+        - type: object
+          description: Create proposal with no client-selected Record identifier.
+          additionalProperties: false
+          required: [kind, target, input]
+          properties:
+            kind:
+              const: create
+              description: Proposal to create a server-identified Record.
+            target:
+              $ref: '#/components/schemas/CreateTarget'
+            input:
+              $ref: '#/components/schemas/CreateInput'
+        - type: object
+          description: Update proposal bound to a source Record validator and merge-patch media type.
+          additionalProperties: false
+          required: [kind, target, baseETag, inputMediaType, input]
+          properties:
+            kind:
+              const: update
+              description: Proposal to apply a merge patch to an existing Record.
+            target:
+              $ref: '#/components/schemas/RecordTarget'
+            baseETag:
+              $ref: '#/components/schemas/StrongETag'
+            inputMediaType:
+              type: string
+              const: application/merge-patch+json
+              description: Registered patch format governing UpdateInput.data.
+            input:
+              $ref: '#/components/schemas/UpdateInput'
+        - type: object
+          description: Named transition proposal bound to a source Record validator.
+          additionalProperties: false
+          required: [kind, target, baseETag, input]
+          properties:
+            kind:
+              const: transition
+              description: Proposal to apply one published named transition.
+            target:
+              $ref: '#/components/schemas/RecordTarget'
+            baseETag:
+              $ref: '#/components/schemas/StrongETag'
+            input:
+              $ref: '#/components/schemas/TransitionInput'
+      examples:
+        - kind: update
+          target:
+            collectionId: records
+            recordId: r_42
+          baseETag: '"record-7fa9"'
+          inputMediaType: application/merge-patch+json
+          input:
+            data:
+              label: Corrected label
+    ReviewDecisionInput:
+      type: object
+      additionalProperties: false
+      required: [comment]
+      description: >-
+        Optional body for a review action. `comment` is retained governance context only, not
+        authoritative Record data, actor identity, trusted purpose, approval state, or a substitute
+        for the operation selected by the request URI and current authorisation.
+      properties:
+        comment:
+          type: string
+          minLength: 1
+          maxLength: 2000
+          description: Human review note safe for the Change Request's authorised audience.
+      examples:
+        - comment: Reviewed against the submitted evidence.
+    WriteResult:
+      type: object
+      required: [collectionId, recordId, etag]
+      description: >-
+        Receipt for an authoritative Record mutation, not a domain Record representation.
+        Readers accept additive response-envelope fields.
+      properties:
+        collectionId:
+          $ref: '#/components/schemas/CollectionId'
+        recordId:
+          $ref: '#/components/schemas/RecordId'
+        etag:
+          $ref: '#/components/schemas/StrongETag'
+        source:
+          $ref: '#/components/schemas/SourceReference'
+      examples:
+        - collectionId: records
+          recordId: r_42
+          etag: '"record-7fa9"'
+    WritableRecord:
+      type: object
+      required: [recordId, data]
+      description: >-
+        Companion representation used to obtain a strong write validator. Readers accept additive
+        response-envelope fields.
+      properties:
+        recordId:
+          $ref: '#/components/schemas/RecordId'
+        data:
+          type: object
+          additionalProperties: true
+          description: Caller-authorised domain data, narrowed by the concrete deployment.
+        source:
+          $ref: '#/components/schemas/SourceReference'
+      examples:
+        - recordId: r_42
+          data:
+            label: Reference record
+    ProcessingError:
+      type: object
+      additionalProperties: false
+      required: [type, title, traceId]
+      description: Transport-neutral failure summary stored in a domain-state representation.
+      properties:
+        type:
+          type: string
+          format: uri
+          description: Stable absolute error type.
+        title:
+          type: string
+          minLength: 1
+          description: Short human-readable failure summary.
+        detail:
+          type: string
+          description: Failure detail safe to disclose to this caller.
+        traceId:
+          type: string
+          pattern: '^(?!0{32}$)[\da-f]{32}$'
+          description: W3C trace identifier associated with the failed application attempt.
+      examples:
+        - type: https://govstack.global/problems/digital-registries/source-precondition-failed
+          title: Source Record changed
+          traceId: 6f1c3f0e2a9b4c8d7e6f5a4b3c2d1e0f
+    ChangeRequest:
+      type: object
+      required:
+        - changeRequestId
+        - proposalVersion
+        - kind
+        - target
+        - input
+        - reviewState
+        - applicationState
+        - submittedAt
+        - updatedAt
+      description: >-
+        Immutable proposal with independently observable review and application states. `pending`
+        has no Record side effect; `approved` does not imply `applied`. `result` appears only for
+        `applied`, and `error` is required for `blocked` or `failed`. Readers accept additive
+        envelope fields.
+      properties:
+        changeRequestId:
+          $ref: '#/components/schemas/OpaqueId'
+        proposalVersion:
+          type: integer
+          minimum: 1
+          description: Immutable proposal version to which review If-Match is bound.
+        kind:
+          type: string
+          enum: [create, update, transition]
+          description: >-
+            Proposed semantic change: create adds a Record, update applies a merge patch, and
+            transition applies one published named action.
+          examples: [update]
+        target:
+          description: Target Collection and, for update or transition, stable Record identifier.
+        input:
+          description: Typed input matching the corresponding direct operation contract.
+        baseETag:
+          $ref: '#/components/schemas/StrongETag'
+        inputMediaType:
+          type: string
+          const: application/merge-patch+json
+          description: Registered patch media type required for update proposals.
+        reviewState:
+          type: string
+          enum: [pending, approved, rejected, withdrawn]
+          description: >-
+            Governance state: `pending` awaits review, `approved` records approval, `rejected`
+            records rejection, and `withdrawn` records authorised withdrawal.
+          examples: [pending]
+        applicationState:
+          type: string
+          enum: [not-started, applying, applied, blocked, failed]
+          description: >-
+            Authoritative application state: `not-started` has no commit work, `applying` is
+            non-terminal, `applied` succeeded, `blocked` needs changed precondition or authority,
+            and `failed` is terminal processing failure.
+          examples: [not-started]
+        result:
+          $ref: '#/components/schemas/WriteResult'
+        error:
+          $ref: '#/components/schemas/ProcessingError'
+        submittedAt:
+          type: string
+          format: date-time
+          pattern: 'Z(?![\s\S])'
+          description: UTC instant at which the immutable proposal resource was created.
+        updatedAt:
+          type: string
+          format: date-time
+          pattern: 'Z(?![\s\S])'
+          description: UTC instant at which review or application state last changed.
+      allOf:
+        - if:
+            description: Select the create proposal branch.
+            properties:
+              kind: {const: create, description: Create proposal discriminator.}
+            required: [kind]
+          then:
+            description: Create uses a Collection target and CreateInput without source preconditions.
+            properties:
+              target: {$ref: '#/components/schemas/CreateTarget'}
+              input: {$ref: '#/components/schemas/CreateInput'}
+            not:
+              description: Creation has neither a source validator nor patch media type.
+              anyOf:
+                - description: baseETag is forbidden for creation.
+                  required: [baseETag]
+                - description: inputMediaType is forbidden for creation.
+                  required: [inputMediaType]
+        - if:
+            description: Select the update proposal branch.
+            properties:
+              kind: {const: update, description: Update proposal discriminator.}
+            required: [kind]
+          then:
+            description: Update requires an existing target, source validator, media type, and UpdateInput.
+            required: [baseETag, inputMediaType]
+            properties:
+              target: {$ref: '#/components/schemas/RecordTarget'}
+              input: {$ref: '#/components/schemas/UpdateInput'}
+        - if:
+            description: Select the named transition proposal branch.
+            properties:
+              kind: {const: transition, description: Transition proposal discriminator.}
+            required: [kind]
+          then:
+            description: Transition requires an existing target, source validator, and TransitionInput.
+            required: [baseETag]
+            properties:
+              target: {$ref: '#/components/schemas/RecordTarget'}
+              input: {$ref: '#/components/schemas/TransitionInput'}
+            not:
+              description: Named transitions do not carry update patch media type.
+              required: [inputMediaType]
+        - if:
+            description: Match review states that cannot begin authoritative application.
+            properties:
+              reviewState:
+                enum: [pending, rejected, withdrawn]
+                description: Review states with no Record side effect.
+            required: [reviewState]
+          then:
+            description: Non-approved proposals remain not-started.
+            properties:
+              applicationState: {const: not-started, description: No application work has started.}
+        - if:
+            description: Match successfully applied proposals.
+            properties:
+              applicationState: {const: applied, description: Authoritative application succeeded.}
+            required: [applicationState]
+          then:
+            description: Applied proposals are approved and carry a result but no error.
+            required: [result]
+            properties:
+              reviewState: {const: approved, description: Application requires prior approval.}
+            not:
+              description: Applied proposals do not carry an application error.
+              required: [error]
+        - if:
+            description: Match blocked or failed application attempts.
+            properties:
+              applicationState:
+                enum: [blocked, failed]
+                description: Application stopped without an authoritative result.
+            required: [applicationState]
+          then:
+            description: Blocked and failed application states require an error and no result.
+            required: [error]
+            properties:
+              reviewState: {const: approved, description: Application requires prior approval.}
+            not:
+              description: Unsuccessful application has no WriteResult.
+              required: [result]
+        - if:
+            description: Match application states without a terminal outcome.
+            properties:
+              applicationState:
+                enum: [not-started, applying]
+                description: No terminal application outcome is available.
+            required: [applicationState]
+          then:
+            description: Non-terminal application has neither result nor stored error.
+            not:
+              description: Terminal outcome members are forbidden until application terminates.
+              anyOf:
+                - description: Result is forbidden before applied.
+                  required: [result]
+                - description: Error is forbidden before blocked or failed.
+                  required: [error]
+    ChangeRequestPage:
+      type: object
+      required: [items, page]
+      description: >-
+        Bounded page of visible change requests. Readers accept additive response-envelope fields.
+      properties:
+        items:
+          type: array
+          maxItems: 100
+          description: Caller-visible change requests in deterministic page order.
+          items:
+            $ref: '#/components/schemas/ChangeRequest'
+        page:
+          $ref: './common/govstack-openapi-common.yaml#/components/schemas/PageInfo'
+    ApprovedChangeRequest:
+      description: Approved review decision with no authoritative application started.
+      allOf:
+        - $ref: '#/components/schemas/ChangeRequest'
+        - type: object
+          description: Constrain the approval response to its exact review-only outcome.
+          required: [reviewState, applicationState]
+          properties:
+            reviewState: {const: approved, description: The exact proposal version was approved.}
+            applicationState: {const: not-started, description: Approval did not start application.}
+    RejectedChangeRequest:
+      description: Rejected review decision with no authoritative application started.
+      allOf:
+        - $ref: '#/components/schemas/ChangeRequest'
+        - type: object
+          description: Constrain the rejection response to its exact review-only outcome.
+          required: [reviewState, applicationState]
+          properties:
+            reviewState: {const: rejected, description: The exact proposal version was rejected.}
+            applicationState: {const: not-started, description: Rejection has no application effect.}
+    WithdrawnChangeRequest:
+      description: Authorised withdrawal with no authoritative application started.
+      allOf:
+        - $ref: '#/components/schemas/ChangeRequest'
+        - type: object
+          description: Constrain the withdrawal response to its exact review-only outcome.
+          required: [reviewState, applicationState]
+          properties:
+            reviewState: {const: withdrawn, description: The exact proposal version was withdrawn.}
+            applicationState: {const: not-started, description: Withdrawal has no application effect.}
+    Operation:
+      type: object
+      required: [operationId, status, createdAt, updatedAt]
+      description: >-
+        Optional background execution state, separate from Change Request governance. `pending`
+        means queued execution, not pending approval; `running` means execution is in progress.
+        Neither grants approval or implies a committed Record. `succeeded` and `failed` are
+        terminal; only `succeeded` has `result`, and `failed` requires `error`. Review and
+        application states remain on the Change Request. Readers accept additive envelope fields.
+      properties:
+        operationId:
+          $ref: '#/components/schemas/OpaqueId'
+        status:
+          type: string
+          enum: [pending, running, succeeded, failed]
+          description: >-
+            Operation lifecycle: pending and running are non-terminal; succeeded and failed are
+            terminal.
+          examples: [running]
+        createdAt:
+          type: string
+          format: date-time
+          pattern: 'Z(?![\s\S])'
+          description: UTC instant at which the Operation resource was created.
+        updatedAt:
+          type: string
+          format: date-time
+          pattern: 'Z(?![\s\S])'
+          description: UTC instant at which Operation state last changed.
+        progress:
+          type: integer
+          minimum: 0
+          maximum: 100
+          description: Optional approximate completion percentage for non-terminal work.
+        result:
+          $ref: '#/components/schemas/WriteResult'
+        error:
+          $ref: '#/components/schemas/ProcessingError'
+      examples:
+        - operationId: op_7
+          status: running
+          createdAt: '2026-11-04T08:00:00Z'
+          updatedAt: '2026-11-04T08:00:05Z'
+          progress: 40
+      allOf:
+        - if:
+            description: Match successful terminal Operations.
+            properties:
+              status: {const: succeeded, description: Work completed successfully.}
+            required: [status]
+          then:
+            description: Successful Operations carry a result and no error.
+            required: [result]
+            not:
+              description: Successful Operations do not carry an error.
+              required: [error]
+        - if:
+            description: Match failed terminal Operations.
+            properties:
+              status: {const: failed, description: Work completed unsuccessfully.}
+            required: [status]
+          then:
+            description: Failed Operations carry an error and no result.
+            required: [error]
+            not:
+              description: Failed Operations do not carry a result.
+              required: [result]
+        - if:
+            description: Match non-terminal Operations.
+            properties:
+              status:
+                enum: [pending, running]
+                description: Work has not reached a terminal state.
+            required: [status]
+          then:
+            description: Non-terminal Operations carry neither result nor error.
+            not:
+              description: Terminal outcome members are forbidden before completion.
+              anyOf:
+                - description: Result is forbidden before success.
+                  required: [result]
+                - description: Error is forbidden before failure.
+                  required: [error]
+    RecordNotAvailableProblem:
+      description: A Record is absent, outside the selected Collection, or protected from disclosure.
+      required: [type, title, status, traceId]
+      allOf:
+        - $ref: '#/components/schemas/Problem'
+        - type: object
+          description: Bind every concealed or absent Record outcome to the stable read identity.
+          required: [type, title, status, traceId]
+          properties:
+            type: {const: https://govstack.global/problems/digital-registries/record-not-available, description: Stable Record-unavailable problem type.}
+            status: {const: 404, description: HTTP Not Found status.}
+    CollectionNotAvailableProblem:
+      description: A Collection is absent or protected from disclosure.
+      required: [type, title, status, traceId]
+      allOf:
+        - $ref: '#/components/schemas/Problem'
+        - type: object
+          description: Bind every concealed or absent Collection outcome to one stable identity.
+          required: [type, title, status, traceId]
+          properties:
+            type: {const: https://govstack.global/problems/digital-registries/collection-not-available, description: Stable Collection-unavailable problem type.}
+            status: {const: 404, description: HTTP Not Found status.}
+    BadRequestProblem:
+      description: Malformed non-field input or request-body field validation failure.
+      required: [type, title, status, traceId]
+      oneOf:
+        - allOf:
+            - $ref: '#/components/schemas/ValidationProblem'
+            - type: object
+              description: Bind field validation failure to the 400 invalid-request problem type.
+              required: [type, title, status, traceId]
+              properties:
+                type: {const: https://govstack.global/problems/digital-registries/invalid-request, description: Stable invalid-request problem type.}
+                status: {const: 400, description: HTTP Bad Request status.}
+        - allOf:
+            - $ref: '#/components/schemas/Problem'
+            - type: object
+              description: Bind non-field request failure to the 400 bad-request problem type.
+              required: [type, title, status, traceId]
+              properties:
+                type: {const: https://govstack.global/problems/digital-registries/bad-request, description: Stable bad-request problem type.}
+                status: {const: 400, description: HTTP Bad Request status.}
+              not: {required: [errors], description: Non-field failure omits body-relative errors.}
+    UnauthorizedProblem:
+      description: Authentication failed for the current HTTP request.
+      required: [type, title, status, traceId]
+      allOf:
+        - $ref: '#/components/schemas/Problem'
+        - type: object
+          description: Bind authentication failure to the 401 problem identity.
+          required: [type, title, status, traceId]
+          properties:
+            type: {const: https://govstack.global/problems/digital-registries/unauthorized, description: Stable unauthorized problem type.}
+            status: {const: 401, description: HTTP Unauthorized status.}
+    ForbiddenProblem:
+      description: Current authenticated context lacks the required grant.
+      required: [type, title, status, traceId]
+      allOf:
+        - $ref: '#/components/schemas/Problem'
+        - type: object
+          description: Bind authorisation failure to the 403 problem identity.
+          required: [type, title, status, traceId]
+          properties:
+            type: {const: https://govstack.global/problems/digital-registries/forbidden, description: Stable forbidden problem type.}
+            status: {const: 403, description: HTTP Forbidden status.}
+    NotAvailableProblem:
+      description: Resource is absent, out of scope, or protected from existence disclosure.
+      required: [type, title, status, traceId]
+      allOf:
+        - $ref: '#/components/schemas/Problem'
+        - type: object
+          description: Bind concealed or absent resource outcomes to one 404 identity.
+          required: [type, title, status, traceId]
+          properties:
+            type: {const: https://govstack.global/problems/digital-registries/not-available, description: Stable not-available problem type.}
+            status: {const: 404, description: HTTP Not Found status.}
+    NotAcceptableProblem:
+      description: No response representation satisfies the request Accept header.
+      required: [type, title, status, traceId]
+      allOf:
+        - $ref: '#/components/schemas/Problem'
+        - type: object
+          description: Bind representation negotiation failure to the 406 problem identity.
+          required: [type, title, status, traceId]
+          properties:
+            type: {const: https://govstack.global/problems/digital-registries/not-acceptable, description: Stable not-acceptable problem type.}
+            status: {const: 406, description: HTTP Not Acceptable status.}
+    ConflictProblem:
+      description: State conflict or matching idempotent request still in flight.
+      required: [type, title, status, traceId]
+      oneOf:
+        - allOf:
+            - $ref: '#/components/schemas/Problem'
+            - type: object
+              description: Bind a resource or workflow state conflict to its 409 identity.
+              required: [type, title, status, traceId]
+              properties:
+                type: {const: https://govstack.global/problems/digital-registries/state-conflict, description: Stable state-conflict problem type.}
+                status: {const: 409, description: HTTP Conflict status.}
+        - allOf:
+            - $ref: '#/components/schemas/Problem'
+            - type: object
+              description: Bind a matching in-flight retry to its distinct 409 identity.
+              required: [type, title, status, traceId]
+              properties:
+                type: {const: https://govstack.global/problems/digital-registries/idempotency-in-flight, description: Stable in-flight idempotency problem type.}
+                status: {const: 409, description: HTTP Conflict status.}
+    PreconditionFailedProblem:
+      description: A supplied strong If-Match validator did not match current state.
+      required: [type, title, status, traceId]
+      allOf:
+        - $ref: '#/components/schemas/Problem'
+        - type: object
+          description: Bind a failed If-Match comparison to the 412 problem identity.
+          required: [type, title, status, traceId]
+          properties:
+            type: {const: https://govstack.global/problems/digital-registries/precondition-failed, description: Stable precondition-failed problem type.}
+            status: {const: 412, description: HTTP Precondition Failed status.}
+    UnsupportedMediaTypeProblem:
+      description: Request Content-Type is not supported by the operation.
+      required: [type, title, status, traceId]
+      allOf:
+        - $ref: '#/components/schemas/Problem'
+        - type: object
+          description: Bind request media-type rejection to the 415 problem identity.
+          required: [type, title, status, traceId]
+          properties:
+            type: {const: https://govstack.global/problems/digital-registries/unsupported-media-type, description: Stable unsupported-media-type problem type.}
+            status: {const: 415, description: HTTP Unsupported Media Type status.}
+    UnprocessableContentProblem:
+      description: Semantic body validation failure or idempotency fingerprint mismatch.
+      required: [type, title, status, traceId]
+      oneOf:
+        - allOf:
+            - $ref: '#/components/schemas/ValidationProblem'
+            - type: object
+              description: Bind semantic field validation failure to its 422 identity.
+              required: [type, title, status, traceId]
+              properties:
+                type: {const: https://govstack.global/problems/digital-registries/invalid-content, description: Stable invalid-content problem type.}
+                status: {const: 422, description: HTTP Unprocessable Content status.}
+        - allOf:
+            - $ref: '#/components/schemas/Problem'
+            - type: object
+              description: Bind idempotency fingerprint mismatch to its distinct 422 identity.
+              required: [type, title, status, traceId]
+              properties:
+                type: {const: https://govstack.global/problems/digital-registries/idempotency-fingerprint-mismatch, description: Stable fingerprint-mismatch problem type.}
+                status: {const: 422, description: HTTP Unprocessable Content status.}
+              not: {required: [errors], description: Fingerprint mismatch has no body-relative field errors.}
+    PreconditionRequiredProblem:
+      description: Required If-Match header was absent.
+      required: [type, title, status, traceId]
+      allOf:
+        - $ref: '#/components/schemas/Problem'
+        - type: object
+          description: Bind missing required If-Match to the 428 problem identity.
+          required: [type, title, status, traceId]
+          properties:
+            type: {const: https://govstack.global/problems/digital-registries/precondition-required, description: Stable precondition-required problem type.}
+            status: {const: 428, description: HTTP Precondition Required status.}
+    TooManyRequestsProblem:
+      description: Caller-visible rate limit was exceeded.
+      required: [type, title, status, traceId]
+      allOf:
+        - $ref: '#/components/schemas/Problem'
+        - type: object
+          description: Bind rate-limit rejection to the 429 problem identity.
+          required: [type, title, status, traceId]
+          properties:
+            type: {const: https://govstack.global/problems/digital-registries/too-many-requests, description: Stable too-many-requests problem type.}
+            status: {const: 429, description: HTTP Too Many Requests status.}
+    InternalErrorProblem:
+      description: Unexpected server failure with no internal details.
+      required: [type, title, status, traceId]
+      allOf:
+        - $ref: '#/components/schemas/Problem'
+        - type: object
+          description: Bind unexpected server failure to the 500 problem identity.
+          required: [type, title, status, traceId]
+          properties:
+            type: {const: https://govstack.global/problems/digital-registries/internal-error, description: Stable internal-error problem type.}
+            status: {const: 500, description: HTTP Internal Server Error status.}
+    ServiceUnavailableProblem:
+      description: Service temporarily cannot accept work.
+      required: [type, title, status, traceId]
+      allOf:
+        - $ref: '#/components/schemas/Problem'
+        - type: object
+          description: Bind temporary service unavailability to the 503 problem identity.
+          required: [type, title, status, traceId]
+          properties:
+            type: {const: https://govstack.global/problems/digital-registries/service-unavailable, description: Stable service-unavailable problem type.}
+            status: {const: 503, description: HTTP Service Unavailable status.}
+  responses:
+    ApiCatalog:
+      description: >-
+        The API catalog linkset. RFC 9727 recommends the Content-Type profile parameter
+        "https://www.rfc-editor.org/info/rfc9727".
+      headers:
+        Link:
+          $ref: '#/components/headers/ApiCatalogLink'
+        ETag:
+          $ref: '#/components/headers/ApiCatalogETag'
+      content:
+        application/linkset+json:
+          schema:
+            $ref: '#/components/schemas/ApiCatalog'
+          example:
+            linkset:
+              - anchor: https://registry.example/
+                service-desc:
+                  - href: https://registry.example/contracts/1.0.0-draft/openapi.yaml
+                    type: application/vnd.oai.openapi
+                    title: Digital Registries API
+                service-meta:
+                  - href: https://registry.example/catalog
+                    type: application/ld+json
+                    title: Registry metadata for the records Registry
+    ApiCatalogHeaders:
+      description: The API catalog response headers, without a body.
+      headers:
+        Link:
+          $ref: '#/components/headers/ApiCatalogLink'
+        ETag:
+          $ref: '#/components/headers/ApiCatalogETag'
+    ApiCatalogNotModified:
+      description: The API catalog validator matches; the response is bodyless.
+      headers:
+        ETag:
+          $ref: '#/components/headers/ApiCatalogETag'
+    InternalErrorHeaders:
+      description: >-
+        HEAD form of InternalError: the request could not be completed; the response is
+        bodyless.
+      headers:
+        Cache-Control:
+          $ref: '#/components/headers/CacheControl'
+    ServiceUnavailableHeaders:
+      description: >-
+        HEAD form of ServiceUnavailable: the service temporarily cannot accept work; the
+        response is bodyless.
+      headers:
+        Retry-After:
+          $ref: '#/components/headers/RetryAfter'
+        Cache-Control:
+          $ref: '#/components/headers/CacheControl'
+    Record:
+      description: >-
+        One permitted Record in the published view. Retrieve and Lookup share this
+        envelope. ETag is not required unless conditional-read is selected by Retrieve.
+      headers:
+        Cache-Control:
+          $ref: '#/components/headers/CacheControl'
+        ETag:
+          $ref: '#/components/headers/ETag'
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Record'
+    StrongRecord:
+      description: >-
+        The permitted Record view used by the canonical companion read. Its body and required
+        strong ETag come from one current authoritative guard evaluation in the effective
+        authorisation, disclosure, purpose, and field-selection context. The tag is a valid strong
+        validator for the selected representation and also invalidates when any authoritative
+        field or source condition changes in a way that can alter that mutation's validation,
+        mapping, or committed effect. Unrelated hidden state need not invalidate it. The opaque tag
+        encodes no source value; receiving the representation, the tag, or a change in the tag
+        grants no mutation authority and identifies no changed state. A shared view name alone does
+        not make this tag equal to a mutation success tag. Equality is meaningful only when the
+        read observes that exact committed guard state with no intervening mutation-relevant
+        change, and uses the same effective context.
+      headers:
+        Cache-Control:
+          $ref: '#/components/headers/CacheControl'
+        ETag:
+          $ref: '#/components/headers/StrongETag'
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Record'
+    RecordPage:
+      description: One bounded page, which may be empty and still have a continuation cursor.
+      headers:
+        Cache-Control:
+          $ref: '#/components/headers/CacheControl'
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/RecordPage'
+    RecordRevision:
+      description: One retained source revision disclosed under current authorisation.
+      headers:
+        Cache-Control:
+          $ref: '#/components/headers/CacheControl'
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/RecordRevision'
+    RevisionPage:
+      description: One bounded page of retained source revisions under current disclosure policy.
+      headers:
+        Cache-Control:
+          $ref: '#/components/headers/CacheControl'
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/RevisionPage'
+    NotModified:
+      description: >-
+        A Retrieve selecting conditional-read matches its representation validator after
+        authorisation; the response is bodyless.
+      headers:
+        ETag:
+          $ref: '#/components/headers/ConditionalETag'
+        Cache-Control:
+          $ref: '#/components/headers/CacheControl'
+    StrongNotModified:
+      description: >-
+        The authorised canonical companion read matched its strong current-view validator; the
+        response is bodyless and grants no Write authority.
+      headers:
+        ETag:
+          $ref: '#/components/headers/StrongETag'
+        Cache-Control:
+          $ref: '#/components/headers/CacheControl'
+    BadRequest:
+      description: |-
+        `bad-request` identifies malformed or structurally invalid input, including malformed
+        JSON, missing or undeclared body members, and incorrect JSON types. It also identifies
+        invalid or unsupported query parameters or invalid pagination controls, such as an
+        out-of-range `pageSize`. When `field-selection` is selected, empty, duplicate,
+        incorrectly typed or out-of-bounds selections and unsupported `fields` query values
+        use `400`.
+
+        `invalid-cursor` identifies a malformed, expired, or mismatched continuation,
+        including changed path selectors such as a `revision-list` parent `recordId`, request
+        criteria, ordering, effective `pageSize`, field or temporal selection, or trusted purpose.
+      headers:
+        Cache-Control:
+          $ref: '#/components/headers/CacheControl'
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/Problem'
+          examples:
+            malformed:
+              value:
+                type: https://govstack.global/problems/digital-registries/bad-request
+                title: Invalid request
+                status: 400
+                traceId: 6f1c3f0e2a9b4c8d7e6f5a4b3c2d1e0f
+            structure:
+              summary: A required request member is missing
+              value:
+                type: https://govstack.global/problems/digital-registries/bad-request
+                title: Invalid request
+                status: 400
+                detail: The request is missing a required member.
+                traceId: 6f1c3f0e2a9b4c8d7e6f5a4b3c2d1e0f
+            cursor:
+              value:
+                type: https://govstack.global/problems/digital-registries/invalid-cursor
+                title: Invalid continuation
+                status: 400
+                traceId: 6f1c3f0e2a9b4c8d7e6f5a4b3c2d1e0f
+    Unauthorized:
+      description: Missing or invalid access token; the problem reveals no record existence.
+      headers:
+        WWW-Authenticate:
+          $ref: '#/components/headers/WwwAuthenticate'
+        Cache-Control:
+          $ref: '#/components/headers/CacheControl'
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/Problem'
+          example:
+            type: https://govstack.global/problems/digital-registries/unauthorized
+            title: Authentication required
+            status: 401
+            traceId: 6f1c3f0e2a9b4c8d7e6f5a4b3c2d1e0f
+    Forbidden:
+      description: >-
+        Access to the operation or view is denied. Protected Record existence uses the 404
+        response.
+      headers:
+        Cache-Control:
+          $ref: '#/components/headers/CacheControl'
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/Problem'
+          example:
+            type: https://govstack.global/problems/digital-registries/forbidden
+            title: Operation not permitted
+            status: 403
+            traceId: 6f1c3f0e2a9b4c8d7e6f5a4b3c2d1e0f
+    RecordNotAvailable:
+      description: >-
+        Absent Records, Records outside the declared collection and protected existence return
+        the same status, problem type and public detail. Record-specific counts and hints are
+        withheld.
+      headers:
+        Cache-Control:
+          $ref: '#/components/headers/CacheControl'
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/RecordNotAvailableProblem'
+          example:
+            type: https://govstack.global/problems/digital-registries/record-not-available
+            title: Record not available
+            status: 404
+            traceId: 6f1c3f0e2a9b4c8d7e6f5a4b3c2d1e0f
+    CollectionNotAvailable:
+      description: >-
+        The collection is unavailable to this caller. Unknown collections and protected
+        collection visibility use the same status, problem type and public detail.
+      headers:
+        Cache-Control:
+          $ref: '#/components/headers/CacheControl'
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/CollectionNotAvailableProblem'
+          example:
+            type: https://govstack.global/problems/digital-registries/collection-not-available
+            title: Collection not available
+            status: 404
+            traceId: 6f1c3f0e2a9b4c8d7e6f5a4b3c2d1e0f
+    HistoryNotAvailable:
+      description: >-
+        After authorisation and protected-existence checks, the source cannot return known
+        source-backed retained history because retention, mapping, or source-history gaps make
+        it unavailable. The service does not reconstruct missing revisions or substitute current
+        state.
+      headers:
+        Cache-Control:
+          $ref: '#/components/headers/CacheControl'
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/Problem'
+          example:
+            type: https://govstack.global/problems/digital-registries/history-not-available
+            title: Retained history not available
+            status: 409
+            traceId: 6f1c3f0e2a9b4c8d7e6f5a4b3c2d1e0f
+    TemporalStateNotAvailable:
+      description: >-
+        The authorised source cannot evaluate the requested temporal state because retention,
+        source-history gaps, or unavailable temporal capability prevents a source-backed result.
+        It never reconstructs a state or substitutes current state.
+      headers:
+        Cache-Control:
+          $ref: '#/components/headers/CacheControl'
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/Problem'
+          example:
+            type: https://govstack.global/problems/digital-registries/temporal-state-not-available
+            title: Temporal state not available
+            status: 409
+            traceId: 6f1c3f0e2a9b4c8d7e6f5a4b3c2d1e0f
+    NotAcceptable:
+      description: The requested response media type is not supported.
+      headers:
+        Cache-Control:
+          $ref: '#/components/headers/CacheControl'
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/Problem'
+          example:
+            type: https://govstack.global/problems/digital-registries/not-acceptable
+            title: Response media type not supported
+            status: 406
+            traceId: 6f1c3f0e2a9b4c8d7e6f5a4b3c2d1e0f
+    ContentTooLarge:
+      description: The request exceeds the deployment's published body-size limit.
+      headers:
+        Cache-Control:
+          $ref: '#/components/headers/CacheControl'
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/Problem'
+          example:
+            type: https://govstack.global/problems/digital-registries/content-too-large
+            title: Request body too large
+            status: 413
+            traceId: 6f1c3f0e2a9b4c8d7e6f5a4b3c2d1e0f
+    UnsupportedMediaType:
+      description: This read operation accepts application/json request bodies only.
+      headers:
+        Cache-Control:
+          $ref: '#/components/headers/CacheControl'
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/Problem'
+          example:
+            type: https://govstack.global/problems/digital-registries/unsupported-media-type
+            title: Request media type not supported
+            status: 415
+            traceId: 6f1c3f0e2a9b4c8d7e6f5a4b3c2d1e0f
+    InvalidField:
+      description: |-
+        A structurally valid Lookup or Search body names an unknown selector, search or
+        selectable field, or supplies domain values that violate declared format,
+        enumeration, or semantic constraints.
+
+        Structural input and pagination-control errors use `400`. Field errors use JSON
+        Pointers and messages that exclude submitted values and internal details.
+      headers:
+        Cache-Control:
+          $ref: '#/components/headers/CacheControl'
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/ValidationProblem'
+          example:
+            type: https://govstack.global/problems/digital-registries/invalid-field
+            title: Request validation failed
+            status: 422
+            traceId: 6f1c3f0e2a9b4c8d7e6f5a4b3c2d1e0f
+            errors:
+              - pointer: /values/registrationNumber
+                message: The registration number does not match the declared format.
+    TooManyRequests:
+      description: >-
+        The gateway enforces its published quota scope and supplies Retry-After. Advisory
+        RateLimit headers are gateway-owned.
+      headers:
+        Retry-After:
+          $ref: '#/components/headers/RetryAfter'
+        Cache-Control:
+          $ref: '#/components/headers/CacheControl'
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/Problem'
+          example:
+            type: https://govstack.global/problems/digital-registries/too-many-requests
+            title: Request rate exceeded
+            status: 429
+            traceId: 6f1c3f0e2a9b4c8d7e6f5a4b3c2d1e0f
+    InternalError:
+      description: >-
+        Request failure, including a source contract violation. Protected-existence policy
+        precedes Record-specific diagnostics. Problem text excludes personal data, source
+        counts and internal details; type is the sole machine identifier, with code and
+        timestamp omitted.
+      headers:
+        Cache-Control:
+          $ref: '#/components/headers/CacheControl'
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/Problem'
+          example:
+            type: https://govstack.global/problems/digital-registries/internal-error
+            title: Request could not be completed
+            status: 500
+            traceId: 6f1c3f0e2a9b4c8d7e6f5a4b3c2d1e0f
+    BadGateway:
+      description: The registry adapter received an unusable upstream response; no upstream details are exposed.
+      headers:
+        Cache-Control:
+          $ref: '#/components/headers/CacheControl'
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/Problem'
+          example:
+            type: https://govstack.global/problems/digital-registries/bad-gateway
+            title: Upstream request failed
+            status: 502
+            traceId: 6f1c3f0e2a9b4c8d7e6f5a4b3c2d1e0f
+    ServiceUnavailable:
+      description: The service temporarily cannot accept work; no dependency topology is exposed.
+      headers:
+        Retry-After:
+          $ref: '#/components/headers/RetryAfter'
+        Cache-Control:
+          $ref: '#/components/headers/CacheControl'
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/Problem'
+          example:
+            type: https://govstack.global/problems/digital-registries/service-unavailable
+            title: Service temporarily unavailable
+            status: 503
+            traceId: 6f1c3f0e2a9b4c8d7e6f5a4b3c2d1e0f
+    GatewayTimeout:
+      description: The upstream read exceeded its time budget; no partial or fabricated record is returned.
+      headers:
+        Cache-Control:
+          $ref: '#/components/headers/CacheControl'
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/Problem'
+          example:
+            type: https://govstack.global/problems/digital-registries/gateway-timeout
+            title: Upstream request timed out
+            status: 504
+            traceId: 6f1c3f0e2a9b4c8d7e6f5a4b3c2d1e0f
+    RecordCreated:
+      description: >-
+        Record created and authoritatively committed. Location identifies the same Record as the
+        response body and the createdRecord link. Reading it remains separately authorised and
+        follows the declared source-currency contract. The body etag equals the ETag header. A
+        later companion GET returns that same new guard only when it observes that exact committed
+        guard state with no intervening mutation-relevant change, has reached companion currency,
+        and uses the same effective authorisation, disclosure, purpose, and field selection.
+      headers:
+        Location: {$ref: '#/components/headers/Location'}
+        ETag: {$ref: '#/components/headers/StrongETag'}
+        Cache-Control: {$ref: '#/components/headers/WriteCacheControl'}
+      content:
+        application/json:
+          schema: {$ref: '#/components/schemas/WriteResult'}
+          example: {collectionId: records, recordId: r_42, etag: '"record-7fa9"'}
+      links:
+        createdRecord:
+          operationId: retrieveRecord
+          description: Retrieve the created Record when the current caller is separately authorised.
+          parameters:
+            collectionId: '$response.body#/collectionId'
+            recordId: '$response.body#/recordId'
+    RecordUpdated:
+      description: >-
+        Record updated and authoritatively committed; response is bodyless. The ETag is the new
+        guard. A later companion GET returns the same value only when it observes that exact
+        committed guard state with no intervening mutation-relevant change, has reached companion
+        currency, and uses the same effective authorisation, disclosure, purpose, and field
+        selection.
+      headers:
+        ETag: {$ref: '#/components/headers/StrongETag'}
+        Cache-Control: {$ref: '#/components/headers/WriteCacheControl'}
+      links:
+        updatedRecord:
+          operationId: retrieveRecord
+          description: Retrieve the updated Record under separate read authorisation and source currency.
+          parameters:
+            collectionId: '$request.path.collectionId'
+            recordId: '$request.path.recordId'
+    TransitionApplied:
+      description: >-
+        Transition applied and authoritatively committed. The body etag equals the ETag header. A
+        later companion GET returns that same new guard only when it observes that exact committed
+        guard state with no intervening mutation-relevant change, has reached companion currency,
+        and uses the same effective authorisation, disclosure, purpose, and field selection.
+      headers:
+        ETag: {$ref: '#/components/headers/StrongETag'}
+        Cache-Control: {$ref: '#/components/headers/WriteCacheControl'}
+      content:
+        application/json:
+          schema: {$ref: '#/components/schemas/WriteResult'}
+          example: {collectionId: records, recordId: r_42, etag: '"record-7faa"'}
+      links:
+        transitionedRecord:
+          operationId: retrieveRecord
+          description: Retrieve the transitioned Record under separate read authorisation and source currency.
+          parameters:
+            collectionId: '$request.path.collectionId'
+            recordId: '$request.path.recordId'
+    WriteAccepted:
+      description: >-
+        Optional background execution has been accepted; authoritative commit is not implied.
+        Location identifies the Operation to poll. Waiting for manual approval alone does not
+        produce this response; completed Change Request creation returns 201 instead.
+      headers:
+        Location: {$ref: '#/components/headers/Location'}
+        Cache-Control: {$ref: '#/components/headers/WriteCacheControl'}
+      content:
+        application/json:
+          schema: {$ref: '#/components/schemas/Operation'}
+          example:
+            operationId: op_7
+            status: running
+            createdAt: '2026-11-04T08:00:00Z'
+            updatedAt: '2026-11-04T08:00:05Z'
+            progress: 40
+    WritableRecord:
+      description: Caller-authorised writable Record representation with a strong validator.
+      headers:
+        ETag: {$ref: '#/components/headers/StrongETag'}
+        Cache-Control: {$ref: '#/components/headers/WriteCacheControl'}
+      content:
+        application/json:
+          schema: {$ref: '#/components/schemas/WritableRecord'}
+          example: {recordId: r_42, data: {label: Reference record}}
+    ChangeRequestCreated:
+      description: Immutable pending change request created; no Record side effect has occurred.
+      headers:
+        Location: {$ref: '#/components/headers/Location'}
+        ETag: {$ref: '#/components/headers/StrongETag'}
+        Cache-Control: {$ref: '#/components/headers/WriteCacheControl'}
+      content:
+        application/json:
+          schema: {$ref: '#/components/schemas/ChangeRequest'}
+          example: &pendingChangeRequest
+            changeRequestId: cr_7
+            proposalVersion: 1
+            kind: update
+            target: {collectionId: records, recordId: r_42}
+            baseETag: '"record-7fa9"'
+            inputMediaType: application/merge-patch+json
+            input: {data: {label: Corrected label}}
+            reviewState: pending
+            applicationState: not-started
+            submittedAt: '2026-11-04T08:00:00Z'
+            updatedAt: '2026-11-04T08:00:00Z'
+    ChangeRequest:
+      description: One caller-visible change request.
+      headers:
+        ETag: {$ref: '#/components/headers/StrongETag'}
+        Cache-Control: {$ref: '#/components/headers/WriteCacheControl'}
+      content:
+        application/json:
+          schema: {$ref: '#/components/schemas/ChangeRequest'}
+          example: *pendingChangeRequest
+    ChangeRequestPage:
+      description: Bounded page of caller-visible change requests.
+      headers:
+        Cache-Control: {$ref: '#/components/headers/WriteCacheControl'}
+      content:
+        application/json:
+          schema: {$ref: '#/components/schemas/ChangeRequestPage'}
+          example:
+            items: [*pendingChangeRequest]
+            page: {nextCursor: null}
+    ChangeRequestApproved:
+      description: Exact proposal version approved; application has not started.
+      headers:
+        ETag: {$ref: '#/components/headers/StrongETag'}
+        Cache-Control: {$ref: '#/components/headers/WriteCacheControl'}
+      content:
+        application/json:
+          schema: {$ref: '#/components/schemas/ApprovedChangeRequest'}
+          example:
+            <<: *pendingChangeRequest
+            reviewState: approved
+            updatedAt: '2026-11-04T08:03:00Z'
+    ChangeRequestRejected:
+      description: Exact proposal version rejected; application has not started.
+      headers:
+        ETag: {$ref: '#/components/headers/StrongETag'}
+        Cache-Control: {$ref: '#/components/headers/WriteCacheControl'}
+      content:
+        application/json:
+          schema: {$ref: '#/components/schemas/RejectedChangeRequest'}
+          example:
+            <<: *pendingChangeRequest
+            reviewState: rejected
+            updatedAt: '2026-11-04T08:03:00Z'
+    ChangeRequestWithdrawn:
+      description: Exact proposal version withdrawn; application has not started.
+      headers:
+        ETag: {$ref: '#/components/headers/StrongETag'}
+        Cache-Control: {$ref: '#/components/headers/WriteCacheControl'}
+      content:
+        application/json:
+          schema: {$ref: '#/components/schemas/WithdrawnChangeRequest'}
+          example:
+            <<: *pendingChangeRequest
+            reviewState: withdrawn
+            updatedAt: '2026-11-04T08:03:00Z'
+    Operation:
+      description: Current asynchronous write state.
+      headers:
+        Cache-Control: {$ref: '#/components/headers/WriteCacheControl'}
+        Retry-After: {$ref: '#/components/headers/RetryAfter'}
+      content:
+        application/json:
+          schema: {$ref: '#/components/schemas/Operation'}
+          example:
+            operationId: op_7
+            status: running
+            createdAt: '2026-11-04T08:00:00Z'
+            updatedAt: '2026-11-04T08:00:05Z'
+            progress: 40
+    WriteNotModified:
+      description: Conditional GET validator matched; response is bodyless.
+      headers:
+        ETag: {$ref: '#/components/headers/StrongETag'}
+        Cache-Control: {$ref: '#/components/headers/WriteCacheControl'}
+    WriteBadRequest:
+      description: Malformed input, including missing or malformed required Idempotency-Key.
+      headers:
+        Cache-Control: {$ref: '#/components/headers/WriteCacheControl'}
+      content:
+        application/problem+json:
+          schema: {$ref: '#/components/schemas/BadRequestProblem'}
+          example:
+            type: https://govstack.global/problems/digital-registries/bad-request
+            title: Bad request
+            status: 400
+            traceId: 6f1c3f0e2a9b4c8d7e6f5a4b3c2d1e0f
+    WriteUnauthorized:
+      description: Missing or invalid access token.
+      headers:
+        WWW-Authenticate: {$ref: '#/components/headers/WwwAuthenticate'}
+        Cache-Control: {$ref: '#/components/headers/WriteCacheControl'}
+      content:
+        application/problem+json:
+          schema: {$ref: '#/components/schemas/UnauthorizedProblem'}
+          example:
+            type: https://govstack.global/problems/digital-registries/unauthorized
+            title: Authentication required
+            status: 401
+            traceId: 6f1c3f0e2a9b4c8d7e6f5a4b3c2d1e0f
+    WriteForbidden:
+      description: Authenticated caller is not authorised for this operation.
+      headers:
+        Cache-Control: {$ref: '#/components/headers/WriteCacheControl'}
+      content:
+        application/problem+json:
+          schema: {$ref: '#/components/schemas/ForbiddenProblem'}
+          example:
+            type: https://govstack.global/problems/digital-registries/forbidden
+            title: Not authorised
+            status: 403
+            traceId: 6f1c3f0e2a9b4c8d7e6f5a4b3c2d1e0f
+    WriteRecordNotAvailable:
+      description: >-
+        Record is absent, outside the collection, or its existence is protected. This is the
+        same stable public Record-not-available outcome used by the companion read.
+      headers:
+        Cache-Control: {$ref: '#/components/headers/WriteCacheControl'}
+      content:
+        application/problem+json:
+          schema: {$ref: '#/components/schemas/RecordNotAvailableProblem'}
+          example:
+            type: https://govstack.global/problems/digital-registries/record-not-available
+            title: Record not available
+            status: 404
+            traceId: 6f1c3f0e2a9b4c8d7e6f5a4b3c2d1e0f
+    WriteCollectionNotAvailable:
+      description: >-
+        Collection is absent or its existence is protected. This is the same stable public
+        Collection-not-available outcome used by Read operations.
+      headers:
+        Cache-Control: {$ref: '#/components/headers/WriteCacheControl'}
+      content:
+        application/problem+json:
+          schema: {$ref: '#/components/schemas/CollectionNotAvailableProblem'}
+          example:
+            type: https://govstack.global/problems/digital-registries/collection-not-available
+            title: Collection not available
+            status: 404
+            traceId: 6f1c3f0e2a9b4c8d7e6f5a4b3c2d1e0f
+    ChangeRequestNotAvailable:
+      description: Change request is absent or its existence is protected.
+      headers:
+        Cache-Control: {$ref: '#/components/headers/WriteCacheControl'}
+      content:
+        application/problem+json:
+          schema: {$ref: '#/components/schemas/NotAvailableProblem'}
+          example: &notAvailableProblem
+            type: https://govstack.global/problems/digital-registries/not-available
+            title: Resource not available
+            status: 404
+            traceId: 6f1c3f0e2a9b4c8d7e6f5a4b3c2d1e0f
+    TargetNotAvailable:
+      description: >-
+        Proposal target is absent, outside the allowed Registry context, or protected from
+        existence disclosure.
+      headers:
+        Cache-Control: {$ref: '#/components/headers/WriteCacheControl'}
+      content:
+        application/problem+json:
+          schema: {$ref: '#/components/schemas/NotAvailableProblem'}
+          example: *notAvailableProblem
+    OperationNotAvailable:
+      description: Operation is absent or its existence is protected.
+      headers:
+        Cache-Control: {$ref: '#/components/headers/WriteCacheControl'}
+      content:
+        application/problem+json:
+          schema: {$ref: '#/components/schemas/NotAvailableProblem'}
+          example: *notAvailableProblem
+    WriteNotAcceptable:
+      description: No response representation matches Accept.
+      headers:
+        Cache-Control: {$ref: '#/components/headers/WriteCacheControl'}
+      content:
+        application/problem+json:
+          schema: {$ref: '#/components/schemas/NotAcceptableProblem'}
+          example:
+            type: https://govstack.global/problems/digital-registries/not-acceptable
+            title: Representation not available
+            status: 406
+            traceId: 6f1c3f0e2a9b4c8d7e6f5a4b3c2d1e0f
+    Conflict:
+      description: >-
+        Current state conflicts with the operation, or a matching idempotent retry remains in
+        flight. Failed If-Match uses 412 instead.
+      headers:
+        Cache-Control: {$ref: '#/components/headers/WriteCacheControl'}
+      content:
+        application/problem+json:
+          schema: {$ref: '#/components/schemas/ConflictProblem'}
+          example:
+            type: https://govstack.global/problems/digital-registries/state-conflict
+            title: Current state conflicts with the request
+            status: 409
+            traceId: 6f1c3f0e2a9b4c8d7e6f5a4b3c2d1e0f
+    PreconditionFailed:
+      description: If-Match did not match the current strong validator.
+      headers:
+        Cache-Control: {$ref: '#/components/headers/WriteCacheControl'}
+      content:
+        application/problem+json:
+          schema: {$ref: '#/components/schemas/PreconditionFailedProblem'}
+          example:
+            type: https://govstack.global/problems/digital-registries/precondition-failed
+            title: Source state changed
+            status: 412
+            traceId: 6f1c3f0e2a9b4c8d7e6f5a4b3c2d1e0f
+    WriteUnsupportedMediaType:
+      description: Request Content-Type is not supported by this operation.
+      headers:
+        Cache-Control: {$ref: '#/components/headers/WriteCacheControl'}
+      content:
+        application/problem+json:
+          schema: {$ref: '#/components/schemas/UnsupportedMediaTypeProblem'}
+          example:
+            type: https://govstack.global/problems/digital-registries/unsupported-media-type
+            title: Unsupported media type
+            status: 415
+            traceId: 6f1c3f0e2a9b4c8d7e6f5a4b3c2d1e0f
+    UnprocessableContent:
+      description: >-
+        Well-formed input violates semantics, or Idempotency-Key is reused in the same scope with
+        a different request fingerprint.
+      headers:
+        Cache-Control: {$ref: '#/components/headers/WriteCacheControl'}
+      content:
+        application/problem+json:
+          schema: {$ref: '#/components/schemas/UnprocessableContentProblem'}
+          example:
+            type: https://govstack.global/problems/digital-registries/idempotency-fingerprint-mismatch
+            title: Idempotency key fingerprint mismatch
+            status: 422
+            traceId: 6f1c3f0e2a9b4c8d7e6f5a4b3c2d1e0f
+    PreconditionRequired:
+      description: Required If-Match was absent.
+      headers:
+        Cache-Control: {$ref: '#/components/headers/WriteCacheControl'}
+      content:
+        application/problem+json:
+          schema: {$ref: '#/components/schemas/PreconditionRequiredProblem'}
+          example:
+            type: https://govstack.global/problems/digital-registries/precondition-required
+            title: If-Match is required
+            status: 428
+            traceId: 6f1c3f0e2a9b4c8d7e6f5a4b3c2d1e0f
+    WriteTooManyRequests:
+      description: Caller-visible rate limit exceeded.
+      headers:
+        Retry-After: {$ref: '#/components/headers/RetryAfter'}
+        Cache-Control: {$ref: '#/components/headers/WriteCacheControl'}
+      content:
+        application/problem+json:
+          schema: {$ref: '#/components/schemas/TooManyRequestsProblem'}
+          example:
+            type: https://govstack.global/problems/digital-registries/too-many-requests
+            title: Rate limit exceeded
+            status: 429
+            traceId: 6f1c3f0e2a9b4c8d7e6f5a4b3c2d1e0f
+    WriteInternalError:
+      description: Unexpected server failure with no internal detail.
+      headers:
+        Cache-Control: {$ref: '#/components/headers/WriteCacheControl'}
+      content:
+        application/problem+json:
+          schema: {$ref: '#/components/schemas/InternalErrorProblem'}
+          example:
+            type: https://govstack.global/problems/digital-registries/internal-error
+            title: Internal server error
+            status: 500
+            traceId: 6f1c3f0e2a9b4c8d7e6f5a4b3c2d1e0f
+    WriteServiceUnavailable:
+      description: Service temporarily unavailable.
+      headers:
+        Retry-After: {$ref: '#/components/headers/RetryAfter'}
+        Cache-Control: {$ref: '#/components/headers/WriteCacheControl'}
+      content:
+        application/problem+json:
+          schema: {$ref: '#/components/schemas/ServiceUnavailableProblem'}
+          example:
+            type: https://govstack.global/problems/digital-registries/service-unavailable
+            title: Service unavailable
+            status: 503
+            traceId: 6f1c3f0e2a9b4c8d7e6f5a4b3c2d1e0f

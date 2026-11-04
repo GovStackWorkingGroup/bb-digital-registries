@@ -1,0 +1,117 @@
+openapi: 3.1.2
+info:
+  title: 'Household registry Consultation: nested fixed-view example'
+  version: 1.0.0-draft
+  description: >-
+    Illustrative households collection for Registry https://registry.example/registries/households.
+    Its membership is all household Records in that Registry. Retrieve selects the
+    household-with-memberships view. HouseholdRecord is defined in
+    relationship-examples.schema.json, published with dependencies at
+    https://registry.example/contracts/1.0.0-draft/examples/relationship-examples.schema.json.
+    Reads synchronously query the authoritative household source and authorise all released
+    fields and components.
+    This profile returns complete permitted arrays within bounds of 20 memberships and three
+    address lines. Overflow uses generic 500, subject to protected-existence policy.
+    individualRef targets the Individuals Registry; IndividualReference declares its target
+    collection, Retrieve binding and identifier mapping.
+    Access tokens use issuer https://identity.example, the stable logical service audience
+    https://registry.example/households and the declared read scope. Example endpoints are
+    non-production. TLS is 1.3 or later; the gateway allows 60 requests per authenticated
+    client per minute. Responses use no-store. Unsupported query parameters use 400.
+  contact:
+    name: GovStack Digital Registries Working Group
+    url: https://github.com/GovStackWorkingGroup/bb-digital-registries
+  x-govstack-api-guide:
+    version: 0.3.0-draft
+    rulesetVersion: 0.3.0-draft
+servers:
+  - url: https://{gatewayHost}
+    description: Non-production deployment root. The households collection declares its Registry,
+      membership and representation.
+    variables:
+      gatewayHost:
+        default: registry.example
+        description: Reserved non-production documentation-domain default.
+security:
+  - citizenOAuth: [bb:digital-registries:record:read]
+  - serviceOAuth: [bb:digital-registries:record:read]
+tags:
+  - name: Consultation
+    description: Retrieve a permitted household view with embedded components.
+paths:
+  /health:
+    $ref: '../openapi.yaml#/paths/~1health'
+  /.well-known/api-catalog:
+    $ref: '../openapi.yaml#/paths/~1.well-known~1api-catalog'
+  /v1/collections/households/records/{recordId}:
+    get:
+      operationId: retrieveHousehold
+      summary: Retrieve a household with its declared embedded components
+      description: >-
+        Retrieve a Record in the households collection with its permitted embedded address
+        and membership components. individualRef identifies the related Individual Record.
+        Absent Records, Records outside this collection and protected existence share
+        404 record-not-available.
+      tags: [Consultation]
+      x-govstack-pii: true
+      x-govstack-digital-registries:
+        registry: https://registry.example/registries/households
+        collection: households
+        capability: retrieve
+        view: household-with-memberships
+      parameters:
+        - $ref: '../openapi.yaml#/components/parameters/RecordId'
+        - $ref: '../openapi.yaml#/components/parameters/Traceparent'
+      responses:
+        '200':
+          description: Complete permitted household view within its published profile bounds.
+          headers:
+            Cache-Control:
+              $ref: '../openapi.yaml#/components/headers/CacheControl'
+          content:
+            application/json:
+              schema:
+                $ref: './relationship-examples.schema.json#/$defs/HouseholdRecord'
+              example:
+                recordId: household_8
+                data:
+                  address:
+                    addressLines: [12 Example Street]
+                    locality: Example Town
+                    postalCode: '00120'
+                  memberships:
+                    - membershipId: membership_1
+                      role: REFERENCE_PERSON
+                      individualRef:
+                        recordId: person_42
+                    - membershipId: membership_2
+                      role: MEMBER
+                      individualRef:
+                        recordId: person_57
+                        registryId: https://registry.example/registries/individuals
+        '400':
+          $ref: '../openapi.yaml#/components/responses/BadRequest'
+        '401':
+          $ref: '../openapi.yaml#/components/responses/Unauthorized'
+        '403':
+          $ref: '../openapi.yaml#/components/responses/Forbidden'
+        '404':
+          $ref: '../openapi.yaml#/components/responses/RecordNotAvailable'
+        '406':
+          $ref: '../openapi.yaml#/components/responses/NotAcceptable'
+        '429':
+          $ref: '../openapi.yaml#/components/responses/TooManyRequests'
+        '500':
+          $ref: '../openapi.yaml#/components/responses/InternalError'
+        '502':
+          $ref: '../openapi.yaml#/components/responses/BadGateway'
+        '503':
+          $ref: '../openapi.yaml#/components/responses/ServiceUnavailable'
+        '504':
+          $ref: '../openapi.yaml#/components/responses/GatewayTimeout'
+components:
+  securitySchemes:
+    citizenOAuth:
+      $ref: '../openapi.yaml#/components/securitySchemes/citizenOAuth'
+    serviceOAuth:
+      $ref: '../openapi.yaml#/components/securitySchemes/serviceOAuth'

@@ -1,0 +1,2322 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://registry.example/contracts/write-examples.schema.json",
+  "title": "Non-normative Write example schemas",
+  "description": "Illustrative request and result schemas for birth-registration, household, and individual Write examples. PublicSchema is a reference for selected domain fields; command shapes and Write envelopes are example-specific.",
+  "$defs": {
+    "RequestLocalId": {
+      "type": "string",
+      "pattern": "^urn:request-local:[A-Za-z0-9._-]+$",
+      "description": "A URI scoped to one request. It has no authoritative meaning unless the source commits the request and returns a resolution."
+    },
+    "StrongETag": {
+      "$ref": "../write.openapi.yaml#/components/schemas/StrongETag",
+      "description": "Schema for strong etag in this non-normative Write example profile."
+    },
+    "SourceReference": {
+      "$ref": "../write.openapi.yaml#/components/schemas/SourceReference",
+      "description": "Schema for source reference in this non-normative Write example profile."
+    },
+    "ExistingPersonReference": {
+      "type": "string",
+      "pattern": "^https://registry\\.example/v1/collections/individuals/records/[A-Za-z0-9._~-]+$",
+      "description": "Schema for existing person reference in this non-normative Write example profile."
+    },
+    "ExistingHouseholdReference": {
+      "type": "string",
+      "pattern": "^https://registry\\.example/v1/collections/households/records/[A-Za-z0-9._~-]+$",
+      "description": "Schema for existing household reference in this non-normative Write example profile."
+    },
+    "JsonLdType": {
+      "type": "object",
+      "properties": {
+        "@context": {
+          "const": "https://publicschema.org/ctx/draft.jsonld",
+          "description": "Pinned PublicSchema JSON-LD context used by this example instance.",
+          "type": "string"
+        },
+        "@id": {
+          "type": "string",
+          "format": "uri",
+          "description": "URI identity for the object; create commands restrict it to a declared request-local identifier."
+        },
+        "@type": {
+          "type": "string",
+          "format": "uri",
+          "description": "Canonical PublicSchema type URI for this object."
+        }
+      },
+      "description": "Schema for json ld type in this non-normative Write example profile."
+    },
+    "PublicSchemaIdentifier": {
+      "allOf": [
+        {
+          "$ref": "./publicschema/offline/Identifier.schema.json",
+          "description": "Composed constraint 1 for public schema identifier; every composed constraint applies."
+        }
+      ],
+      "unevaluatedProperties": false,
+      "description": "Schema for public schema identifier in this non-normative Write example profile."
+    },
+    "PublicSchemaLocation": {
+      "allOf": [
+        {
+          "$ref": "./publicschema/offline/Location.schema.json",
+          "description": "Composed constraint 1 for public schema location; every composed constraint applies."
+        },
+        {
+          "type": "object",
+          "properties": {
+            "parent_location": {
+              "oneOf": [
+                {
+                  "$ref": "#/$defs/PublicSchemaLocation",
+                  "description": "Alternative 1 for parent location."
+                },
+                {
+                  "type": "string",
+                  "format": "uri",
+                  "description": "Alternative 2 for parent location."
+                }
+              ],
+              "description": "Containing PublicSchema Location or a URI reference to that location."
+            },
+            "geocodes": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/PublicSchemaIdentifier",
+                "description": "One geocodes array entry accepted by this profile."
+              },
+              "description": "Closed PublicSchema Identifier objects representing geographic codes."
+            }
+          },
+          "description": "Composed constraint 2 for public schema location; every composed constraint applies."
+        }
+      ],
+      "unevaluatedProperties": false,
+      "description": "Schema for public schema location in this non-normative Write example profile."
+    },
+    "PublicSchemaAddress": {
+      "allOf": [
+        {
+          "$ref": "./publicschema/offline/Address.schema.json",
+          "description": "Composed constraint 1 for public schema address; every composed constraint applies."
+        },
+        {
+          "type": "object",
+          "properties": {
+            "location": {
+              "oneOf": [
+                {
+                  "$ref": "#/$defs/PublicSchemaLocation",
+                  "description": "Alternative 1 for location."
+                },
+                {
+                  "type": "string",
+                  "format": "uri",
+                  "description": "Alternative 2 for location."
+                }
+              ],
+              "description": "Closed PublicSchema Location object or URI reference."
+            }
+          },
+          "description": "Composed constraint 2 for public schema address; every composed constraint applies."
+        }
+      ],
+      "unevaluatedProperties": false,
+      "description": "Schema for public schema address in this non-normative Write example profile."
+    },
+    "PublicSchemaPerson": {
+      "allOf": [
+        {
+          "$ref": "./publicschema/offline/Person.schema.json",
+          "description": "Composed constraint 1 for public schema person; every composed constraint applies."
+        },
+        {
+          "$ref": "#/$defs/JsonLdType",
+          "description": "Composed constraint 2 for public schema person; every composed constraint applies."
+        },
+        {
+          "type": "object",
+          "properties": {
+            "@type": {
+              "const": "https://publicschema.org/Person",
+              "description": "Canonical PublicSchema type URI for this object.",
+              "type": "string"
+            },
+            "domicile": {
+              "oneOf": [
+                {
+                  "$ref": "#/$defs/PublicSchemaAddress",
+                  "description": "Alternative 1 for domicile."
+                },
+                {
+                  "type": "string",
+                  "format": "uri",
+                  "description": "Alternative 2 for domicile."
+                }
+              ],
+              "description": "Closed PublicSchema Address object or URI reference for the person's permanent home."
+            }
+          },
+          "description": "Composed constraint 3 for public schema person; every composed constraint applies."
+        }
+      ],
+      "unevaluatedProperties": false,
+      "description": "Schema for public schema person in this non-normative Write example profile."
+    },
+    "PublicSchemaCrvsPerson": {
+      "allOf": [
+        {
+          "$ref": "./publicschema/offline/crvs/Person.schema.json",
+          "description": "Composed constraint 1 for public schema crvs person; every composed constraint applies."
+        },
+        {
+          "$ref": "#/$defs/JsonLdType",
+          "description": "Composed constraint 2 for public schema crvs person; every composed constraint applies."
+        },
+        {
+          "type": "object",
+          "properties": {
+            "@type": {
+              "const": "https://publicschema.org/crvs/Person",
+              "description": "Canonical PublicSchema type URI for this object.",
+              "type": "string"
+            },
+            "place_of_usual_residence": {
+              "oneOf": [
+                {
+                  "$ref": "#/$defs/PublicSchemaLocation",
+                  "description": "Alternative 1 for place of usual residence."
+                },
+                {
+                  "type": "string",
+                  "format": "uri",
+                  "description": "Alternative 2 for place of usual residence."
+                }
+              ],
+              "description": "Closed PublicSchema Location object or URI reference for usual residence at the vital event."
+            }
+          },
+          "description": "Composed constraint 3 for public schema crvs person; every composed constraint applies."
+        }
+      ],
+      "unevaluatedProperties": false,
+      "description": "Schema for public schema crvs person in this non-normative Write example profile."
+    },
+    "PublicSchemaCrvsParent": {
+      "allOf": [
+        {
+          "$ref": "./publicschema/offline/crvs/Parent.schema.json",
+          "description": "Composed constraint 1 for public schema crvs parent; every composed constraint applies."
+        },
+        {
+          "$ref": "#/$defs/JsonLdType",
+          "description": "Composed constraint 2 for public schema crvs parent; every composed constraint applies."
+        },
+        {
+          "type": "object",
+          "properties": {
+            "@type": {
+              "const": "https://publicschema.org/crvs/Parent",
+              "description": "Canonical PublicSchema type URI for this object.",
+              "type": "string"
+            },
+            "place_of_usual_residence": {
+              "oneOf": [
+                {
+                  "$ref": "#/$defs/PublicSchemaLocation",
+                  "description": "Alternative 1 for place of usual residence."
+                },
+                {
+                  "type": "string",
+                  "format": "uri",
+                  "description": "Alternative 2 for place of usual residence."
+                }
+              ],
+              "description": "Closed PublicSchema Location object or URI reference for usual residence at the vital event."
+            }
+          },
+          "description": "Composed constraint 3 for public schema crvs parent; every composed constraint applies."
+        }
+      ],
+      "unevaluatedProperties": false,
+      "description": "Schema for public schema crvs parent in this non-normative Write example profile."
+    },
+    "BirthChildForDeclaration": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/PublicSchemaCrvsPerson",
+          "description": "Composed constraint 1 for birth child for declaration; every composed constraint applies."
+        },
+        {
+          "type": "object",
+          "properties": {
+            "person": {
+              "$ref": "#/$defs/EmbeddedNewPerson",
+              "description": "Typed Person object or authoritative Person reference permitted by this profile branch."
+            }
+          },
+          "required": [
+            "@type",
+            "person"
+          ],
+          "description": "Composed constraint 2 for birth child for declaration; every composed constraint applies."
+        }
+      ],
+      "description": "Schema for birth child for declaration in this non-normative Write example profile."
+    },
+    "BirthParentForDeclaration": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/PublicSchemaCrvsParent",
+          "description": "Composed constraint 1 for birth parent for declaration; every composed constraint applies."
+        },
+        {
+          "type": "object",
+          "properties": {
+            "person": {
+              "$ref": "#/$defs/ExistingPersonReference",
+              "description": "Typed Person object or authoritative Person reference permitted by this profile branch."
+            }
+          },
+          "required": [
+            "@type",
+            "person",
+            "parental_role"
+          ],
+          "description": "Composed constraint 2 for birth parent for declaration; every composed constraint applies."
+        }
+      ],
+      "description": "Schema for birth parent for declaration in this non-normative Write example profile."
+    },
+    "PublicSchemaBirth": {
+      "allOf": [
+        {
+          "$ref": "./publicschema/offline/crvs/Birth.schema.json",
+          "description": "Composed constraint 1 for public schema birth; every composed constraint applies."
+        },
+        {
+          "$ref": "#/$defs/JsonLdType",
+          "description": "Composed constraint 2 for public schema birth; every composed constraint applies."
+        },
+        {
+          "type": "object",
+          "properties": {
+            "@type": {
+              "const": "https://publicschema.org/crvs/Birth",
+              "description": "Canonical PublicSchema type URI for this object.",
+              "type": "string"
+            }
+          },
+          "description": "Composed constraint 3 for public schema birth; every composed constraint applies."
+        }
+      ],
+      "unevaluatedProperties": false,
+      "description": "Schema for public schema birth in this non-normative Write example profile."
+    },
+    "PublicSchemaHousehold": {
+      "allOf": [
+        {
+          "$ref": "./publicschema/offline/Household.schema.json",
+          "description": "Composed constraint 1 for public schema household; every composed constraint applies."
+        },
+        {
+          "$ref": "#/$defs/JsonLdType",
+          "description": "Composed constraint 2 for public schema household; every composed constraint applies."
+        },
+        {
+          "type": "object",
+          "properties": {
+            "@type": {
+              "const": "https://publicschema.org/Household",
+              "description": "Canonical PublicSchema type URI for this object.",
+              "type": "string"
+            },
+            "group_type": {
+              "const": "household",
+              "description": "PublicSchema `group_type` value retained with its published spelling and domain meaning.",
+              "type": "string"
+            },
+            "address": {
+              "oneOf": [
+                {
+                  "$ref": "#/$defs/PublicSchemaAddress",
+                  "description": "Alternative 1 for address."
+                },
+                {
+                  "type": "string",
+                  "format": "uri",
+                  "description": "Alternative 2 for address."
+                }
+              ],
+              "description": "PublicSchema `address` value retained with its published spelling and domain meaning."
+            },
+            "location": {
+              "oneOf": [
+                {
+                  "$ref": "#/$defs/PublicSchemaLocation",
+                  "description": "Alternative 1 for location."
+                },
+                {
+                  "type": "string",
+                  "format": "uri",
+                  "description": "Alternative 2 for location."
+                }
+              ],
+              "description": "Closed PublicSchema Location object or URI reference."
+            }
+          },
+          "description": "Composed constraint 3 for public schema household; every composed constraint applies."
+        }
+      ],
+      "not": {
+        "anyOf": [
+          {
+            "required": [
+              "identifiers"
+            ],
+            "description": "Alternative 1 for public schema household."
+          },
+          {
+            "required": [
+              "identity_documents"
+            ],
+            "description": "Alternative 2 for public schema household."
+          }
+        ],
+        "description": "Forbidden field combination for public schema household."
+      },
+      "unevaluatedProperties": false,
+      "description": "Schema for public schema household in this non-normative Write example profile."
+    },
+    "EmbeddedNewPerson": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/PublicSchemaPerson",
+          "description": "Composed constraint 1 for embedded new person; every composed constraint applies."
+        },
+        {
+          "type": "object",
+          "properties": {
+            "@id": {
+              "$ref": "#/$defs/RequestLocalId",
+              "description": "URI identity for the object; create commands restrict it to a declared request-local identifier."
+            }
+          },
+          "required": [
+            "@id",
+            "@type",
+            "given_name",
+            "family_name"
+          ],
+          "not": {
+            "anyOf": [
+              {
+                "required": [
+                  "identifiers"
+                ],
+                "description": "Alternative 1 for embedded new person."
+              },
+              {
+                "required": [
+                  "identity_documents"
+                ],
+                "description": "Alternative 2 for embedded new person."
+              },
+              {
+                "required": [
+                  "biometric_samples"
+                ],
+                "description": "Alternative 3 for embedded new person."
+              },
+              {
+                "required": [
+                  "group_memberships"
+                ],
+                "description": "Alternative 4 for embedded new person."
+              }
+            ],
+            "description": "Forbidden field combination for embedded new person."
+          },
+          "description": "Composed constraint 2 for embedded new person; every composed constraint applies."
+        }
+      ],
+      "description": "Schema for embedded new person in this non-normative Write example profile."
+    },
+    "ExistingPersonMembership": {
+      "allOf": [
+        {
+          "$ref": "./publicschema/offline/GroupMembership.schema.json",
+          "description": "Composed constraint 1 for existing person membership; every composed constraint applies."
+        },
+        {
+          "type": "object",
+          "properties": {
+            "person": {
+              "$ref": "#/$defs/ExistingPersonReference",
+              "description": "Typed Person object or authoritative Person reference permitted by this profile branch."
+            },
+            "group": {
+              "$ref": "#/$defs/RequestLocalId",
+              "description": "Household reference bound either request-locally during create or authoritatively during transition."
+            }
+          },
+          "required": [
+            "person",
+            "group",
+            "role"
+          ],
+          "description": "Composed constraint 2 for existing person membership; every composed constraint applies."
+        }
+      ],
+      "unevaluatedProperties": false,
+      "description": "Schema for existing person membership in this non-normative Write example profile."
+    },
+    "EmbeddedPersonMembership": {
+      "allOf": [
+        {
+          "$ref": "./publicschema/offline/GroupMembership.schema.json",
+          "description": "Composed constraint 1 for embedded person membership; every composed constraint applies."
+        },
+        {
+          "type": "object",
+          "properties": {
+            "person": {
+              "$ref": "#/$defs/EmbeddedNewPerson",
+              "description": "Typed Person object or authoritative Person reference permitted by this profile branch."
+            },
+            "group": {
+              "$ref": "#/$defs/RequestLocalId",
+              "description": "Household reference bound either request-locally during create or authoritatively during transition."
+            }
+          },
+          "required": [
+            "person",
+            "group",
+            "role"
+          ],
+          "description": "Composed constraint 2 for embedded person membership; every composed constraint applies."
+        }
+      ],
+      "unevaluatedProperties": false,
+      "description": "Schema for embedded person membership in this non-normative Write example profile."
+    },
+    "ExistingPersonMembershipForExistingHousehold": {
+      "allOf": [
+        {
+          "$ref": "./publicschema/offline/GroupMembership.schema.json",
+          "description": "Composed constraint 1 for existing person membership for existing household; every composed constraint applies."
+        },
+        {
+          "type": "object",
+          "properties": {
+            "person": {
+              "$ref": "#/$defs/ExistingPersonReference",
+              "description": "Typed Person object or authoritative Person reference permitted by this profile branch."
+            },
+            "group": {
+              "$ref": "#/$defs/ExistingHouseholdReference",
+              "description": "Household reference bound either request-locally during create or authoritatively during transition."
+            }
+          },
+          "required": [
+            "person",
+            "group",
+            "role"
+          ],
+          "description": "Composed constraint 2 for existing person membership for existing household; every composed constraint applies."
+        }
+      ],
+      "unevaluatedProperties": false,
+      "description": "Schema for existing person membership for existing household in this non-normative Write example profile."
+    },
+    "EmbeddedPersonMembershipForExistingHousehold": {
+      "allOf": [
+        {
+          "$ref": "./publicschema/offline/GroupMembership.schema.json",
+          "description": "Composed constraint 1 for embedded person membership for existing household; every composed constraint applies."
+        },
+        {
+          "type": "object",
+          "properties": {
+            "person": {
+              "$ref": "#/$defs/EmbeddedNewPerson",
+              "description": "Typed Person object or authoritative Person reference permitted by this profile branch."
+            },
+            "group": {
+              "$ref": "#/$defs/ExistingHouseholdReference",
+              "description": "Household reference bound either request-locally during create or authoritatively during transition."
+            }
+          },
+          "required": [
+            "person",
+            "group",
+            "role"
+          ],
+          "description": "Composed constraint 2 for embedded person membership for existing household; every composed constraint applies."
+        }
+      ],
+      "unevaluatedProperties": false,
+      "description": "Schema for embedded person membership for existing household in this non-normative Write example profile."
+    },
+    "HouseholdWithExistingPersons": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/PublicSchemaHousehold",
+          "description": "Composed constraint 1 for household with existing persons; every composed constraint applies."
+        },
+        {
+          "type": "object",
+          "properties": {
+            "@context": {
+              "const": "https://publicschema.org/ctx/draft.jsonld",
+              "description": "Pinned PublicSchema JSON-LD context used by this example instance.",
+              "type": "string"
+            },
+            "@id": {
+              "$ref": "#/$defs/RequestLocalId",
+              "description": "URI identity for the object; create commands restrict it to a declared request-local identifier."
+            },
+            "memberships": {
+              "type": "array",
+              "minItems": 1,
+              "items": {
+                "$ref": "#/$defs/ExistingPersonMembership",
+                "description": "One memberships array entry accepted by this profile."
+              },
+              "description": "PublicSchema `memberships` value retained with its published spelling and domain meaning."
+            }
+          },
+          "required": [
+            "@context",
+            "@id",
+            "@type",
+            "group_type",
+            "name",
+            "memberships"
+          ],
+          "description": "Composed constraint 2 for household with existing persons; every composed constraint applies."
+        }
+      ],
+      "description": "Schema for household with existing persons in this non-normative Write example profile."
+    },
+    "HouseholdCompoundCreate": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/PublicSchemaHousehold",
+          "description": "Composed constraint 1 for household compound create; every composed constraint applies."
+        },
+        {
+          "type": "object",
+          "properties": {
+            "@context": {
+              "const": "https://publicschema.org/ctx/draft.jsonld",
+              "description": "Pinned PublicSchema JSON-LD context used by this example instance.",
+              "type": "string"
+            },
+            "@id": {
+              "$ref": "#/$defs/RequestLocalId",
+              "description": "URI identity for the object; create commands restrict it to a declared request-local identifier."
+            },
+            "memberships": {
+              "type": "array",
+              "minItems": 1,
+              "items": {
+                "oneOf": [
+                  {
+                    "$ref": "#/$defs/ExistingPersonMembership",
+                    "description": "Alternative 1 for memberships."
+                  },
+                  {
+                    "$ref": "#/$defs/EmbeddedPersonMembership",
+                    "description": "Alternative 2 for memberships."
+                  }
+                ],
+                "description": "One memberships array entry accepted by this profile."
+              },
+              "contains": {
+                "$ref": "#/$defs/EmbeddedPersonMembership",
+                "description": "Required membership variant within memberships."
+              },
+              "minContains": 1,
+              "description": "PublicSchema `memberships` value retained with its published spelling and domain meaning."
+            }
+          },
+          "required": [
+            "@context",
+            "@id",
+            "@type",
+            "group_type",
+            "name",
+            "memberships"
+          ],
+          "description": "Composed constraint 2 for household compound create; every composed constraint applies."
+        }
+      ],
+      "description": "Schema for household compound create in this non-normative Write example profile."
+    },
+    "IndividualCreateData": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/PublicSchemaPerson",
+          "description": "Composed constraint 1 for individual create data; every composed constraint applies."
+        },
+        {
+          "type": "object",
+          "properties": {
+            "@context": {
+              "const": "https://publicschema.org/ctx/draft.jsonld",
+              "description": "Pinned PublicSchema JSON-LD context used by this example instance.",
+              "type": "string"
+            }
+          },
+          "required": [
+            "@context",
+            "@type",
+            "given_name",
+            "family_name"
+          ],
+          "not": {
+            "anyOf": [
+              {
+                "required": [
+                  "identifiers"
+                ],
+                "description": "Alternative 1 for individual create data."
+              },
+              {
+                "required": [
+                  "identity_documents"
+                ],
+                "description": "Alternative 2 for individual create data."
+              },
+              {
+                "required": [
+                  "biometric_samples"
+                ],
+                "description": "Alternative 3 for individual create data."
+              },
+              {
+                "required": [
+                  "group_memberships"
+                ],
+                "description": "Alternative 4 for individual create data."
+              },
+              {
+                "required": [
+                  "@id"
+                ],
+                "description": "Alternative 5 for individual create data."
+              }
+            ],
+            "description": "Forbidden field combination for individual create data."
+          },
+          "description": "Composed constraint 2 for individual create data; every composed constraint applies."
+        }
+      ],
+      "description": "Schema for individual create data in this non-normative Write example profile."
+    },
+    "EvidenceReference": {
+      "type": "object",
+      "description": "A source-specific evidence pointer. It is intentionally outside the PublicSchema Birth event.",
+      "properties": {
+        "evidenceType": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Deployment-defined classification of the supporting evidence."
+        },
+        "reference": {
+          "type": "string",
+          "format": "uri",
+          "description": "URI of the source-specific supporting evidence."
+        },
+        "issuedAt": {
+          "type": "string",
+          "format": "date-time",
+          "pattern": "Z(?![\\s\\S])",
+          "description": "UTC instant at which the referenced evidence was issued."
+        }
+      },
+      "required": [
+        "evidenceType",
+        "reference"
+      ],
+      "additionalProperties": false
+    },
+    "BirthAnnotation": {
+      "type": "object",
+      "description": "Declaration or correction reason and evidence carried by the Write command, not by the PublicSchema Birth event.",
+      "properties": {
+        "reasonCode": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Deployment-defined reason code for the declaration or correction command."
+        },
+        "statement": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Human-readable rationale for the declaration or correction command."
+        },
+        "supportingEvidence": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/EvidenceReference",
+            "description": "One supporting evidence array entry accepted by this profile."
+          },
+          "uniqueItems": true,
+          "description": "Source-specific evidence references supporting the command."
+        }
+      },
+      "required": [
+        "reasonCode",
+        "statement"
+      ],
+      "additionalProperties": false
+    },
+    "BirthEventForDeclaration": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/PublicSchemaBirth",
+          "description": "Composed constraint 1 for birth event for declaration; every composed constraint applies."
+        },
+        {
+          "type": "object",
+          "properties": {
+            "@context": {
+              "const": "https://publicschema.org/ctx/draft.jsonld",
+              "description": "Pinned PublicSchema JSON-LD context used by this example instance.",
+              "type": "string"
+            },
+            "@id": {
+              "$ref": "#/$defs/RequestLocalId",
+              "description": "URI identity for the object; create commands restrict it to a declared request-local identifier."
+            },
+            "event_location": {
+              "oneOf": [
+                {
+                  "$ref": "#/$defs/PublicSchemaLocation",
+                  "description": "Alternative 1 for event location."
+                },
+                {
+                  "type": "string",
+                  "format": "uri",
+                  "description": "Alternative 2 for event location."
+                }
+              ],
+              "description": "PublicSchema `event_location` value retained with its published spelling and domain meaning."
+            },
+            "informant": {
+              "$ref": "#/$defs/ExistingPersonReference",
+              "description": "Authoritative reference to the existing Person who supplied the birth information."
+            },
+            "child": {
+              "$ref": "#/$defs/BirthChildForDeclaration",
+              "description": "Typed CRVS child wrapper containing the request-local new Person."
+            },
+            "parents": {
+              "type": "array",
+              "minItems": 1,
+              "items": {
+                "$ref": "#/$defs/BirthParentForDeclaration",
+                "description": "One parents array entry accepted by this profile."
+              },
+              "description": "Typed CRVS parent wrappers referencing existing Persons."
+            }
+          },
+          "required": [
+            "@context",
+            "@id",
+            "@type",
+            "event_date",
+            "child",
+            "parents",
+            "sex_at_birth"
+          ],
+          "not": {
+            "anyOf": [
+              {
+                "required": [
+                  "identifiers"
+                ],
+                "description": "Alternative 1 for birth event for declaration."
+              },
+              {
+                "required": [
+                  "registration_date"
+                ],
+                "description": "Alternative 2 for birth event for declaration."
+              },
+              {
+                "required": [
+                  "registration_location"
+                ],
+                "description": "Alternative 3 for birth event for declaration."
+              },
+              {
+                "required": [
+                  "registration_type"
+                ],
+                "description": "Alternative 4 for birth event for declaration."
+              },
+              {
+                "required": [
+                  "registrar"
+                ],
+                "description": "Alternative 5 for birth event for declaration."
+              },
+              {
+                "required": [
+                  "registration_status"
+                ],
+                "description": "Alternative 6 for birth event for declaration."
+              }
+            ],
+            "description": "Forbidden field combination for birth event for declaration."
+          },
+          "description": "Composed constraint 2 for birth event for declaration; every composed constraint applies."
+        }
+      ],
+      "description": "Schema for birth event for declaration in this non-normative Write example profile."
+    },
+    "BirthProjectionPatch": {
+      "type": "object",
+      "description": "A merge-patch-shaped subset that maps to the eventual PublicSchema Birth projection only after authoritative commit.",
+      "properties": {
+        "event_date": {
+          "$ref": "./publicschema/offline/crvs/Birth.schema.json#/properties/event_date",
+          "description": "PublicSchema `event_date` value retained with its published spelling and domain meaning."
+        },
+        "event_date_estimated": {
+          "$ref": "./publicschema/offline/crvs/Birth.schema.json#/properties/event_date_estimated",
+          "description": "PublicSchema `event_date_estimated` value retained with its published spelling and domain meaning."
+        },
+        "event_location": {
+          "oneOf": [
+            {
+              "$ref": "#/$defs/PublicSchemaLocation",
+              "description": "Alternative 1 for event location."
+            },
+            {
+              "type": "string",
+              "format": "uri",
+              "description": "Alternative 2 for event location."
+            }
+          ],
+          "description": "PublicSchema `event_location` value retained with its published spelling and domain meaning."
+        },
+        "registration_location": {
+          "oneOf": [
+            {
+              "$ref": "#/$defs/PublicSchemaLocation",
+              "description": "Alternative 1 for registration location."
+            },
+            {
+              "type": "string",
+              "format": "uri",
+              "description": "Alternative 2 for registration location."
+            }
+          ],
+          "description": "PublicSchema `registration_location` value retained with its published spelling and domain meaning."
+        },
+        "registration_type": {
+          "$ref": "./publicschema/offline/crvs/Birth.schema.json#/properties/registration_type",
+          "description": "PublicSchema `registration_type` value retained with its published spelling and domain meaning."
+        },
+        "sex_at_birth": {
+          "$ref": "./publicschema/offline/crvs/Birth.schema.json#/properties/sex_at_birth",
+          "description": "PublicSchema `sex_at_birth` value retained with its published spelling and domain meaning."
+        },
+        "nationality_at_birth": {
+          "$ref": "./publicschema/offline/crvs/Birth.schema.json#/properties/nationality_at_birth",
+          "description": "PublicSchema `nationality_at_birth` value retained with its published spelling and domain meaning."
+        },
+        "place_type": {
+          "$ref": "./publicschema/offline/crvs/Birth.schema.json#/properties/place_type",
+          "description": "PublicSchema `place_type` value retained with its published spelling and domain meaning."
+        },
+        "birth_type": {
+          "$ref": "./publicschema/offline/crvs/Birth.schema.json#/properties/birth_type",
+          "description": "PublicSchema `birth_type` value retained with its published spelling and domain meaning."
+        },
+        "birth_order": {
+          "$ref": "./publicschema/offline/crvs/Birth.schema.json#/properties/birth_order",
+          "description": "PublicSchema `birth_order` value retained with its published spelling and domain meaning."
+        },
+        "weight_at_birth": {
+          "$ref": "./publicschema/offline/crvs/Birth.schema.json#/properties/weight_at_birth",
+          "description": "PublicSchema `weight_at_birth` value retained with its published spelling and domain meaning."
+        },
+        "attendant_at_birth": {
+          "$ref": "./publicschema/offline/crvs/Birth.schema.json#/properties/attendant_at_birth",
+          "description": "PublicSchema `attendant_at_birth` value retained with its published spelling and domain meaning."
+        }
+      },
+      "minProperties": 1,
+      "additionalProperties": false
+    },
+    "BirthDeclarationCommand": {
+      "type": "object",
+      "description": "A source command mapped to a PublicSchema Birth event. It is not the stored or read Birth resource.",
+      "properties": {
+        "transactionId": {
+          "type": "string",
+          "minLength": 8,
+          "description": "Client-generated source-command correlation identifier; it does not replace the HTTP Idempotency-Key."
+        },
+        "birth": {
+          "$ref": "#/$defs/BirthEventForDeclaration",
+          "description": "Proposed PublicSchema Birth event content, projected only after authoritative commit."
+        },
+        "annotation": {
+          "$ref": "#/$defs/BirthAnnotation",
+          "description": "Command-only reason and evidence metadata that is not projected into the Birth event."
+        }
+      },
+      "required": [
+        "transactionId",
+        "birth",
+        "annotation"
+      ],
+      "additionalProperties": false
+    },
+    "BirthCorrectionCommand": {
+      "type": "object",
+      "description": "A correction command. Direct execution or approved application maps birthPatch into the PublicSchema Birth projection.",
+      "properties": {
+        "transactionId": {
+          "type": "string",
+          "minLength": 8,
+          "description": "Client-generated source-command correlation identifier; it does not replace the HTTP Idempotency-Key."
+        },
+        "birthPatch": {
+          "$ref": "#/$defs/BirthProjectionPatch",
+          "description": "Partial Birth projection change; omitted properties remain unchanged and null values are rejected."
+        },
+        "annotation": {
+          "$ref": "#/$defs/BirthAnnotation",
+          "description": "Command-only reason and evidence metadata that is not projected into the Birth event."
+        }
+      },
+      "required": [
+        "transactionId",
+        "birthPatch",
+        "annotation"
+      ],
+      "additionalProperties": false
+    },
+    "BirthDeclarationCreateInput": {
+      "type": "object",
+      "properties": {
+        "data": {
+          "$ref": "#/$defs/BirthDeclarationCommand",
+          "description": "Domain data submitted to the selected concrete Write operation."
+        },
+        "source": {
+          "$ref": "#/$defs/SourceReference",
+          "description": "Optional authoritative-source correlation metadata defined by the shared Write contract."
+        }
+      },
+      "required": [
+        "data"
+      ],
+      "additionalProperties": false,
+      "description": "Direct or governed birth-declaration command mapped to a PublicSchema Birth projection after commit."
+    },
+    "BirthCorrectionInput": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "const": "correct-birth",
+          "description": "Fixed published name of the selected transition; it is not a runtime action selector.",
+          "type": "string"
+        },
+        "parameters": {
+          "$ref": "#/$defs/BirthCorrectionCommand",
+          "description": "Typed parameters for the fixed transition operation."
+        },
+        "source": {
+          "$ref": "#/$defs/SourceReference",
+          "description": "Optional authoritative-source correlation metadata defined by the shared Write contract."
+        }
+      },
+      "required": [
+        "name",
+        "parameters"
+      ],
+      "additionalProperties": false,
+      "description": "Fixed correct-birth transition input carrying a closed Birth patch and command annotation."
+    },
+    "HouseholdExistingCreateInput": {
+      "type": "object",
+      "properties": {
+        "data": {
+          "$ref": "#/$defs/HouseholdWithExistingPersons",
+          "description": "Domain data submitted to the selected concrete Write operation."
+        },
+        "source": {
+          "$ref": "#/$defs/SourceReference",
+          "description": "Optional authoritative-source correlation metadata defined by the shared Write contract."
+        }
+      },
+      "required": [
+        "data"
+      ],
+      "additionalProperties": false,
+      "description": "Household create input whose memberships reference existing Person records."
+    },
+    "HouseholdCompoundCreateInput": {
+      "type": "object",
+      "properties": {
+        "data": {
+          "$ref": "#/$defs/HouseholdCompoundCreate",
+          "description": "Domain data submitted to the selected concrete Write operation."
+        },
+        "source": {
+          "$ref": "#/$defs/SourceReference",
+          "description": "Optional authoritative-source correlation metadata defined by the shared Write contract."
+        }
+      },
+      "required": [
+        "data"
+      ],
+      "additionalProperties": false,
+      "description": "Same-source atomic Household create input containing at least one request-local new Person."
+    },
+    "HouseholdCreateInput": {
+      "oneOf": [
+        {
+          "$ref": "#/$defs/HouseholdExistingCreateInput",
+          "description": "Alternative 1 for household create input."
+        },
+        {
+          "$ref": "#/$defs/HouseholdCompoundCreateInput",
+          "description": "Alternative 2 for household create input."
+        }
+      ],
+      "description": "Supported Household create alternatives for existing or newly embedded Persons."
+    },
+    "IndividualCreateInput": {
+      "type": "object",
+      "properties": {
+        "data": {
+          "$ref": "#/$defs/IndividualCreateData",
+          "description": "Domain data submitted to the selected concrete Write operation."
+        },
+        "source": {
+          "$ref": "#/$defs/SourceReference",
+          "description": "Optional authoritative-source correlation metadata defined by the shared Write contract."
+        }
+      },
+      "required": [
+        "data"
+      ],
+      "additionalProperties": false,
+      "description": "Independent Person create input that leaves authority-owned identity fields unset."
+    },
+    "IndividualUpdateInput": {
+      "type": "object",
+      "description": "RFC 7396 merge patch over the selected PublicSchema Person projection.",
+      "properties": {
+        "data": {
+          "type": "object",
+          "properties": {
+            "preferred_name": {
+              "oneOf": [
+                {
+                  "$ref": "./publicschema/offline/Person.schema.json#/properties/preferred_name",
+                  "description": "Alternative 1 for preferred name."
+                },
+                {
+                  "type": "null",
+                  "description": "Alternative 2 for preferred name."
+                }
+              ],
+              "description": "PublicSchema `preferred_name` value retained with its published spelling and domain meaning."
+            },
+            "phone_number": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "pattern": "^\\+[1-9]\\d{1,14}$",
+              "description": "Nullable E.164 international telephone number; null removes the existing value."
+            },
+            "email_address": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "format": "email",
+              "description": "Nullable email address; null removes the existing value."
+            }
+          },
+          "minProperties": 1,
+          "additionalProperties": false,
+          "description": "Domain data submitted to the selected concrete Write operation."
+        }
+      },
+      "required": [
+        "data"
+      ],
+      "additionalProperties": false
+    },
+    "HouseholdAddMemberParameters": {
+      "type": "object",
+      "properties": {
+        "membership": {
+          "oneOf": [
+            {
+              "$ref": "#/$defs/ExistingPersonMembershipForExistingHousehold",
+              "description": "Alternative 1 for membership."
+            },
+            {
+              "$ref": "#/$defs/EmbeddedPersonMembershipForExistingHousehold",
+              "description": "Alternative 2 for membership."
+            }
+          ],
+          "description": "PublicSchema household membership to add under the profile's source transaction guarantee."
+        }
+      },
+      "required": [
+        "membership"
+      ],
+      "additionalProperties": false,
+      "description": "Schema for household add member parameters in this non-normative Write example profile."
+    },
+    "HouseholdAddMemberInput": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "const": "add-member",
+          "description": "Fixed published name of the selected transition; it is not a runtime action selector.",
+          "type": "string"
+        },
+        "parameters": {
+          "$ref": "#/$defs/HouseholdAddMemberParameters",
+          "description": "Typed parameters for the fixed transition operation."
+        },
+        "source": {
+          "$ref": "#/$defs/SourceReference",
+          "description": "Optional authoritative-source correlation metadata defined by the shared Write contract."
+        }
+      },
+      "required": [
+        "name",
+        "parameters"
+      ],
+      "additionalProperties": false,
+      "description": "Fixed add-member transition input for an existing Household target."
+    },
+    "PublicSchemaChangeRequestInput": {
+      "oneOf": [
+        {
+          "$ref": "#/$defs/CreateChangeRequest",
+          "description": "Alternative 1 for public schema change request input."
+        },
+        {
+          "$ref": "#/$defs/TransitionChangeRequest",
+          "description": "Alternative 2 for public schema change request input."
+        }
+      ],
+      "description": "Strict proposal request correlated to a concrete create or transition profile input."
+    },
+    "BirthDeclarationChangeRequest": {
+      "type": "object",
+      "properties": {
+        "kind": {
+          "const": "create",
+          "description": "Write kind: create proposes a new Record, update proposes a merge patch, and transition proposes a fixed named action.",
+          "type": "string"
+        },
+        "target": {
+          "type": "object",
+          "properties": {
+            "collectionId": {
+              "const": "birth-registrations",
+              "description": "Collection identifier: birth-registrations contains Birth projections, households contains Household records, and individuals contains Person records.",
+              "type": "string"
+            }
+          },
+          "required": [
+            "collectionId"
+          ],
+          "additionalProperties": false,
+          "description": "Collection and, when applicable, Record selected by the proposal."
+        },
+        "input": {
+          "$ref": "#/$defs/BirthDeclarationCreateInput",
+          "description": "Concrete typed input that would be used by the corresponding direct operation."
+        }
+      },
+      "required": [
+        "kind",
+        "target",
+        "input"
+      ],
+      "additionalProperties": false,
+      "description": "Schema for birth declaration change request in this non-normative Write example profile."
+    },
+    "BirthCorrectionChangeRequest": {
+      "type": "object",
+      "properties": {
+        "kind": {
+          "const": "transition",
+          "description": "Write kind: create proposes a new Record, update proposes a merge patch, and transition proposes a fixed named action.",
+          "type": "string"
+        },
+        "target": {
+          "type": "object",
+          "properties": {
+            "collectionId": {
+              "const": "birth-registrations",
+              "description": "Collection identifier: birth-registrations contains Birth projections, households contains Household records, and individuals contains Person records.",
+              "type": "string"
+            },
+            "recordId": {
+              "$ref": "../openapi.yaml#/components/schemas/RecordId"
+            }
+          },
+          "required": [
+            "collectionId",
+            "recordId"
+          ],
+          "additionalProperties": false,
+          "description": "Collection and, when applicable, Record selected by the proposal."
+        },
+        "baseETag": {
+          "$ref": "#/$defs/StrongETag",
+          "description": "Strong target Record validator checked by the independently authorised application worker at commit."
+        },
+        "input": {
+          "$ref": "#/$defs/BirthCorrectionInput",
+          "description": "Concrete typed input that would be used by the corresponding direct operation."
+        }
+      },
+      "required": [
+        "kind",
+        "target",
+        "baseETag",
+        "input"
+      ],
+      "additionalProperties": false,
+      "description": "Schema for birth correction change request in this non-normative Write example profile."
+    },
+    "HouseholdCreateChangeRequest": {
+      "type": "object",
+      "properties": {
+        "kind": {
+          "const": "create",
+          "description": "Write kind: create proposes a new Record, update proposes a merge patch, and transition proposes a fixed named action.",
+          "type": "string"
+        },
+        "target": {
+          "type": "object",
+          "properties": {
+            "collectionId": {
+              "const": "households",
+              "description": "Collection identifier: birth-registrations contains Birth projections, households contains Household records, and individuals contains Person records.",
+              "type": "string"
+            }
+          },
+          "required": [
+            "collectionId"
+          ],
+          "additionalProperties": false,
+          "description": "Collection and, when applicable, Record selected by the proposal."
+        },
+        "input": {
+          "$ref": "#/$defs/HouseholdCreateInput",
+          "description": "Concrete typed input that would be used by the corresponding direct operation."
+        }
+      },
+      "required": [
+        "kind",
+        "target",
+        "input"
+      ],
+      "additionalProperties": false,
+      "description": "Schema for household create change request in this non-normative Write example profile."
+    },
+    "IndividualCreateChangeRequest": {
+      "type": "object",
+      "properties": {
+        "kind": {
+          "const": "create",
+          "description": "Write kind: create proposes a new Record, update proposes a merge patch, and transition proposes a fixed named action.",
+          "type": "string"
+        },
+        "target": {
+          "type": "object",
+          "properties": {
+            "collectionId": {
+              "const": "individuals",
+              "description": "Collection identifier: birth-registrations contains Birth projections, households contains Household records, and individuals contains Person records.",
+              "type": "string"
+            }
+          },
+          "required": [
+            "collectionId"
+          ],
+          "additionalProperties": false,
+          "description": "Collection and, when applicable, Record selected by the proposal."
+        },
+        "input": {
+          "$ref": "#/$defs/IndividualCreateInput",
+          "description": "Concrete typed input that would be used by the corresponding direct operation."
+        }
+      },
+      "required": [
+        "kind",
+        "target",
+        "input"
+      ],
+      "additionalProperties": false,
+      "description": "Schema for individual create change request in this non-normative Write example profile."
+    },
+    "HouseholdAddMemberChangeRequest": {
+      "type": "object",
+      "properties": {
+        "kind": {
+          "const": "transition",
+          "description": "Write kind: create proposes a new Record, update proposes a merge patch, and transition proposes a fixed named action.",
+          "type": "string"
+        },
+        "target": {
+          "type": "object",
+          "properties": {
+            "collectionId": {
+              "const": "households",
+              "description": "Collection identifier: birth-registrations contains Birth projections, households contains Household records, and individuals contains Person records.",
+              "type": "string"
+            },
+            "recordId": {
+              "$ref": "../openapi.yaml#/components/schemas/RecordId"
+            }
+          },
+          "required": [
+            "collectionId",
+            "recordId"
+          ],
+          "additionalProperties": false,
+          "description": "Collection and, when applicable, Record selected by the proposal."
+        },
+        "baseETag": {
+          "$ref": "#/$defs/StrongETag",
+          "description": "Strong target Record validator checked by the independently authorised application worker at commit."
+        },
+        "input": {
+          "$ref": "#/$defs/HouseholdAddMemberInput",
+          "description": "Concrete typed input that would be used by the corresponding direct operation."
+        }
+      },
+      "required": [
+        "kind",
+        "target",
+        "baseETag",
+        "input"
+      ],
+      "additionalProperties": false,
+      "description": "Schema for household add member change request in this non-normative Write example profile."
+    },
+    "CreateChangeRequest": {
+      "oneOf": [
+        {
+          "$ref": "#/$defs/BirthDeclarationChangeRequest",
+          "description": "Alternative 1 for create change request."
+        },
+        {
+          "$ref": "#/$defs/HouseholdCreateChangeRequest",
+          "description": "Alternative 2 for create change request."
+        },
+        {
+          "$ref": "#/$defs/IndividualCreateChangeRequest",
+          "description": "Alternative 3 for create change request."
+        }
+      ],
+      "description": "Schema for create change request in this non-normative Write example profile."
+    },
+    "TransitionChangeRequest": {
+      "oneOf": [
+        {
+          "$ref": "#/$defs/BirthCorrectionChangeRequest",
+          "description": "Alternative 1 for transition change request."
+        },
+        {
+          "$ref": "#/$defs/HouseholdAddMemberChangeRequest",
+          "description": "Alternative 2 for transition change request."
+        }
+      ],
+      "description": "Schema for transition change request in this non-normative Write example profile."
+    },
+    "LocalReferenceResolution": {
+      "type": "object",
+      "properties": {
+        "requestLocalId": {
+          "$ref": "#/$defs/RequestLocalId",
+          "description": "Request-local URI declared in the accepted command and resolved only after commit."
+        },
+        "collectionId": {
+          "enum": [
+            "birth-registrations",
+            "households",
+            "individuals"
+          ],
+          "description": "Collection identifier: birth-registrations contains Birth projections, households contains Household records, and individuals contains Person records.",
+          "type": "string"
+        },
+        "recordId": {
+          "$ref": "../openapi.yaml#/components/schemas/RecordId"
+        }
+      },
+      "required": [
+        "requestLocalId",
+        "collectionId",
+        "recordId"
+      ],
+      "additionalProperties": false,
+      "description": "Schema for local reference resolution in this non-normative Write example profile."
+    },
+    "PublicSchemaWriteResult": {
+      "type": "object",
+      "properties": {
+        "collectionId": {
+          "enum": [
+            "birth-registrations",
+            "households",
+            "individuals"
+          ],
+          "description": "Collection identifier: birth-registrations contains Birth projections, households contains Household records, and individuals contains Person records.",
+          "type": "string"
+        },
+        "recordId": {
+          "$ref": "../openapi.yaml#/components/schemas/RecordId"
+        },
+        "etag": {
+          "$ref": "#/$defs/StrongETag",
+          "description": "Strong entity tag for the authoritative Record after commit."
+        },
+        "requestLocalReferences": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/LocalReferenceResolution",
+            "description": "One request local references array entry accepted by this profile."
+          },
+          "uniqueItems": true,
+          "description": "Mappings from created request-local URIs to authority-assigned Collection and Record identifiers."
+        }
+      },
+      "required": [
+        "collectionId",
+        "recordId",
+        "etag"
+      ],
+      "description": "Open authoritative result for one target Record plus profile-local request-reference resolutions."
+    },
+    "ProcessingError": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "type": "string",
+          "format": "uri",
+          "description": "Stable URI identifying the processing-error category."
+        },
+        "title": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Short human-readable processing-error summary."
+        },
+        "detail": {
+          "type": "string",
+          "description": "Optional human-readable processing-error detail suitable for the authorised caller."
+        },
+        "traceId": {
+          "type": "string",
+          "pattern": "^(?!0{32}$)[0-9a-f]{32}$",
+          "description": "Trace identifier used to correlate the processing failure without exposing protected data."
+        }
+      },
+      "required": [
+        "type",
+        "title",
+        "traceId"
+      ],
+      "additionalProperties": false,
+      "description": "Schema for processing error in this non-normative Write example profile."
+    },
+    "PublicSchemaChangeRequest": {
+      "type": "object",
+      "properties": {
+        "changeRequestId": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Authority-assigned identifier for the immutable change request."
+        },
+        "proposalVersion": {
+          "type": "integer",
+          "minimum": 1,
+          "description": "Monotonically increasing representation version guarded by review If-Match."
+        },
+        "kind": {
+          "enum": [
+            "create",
+            "transition"
+          ],
+          "description": "Write kind: create proposes a new Record, update proposes a merge patch, and transition proposes a fixed named action.",
+          "type": "string"
+        },
+        "target": {
+          "oneOf": [
+            {
+              "type": "object",
+              "properties": {
+                "collectionId": {
+                  "enum": [
+                    "birth-registrations",
+                    "households",
+                    "individuals"
+                  ],
+                  "description": "Collection identifier: birth-registrations contains Birth projections, households contains Household records, and individuals contains Person records.",
+                  "type": "string"
+                }
+              },
+              "required": [
+                "collectionId"
+              ],
+              "additionalProperties": false,
+              "description": "Alternative 1 for target."
+            },
+            {
+              "type": "object",
+              "properties": {
+                "collectionId": {
+                  "enum": [
+                    "birth-registrations",
+                    "households"
+                  ],
+                  "description": "Collection identifier: birth-registrations contains Birth projections, households contains Household records, and individuals contains Person records.",
+                  "type": "string"
+                },
+                "recordId": {
+                  "$ref": "../openapi.yaml#/components/schemas/RecordId"
+                }
+              },
+              "required": [
+                "collectionId",
+                "recordId"
+              ],
+              "additionalProperties": false,
+              "description": "Alternative 2 for target."
+            }
+          ],
+          "description": "Collection and, when applicable, Record selected by the proposal."
+        },
+        "baseETag": {
+          "$ref": "#/$defs/StrongETag",
+          "description": "Strong target Record validator checked by the independently authorised application worker at commit."
+        },
+        "input": {
+          "type": "object",
+          "description": "Concrete typed input that would be used by the corresponding direct operation."
+        },
+        "reviewState": {
+          "enum": [
+            "pending",
+            "approved",
+            "rejected",
+            "withdrawn"
+          ],
+          "description": "Review state: pending awaits a decision, approved or rejected records that decision, and withdrawn records submitter withdrawal.",
+          "type": "string"
+        },
+        "applicationState": {
+          "enum": [
+            "not-started",
+            "applying",
+            "applied",
+            "blocked",
+            "failed"
+          ],
+          "description": "Application state: not-started has no authoritative effect, applying is in progress, applied committed, and blocked or failed did not commit.",
+          "type": "string"
+        },
+        "result": {
+          "$ref": "#/$defs/PublicSchemaWriteResult",
+          "description": "Authoritative Write result present only after successful application."
+        },
+        "error": {
+          "$ref": "#/$defs/ProcessingError",
+          "description": "Processing error present only when authoritative application is blocked or failed."
+        },
+        "submittedAt": {
+          "type": "string",
+          "format": "date-time",
+          "pattern": "Z$",
+          "description": "UTC instant at which the change request was submitted."
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time",
+          "pattern": "Z$",
+          "description": "UTC instant at which the change-request representation last changed."
+        }
+      },
+      "required": [
+        "changeRequestId",
+        "proposalVersion",
+        "kind",
+        "target",
+        "input",
+        "reviewState",
+        "applicationState",
+        "submittedAt",
+        "updatedAt"
+      ],
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "kind": {
+                "const": "create",
+                "description": "Write kind: create proposes a new Record, update proposes a merge patch, and transition proposes a fixed named action.",
+                "type": "string"
+              }
+            },
+            "required": [
+              "kind"
+            ],
+            "description": "Condition selecting the correlated public schema change request response or proposal constraint."
+          },
+          "then": {
+            "properties": {
+              "target": {
+                "type": "object",
+                "properties": {
+                  "collectionId": {
+                    "enum": [
+                      "birth-registrations",
+                      "households",
+                      "individuals"
+                    ],
+                    "description": "Collection identifier: birth-registrations contains Birth projections, households contains Household records, and individuals contains Person records.",
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "collectionId"
+                ],
+                "additionalProperties": false,
+                "description": "Collection and, when applicable, Record selected by the proposal."
+              },
+              "input": {
+                "oneOf": [
+                  {
+                    "$ref": "#/$defs/BirthDeclarationCreateInput",
+                    "description": "Alternative 1 for input."
+                  },
+                  {
+                    "$ref": "#/$defs/HouseholdExistingCreateInput",
+                    "description": "Alternative 2 for input."
+                  },
+                  {
+                    "$ref": "#/$defs/HouseholdCompoundCreateInput",
+                    "description": "Alternative 3 for input."
+                  },
+                  {
+                    "$ref": "#/$defs/IndividualCreateInput",
+                    "description": "Alternative 4 for input."
+                  }
+                ],
+                "description": "Concrete typed input that would be used by the corresponding direct operation."
+              }
+            },
+            "not": {
+              "required": [
+                "baseETag"
+              ],
+              "description": "Forbidden field combination for public schema change request."
+            },
+            "description": "Constraint applied when the preceding public schema change request condition matches."
+          },
+          "description": "Composed constraint 1 for public schema change request; every composed constraint applies."
+        },
+        {
+          "if": {
+            "properties": {
+              "kind": {
+                "const": "transition",
+                "description": "Write kind: create proposes a new Record, update proposes a merge patch, and transition proposes a fixed named action.",
+                "type": "string"
+              }
+            },
+            "required": [
+              "kind"
+            ],
+            "description": "Condition selecting the correlated public schema change request response or proposal constraint."
+          },
+          "then": {
+            "required": [
+              "baseETag"
+            ],
+            "properties": {
+              "target": {
+                "type": "object",
+                "properties": {
+                  "collectionId": {
+                    "enum": [
+                      "birth-registrations",
+                      "households"
+                    ],
+                    "description": "Collection identifier: birth-registrations contains Birth projections, households contains Household records, and individuals contains Person records.",
+                    "type": "string"
+                  },
+                  "recordId": {
+                    "$ref": "../openapi.yaml#/components/schemas/RecordId"
+                  }
+                },
+                "required": [
+                  "collectionId",
+                  "recordId"
+                ],
+                "additionalProperties": false,
+                "description": "Collection and, when applicable, Record selected by the proposal."
+              },
+              "input": {
+                "oneOf": [
+                  {
+                    "$ref": "#/$defs/BirthCorrectionInput",
+                    "description": "Alternative 1 for input."
+                  },
+                  {
+                    "$ref": "#/$defs/HouseholdAddMemberInput",
+                    "description": "Alternative 2 for input."
+                  }
+                ],
+                "description": "Concrete typed input that would be used by the corresponding direct operation."
+              }
+            },
+            "description": "Constraint applied when the preceding public schema change request condition matches."
+          },
+          "description": "Composed constraint 2 for public schema change request; every composed constraint applies."
+        },
+        {
+          "if": {
+            "properties": {
+              "kind": {
+                "const": "create",
+                "description": "Write kind: create proposes a new Record, update proposes a merge patch, and transition proposes a fixed named action.",
+                "type": "string"
+              },
+              "target": {
+                "properties": {
+                  "collectionId": {
+                    "const": "birth-registrations",
+                    "description": "Collection identifier: birth-registrations contains Birth projections, households contains Household records, and individuals contains Person records.",
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "collectionId"
+                ],
+                "description": "Collection and, when applicable, Record selected by the proposal."
+              }
+            },
+            "required": [
+              "kind",
+              "target"
+            ],
+            "description": "Condition selecting the correlated public schema change request response or proposal constraint."
+          },
+          "then": {
+            "properties": {
+              "input": {
+                "$ref": "#/$defs/BirthDeclarationCreateInput",
+                "description": "Concrete typed input that would be used by the corresponding direct operation."
+              }
+            },
+            "description": "Constraint applied when the preceding public schema change request condition matches."
+          },
+          "description": "Composed constraint 3 for public schema change request; every composed constraint applies."
+        },
+        {
+          "if": {
+            "properties": {
+              "kind": {
+                "const": "create",
+                "description": "Write kind: create proposes a new Record, update proposes a merge patch, and transition proposes a fixed named action.",
+                "type": "string"
+              },
+              "target": {
+                "properties": {
+                  "collectionId": {
+                    "const": "households",
+                    "description": "Collection identifier: birth-registrations contains Birth projections, households contains Household records, and individuals contains Person records.",
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "collectionId"
+                ],
+                "description": "Collection and, when applicable, Record selected by the proposal."
+              }
+            },
+            "required": [
+              "kind",
+              "target"
+            ],
+            "description": "Condition selecting the correlated public schema change request response or proposal constraint."
+          },
+          "then": {
+            "properties": {
+              "input": {
+                "oneOf": [
+                  {
+                    "$ref": "#/$defs/HouseholdExistingCreateInput",
+                    "description": "Alternative 1 for input."
+                  },
+                  {
+                    "$ref": "#/$defs/HouseholdCompoundCreateInput",
+                    "description": "Alternative 2 for input."
+                  }
+                ],
+                "description": "Concrete typed input that would be used by the corresponding direct operation."
+              }
+            },
+            "description": "Constraint applied when the preceding public schema change request condition matches."
+          },
+          "description": "Composed constraint 4 for public schema change request; every composed constraint applies."
+        },
+        {
+          "if": {
+            "properties": {
+              "kind": {
+                "const": "create",
+                "description": "Write kind: create proposes a new Record, update proposes a merge patch, and transition proposes a fixed named action.",
+                "type": "string"
+              },
+              "target": {
+                "properties": {
+                  "collectionId": {
+                    "const": "individuals",
+                    "description": "Collection identifier: birth-registrations contains Birth projections, households contains Household records, and individuals contains Person records.",
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "collectionId"
+                ],
+                "description": "Collection and, when applicable, Record selected by the proposal."
+              }
+            },
+            "required": [
+              "kind",
+              "target"
+            ],
+            "description": "Condition selecting the correlated public schema change request response or proposal constraint."
+          },
+          "then": {
+            "properties": {
+              "input": {
+                "$ref": "#/$defs/IndividualCreateInput",
+                "description": "Concrete typed input that would be used by the corresponding direct operation."
+              }
+            },
+            "description": "Constraint applied when the preceding public schema change request condition matches."
+          },
+          "description": "Composed constraint 5 for public schema change request; every composed constraint applies."
+        },
+        {
+          "if": {
+            "properties": {
+              "kind": {
+                "const": "transition",
+                "description": "Write kind: create proposes a new Record, update proposes a merge patch, and transition proposes a fixed named action.",
+                "type": "string"
+              },
+              "target": {
+                "properties": {
+                  "collectionId": {
+                    "const": "birth-registrations",
+                    "description": "Collection identifier: birth-registrations contains Birth projections, households contains Household records, and individuals contains Person records.",
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "collectionId"
+                ],
+                "description": "Collection and, when applicable, Record selected by the proposal."
+              }
+            },
+            "required": [
+              "kind",
+              "target"
+            ],
+            "description": "Condition selecting the correlated public schema change request response or proposal constraint."
+          },
+          "then": {
+            "properties": {
+              "input": {
+                "$ref": "#/$defs/BirthCorrectionInput",
+                "description": "Concrete typed input that would be used by the corresponding direct operation."
+              }
+            },
+            "description": "Constraint applied when the preceding public schema change request condition matches."
+          },
+          "description": "Composed constraint 6 for public schema change request; every composed constraint applies."
+        },
+        {
+          "if": {
+            "properties": {
+              "kind": {
+                "const": "transition",
+                "description": "Write kind: create proposes a new Record, update proposes a merge patch, and transition proposes a fixed named action.",
+                "type": "string"
+              },
+              "target": {
+                "properties": {
+                  "collectionId": {
+                    "const": "households",
+                    "description": "Collection identifier: birth-registrations contains Birth projections, households contains Household records, and individuals contains Person records.",
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "collectionId"
+                ],
+                "description": "Collection and, when applicable, Record selected by the proposal."
+              }
+            },
+            "required": [
+              "kind",
+              "target"
+            ],
+            "description": "Condition selecting the correlated public schema change request response or proposal constraint."
+          },
+          "then": {
+            "properties": {
+              "input": {
+                "$ref": "#/$defs/HouseholdAddMemberInput",
+                "description": "Concrete typed input that would be used by the corresponding direct operation."
+              }
+            },
+            "description": "Constraint applied when the preceding public schema change request condition matches."
+          },
+          "description": "Composed constraint 7 for public schema change request; every composed constraint applies."
+        },
+        {
+          "if": {
+            "properties": {
+              "reviewState": {
+                "enum": [
+                  "pending",
+                  "rejected",
+                  "withdrawn"
+                ],
+                "description": "Review state: pending awaits a decision, approved or rejected records that decision, and withdrawn records submitter withdrawal.",
+                "type": "string"
+              }
+            },
+            "required": [
+              "reviewState"
+            ],
+            "description": "Condition selecting the correlated public schema change request response or proposal constraint."
+          },
+          "then": {
+            "properties": {
+              "applicationState": {
+                "const": "not-started",
+                "description": "Application state: not-started has no authoritative effect, applying is in progress, applied committed, and blocked or failed did not commit.",
+                "type": "string"
+              }
+            },
+            "description": "Constraint applied when the preceding public schema change request condition matches."
+          },
+          "description": "Composed constraint 8 for public schema change request; every composed constraint applies."
+        },
+        {
+          "if": {
+            "properties": {
+              "applicationState": {
+                "const": "applied",
+                "description": "Application state: not-started has no authoritative effect, applying is in progress, applied committed, and blocked or failed did not commit.",
+                "type": "string"
+              }
+            },
+            "required": [
+              "applicationState"
+            ],
+            "description": "Condition selecting the correlated public schema change request response or proposal constraint."
+          },
+          "then": {
+            "required": [
+              "result"
+            ],
+            "properties": {
+              "reviewState": {
+                "const": "approved",
+                "description": "Review state: pending awaits a decision, approved or rejected records that decision, and withdrawn records submitter withdrawal.",
+                "type": "string"
+              }
+            },
+            "not": {
+              "required": [
+                "error"
+              ],
+              "description": "Forbidden field combination for public schema change request."
+            },
+            "description": "Constraint applied when the preceding public schema change request condition matches."
+          },
+          "description": "Composed constraint 9 for public schema change request; every composed constraint applies."
+        },
+        {
+          "if": {
+            "properties": {
+              "applicationState": {
+                "enum": [
+                  "blocked",
+                  "failed"
+                ],
+                "description": "Application state: not-started has no authoritative effect, applying is in progress, applied committed, and blocked or failed did not commit.",
+                "type": "string"
+              }
+            },
+            "required": [
+              "applicationState"
+            ],
+            "description": "Condition selecting the correlated public schema change request response or proposal constraint."
+          },
+          "then": {
+            "required": [
+              "error"
+            ],
+            "properties": {
+              "reviewState": {
+                "const": "approved",
+                "description": "Review state: pending awaits a decision, approved or rejected records that decision, and withdrawn records submitter withdrawal.",
+                "type": "string"
+              }
+            },
+            "not": {
+              "required": [
+                "result"
+              ],
+              "description": "Forbidden field combination for public schema change request."
+            },
+            "description": "Constraint applied when the preceding public schema change request condition matches."
+          },
+          "description": "Composed constraint 10 for public schema change request; every composed constraint applies."
+        },
+        {
+          "if": {
+            "properties": {
+              "applicationState": {
+                "enum": [
+                  "not-started",
+                  "applying"
+                ],
+                "description": "Application state: not-started has no authoritative effect, applying is in progress, applied committed, and blocked or failed did not commit.",
+                "type": "string"
+              }
+            },
+            "required": [
+              "applicationState"
+            ],
+            "description": "Condition selecting the correlated public schema change request response or proposal constraint."
+          },
+          "then": {
+            "not": {
+              "anyOf": [
+                {
+                  "required": [
+                    "result"
+                  ],
+                  "description": "Alternative 1 for public schema change request."
+                },
+                {
+                  "required": [
+                    "error"
+                  ],
+                  "description": "Alternative 2 for public schema change request."
+                }
+              ],
+              "description": "Forbidden field combination for public schema change request."
+            },
+            "description": "Constraint applied when the preceding public schema change request condition matches."
+          },
+          "description": "Composed constraint 11 for public schema change request; every composed constraint applies."
+        }
+      ],
+      "description": "Open response envelope exposing review and application state independently."
+    },
+    "ApprovedPublicSchemaDecisionReceipt": {
+      "type": "object",
+      "properties": {
+        "changeRequestId": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Authority-assigned identifier for the immutable change request."
+        },
+        "proposalVersion": {
+          "type": "integer",
+          "minimum": 1,
+          "description": "Monotonically increasing representation version guarded by review If-Match."
+        },
+        "kind": {
+          "enum": [
+            "create",
+            "update",
+            "transition"
+          ],
+          "description": "Write kind: create proposes a new Record, update proposes a merge patch, and transition proposes a fixed named action.",
+          "type": "string"
+        },
+        "target": {
+          "type": "object",
+          "minProperties": 1,
+          "description": "Collection and, when applicable, Record selected by the proposal."
+        },
+        "input": {
+          "type": "object",
+          "minProperties": 1,
+          "description": "Concrete typed input that would be used by the corresponding direct operation."
+        },
+        "reviewState": {
+          "const": "approved",
+          "description": "Review state: pending awaits a decision, approved or rejected records that decision, and withdrawn records submitter withdrawal.",
+          "type": "string"
+        },
+        "applicationState": {
+          "const": "not-started",
+          "description": "Application state: not-started has no authoritative effect, applying is in progress, applied committed, and blocked or failed did not commit.",
+          "type": "string"
+        },
+        "submittedAt": {
+          "type": "string",
+          "format": "date-time",
+          "pattern": "Z(?![\\s\\S])",
+          "description": "UTC instant at which the change request was submitted."
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time",
+          "pattern": "Z(?![\\s\\S])",
+          "description": "UTC instant at which the change-request representation last changed."
+        }
+      },
+      "required": [
+        "changeRequestId",
+        "proposalVersion",
+        "kind",
+        "target",
+        "input",
+        "reviewState",
+        "applicationState",
+        "submittedAt",
+        "updatedAt"
+      ],
+      "not": {
+        "anyOf": [
+          {
+            "required": [
+              "result"
+            ],
+            "description": "Alternative 1 for approved public schema decision receipt."
+          },
+          {
+            "required": [
+              "error"
+            ],
+            "description": "Alternative 2 for approved public schema decision receipt."
+          }
+        ],
+        "description": "Forbidden field combination for approved public schema decision receipt."
+      },
+      "description": "Open review receipt proving approval without implying authoritative application."
+    },
+    "RejectedPublicSchemaDecisionReceipt": {
+      "type": "object",
+      "properties": {
+        "changeRequestId": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Authority-assigned identifier for the immutable change request."
+        },
+        "proposalVersion": {
+          "type": "integer",
+          "minimum": 1,
+          "description": "Monotonically increasing representation version guarded by review If-Match."
+        },
+        "kind": {
+          "enum": [
+            "create",
+            "update",
+            "transition"
+          ],
+          "description": "Write kind: create proposes a new Record, update proposes a merge patch, and transition proposes a fixed named action.",
+          "type": "string"
+        },
+        "target": {
+          "type": "object",
+          "minProperties": 1,
+          "description": "Collection and, when applicable, Record selected by the proposal."
+        },
+        "input": {
+          "type": "object",
+          "minProperties": 1,
+          "description": "Concrete typed input that would be used by the corresponding direct operation."
+        },
+        "reviewState": {
+          "const": "rejected",
+          "description": "Review state: pending awaits a decision, approved or rejected records that decision, and withdrawn records submitter withdrawal.",
+          "type": "string"
+        },
+        "applicationState": {
+          "const": "not-started",
+          "description": "Application state: not-started has no authoritative effect, applying is in progress, applied committed, and blocked or failed did not commit.",
+          "type": "string"
+        },
+        "submittedAt": {
+          "type": "string",
+          "format": "date-time",
+          "pattern": "Z(?![\\s\\S])",
+          "description": "UTC instant at which the change request was submitted."
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time",
+          "pattern": "Z(?![\\s\\S])",
+          "description": "UTC instant at which the change-request representation last changed."
+        }
+      },
+      "required": [
+        "changeRequestId",
+        "proposalVersion",
+        "kind",
+        "target",
+        "input",
+        "reviewState",
+        "applicationState",
+        "submittedAt",
+        "updatedAt"
+      ],
+      "not": {
+        "anyOf": [
+          {
+            "required": [
+              "result"
+            ],
+            "description": "Alternative 1 for rejected public schema decision receipt."
+          },
+          {
+            "required": [
+              "error"
+            ],
+            "description": "Alternative 2 for rejected public schema decision receipt."
+          }
+        ],
+        "description": "Forbidden field combination for rejected public schema decision receipt."
+      },
+      "description": "Open review receipt proving rejection without changing an authoritative Record."
+    }
+  }
+}

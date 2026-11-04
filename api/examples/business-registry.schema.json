@@ -1,0 +1,217 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Illustrative business registry Consultation binding",
+  "description": "Typed business-public data and Consultation inputs. The root validates Record.data; named definitions bind Record, RecordPage, Lookup and Search.",
+  "$ref": "#/$defs/BusinessData",
+  "$defs": {
+    "BusinessData": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "Business-public view fields. Both fields are returned by default; a field-selection request can project either field, so each property is not required in the response schema.",
+      "properties": {
+        "legalName": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 300,
+          "description": "Current legal name recorded by the business registry; no assertion about a person's identity is made."
+        },
+        "registrationStatus": {
+          "$ref": "#/$defs/RegistrationStatus"
+        }
+      },
+      "examples": [{"legalName": "Example Ltd", "registrationStatus": "DISSOLVED"}]
+    },
+    "BusinessFields": {
+      "description": "Non-empty field selection supported by this deployment. Omission selects both legalName and registrationStatus.",
+      "type": "array",
+      "maxItems": 2,
+      "allOf": [
+        {"$ref": "../openapi.yaml#/components/schemas/FieldSelection"},
+        {
+          "type": "array",
+          "description": "Selection of literal camelCase property names from the BusinessData response object.",
+          "items": {
+            "type": "string",
+            "enum": ["legalName", "registrationStatus"],
+            "description": "Literal response property name: legalName is the registered business name; registrationStatus is the domain registration status. Casing is significant."
+          }
+        }
+      ],
+      "examples": [["legalName"], ["legalName", "registrationStatus"]]
+    },
+    "RegistrationStatus": {
+      "type": "string",
+      "pattern": "^[A-Z][A-Z0-9_]*(?![\\s\\S])",
+      "x-extensible-enum": ["ACTIVE", "DISSOLVED"],
+      "description": "ACTIVE means registered and not dissolved; DISSOLVED means registration has ended. The registry can add statuses; clients handle unrecognised values.",
+      "examples": ["DISSOLVED"]
+    },
+    "BusinessRecord": {
+      "description": "The shared record envelope bound to the business-public view; additive envelope metadata remains permitted.",
+      "allOf": [
+        {"$ref": "../openapi.yaml#/components/schemas/Record"},
+        {
+          "type": "object",
+          "description": "Concrete identity and view constraints for this example.",
+          "properties": {
+            "recordId": {
+              "type": "string",
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{0,63}(?![\\s\\S])",
+              "description": "Existing non-personal source identifier. Records are ordered by ascending ASCII bytes of this value, which is also the unique tie-breaker. Collection actions occupy a separate path namespace, so source identifiers such as lookup and search remain valid."
+            },
+            "data": {"$ref": "#/$defs/BusinessData"}
+          }
+        }
+      ],
+      "examples": [{"recordId": "r_42", "data": {"legalName": "Example Ltd", "registrationStatus": "DISSOLVED"}}]
+    },
+    "BusinessPage": {
+      "description": "A typed business record page; total, when supplied, is exact for authorised matching records at evaluation of this page.",
+      "allOf": [
+        {"$ref": "../openapi.yaml#/components/schemas/RecordPage"},
+        {
+          "type": "object",
+          "description": "Every item uses the same declared business-public view.",
+          "properties": {
+            "items": {
+              "type": "array",
+              "maxItems": 100,
+              "description": "At most the effective pageSize business records, in ascending ASCII recordId order.",
+              "items": {"$ref": "#/$defs/BusinessRecord"}
+            }
+          }
+        }
+      ],
+      "examples": [{"items": [], "pageInfo": {"nextCursor": null, "total": 0}}]
+    },
+    "RegistrationNumberValues": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "Complete exact key, unique throughout this Registry, matched byte for byte.",
+      "required": ["registrationNumber"],
+      "properties": {
+        "registrationNumber": {
+          "type": "string",
+          "pattern": "^BR-[0-9]{6}(?![\\s\\S])",
+          "description": "Registry-assigned registration number, including the uppercase prefix and all six digits."
+        }
+      },
+      "examples": [{"registrationNumber": "BR-000042"}]
+    },
+    "JurisdictionNumberValues": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "Composite exact key whose pair is unique in this Registry. Both fields are matched byte for byte.",
+      "required": ["jurisdictionCode", "localNumber"],
+      "properties": {
+        "jurisdictionCode": {
+          "type": "string",
+          "pattern": "^[A-Z]{2}(?![\\s\\S])",
+          "description": "Two-letter registry-owned jurisdiction code, not asserted to be an ISO country code."
+        },
+        "localNumber": {
+          "type": "string",
+          "pattern": "^[0-9]{8}(?![\\s\\S])",
+          "description": "Eight-digit identifier within the jurisdiction; leading zeroes are significant."
+        }
+      },
+      "examples": [{"jurisdictionCode": "AA", "localNumber": "00000042"}]
+    },
+    "BusinessLookupRequest": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "One of two typed exact-key selectors. Selector names determine their complete accepted key fields.",
+      "required": ["selector", "values"],
+      "properties": {
+        "selector": {
+          "type": "string",
+          "description": "Published exact selector name, constrained together with its values by oneOf."
+        },
+        "values": {
+          "type": "object",
+          "description": "The complete typed key associated with the chosen selector."
+        },
+        "fields": {"$ref": "#/$defs/BusinessFields"}
+      },
+      "oneOf": [
+        {
+          "description": "Registry-wide registration-number lookup.",
+          "properties": {
+            "selector": {"const": "byRegistrationNumber"},
+            "values": {"$ref": "#/$defs/RegistrationNumberValues"}
+          }
+        },
+        {
+          "description": "Jurisdiction and local-number composite lookup.",
+          "properties": {
+            "selector": {"const": "byJurisdictionNumber"},
+            "values": {"$ref": "#/$defs/JurisdictionNumberValues"}
+          }
+        }
+      ],
+      "examples": [
+        {"selector": "byRegistrationNumber", "values": {"registrationNumber": "BR-000042"}, "fields": ["legalName"]},
+        {"selector": "byJurisdictionNumber", "values": {"jurisdictionCode": "AA", "localNumber": "00000042"}}
+      ]
+    },
+    "RegistrationStatusCriteria": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "One equality predicate over the declared business registration status, with no implicit case conversion.",
+      "required": ["registrationStatus"],
+      "properties": {"registrationStatus": {"$ref": "#/$defs/RegistrationStatus"}},
+      "examples": [{"registrationStatus": "DISSOLVED"}]
+    },
+    "FieldEqualityCriteria": {
+      "type": "object",
+      "additionalProperties": false,
+      "minProperties": 1,
+      "description": "Equality predicates over any non-empty combination of the declared business-public fields. Every supplied field must match exactly; omitted fields do not constrain the result.",
+      "properties": {
+        "legalName": {"$ref": "#/$defs/BusinessData/properties/legalName"},
+        "registrationStatus": {"$ref": "#/$defs/RegistrationStatus"}
+      },
+      "examples": [{"legalName": "Example Ltd", "registrationStatus": "DISSOLVED"}]
+    },
+    "BusinessSearchRequest": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "One of two typed equality searches with continuation controls. Search names determine their accepted criteria. Repeat search and criteria on continuation.",
+      "required": ["search", "criteria"],
+      "properties": {
+        "search": {
+          "type": "string",
+          "description": "Published search name, constrained together with its criteria by oneOf."
+        },
+        "criteria": {
+          "type": "object",
+          "description": "The typed criteria associated with the chosen search."
+        },
+        "fields": {"$ref": "#/$defs/BusinessFields"},
+        "pageSize": {"$ref": "../openapi.yaml#/components/schemas/PageSize"},
+        "cursor": {"$ref": "../openapi.yaml#/components/schemas/Cursor"}
+      },
+      "oneOf": [
+        {
+          "description": "Registration-status equality search.",
+          "properties": {
+            "search": {"const": "byRegistrationStatus"},
+            "criteria": {"$ref": "#/$defs/RegistrationStatusCriteria"}
+          }
+        },
+        {
+          "description": "Equality search over the declared business-public fields.",
+          "properties": {
+            "search": {"const": "byFields"},
+            "criteria": {"$ref": "#/$defs/FieldEqualityCriteria"}
+          }
+        }
+      ],
+      "examples": [
+        {"search": "byRegistrationStatus", "criteria": {"registrationStatus": "DISSOLVED"}, "fields": ["legalName"], "pageSize": 20},
+        {"search": "byRegistrationStatus", "criteria": {"registrationStatus": "DISSOLVED"}, "fields": ["legalName"], "cursor": "pgn_7JpQ9m2W4xK8fR3cT6vN1"},
+        {"search": "byFields", "criteria": {"legalName": "Example Ltd", "registrationStatus": "DISSOLVED"}}
+      ]
+    }
+  }
+}

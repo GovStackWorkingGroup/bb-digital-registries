@@ -1,84 +1,63 @@
-# GovStack Building Block Template
+# Digital Registries Building Block Specification
 
-This template is intended to be used by the various GovStack building block
-repos. Each building block repo will have at least 4 main sections, outlined in
-the directory structure below.
+Version **3.0.0-alpha.2**, an authoring draft. The specification inherits
+`govstack-cfr-2.1.0`. Its requirements remain DRAFT and do not establish an
+implementation conformance or certification claim.
 
-## Gitbook and the published "Building Block Specifications" document
+The Digital Registries Building Block defines interoperable behaviour for software
+that maintains authoritative records about persons, organisations, places, assets,
+or events. It specifies Registry identity, authority, metadata, discovery, stable
+Record references, and permitted representations without prescribing a database
+product, administrative user interface, storage model, deployment topology, or
+domain data model.
 
-Note that pushes to the `main` branch will automatically trigger a Gitbook build
-and deployment from the `/spec` directory.
+The target conformance model combines Registry Core with at least one declared
+Registry operation. This draft defines six independently selectable Consultation options and four
+Write options: direct creation, direct update, direct named transition, and
+approval-based change requests. No particular operation is universal. A deployment
+can offer direct writes, approval-based writes, both, or only declared reads.
+The other six API families remain informative roadmap material until their
+requirements, contracts, and tests are defined.
+Business-outcome capabilities in `metadata.yml` are informative and are realised
+by the functionalities; operation choices are declared by option key.
 
-## Repo Structure
+The six read operations share a Record representation and bounded pagination
+over explicit logical Collections. Operations can separately declare
+conditional reads, field selection, complete traversal, snapshot traversal,
+recorded-time, effective-time, or purpose binding; caller capability discovery can
+also be offered as supporting metadata. The same Registry API can expose read,
+direct Write, Change Request, and asynchronous Operation resources while keeping
+their grants and selection independent. The HTTP binding supplies Registry,
+Collection, schema, capability, and selectable feature declarations through its
+versioned contract.
+Source history, revision, lifecycle, recording-time, and effective-time metadata
+remain conditional on the source and the selected capability or feature.
 
-```sh
-README.md
-/spec # the markdown files which are used to build the specification in GitBook
-/api # the openapi specification
-/test # the test plan and tests
-  plan.md
-/examples # examples for deploying, configuring, and testing applications which implement the behaviors specified by this building block
-  /application-a
-    README.md # instructions for deployment/testing
-    docker-compose.yaml # example deployment file
-      db
-      web
-      adaptor
-      security-server
-    Caddyfile # example config for "adaptor"
-    Dockerfile # dockerfile to build "adaptor"
-  /application-b
-  /application-c
-```
+## Reading guide
 
-## Test data
+- **Architects and procurement teams:** read the [overview](introduction/overview.md)
+  and [scope](introduction/scope.md) for purpose, boundaries, draft maturity, and
+  conformance conditions.
+- **Implementers:** use [Discover Registry Services](requirements/registry-discovery.md)
+  for metadata and discovery, then [Provide Registry Services](requirements/registry-services.md)
+  for the Record model, Consultation, Write, and workflows.
+- **API consumers:** use the unified [Registry API reference](resources/api-reference.md).
+  The
+  [API examples](resources/api-examples/README.md) illustrate deployment choices
+  and add no requirements to the shared contract.
+- **Assessors:** use the [verification procedures](resources/testing.md),
+  [Write verification](resources/write-testing.md), and the applicability
+  declarations in the functionality files.
 
-In order to properly call the tests, a file with input data has been created.
+## Source and contributions
 
-The data must exist in tested software before running the tests.
+The [Digital Registries repository](https://github.com/GovStackWorkingGroup/bb-digital-registries)
+contains the source, contributor instructions, validation tools, and Git history.
 
-This data are compatible with the data used in the tests and they are stored in
-the `openAPI` folder in the `test-data.json`.
+## Attribution
 
-## Run Cucumber tests
+Current coordinating authors are Sebastian Leidig, Jeremi Joslin, and David Higgins.
+The repository release history retains historical authors, coordinators,
+editors, reviewers, and changes.
 
-Cucumber-js is used to execute test harness to check compability of application
-api with BB test definitions.
-
-### Mock server
-
-Launch the mock server from examples/mock folder. The instruction is located in
-'examples/mock' folder in file README.md
-
-### Cucumber tests
-
-To install project's dependencies, navigate to folder 'test' and execute the
-following command:
-
-```
-yarn install
-```
-
-Then to execute all tests scenarios use the following command:
-
-```
-yarn test
-```
-
-or
-
-```
-npx cucumber-js
-```
-
-To execute specific test scenario use the following command:
-
-```
-npx cucumber-js features/<file_name>
-```
-
-example:
-
-```
-npx cucumber-js features/data_update_or_create.feature
-```
+The [repository licence](LICENSE) applies to the specification source.

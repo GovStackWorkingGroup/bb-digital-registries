@@ -1,0 +1,60 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://publicschema.org/Location.schema.json",
+  "title": "Location",
+  "description": "A named geographic or administrative area, such as a region, district, commune, or village. Location captures where a household or event is situated within an administrative hierarchy, distinct from a street address.\n",
+  "type": "object",
+  "properties": {
+    "location_name": {
+      "type": "string",
+      "description": "A human-readable place name for the location."
+    },
+    "latitude": {
+      "type": "number",
+      "description": "The geographic latitude in decimal degrees (WGS84)."
+    },
+    "longitude": {
+      "type": "number",
+      "description": "The geographic longitude in decimal degrees (WGS84)."
+    },
+    "geometry": {
+      "$ref": "https://geojson.org/schema/Geometry.json",
+      "description": "The geographic boundary or shape, expressed as a GeoJSON Geometry object (Point, Polygon, MultiPolygon, etc.)."
+    },
+    "administrative_level": {
+      "type": "integer",
+      "description": "The numeric tier in the administrative hierarchy, following the OCHA COD-AB convention: 0 = country, 1 = first subnational (state, province, region), 2 = second subnational (district, county, department), and so on. No fixed maximum depth."
+    },
+    "level_name": {
+      "type": "string",
+      "description": "The country-specific name for this administrative tier (e.g., state, department, commune, ward)."
+    },
+    "parent_location": {
+      "oneOf": [
+        {
+          "$ref": "https://publicschema.org/Location.schema.json"
+        },
+        {
+          "type": "string",
+          "description": "URI or identifier reference"
+        }
+      ],
+      "description": "The parent location in the administrative hierarchy."
+    },
+    "geocodes": {
+      "type": "array",
+      "items": {
+        "oneOf": [
+          {
+            "$ref": "https://publicschema.org/Identifier.schema.json"
+          },
+          {
+            "type": "string",
+            "description": "URI or identifier reference"
+          }
+        ],
+        "description": "Administrative or statistical codes that identify this area within a coding system (FIPS, P-code, postal code, etc.)."
+      }
+    }
+  }
+}

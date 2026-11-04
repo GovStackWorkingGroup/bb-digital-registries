@@ -1,0 +1,142 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "x-govstack-digital-registries",
+  "description": "Registry context declared on the OpenAPI Operation Object of every Consultation operation. The values bind the operation to the Registry Identifier published in Registry metadata, its collection, capability and Record view, and any selected selectable read features.",
+  "type": "object",
+  "required": ["registry", "collection", "capability", "view"],
+  "additionalProperties": false,
+  "properties": {
+    "registry": {
+      "description": "Registry Identifier of the Registry whose Records the operation returns. It equals the @id of a govreg:Registry in the published Registry metadata.",
+      "type": "string",
+      "format": "iri",
+      "maxLength": 2048
+    },
+    "collection": {
+      "description": "Collection name. It equals the collection segment of the operation path.",
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9-]{0,127}(?![\\s\\S])",
+      "maxLength": 128
+    },
+    "capability": {
+      "description": "Capability implemented by the operation.",
+      "type": "string",
+      "enum": ["retrieve", "lookup", "list", "search", "revision-list", "revision-retrieve"]
+    },
+    "view": {
+      "description": "Name of the Record view the operation returns. Operations of one collection that share a view name return the same Record schema.",
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9-]{0,127}(?![\\s\\S])",
+      "maxLength": 128
+    },
+    "features": {
+      "description": "Selectable features implemented by this operation. Omission or an empty array selects none. Each selected feature adds its Consultation requirements; snapshot-traversal also requires complete-traversal.",
+      "type": "array",
+      "maxItems": 8,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "enum": ["conditional-read", "field-selection", "complete-traversal", "snapshot-traversal", "recorded-time", "effective-time", "purpose-bound"]
+      }
+    },
+    "purpose": {
+      "description": "Trusted purpose binding selected by purpose-bound. Purpose comes from a verified access-token claim or governed trusted authorisation context; request URI, query, body and ad hoc headers never grant purpose.",
+      "oneOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["required", "binding", "claim", "allowedPurposes"],
+          "properties": {
+            "required": {"const": true},
+            "binding": {"const": "access-token-claim"},
+            "claim": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128,
+              "pattern": "^[A-Za-z][A-Za-z0-9._:-]{0,127}(?![\\s\\S])"
+            },
+            "allowedPurposes": {
+              "type": "array",
+              "minItems": 1,
+              "maxItems": 32,
+              "uniqueItems": true,
+              "items": {
+                "description": "Controlled purpose code or absolute purpose URI.",
+                "anyOf": [
+                  {"type": "string", "minLength": 1, "maxLength": 128, "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}(?![\\s\\S])"},
+                  {"type": "string", "format": "uri", "minLength": 1, "maxLength": 2048, "pattern": "^\\S+(?![\\s\\S])"}
+                ]
+              }
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["required", "binding", "allowedPurposes"],
+          "properties": {
+            "required": {"const": true},
+            "binding": {"const": "trusted-authorization-context"},
+            "allowedPurposes": {
+              "type": "array",
+              "minItems": 1,
+              "maxItems": 32,
+              "uniqueItems": true,
+              "items": {
+                "description": "Controlled purpose code or absolute purpose URI.",
+                "anyOf": [
+                  {"type": "string", "minLength": 1, "maxLength": 128, "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}(?![\\s\\S])"},
+                  {"type": "string", "format": "uri", "minLength": 1, "maxLength": 2048, "pattern": "^\\S+(?![\\s\\S])"}
+                ]
+              }
+            }
+          }
+        }
+      ]
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "required": ["features"],
+        "properties": {"features": {"contains": {"const": "conditional-read"}}}
+      },
+      "then": {"properties": {"capability": {"const": "retrieve"}}}
+    },
+    {
+      "if": {
+        "required": ["features"],
+        "properties": {"features": {"contains": {"enum": ["complete-traversal", "snapshot-traversal"]}}}
+      },
+      "then": {"properties": {"capability": {"enum": ["list", "search"]}}}
+    },
+    {
+      "if": {
+        "required": ["features"],
+        "properties": {"features": {"contains": {"const": "snapshot-traversal"}}}
+      },
+      "then": {"properties": {"features": {"contains": {"const": "complete-traversal"}}}}
+    },
+    {
+      "if": {
+        "required": ["features"],
+        "properties": {"features": {"contains": {"enum": ["recorded-time", "effective-time"]}}}
+      },
+      "then": {"properties": {"capability": {"enum": ["retrieve", "lookup", "list", "search"]}}}
+    },
+    {
+      "if": {
+        "required": ["features"],
+        "properties": {"features": {"contains": {"const": "purpose-bound"}}}
+      },
+      "then": {"required": ["purpose"]}
+    },
+    {
+      "if": {"required": ["purpose"]},
+      "then": {
+        "required": ["features"],
+        "properties": {"features": {"contains": {"const": "purpose-bound"}}}
+      }
+    }
+  ]
+}

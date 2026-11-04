@@ -1,0 +1,4 @@
+version: 1
+apis:
+  - type: openapi
+    path: api/openapi.yaml

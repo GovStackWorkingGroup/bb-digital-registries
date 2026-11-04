@@ -1,0 +1,235 @@
+{
+  "description": "Illustrative independent Consultation exchanges. They demonstrate contract shapes only and do not claim runtime implementation or source-history verification.",
+  "exchanges": [
+    {
+      "name": "businessConditionalRetrieve200",
+      "operationId": "retrieveBusiness",
+      "request": {
+        "path": {"recordId": "r_42"},
+        "headers": {"If-None-Match": "W/\"business-public-r42-v6\""}
+      },
+      "response": {
+        "status": 200,
+        "headers": {"ETag": "W/\"business-public-r42-v7\"", "Cache-Control": "no-store"},
+        "body": {
+          "recordId": "r_42",
+          "data": {"legalName": "Example Ltd", "registrationStatus": "DISSOLVED"}
+        }
+      }
+    },
+    {
+      "name": "businessConditionalRetrieve304",
+      "operationId": "retrieveBusiness",
+      "request": {
+        "path": {"recordId": "r_42"},
+        "headers": {"If-None-Match": "W/\"business-public-r42-v7\""}
+      },
+      "response": {
+        "status": 304,
+        "headers": {"ETag": "W/\"business-public-r42-v7\"", "Cache-Control": "no-store"}
+      }
+    },
+    {
+      "name": "birthBeforePlaceCorrection",
+      "operationId": "retrieveBirthRegistration",
+      "request": {
+        "path": {"recordId": "birth_19"},
+        "query": {"recordedAsOf": "2026-05-01T23:59:59Z", "effectiveAt": "2020-07-15"}
+      },
+      "response": {
+        "status": 200,
+        "body": {
+          "recordId": "birth_19",
+          "temporal": {"recordedAsOf": "2026-05-01T23:59:59Z", "effectiveAt": "2020-07-15"},
+          "data": {
+            "dateOfBirth": "2020-06-12",
+            "placeOfBirth": "Example Town",
+            "registrationEffectiveFrom": "2020-07-01",
+            "parents": [{"nameAtRegistration": "Alex Example"}]
+          }
+        }
+      }
+    },
+    {
+      "name": "birthAfterPlaceCorrection",
+      "operationId": "retrieveBirthRegistration",
+      "request": {
+        "path": {"recordId": "birth_19"},
+        "query": {"recordedAsOf": "2026-06-03T00:00:00Z", "effectiveAt": "2020-07-15"}
+      },
+      "response": {
+        "status": 200,
+        "body": {
+          "recordId": "birth_19",
+          "temporal": {"recordedAsOf": "2026-06-03T00:00:00Z", "effectiveAt": "2020-07-15"},
+          "data": {
+            "dateOfBirth": "2020-06-12",
+            "placeOfBirth": "Corrected Town",
+            "registrationEffectiveFrom": "2020-07-01",
+            "parents": [{"nameAtRegistration": "Alex Example"}]
+          }
+        }
+      }
+    },
+    {
+      "name": "searchByOccurrencePeriodAndPlace",
+      "operationId": "searchBirthRegistrations",
+      "request": {
+        "body": {
+          "search": "byOccurrencePeriodAndPlace",
+          "criteria": {
+            "occurrencePeriod": {"from": "2020-06-01", "to": "2020-06-30"},
+            "placePrefix": "Example"
+          },
+          "temporal": {"recordedAsOf": "2026-06-03T00:00:00Z", "effectiveAt": "2020-07-15"},
+          "pageSize": 20
+        }
+      },
+      "response": {"status": 200, "headers": {"Cache-Control": "no-store"}, "body": {"items": [], "temporal": {"recordedAsOf": "2026-06-03T00:00:00Z", "effectiveAt": "2020-07-15"}, "pageInfo": {"nextCursor": null}}}
+    },
+    {
+      "name": "birthTemporalSearchSourceUnavailable",
+      "operationId": "searchBirthRegistrations",
+      "request": {
+        "body": {
+          "search": "byOccurrencePeriodAndPlace",
+          "criteria": {
+            "occurrencePeriod": {"from": "2020-06-01", "to": "2020-06-30"},
+            "placePrefix": "Example"
+          },
+          "temporal": {"recordedAsOf": "2018-01-01T00:00:00Z"},
+          "pageSize": 20
+        }
+      },
+      "response": {
+        "status": 409,
+        "headers": {"Cache-Control": "no-store"},
+        "body": {
+          "type": "https://govstack.global/problems/digital-registries/temporal-state-not-available",
+          "title": "Temporal state not available",
+          "status": 409,
+          "traceId": "6f1c3f0e2a9b4c8d7e6f5a4b3c2d1e0f"
+        }
+      }
+    },
+    {
+      "name": "listRetainedBirthRevisions",
+      "operationId": "listBirthRegistrationRevisions",
+      "request": {"path": {"recordId": "birth_19"}},
+      "response": {
+        "status": 200,
+        "body": {
+          "items": [
+            {
+              "recordId": "birth_19",
+              "revision": {"revisionId": "rev-2", "recordedAt": "2026-05-02T09:00:00Z"},
+              "data": {
+                "dateOfBirth": "2020-06-12",
+                "placeOfBirth": "Corrected Town",
+                "registrationEffectiveFrom": "2020-07-01",
+                "parents": []
+              }
+            },
+            {
+              "recordId": "birth_19",
+              "revision": {"revisionId": "rev-1", "recordedAt": "2020-07-01T10:00:00Z"},
+              "data": {
+                "dateOfBirth": "2020-06-12",
+                "placeOfBirth": "Example Town",
+                "registrationEffectiveFrom": "2020-07-01",
+                "parents": []
+              }
+            }
+          ],
+          "pageInfo": {"nextCursor": null}
+        }
+      }
+    },
+    {
+      "name": "retrieveOriginalBirthRevision",
+      "operationId": "retrieveBirthRegistrationRevision",
+      "request": {"path": {"recordId": "birth_19", "revisionId": "rev-1"}},
+      "response": {
+        "status": 200,
+        "body": {
+          "recordId": "birth_19",
+          "revision": {"revisionId": "rev-1", "recordedAt": "2020-07-01T10:00:00Z"},
+          "data": {
+            "dateOfBirth": "2020-06-12",
+            "placeOfBirth": "Example Town",
+            "registrationEffectiveFrom": "2020-07-01",
+            "parents": []
+          }
+        }
+      }
+    },
+    {
+      "name": "callerHasNoDiscoverableOperations",
+      "operationId": "getCallerCapabilities",
+      "request": {},
+      "response": {"status": 200, "headers": {"Cache-Control": "no-store"}, "body": {"collections": []}}
+    },
+    {
+      "name": "callerDiscoversBusinessAndBirthReads",
+      "operationId": "getCallerCapabilities",
+      "request": {},
+      "response": {
+        "status": 200,
+        "headers": {"Cache-Control": "no-store"},
+        "body": {
+          "collections": [
+            {
+              "collectionId": "businesses",
+              "registry": "https://registry.example/registries/business",
+              "operations": [
+                {
+                  "operationId": "retrieveBusiness",
+                  "contract": "https://registry.example/contracts/1.0.0-draft/examples/business-registry.openapi.yaml",
+                  "capability": "retrieve",
+                  "view": "business-public",
+                  "features": ["conditional-read", "field-selection"],
+                  "readableFields": ["legalName", "registrationStatus"]
+                },
+                {
+                  "operationId": "lookupBusiness",
+                  "contract": "https://registry.example/contracts/1.0.0-draft/examples/business-registry.openapi.yaml",
+                  "capability": "lookup",
+                  "view": "business-public",
+                  "features": ["field-selection"],
+                  "selectors": ["byRegistrationNumber", "byJurisdictionNumber"]
+                },
+                {
+                  "operationId": "searchBusinesses",
+                  "contract": "https://registry.example/contracts/1.0.0-draft/examples/business-registry.openapi.yaml",
+                  "capability": "search",
+                  "view": "business-public",
+                  "features": ["field-selection", "complete-traversal"],
+                  "searches": ["byRegistrationStatus", "byFields"]
+                }
+              ]
+            },
+            {
+              "collectionId": "birth-registrations",
+              "registry": "https://registry.example/registries/birth-registrations",
+              "operations": [
+                {
+                  "operationId": "retrieveBirthRegistration",
+                  "contract": "https://registry.example/contracts/1.0.0-draft/examples/birth-registration.openapi.yaml",
+                  "capability": "retrieve",
+                  "view": "birth-registration-with-recorded-parents",
+                  "features": ["recorded-time", "effective-time", "purpose-bound"],
+                  "purpose": {
+                    "required": true,
+                    "binding": "access-token-claim",
+                    "claim": "purpose",
+                    "allowedPurposes": ["benefit-eligibility"]
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      }
+    }
+  ]
+}

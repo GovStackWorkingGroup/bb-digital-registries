@@ -1,0 +1,2310 @@
+{
+  "@context": {
+    "@vocab": "https://publicschema.org/",
+    "xsd": "http://www.w3.org/2001/XMLSchema#",
+    "schema": "https://schema.org/",
+    "ps": "https://publicschema.org/meta/",
+    "rdfs": "http://www.w3.org/2000/01/rdf-schema#",
+    "rdf": "http://www.w3.org/1999/02/22-rdf-syntax-ns#",
+    "skos": "http://www.w3.org/2004/02/skos/core#",
+    "dpv": "https://w3id.org/dpv#",
+    "dpv-pd": "https://w3id.org/dpv/pd#",
+    "dpv-gdpr": "https://w3id.org/dpv/legal/eu/gdpr#",
+    "dpv-tech": "https://w3id.org/dpv/tech#",
+    "dpv-loc": "https://w3id.org/dpv/loc#",
+    "type": "@type",
+    "schema:domainIncludes": {
+      "@id": "https://schema.org/domainIncludes",
+      "@type": "@id"
+    },
+    "schema:rangeIncludes": {
+      "@id": "https://schema.org/rangeIncludes",
+      "@type": "@id"
+    },
+    "rdfs:subClassOf": {
+      "@id": "http://www.w3.org/2000/01/rdf-schema#subClassOf",
+      "@type": "@id",
+      "@container": "@set"
+    },
+    "ps:subtypes": {
+      "@id": "https://publicschema.org/meta/subtypes",
+      "@type": "@id",
+      "@container": "@set"
+    },
+    "ps:references": {
+      "@id": "https://publicschema.org/meta/references",
+      "@type": "@id"
+    },
+    "ps:vocabulary": {
+      "@id": "https://publicschema.org/meta/vocabulary",
+      "@type": "@id"
+    },
+    "skos:exactMatch": {
+      "@id": "http://www.w3.org/2004/02/skos/core#exactMatch",
+      "@type": "@id"
+    },
+    "skos:closeMatch": {
+      "@id": "http://www.w3.org/2004/02/skos/core#closeMatch",
+      "@type": "@id"
+    },
+    "skos:broadMatch": {
+      "@id": "http://www.w3.org/2004/02/skos/core#broadMatch",
+      "@type": "@id"
+    },
+    "skos:narrowMatch": {
+      "@id": "http://www.w3.org/2004/02/skos/core#narrowMatch",
+      "@type": "@id"
+    },
+    "skos:relatedMatch": {
+      "@id": "http://www.w3.org/2004/02/skos/core#relatedMatch",
+      "@type": "@id"
+    },
+    "rdfs:seeAlso": {
+      "@id": "http://www.w3.org/2000/01/rdf-schema#seeAlso",
+      "@type": "@id"
+    },
+    "agri/AgriculturalFacility": "https://publicschema.org/agri/AgriculturalFacility",
+    "agri/AgriculturalHolderRole": "https://publicschema.org/agri/AgriculturalHolderRole",
+    "agri/AgriculturalInputProduct": "https://publicschema.org/agri/AgriculturalInputProduct",
+    "agri/AgriculturalLaboratory": "https://publicschema.org/agri/AgriculturalLaboratory",
+    "agri/AgriculturalMachine": "https://publicschema.org/agri/AgriculturalMachine",
+    "agri/AgriculturalParcel": "https://publicschema.org/agri/AgriculturalParcel",
+    "agri/AgriculturalServiceRole": "https://publicschema.org/agri/AgriculturalServiceRole",
+    "agri/AnimalBreed": "https://publicschema.org/agri/AnimalBreed",
+    "agri/AnimalResidence": "https://publicschema.org/agri/AnimalResidence",
+    "agri/CropPlanting": "https://publicschema.org/agri/CropPlanting",
+    "agri/CropPlantingComponent": "https://publicschema.org/agri/CropPlantingComponent",
+    "agri/Farm": "https://publicschema.org/agri/Farm",
+    "agri/FarmerRegistration": "https://publicschema.org/agri/FarmerRegistration",
+    "agri/FishingVessel": "https://publicschema.org/agri/FishingVessel",
+    "agri/GroupAgriculturalHolderRole": "https://publicschema.org/agri/GroupAgriculturalHolderRole",
+    "agri/HoldingFacilityLink": "https://publicschema.org/agri/HoldingFacilityLink",
+    "agri/HoldingParcelLink": "https://publicschema.org/agri/HoldingParcelLink",
+    "agri/HoldingWorkAssignment": "https://publicschema.org/agri/HoldingWorkAssignment",
+    "agri/IrrigationScheme": "https://publicschema.org/agri/IrrigationScheme",
+    "agri/OrganizationAgriculturalHolderRole": "https://publicschema.org/agri/OrganizationAgriculturalHolderRole",
+    "agri/PersonAgriculturalHolderRole": "https://publicschema.org/agri/PersonAgriculturalHolderRole",
+    "agri/ProducerOrganization": "https://publicschema.org/agri/ProducerOrganization",
+    "crvs/Adoption": "https://publicschema.org/crvs/Adoption",
+    "crvs/Birth": "https://publicschema.org/crvs/Birth",
+    "crvs/Certificate": "https://publicschema.org/crvs/Certificate",
+    "crvs/CivilStatusAnnotation": "https://publicschema.org/crvs/CivilStatusAnnotation",
+    "crvs/CivilStatusDocument": "https://publicschema.org/crvs/CivilStatusDocument",
+    "crvs/CivilStatusRecord": "https://publicschema.org/crvs/CivilStatusRecord",
+    "crvs/Death": "https://publicschema.org/crvs/Death",
+    "crvs/FamilyRegister": "https://publicschema.org/crvs/FamilyRegister",
+    "crvs/FetalDeath": "https://publicschema.org/crvs/FetalDeath",
+    "crvs/Legitimation": "https://publicschema.org/crvs/Legitimation",
+    "crvs/Marriage": "https://publicschema.org/crvs/Marriage",
+    "crvs/MarriageTermination": "https://publicschema.org/crvs/MarriageTermination",
+    "crvs/Parent": "https://publicschema.org/crvs/Parent",
+    "crvs/PaternityRecognition": "https://publicschema.org/crvs/PaternityRecognition",
+    "crvs/Person": "https://publicschema.org/crvs/Person",
+    "crvs/VitalEvent": "https://publicschema.org/crvs/VitalEvent",
+    "edu/EducationOffering": "https://publicschema.org/edu/EducationOffering",
+    "edu/EducationProgram": "https://publicschema.org/edu/EducationProgram",
+    "edu/EducationProvider": "https://publicschema.org/edu/EducationProvider",
+    "edu/ProviderSite": "https://publicschema.org/edu/ProviderSite",
+    "edu/School": "https://publicschema.org/edu/School",
+    "elections/VoterRegistration": "https://publicschema.org/elections/VoterRegistration",
+    "environment/EnvironmentalFacility": "https://publicschema.org/environment/EnvironmentalFacility",
+    "environment/WaterUseAuthorization": "https://publicschema.org/environment/WaterUseAuthorization",
+    "health/HealthFacility": "https://publicschema.org/health/HealthFacility",
+    "land/LandAdministrativeUnit": "https://publicschema.org/land/LandAdministrativeUnit",
+    "land/LandBoundaryAssertion": "https://publicschema.org/land/LandBoundaryAssertion",
+    "land/LandSpatialUnit": "https://publicschema.org/land/LandSpatialUnit",
+    "land/LandTenureAssertion": "https://publicschema.org/land/LandTenureAssertion",
+    "metrics/AttributeValue": "https://publicschema.org/metrics/AttributeValue",
+    "metrics/DimensionValue": "https://publicschema.org/metrics/DimensionValue",
+    "metrics/Metric": "https://publicschema.org/metrics/Metric",
+    "metrics/MetricAttribute": "https://publicschema.org/metrics/MetricAttribute",
+    "metrics/MetricCalculation": "https://publicschema.org/metrics/MetricCalculation",
+    "metrics/MetricDimension": "https://publicschema.org/metrics/MetricDimension",
+    "metrics/MetricObservation": "https://publicschema.org/metrics/MetricObservation",
+    "metrics/MetricReport": "https://publicschema.org/metrics/MetricReport",
+    "metrics/Period": "https://publicschema.org/metrics/Period",
+    "metrics/PopulationCriterion": "https://publicschema.org/metrics/PopulationCriterion",
+    "metrics/Stratifier": "https://publicschema.org/metrics/Stratifier",
+    "sp/BenefitSchedule": "https://publicschema.org/sp/BenefitSchedule",
+    "sp/EligibilityDecision": "https://publicschema.org/sp/EligibilityDecision",
+    "sp/Enrollment": "https://publicschema.org/sp/Enrollment",
+    "sp/Entitlement": "https://publicschema.org/sp/Entitlement",
+    "sp/Grievance": "https://publicschema.org/sp/Grievance",
+    "sp/Program": "https://publicschema.org/sp/Program",
+    "sp/Referral": "https://publicschema.org/sp/Referral",
+    "tax/TaxRegistration": "https://publicschema.org/tax/TaxRegistration",
+    "transport/DrivingEntitlement": "https://publicschema.org/transport/DrivingEntitlement",
+    "transport/Vehicle": "https://publicschema.org/transport/Vehicle",
+    "Address": "https://publicschema.org/Address",
+    "AdministrativeAppeal": "https://publicschema.org/AdministrativeAppeal",
+    "AdministrativeDecision": "https://publicschema.org/AdministrativeDecision",
+    "Agent": "https://publicschema.org/Agent",
+    "AnimalGroup": "https://publicschema.org/AnimalGroup",
+    "AnimalGroupCount": "https://publicschema.org/AnimalGroupCount",
+    "AnimalMovement": "https://publicschema.org/AnimalMovement",
+    "AnimalResponsibility": "https://publicschema.org/AnimalResponsibility",
+    "AssetAddressAssignment": "https://publicschema.org/AssetAddressAssignment",
+    "AssetPartyRole": "https://publicschema.org/AssetPartyRole",
+    "Authorization": "https://publicschema.org/Authorization",
+    "AwardedQualification": "https://publicschema.org/AwardedQualification",
+    "BiometricSample": "https://publicschema.org/BiometricSample",
+    "Building": "https://publicschema.org/Building",
+    "BuildingUnit": "https://publicschema.org/BuildingUnit",
+    "Certification": "https://publicschema.org/Certification",
+    "CodedValue": "https://publicschema.org/CodedValue",
+    "ComplianceAssessment": "https://publicschema.org/ComplianceAssessment",
+    "ConsentRecord": "https://publicschema.org/ConsentRecord",
+    "ContactPoint": "https://publicschema.org/ContactPoint",
+    "DeliveryItem": "https://publicschema.org/DeliveryItem",
+    "Event": "https://publicschema.org/Event",
+    "EvidenceAssertion": "https://publicschema.org/EvidenceAssertion",
+    "Family": "https://publicschema.org/Family",
+    "FunctioningProfile": "https://publicschema.org/FunctioningProfile",
+    "GeneticResourceAccession": "https://publicschema.org/GeneticResourceAccession",
+    "Group": "https://publicschema.org/Group",
+    "GroupMembership": "https://publicschema.org/GroupMembership",
+    "HazardEvent": "https://publicschema.org/HazardEvent",
+    "Household": "https://publicschema.org/Household",
+    "IdentifiedAnimalUnit": "https://publicschema.org/IdentifiedAnimalUnit",
+    "Identifier": "https://publicschema.org/Identifier",
+    "IdentifierAssignment": "https://publicschema.org/IdentifierAssignment",
+    "IdentityDocument": "https://publicschema.org/IdentityDocument",
+    "InKindDelivery": "https://publicschema.org/InKindDelivery",
+    "IndividualAnimal": "https://publicschema.org/IndividualAnimal",
+    "InformalGroup": "https://publicschema.org/InformalGroup",
+    "InstitutionalRelationship": "https://publicschema.org/InstitutionalRelationship",
+    "InstitutionalRole": "https://publicschema.org/InstitutionalRole",
+    "Instrument": "https://publicschema.org/Instrument",
+    "LegalArrangement": "https://publicschema.org/LegalArrangement",
+    "Location": "https://publicschema.org/Location",
+    "NameUsage": "https://publicschema.org/NameUsage",
+    "Organization": "https://publicschema.org/Organization",
+    "OrganizationalChangeEvent": "https://publicschema.org/OrganizationalChangeEvent",
+    "OwnershipInterest": "https://publicschema.org/OwnershipInterest",
+    "Party": "https://publicschema.org/Party",
+    "PaymentEvent": "https://publicschema.org/PaymentEvent",
+    "Person": "https://publicschema.org/Person",
+    "PlantVariety": "https://publicschema.org/PlantVariety",
+    "PracticeRole": "https://publicschema.org/PracticeRole",
+    "PrivacyNotice": "https://publicschema.org/PrivacyNotice",
+    "ProductComponent": "https://publicschema.org/ProductComponent",
+    "ProfessionalLicense": "https://publicschema.org/ProfessionalLicense",
+    "Profile": "https://publicschema.org/Profile",
+    "PublicOrganization": "https://publicschema.org/PublicOrganization",
+    "PublicService": "https://publicschema.org/PublicService",
+    "QuantityValue": "https://publicschema.org/QuantityValue",
+    "RecordLifecycleEvent": "https://publicschema.org/RecordLifecycleEvent",
+    "RecordReference": "https://publicschema.org/RecordReference",
+    "Register": "https://publicschema.org/Register",
+    "Registration": "https://publicschema.org/Registration",
+    "RegistrationOffice": "https://publicschema.org/RegistrationOffice",
+    "RegistryEntry": "https://publicschema.org/RegistryEntry",
+    "RegulatoryAction": "https://publicschema.org/RegulatoryAction",
+    "Relationship": "https://publicschema.org/Relationship",
+    "RepresentationRole": "https://publicschema.org/RepresentationRole",
+    "ScoringEvent": "https://publicschema.org/ScoringEvent",
+    "ScoringRule": "https://publicschema.org/ScoringRule",
+    "SeedLot": "https://publicschema.org/SeedLot",
+    "ServiceApplication": "https://publicschema.org/ServiceApplication",
+    "ServiceCapacityObservation": "https://publicschema.org/ServiceCapacityObservation",
+    "ServicePoint": "https://publicschema.org/ServicePoint",
+    "SocioEconomicProfile": "https://publicschema.org/SocioEconomicProfile",
+    "SoftwareAgent": "https://publicschema.org/SoftwareAgent",
+    "SpatialGeometry": "https://publicschema.org/SpatialGeometry",
+    "SubjectMatchAssertion": "https://publicschema.org/SubjectMatchAssertion",
+    "Voucher": "https://publicschema.org/Voucher",
+    "VoucherRedemption": "https://publicschema.org/VoucherRedemption",
+    "WaterPoint": "https://publicschema.org/WaterPoint",
+    "WorkRelationship": "https://publicschema.org/WorkRelationship",
+    "AgriculturalFacility": "https://publicschema.org/agri/AgriculturalFacility",
+    "AgriculturalHolderRole": "https://publicschema.org/agri/AgriculturalHolderRole",
+    "AgriculturalInputProduct": "https://publicschema.org/agri/AgriculturalInputProduct",
+    "AgriculturalLaboratory": "https://publicschema.org/agri/AgriculturalLaboratory",
+    "AgriculturalMachine": "https://publicschema.org/agri/AgriculturalMachine",
+    "AgriculturalParcel": "https://publicschema.org/agri/AgriculturalParcel",
+    "AgriculturalServiceRole": "https://publicschema.org/agri/AgriculturalServiceRole",
+    "AnimalBreed": "https://publicschema.org/agri/AnimalBreed",
+    "AnimalResidence": "https://publicschema.org/agri/AnimalResidence",
+    "CropPlanting": "https://publicschema.org/agri/CropPlanting",
+    "CropPlantingComponent": "https://publicschema.org/agri/CropPlantingComponent",
+    "Farm": "https://publicschema.org/agri/Farm",
+    "FarmerRegistration": "https://publicschema.org/agri/FarmerRegistration",
+    "FishingVessel": "https://publicschema.org/agri/FishingVessel",
+    "GroupAgriculturalHolderRole": "https://publicschema.org/agri/GroupAgriculturalHolderRole",
+    "HoldingFacilityLink": "https://publicschema.org/agri/HoldingFacilityLink",
+    "HoldingParcelLink": "https://publicschema.org/agri/HoldingParcelLink",
+    "HoldingWorkAssignment": "https://publicschema.org/agri/HoldingWorkAssignment",
+    "IrrigationScheme": "https://publicschema.org/agri/IrrigationScheme",
+    "OrganizationAgriculturalHolderRole": "https://publicschema.org/agri/OrganizationAgriculturalHolderRole",
+    "PersonAgriculturalHolderRole": "https://publicschema.org/agri/PersonAgriculturalHolderRole",
+    "ProducerOrganization": "https://publicschema.org/agri/ProducerOrganization",
+    "Adoption": "https://publicschema.org/crvs/Adoption",
+    "Birth": "https://publicschema.org/crvs/Birth",
+    "Certificate": "https://publicschema.org/crvs/Certificate",
+    "CivilStatusAnnotation": "https://publicschema.org/crvs/CivilStatusAnnotation",
+    "CivilStatusDocument": "https://publicschema.org/crvs/CivilStatusDocument",
+    "CivilStatusRecord": "https://publicschema.org/crvs/CivilStatusRecord",
+    "Death": "https://publicschema.org/crvs/Death",
+    "FamilyRegister": "https://publicschema.org/crvs/FamilyRegister",
+    "FetalDeath": "https://publicschema.org/crvs/FetalDeath",
+    "Legitimation": "https://publicschema.org/crvs/Legitimation",
+    "Marriage": "https://publicschema.org/crvs/Marriage",
+    "MarriageTermination": "https://publicschema.org/crvs/MarriageTermination",
+    "Parent": "https://publicschema.org/crvs/Parent",
+    "PaternityRecognition": "https://publicschema.org/crvs/PaternityRecognition",
+    "VitalEvent": "https://publicschema.org/crvs/VitalEvent",
+    "EducationOffering": "https://publicschema.org/edu/EducationOffering",
+    "EducationProgram": "https://publicschema.org/edu/EducationProgram",
+    "EducationProvider": "https://publicschema.org/edu/EducationProvider",
+    "ProviderSite": "https://publicschema.org/edu/ProviderSite",
+    "School": "https://publicschema.org/edu/School",
+    "VoterRegistration": "https://publicschema.org/elections/VoterRegistration",
+    "EnvironmentalFacility": "https://publicschema.org/environment/EnvironmentalFacility",
+    "WaterUseAuthorization": "https://publicschema.org/environment/WaterUseAuthorization",
+    "HealthFacility": "https://publicschema.org/health/HealthFacility",
+    "LandAdministrativeUnit": "https://publicschema.org/land/LandAdministrativeUnit",
+    "LandBoundaryAssertion": "https://publicschema.org/land/LandBoundaryAssertion",
+    "LandSpatialUnit": "https://publicschema.org/land/LandSpatialUnit",
+    "LandTenureAssertion": "https://publicschema.org/land/LandTenureAssertion",
+    "AttributeValue": "https://publicschema.org/metrics/AttributeValue",
+    "DimensionValue": "https://publicschema.org/metrics/DimensionValue",
+    "Metric": "https://publicschema.org/metrics/Metric",
+    "MetricAttribute": "https://publicschema.org/metrics/MetricAttribute",
+    "MetricCalculation": "https://publicschema.org/metrics/MetricCalculation",
+    "MetricDimension": "https://publicschema.org/metrics/MetricDimension",
+    "MetricObservation": "https://publicschema.org/metrics/MetricObservation",
+    "MetricReport": "https://publicschema.org/metrics/MetricReport",
+    "Period": "https://publicschema.org/metrics/Period",
+    "PopulationCriterion": "https://publicschema.org/metrics/PopulationCriterion",
+    "Stratifier": "https://publicschema.org/metrics/Stratifier",
+    "BenefitSchedule": "https://publicschema.org/sp/BenefitSchedule",
+    "EligibilityDecision": "https://publicschema.org/sp/EligibilityDecision",
+    "Enrollment": "https://publicschema.org/sp/Enrollment",
+    "Entitlement": "https://publicschema.org/sp/Entitlement",
+    "Grievance": "https://publicschema.org/sp/Grievance",
+    "Program": "https://publicschema.org/sp/Program",
+    "Referral": "https://publicschema.org/sp/Referral",
+    "TaxRegistration": "https://publicschema.org/tax/TaxRegistration",
+    "DrivingEntitlement": "https://publicschema.org/transport/DrivingEntitlement",
+    "Vehicle": "https://publicschema.org/transport/Vehicle",
+    "document_type": "https://publicschema.org/document_type",
+    "issuing_jurisdiction": "https://publicschema.org/issuing_jurisdiction",
+    "identity_documents": {
+      "@id": "https://publicschema.org/identity_documents",
+      "@type": "@id",
+      "@container": "@set"
+    },
+    "biometric_modality": "https://publicschema.org/biometric_modality",
+    "biometric_subtype": "https://publicschema.org/biometric_subtype",
+    "capture_date": {
+      "@id": "https://publicschema.org/capture_date",
+      "@type": "xsd:date"
+    },
+    "capture_device": "https://publicschema.org/capture_device",
+    "exception_reason": "https://publicschema.org/exception_reason",
+    "impression_type": "https://publicschema.org/impression_type",
+    "quality_algorithm": "https://publicschema.org/quality_algorithm",
+    "quality_score": {
+      "@id": "https://publicschema.org/quality_score",
+      "@type": "xsd:integer"
+    },
+    "sample_format": "https://publicschema.org/sample_format",
+    "sample_uri": "https://publicschema.org/sample_uri",
+    "commodity_type": "https://publicschema.org/commodity_type",
+    "quantity": "https://publicschema.org/quantity",
+    "quantity_redeemed": "https://publicschema.org/quantity_redeemed",
+    "unit_of_measure": "https://publicschema.org/unit_of_measure",
+    "applicant": {
+      "@id": "https://publicschema.org/applicant",
+      "@type": "@id"
+    },
+    "beneficiary": {
+      "@id": "https://publicschema.org/beneficiary",
+      "@type": "@id"
+    },
+    "benefit_description": "https://publicschema.org/sp/benefit_description",
+    "benefit_modality": {
+      "@id": "https://publicschema.org/sp/benefit_modality",
+      "@container": "@set"
+    },
+    "complainant": {
+      "@id": "https://publicschema.org/sp/complainant",
+      "@type": "@id"
+    },
+    "conditionality_type": "https://publicschema.org/sp/conditionality_type",
+    "coverage_area": {
+      "@id": "https://publicschema.org/sp/coverage_area",
+      "@type": "@id"
+    },
+    "coverage_period_end": {
+      "@id": "https://publicschema.org/sp/coverage_period_end",
+      "@type": "xsd:date"
+    },
+    "coverage_period_start": {
+      "@id": "https://publicschema.org/sp/coverage_period_start",
+      "@type": "xsd:date"
+    },
+    "decision_basis": "https://publicschema.org/decision_basis",
+    "decision_date": {
+      "@id": "https://publicschema.org/decision_date",
+      "@type": "xsd:date"
+    },
+    "document_expiry_date": {
+      "@id": "https://publicschema.org/sp/document_expiry_date",
+      "@type": "xsd:date"
+    },
+    "eligibility_decision_ref": {
+      "@id": "https://publicschema.org/sp/eligibility_decision_ref",
+      "@type": "@id"
+    },
+    "eligibility_status": "https://publicschema.org/eligibility_status",
+    "enrollment_date": {
+      "@id": "https://publicschema.org/enrollment_date",
+      "@type": "xsd:date"
+    },
+    "enrollment_status": "https://publicschema.org/enrollment_status",
+    "entitlement_status": "https://publicschema.org/sp/entitlement_status",
+    "exit_date": {
+      "@id": "https://publicschema.org/exit_date",
+      "@type": "xsd:date"
+    },
+    "exit_reason": "https://publicschema.org/exit_reason",
+    "frequency": "https://publicschema.org/frequency",
+    "frequency_rule": "https://publicschema.org/frequency_rule",
+    "governing_jurisdiction": "https://publicschema.org/sp/governing_jurisdiction",
+    "grievance_status": "https://publicschema.org/sp/grievance_status",
+    "grievance_subject": "https://publicschema.org/sp/grievance_subject",
+    "grievance_type": "https://publicschema.org/sp/grievance_type",
+    "implementing_agency": "https://publicschema.org/sp/implementing_agency",
+    "is_enrolled": {
+      "@id": "https://publicschema.org/sp/is_enrolled",
+      "@type": "xsd:boolean"
+    },
+    "program_ref": {
+      "@id": "https://publicschema.org/sp/program_ref",
+      "@type": "@id"
+    },
+    "receiving_program": "https://publicschema.org/receiving_program",
+    "referral_date": {
+      "@id": "https://publicschema.org/referral_date",
+      "@type": "xsd:date"
+    },
+    "referral_reason": "https://publicschema.org/referral_reason",
+    "referral_status": "https://publicschema.org/referral_status",
+    "referred_person": {
+      "@id": "https://publicschema.org/referred_person",
+      "@type": "@id"
+    },
+    "referring_program": "https://publicschema.org/referring_program",
+    "resolution_date": {
+      "@id": "https://publicschema.org/resolution_date",
+      "@type": "xsd:date"
+    },
+    "schedule_ref": {
+      "@id": "https://publicschema.org/sp/schedule_ref",
+      "@type": "@id"
+    },
+    "submission_date": {
+      "@id": "https://publicschema.org/submission_date",
+      "@type": "xsd:date"
+    },
+    "targeting_approach": "https://publicschema.org/sp/targeting_approach",
+    "valid_until": {
+      "@id": "https://publicschema.org/valid_until",
+      "@type": "xsd:date"
+    },
+    "administrative_level": {
+      "@id": "https://publicschema.org/administrative_level",
+      "@type": "xsd:integer"
+    },
+    "affected_locations": {
+      "@id": "https://publicschema.org/affected_locations",
+      "@type": "@id",
+      "@container": "@set"
+    },
+    "affected_programs": {
+      "@id": "https://publicschema.org/affected_programs",
+      "@type": "@id",
+      "@container": "@set"
+    },
+    "age_at_event": {
+      "@id": "https://publicschema.org/crvs/age_at_event",
+      "@type": "xsd:integer"
+    },
+    "assessment_band": "https://publicschema.org/assessment_band",
+    "automated_decision_description": "https://publicschema.org/automated_decision_description",
+    "available_languages": {
+      "@id": "https://publicschema.org/available_languages",
+      "@container": "@set"
+    },
+    "certainty": "https://publicschema.org/certainty",
+    "complaint_authority_contact": "https://publicschema.org/complaint_authority_contact",
+    "cutoff_score": "https://publicschema.org/cutoff_score",
+    "data_sources": {
+      "@id": "https://publicschema.org/data_sources",
+      "@container": "@set"
+    },
+    "delivery_channel": "https://publicschema.org/delivery_channel",
+    "delivery_date": {
+      "@id": "https://publicschema.org/delivery_date",
+      "@type": "xsd:date"
+    },
+    "delivery_location": "https://publicschema.org/delivery_location",
+    "delivery_status": "https://publicschema.org/delivery_status",
+    "dpo_contact": "https://publicschema.org/dpo_contact",
+    "entitlement_ref": {
+      "@id": "https://publicschema.org/entitlement_ref",
+      "@type": "@id"
+    },
+    "evaluation_date": {
+      "@id": "https://publicschema.org/evaluation_date",
+      "@type": "xsd:date"
+    },
+    "evaluator": {
+      "@id": "https://publicschema.org/evaluator",
+      "@type": "@id"
+    },
+    "failure_reason": "https://publicschema.org/failure_reason",
+    "geocodes": {
+      "@id": "https://publicschema.org/geocodes",
+      "@type": "@id",
+      "@container": "@set"
+    },
+    "geometry": {
+      "@id": "https://publicschema.org/geometry",
+      "@type": "@json"
+    },
+    "group": {
+      "@id": "https://publicschema.org/group",
+      "@type": "@id"
+    },
+    "hazard_type": "https://publicschema.org/hazard_type",
+    "inputs": {
+      "@id": "https://publicschema.org/inputs",
+      "@type": "@id",
+      "@container": "@set"
+    },
+    "is_active": {
+      "@id": "https://publicschema.org/is_active",
+      "@type": "xsd:boolean"
+    },
+    "is_reconciled": {
+      "@id": "https://publicschema.org/is_reconciled",
+      "@type": "xsd:boolean"
+    },
+    "item_set": {
+      "@id": "https://publicschema.org/item_set",
+      "@container": "@set"
+    },
+    "items": {
+      "@id": "https://publicschema.org/items",
+      "@type": "@id",
+      "@container": "@set"
+    },
+    "language_of_administration": {
+      "@id": "https://publicschema.org/language_of_administration",
+      "@container": "@set"
+    },
+    "latitude": "https://publicschema.org/latitude",
+    "level_name": "https://publicschema.org/level_name",
+    "location_name": "https://publicschema.org/location_name",
+    "longitude": "https://publicschema.org/longitude",
+    "parent_location": {
+      "@id": "https://publicschema.org/parent_location",
+      "@type": "@id"
+    },
+    "payment_amount": "https://publicschema.org/payment_amount",
+    "payment_currency": "https://publicschema.org/payment_currency",
+    "payment_date": {
+      "@id": "https://publicschema.org/payment_date",
+      "@type": "xsd:date"
+    },
+    "payment_status": "https://publicschema.org/payment_status",
+    "place_of_usual_residence": {
+      "@id": "https://publicschema.org/crvs/place_of_usual_residence",
+      "@type": "@id"
+    },
+    "publication_url": {
+      "@id": "https://publicschema.org/publication_url",
+      "@type": "@id"
+    },
+    "publisher": {
+      "@id": "https://publicschema.org/publisher",
+      "@type": "@id"
+    },
+    "raw_score": "https://publicschema.org/raw_score",
+    "recipient": {
+      "@id": "https://publicschema.org/recipient",
+      "@type": "@id"
+    },
+    "recipient_categories": {
+      "@id": "https://publicschema.org/recipient_categories",
+      "@container": "@set"
+    },
+    "recipients_described": "https://publicschema.org/recipients_described",
+    "redeemable_by": {
+      "@id": "https://publicschema.org/redeemable_by",
+      "@type": "@id",
+      "@container": "@set"
+    },
+    "redeemed_by": {
+      "@id": "https://publicschema.org/redeemed_by",
+      "@type": "@id"
+    },
+    "redemption_agent": "https://publicschema.org/redemption_agent",
+    "redemption_date": {
+      "@id": "https://publicschema.org/redemption_date",
+      "@type": "xsd:date"
+    },
+    "retention_description": "https://publicschema.org/retention_description",
+    "rights_description": "https://publicschema.org/rights_description",
+    "role": "https://publicschema.org/role",
+    "rule_applied": {
+      "@id": "https://publicschema.org/rule_applied",
+      "@type": "@id"
+    },
+    "scoring_method": "https://publicschema.org/scoring_method",
+    "serial_number": "https://publicschema.org/serial_number",
+    "severity": "https://publicschema.org/severity",
+    "source_of_data": "https://publicschema.org/source_of_data",
+    "supersedes_ref": {
+      "@id": "https://publicschema.org/supersedes_ref",
+      "@type": "@id"
+    },
+    "transfer_description": "https://publicschema.org/transfer_description",
+    "version": "https://publicschema.org/version",
+    "voucher_format": "https://publicschema.org/voucher_format",
+    "voucher_ref": {
+      "@id": "https://publicschema.org/voucher_ref",
+      "@type": "@id"
+    },
+    "voucher_status": "https://publicschema.org/voucher_status",
+    "withdrawal_description": "https://publicschema.org/withdrawal_description",
+    "code_value": "https://publicschema.org/code_value",
+    "code_scheme": {
+      "@id": "https://publicschema.org/code_scheme",
+      "@type": "@id"
+    },
+    "code_label": "https://publicschema.org/code_label",
+    "code_meaning": {
+      "@id": "https://publicschema.org/code_meaning",
+      "@type": "@id"
+    },
+    "quantity_value": "https://publicschema.org/quantity_value",
+    "unit_code": "https://publicschema.org/unit_code",
+    "unit_scheme": "https://publicschema.org/unit_scheme",
+    "geometry_encoding": "https://publicschema.org/geometry_encoding",
+    "geometry_literal": "https://publicschema.org/geometry_literal",
+    "coordinate_reference_system": {
+      "@id": "https://publicschema.org/coordinate_reference_system",
+      "@type": "@id"
+    },
+    "spatial_geometry": {
+      "@id": "https://publicschema.org/spatial_geometry",
+      "@type": "@id",
+      "@container": "@set"
+    },
+    "address": {
+      "@id": "https://publicschema.org/address",
+      "@type": "@id"
+    },
+    "address_area": "https://publicschema.org/address_area",
+    "administrative_area": "https://publicschema.org/administrative_area",
+    "addressRegion": "https://publicschema.org/administrative_area",
+    "biometric_samples": {
+      "@id": "https://publicschema.org/biometric_samples",
+      "@type": "@id",
+      "@container": "@set"
+    },
+    "building_name": "https://publicschema.org/building_name",
+    "chronic_illness_in_household": {
+      "@id": "https://publicschema.org/chronic_illness_in_household",
+      "@type": "xsd:boolean"
+    },
+    "city": "https://publicschema.org/city",
+    "addressLocality": "https://publicschema.org/city",
+    "cooking_fuel": "https://publicschema.org/cooking_fuel",
+    "country": "https://publicschema.org/country",
+    "addressCountry": "https://publicschema.org/country",
+    "country_of_birth": "https://publicschema.org/country_of_birth",
+    "date_of_birth": {
+      "@id": "https://publicschema.org/date_of_birth",
+      "@type": "xsd:date"
+    },
+    "birthDate": {
+      "@id": "https://publicschema.org/date_of_birth",
+      "@type": "xsd:date"
+    },
+    "date_of_death": {
+      "@id": "https://publicschema.org/date_of_death",
+      "@type": "xsd:date"
+    },
+    "deathDate": {
+      "@id": "https://publicschema.org/date_of_death",
+      "@type": "xsd:date"
+    },
+    "displacement_status": "https://publicschema.org/displacement_status",
+    "dissolution_date": {
+      "@id": "https://publicschema.org/dissolution_date",
+      "@type": "xsd:date"
+    },
+    "domicile": {
+      "@id": "https://publicschema.org/domicile",
+      "@type": "@id"
+    },
+    "dwelling_type": "https://publicschema.org/dwelling_type",
+    "economic_activities": {
+      "@id": "https://publicschema.org/economic_activities",
+      "@type": "@id",
+      "@container": "@set"
+    },
+    "education_level": "https://publicschema.org/education_level",
+    "electricity_access": {
+      "@id": "https://publicschema.org/electricity_access",
+      "@type": "xsd:boolean"
+    },
+    "email_address": "https://publicschema.org/email_address",
+    "email": "https://publicschema.org/email_address",
+    "employment_status": "https://publicschema.org/employment_status",
+    "ethnic_group": "https://publicschema.org/ethnic_group",
+    "facility_level": "https://publicschema.org/health/facility_level",
+    "facility_type": "https://publicschema.org/health/facility_type",
+    "family_name": "https://publicschema.org/family_name",
+    "familyName": "https://publicschema.org/family_name",
+    "family_name_at_birth": "https://publicschema.org/family_name_at_birth",
+    "floor_material": "https://publicschema.org/floor_material",
+    "food_security_level": "https://publicschema.org/food_security_level",
+    "formation_date": {
+      "@id": "https://publicschema.org/formation_date",
+      "@type": "xsd:date"
+    },
+    "full_address": "https://publicschema.org/full_address",
+    "functioning_status": "https://publicschema.org/functioning_status",
+    "gender": "https://publicschema.org/gender",
+    "given_name": "https://publicschema.org/given_name",
+    "givenName": "https://publicschema.org/given_name",
+    "given_name_at_birth": "https://publicschema.org/given_name_at_birth",
+    "group_memberships": {
+      "@id": "https://publicschema.org/group_memberships",
+      "@type": "@id",
+      "@container": "@set"
+    },
+    "group_type": "https://publicschema.org/group_type",
+    "house_number": "https://publicschema.org/house_number",
+    "household_assets": {
+      "@id": "https://publicschema.org/household_assets",
+      "@container": "@set"
+    },
+    "ict_access": {
+      "@id": "https://publicschema.org/ict_access",
+      "@container": "@set"
+    },
+    "identifier_scheme_id": "https://publicschema.org/identifier_scheme_id",
+    "identifier_scheme_name": "https://publicschema.org/identifier_scheme_name",
+    "identifier_type": "https://publicschema.org/identifier_type",
+    "identifier_value": "https://publicschema.org/identifier_value",
+    "income_source": "https://publicschema.org/income_source",
+    "industry": "https://publicschema.org/industry",
+    "legal_form": {
+      "@id": "https://publicschema.org/legal_form",
+      "@type": "@id"
+    },
+    "literacy": "https://publicschema.org/literacy",
+    "located_at": {
+      "@id": "https://publicschema.org/located_at",
+      "@type": "@id"
+    },
+    "managed_by": {
+      "@id": "https://publicschema.org/managed_by",
+      "@type": "@id"
+    },
+    "marital_status": "https://publicschema.org/marital_status",
+    "matronymic_name": "https://publicschema.org/matronymic_name",
+    "member_count": {
+      "@id": "https://publicschema.org/member_count",
+      "@type": "xsd:integer"
+    },
+    "memberships": {
+      "@id": "https://publicschema.org/memberships",
+      "@type": "@id",
+      "@container": "@set"
+    },
+    "nationality": "https://publicschema.org/nationality",
+    "number_of_spouses": {
+      "@id": "https://publicschema.org/number_of_spouses",
+      "@type": "xsd:integer"
+    },
+    "nutrition_status": "https://publicschema.org/nutrition_status",
+    "object_person": {
+      "@id": "https://publicschema.org/object_person",
+      "@type": "@id"
+    },
+    "occupation": "https://publicschema.org/occupation",
+    "operational_status": "https://publicschema.org/operational_status",
+    "patronymic_name": "https://publicschema.org/patronymic_name",
+    "phone_number": "https://publicschema.org/phone_number",
+    "telephone": "https://publicschema.org/phone_number",
+    "postal_code": "https://publicschema.org/postal_code",
+    "postalCode": "https://publicschema.org/postal_code",
+    "preferred_language": "https://publicschema.org/preferred_language",
+    "preferred_name": "https://publicschema.org/preferred_name",
+    "alternateName": "https://publicschema.org/preferred_name",
+    "pregnancy_status": "https://publicschema.org/pregnancy_status",
+    "pregnant_or_lactating_count": {
+      "@id": "https://publicschema.org/pregnant_or_lactating_count",
+      "@type": "xsd:integer"
+    },
+    "registration_office_type": "https://publicschema.org/registration_office_type",
+    "relationship_type": "https://publicschema.org/relationship_type",
+    "religion": "https://publicschema.org/religion",
+    "roof_material": "https://publicschema.org/roof_material",
+    "sanitation_facility": "https://publicschema.org/sanitation_facility",
+    "sanitation_service_level": "https://publicschema.org/sanitation_service_level",
+    "sanitation_shared_households": {
+      "@id": "https://publicschema.org/sanitation_shared_households",
+      "@type": "xsd:integer"
+    },
+    "school_level_served": {
+      "@id": "https://publicschema.org/edu/school_level_served",
+      "@container": "@set"
+    },
+    "school_type": "https://publicschema.org/edu/school_type",
+    "service_point_type": "https://publicschema.org/service_point_type",
+    "settlement_type": "https://publicschema.org/settlement_type",
+    "sex": "https://publicschema.org/sex",
+    "status_in_employment": "https://publicschema.org/status_in_employment",
+    "street_address": "https://publicschema.org/street_address",
+    "streetAddress": "https://publicschema.org/street_address",
+    "subject_person": {
+      "@id": "https://publicschema.org/subject_person",
+      "@type": "@id"
+    },
+    "wall_material": "https://publicschema.org/wall_material",
+    "water_collection_time_minutes": {
+      "@id": "https://publicschema.org/water_collection_time_minutes",
+      "@type": "xsd:integer"
+    },
+    "water_point_type": "https://publicschema.org/water_point_type",
+    "water_service_level": "https://publicschema.org/water_service_level",
+    "water_source": "https://publicschema.org/water_source",
+    "amount": "https://publicschema.org/amount",
+    "conforms_to": {
+      "@id": "https://publicschema.org/conforms_to",
+      "@type": "@id",
+      "@container": "@set"
+    },
+    "controllers": {
+      "@id": "https://publicschema.org/controllers",
+      "@type": "@id",
+      "@container": "@set"
+    },
+    "created_at": {
+      "@id": "https://publicschema.org/created_at",
+      "@type": "xsd:dateTime"
+    },
+    "currency": "https://publicschema.org/currency",
+    "description": "https://publicschema.org/description",
+    "effective_date": {
+      "@id": "https://publicschema.org/effective_date",
+      "@type": "xsd:date"
+    },
+    "end_date": {
+      "@id": "https://publicschema.org/end_date",
+      "@type": "xsd:date"
+    },
+    "endDate": {
+      "@id": "https://publicschema.org/end_date",
+      "@type": "xsd:date"
+    },
+    "enrollment_ref": {
+      "@id": "https://publicschema.org/enrollment_ref",
+      "@type": "@id"
+    },
+    "expiry_date": {
+      "@id": "https://publicschema.org/expiry_date",
+      "@type": "xsd:date"
+    },
+    "identifier": "https://publicschema.org/identifier",
+    "identifiers": {
+      "@id": "https://publicschema.org/identifiers",
+      "@type": "@id",
+      "@container": "@set"
+    },
+    "issue_date": {
+      "@id": "https://publicschema.org/issue_date",
+      "@type": "xsd:date"
+    },
+    "issued_to": {
+      "@id": "https://publicschema.org/issued_to",
+      "@type": "@id"
+    },
+    "issuing_authority": "https://publicschema.org/issuing_authority",
+    "jurisdiction": "https://publicschema.org/jurisdiction",
+    "legal_basis": {
+      "@id": "https://publicschema.org/legal_basis",
+      "@container": "@set"
+    },
+    "location": {
+      "@id": "https://publicschema.org/location",
+      "@type": "@id"
+    },
+    "name": "https://publicschema.org/name",
+    "person": {
+      "@id": "https://publicschema.org/person",
+      "@type": "@id"
+    },
+    "personal_data_categories": {
+      "@id": "https://publicschema.org/personal_data_categories",
+      "@type": "@id",
+      "@container": "@set"
+    },
+    "processing_operations": {
+      "@id": "https://publicschema.org/processing_operations",
+      "@type": "@id",
+      "@container": "@set"
+    },
+    "purposes": {
+      "@id": "https://publicschema.org/purposes",
+      "@type": "@id",
+      "@container": "@set"
+    },
+    "schema_version": {
+      "@id": "https://publicschema.org/schema_version",
+      "@type": "@id"
+    },
+    "software_used": {
+      "@id": "https://publicschema.org/software_used",
+      "@type": "@id"
+    },
+    "special_category_basis": {
+      "@id": "https://publicschema.org/special_category_basis",
+      "@container": "@set"
+    },
+    "start_date": {
+      "@id": "https://publicschema.org/start_date",
+      "@type": "xsd:date"
+    },
+    "startDate": {
+      "@id": "https://publicschema.org/start_date",
+      "@type": "xsd:date"
+    },
+    "storage_duration_days": {
+      "@id": "https://publicschema.org/storage_duration_days",
+      "@type": "xsd:integer"
+    },
+    "subject": {
+      "@id": "https://publicschema.org/subject",
+      "@type": "@id"
+    },
+    "adoptee": {
+      "@id": "https://publicschema.org/crvs/adoptee",
+      "@type": "@id"
+    },
+    "adoption_type": "https://publicschema.org/crvs/adoption_type",
+    "adoptive_parents": {
+      "@id": "https://publicschema.org/crvs/adoptive_parents",
+      "@type": "@id",
+      "@container": "@set"
+    },
+    "annotating_authority": {
+      "@id": "https://publicschema.org/crvs/annotating_authority",
+      "@type": "@id"
+    },
+    "annotation_date": {
+      "@id": "https://publicschema.org/crvs/annotation_date",
+      "@type": "xsd:date"
+    },
+    "annotation_text": "https://publicschema.org/crvs/annotation_text",
+    "annotation_type": "https://publicschema.org/crvs/annotation_type",
+    "annotations": {
+      "@id": "https://publicschema.org/crvs/annotations",
+      "@type": "@id",
+      "@container": "@set"
+    },
+    "attendant_at_birth": "https://publicschema.org/crvs/attendant_at_birth",
+    "birth_order": {
+      "@id": "https://publicschema.org/crvs/birth_order",
+      "@type": "xsd:integer"
+    },
+    "birth_ref": {
+      "@id": "https://publicschema.org/crvs/birth_ref",
+      "@type": "@id"
+    },
+    "birth_type": "https://publicschema.org/crvs/birth_type",
+    "cause_of_death": "https://publicschema.org/crvs/cause_of_death",
+    "cause_of_death_code": "https://publicschema.org/crvs/cause_of_death_code",
+    "cause_of_death_coding_system": "https://publicschema.org/crvs/cause_of_death_coding_system",
+    "cause_of_death_method": "https://publicschema.org/crvs/cause_of_death_method",
+    "cause_of_fetal_death": "https://publicschema.org/crvs/cause_of_fetal_death",
+    "cause_of_fetal_death_code": "https://publicschema.org/crvs/cause_of_fetal_death_code",
+    "cause_of_fetal_death_coding_system": "https://publicschema.org/crvs/cause_of_fetal_death_coding_system",
+    "certificate_document_type": "https://publicschema.org/crvs/certificate_document_type",
+    "certificate_format": "https://publicschema.org/crvs/certificate_format",
+    "certificate_label": "https://publicschema.org/crvs/certificate_label",
+    "certificate_number": "https://publicschema.org/crvs/certificate_number",
+    "child": {
+      "@id": "https://publicschema.org/crvs/child",
+      "@type": "@id"
+    },
+    "civil_status_record": {
+      "@id": "https://publicschema.org/crvs/civil_status_record",
+      "@type": "@id"
+    },
+    "court": "https://publicschema.org/crvs/court",
+    "creation_date": {
+      "@id": "https://publicschema.org/crvs/creation_date",
+      "@type": "xsd:date"
+    },
+    "deceased": {
+      "@id": "https://publicschema.org/crvs/deceased",
+      "@type": "@id"
+    },
+    "establishment_basis": "https://publicschema.org/crvs/establishment_basis",
+    "event_date": {
+      "@id": "https://publicschema.org/crvs/event_date",
+      "@type": "xsd:date"
+    },
+    "event_date_estimated": {
+      "@id": "https://publicschema.org/crvs/event_date_estimated",
+      "@type": "xsd:boolean"
+    },
+    "event_location": {
+      "@id": "https://publicschema.org/crvs/event_location",
+      "@type": "@id"
+    },
+    "family": {
+      "@id": "https://publicschema.org/crvs/family",
+      "@type": "@id"
+    },
+    "family_register_status": "https://publicschema.org/crvs/family_register_status",
+    "gestational_age": {
+      "@id": "https://publicschema.org/crvs/gestational_age",
+      "@type": "xsd:integer"
+    },
+    "head_of_household": {
+      "@id": "https://publicschema.org/crvs/head_of_household",
+      "@type": "@id"
+    },
+    "informant": {
+      "@id": "https://publicschema.org/crvs/informant",
+      "@type": "@id"
+    },
+    "issuing_authority_location": {
+      "@id": "https://publicschema.org/crvs/issuing_authority_location",
+      "@type": "@id"
+    },
+    "issuing_office": {
+      "@id": "https://publicschema.org/crvs/issuing_office",
+      "@type": "@id"
+    },
+    "judgment_date": {
+      "@id": "https://publicschema.org/crvs/judgment_date",
+      "@type": "xsd:date"
+    },
+    "judgment_reference": "https://publicschema.org/crvs/judgment_reference",
+    "manner_of_death": "https://publicschema.org/crvs/manner_of_death",
+    "marriage_ref": {
+      "@id": "https://publicschema.org/crvs/marriage_ref",
+      "@type": "@id"
+    },
+    "medical_certifier": {
+      "@id": "https://publicschema.org/crvs/medical_certifier",
+      "@type": "@id"
+    },
+    "mother": {
+      "@id": "https://publicschema.org/crvs/mother",
+      "@type": "@id"
+    },
+    "nationality_at_birth": "https://publicschema.org/crvs/nationality_at_birth",
+    "originating_event": {
+      "@id": "https://publicschema.org/crvs/originating_event",
+      "@type": "@id"
+    },
+    "parental_role": "https://publicschema.org/crvs/parental_role",
+    "parents": {
+      "@id": "https://publicschema.org/crvs/parents",
+      "@type": "@id",
+      "@container": "@set"
+    },
+    "party_1": {
+      "@id": "https://publicschema.org/crvs/party_1",
+      "@type": "@id"
+    },
+    "party_2": {
+      "@id": "https://publicschema.org/crvs/party_2",
+      "@type": "@id"
+    },
+    "place_type": "https://publicschema.org/crvs/place_type",
+    "previous_parents": {
+      "@id": "https://publicschema.org/crvs/previous_parents",
+      "@type": "@id",
+      "@container": "@set"
+    },
+    "recognizing_parent": {
+      "@id": "https://publicschema.org/crvs/recognizing_parent",
+      "@type": "@id"
+    },
+    "record_type": "https://publicschema.org/crvs/record_type",
+    "register_authority": {
+      "@id": "https://publicschema.org/crvs/register_authority",
+      "@type": "@id"
+    },
+    "register_number": "https://publicschema.org/crvs/register_number",
+    "registrar": {
+      "@id": "https://publicschema.org/crvs/registrar",
+      "@type": "@id"
+    },
+    "registration_date": {
+      "@id": "https://publicschema.org/crvs/registration_date",
+      "@type": "xsd:date"
+    },
+    "registration_location": {
+      "@id": "https://publicschema.org/crvs/registration_location",
+      "@type": "@id"
+    },
+    "registration_status": "https://publicschema.org/crvs/registration_status",
+    "registration_type": "https://publicschema.org/crvs/registration_type",
+    "sex_at_birth": "https://publicschema.org/crvs/sex_at_birth",
+    "termination_type": "https://publicschema.org/crvs/termination_type",
+    "triggering_vital_event": {
+      "@id": "https://publicschema.org/crvs/triggering_vital_event",
+      "@type": "@id"
+    },
+    "type_of_marriage": "https://publicschema.org/crvs/type_of_marriage",
+    "vital_event": {
+      "@id": "https://publicschema.org/crvs/vital_event",
+      "@type": "@id"
+    },
+    "weight": "https://publicschema.org/crvs/weight",
+    "weight_at_birth": "https://publicschema.org/crvs/weight_at_birth",
+    "witnesses": {
+      "@id": "https://publicschema.org/crvs/witnesses",
+      "@type": "@id",
+      "@container": "@set"
+    },
+    "administration_mode": "https://publicschema.org/administration_mode",
+    "anxiety_frequency": "https://publicschema.org/anxiety_frequency",
+    "anxiety_intensity": "https://publicschema.org/anxiety_intensity",
+    "anxiety_medication": {
+      "@id": "https://publicschema.org/anxiety_medication",
+      "@type": "xsd:boolean"
+    },
+    "cognition_remembering_frequency": "https://publicschema.org/cognition_remembering_frequency",
+    "cognition_subdomain": "https://publicschema.org/cognition_subdomain",
+    "depression_frequency": "https://publicschema.org/depression_frequency",
+    "depression_intensity": "https://publicschema.org/depression_intensity",
+    "depression_medication": {
+      "@id": "https://publicschema.org/depression_medication",
+      "@type": "xsd:boolean"
+    },
+    "difficulty_accepting_change": "https://publicschema.org/difficulty_accepting_change",
+    "difficulty_being_understood": "https://publicschema.org/difficulty_being_understood",
+    "difficulty_being_understood_inside_household": "https://publicschema.org/difficulty_being_understood_inside_household",
+    "difficulty_being_understood_outside_household": "https://publicschema.org/difficulty_being_understood_outside_household",
+    "difficulty_climbing_steps": "https://publicschema.org/difficulty_climbing_steps",
+    "difficulty_cognition": "https://publicschema.org/difficulty_cognition",
+    "difficulty_communication": "https://publicschema.org/difficulty_communication",
+    "difficulty_concentrating": "https://publicschema.org/difficulty_concentrating",
+    "difficulty_controlling_behaviour": "https://publicschema.org/difficulty_controlling_behaviour",
+    "difficulty_dexterity": "https://publicschema.org/difficulty_dexterity",
+    "difficulty_disruptive_behaviour": "https://publicschema.org/difficulty_disruptive_behaviour",
+    "difficulty_hearing": "https://publicschema.org/difficulty_hearing",
+    "difficulty_hearing_noisy_room": "https://publicschema.org/difficulty_hearing_noisy_room",
+    "difficulty_hearing_quiet_room": "https://publicschema.org/difficulty_hearing_quiet_room",
+    "difficulty_learning": "https://publicschema.org/difficulty_learning",
+    "difficulty_making_friends": "https://publicschema.org/difficulty_making_friends",
+    "difficulty_playing": "https://publicschema.org/difficulty_playing",
+    "difficulty_remembering": "https://publicschema.org/difficulty_remembering",
+    "difficulty_seeing": "https://publicschema.org/difficulty_seeing",
+    "difficulty_seeing_coin": "https://publicschema.org/difficulty_seeing_coin",
+    "difficulty_seeing_face_across_room": "https://publicschema.org/difficulty_seeing_face_across_room",
+    "difficulty_self_care": "https://publicschema.org/difficulty_self_care",
+    "difficulty_understanding_others": "https://publicschema.org/difficulty_understanding_others",
+    "difficulty_upper_body_fine_motor": "https://publicschema.org/difficulty_upper_body_fine_motor",
+    "difficulty_upper_body_reach": "https://publicschema.org/difficulty_upper_body_reach",
+    "difficulty_walking": "https://publicschema.org/difficulty_walking",
+    "difficulty_walking_100m": "https://publicschema.org/difficulty_walking_100m",
+    "difficulty_walking_500m": "https://publicschema.org/difficulty_walking_500m",
+    "disability_domains_identified": {
+      "@id": "https://publicschema.org/disability_domains_identified",
+      "@container": "@set"
+    },
+    "disability_identified": {
+      "@id": "https://publicschema.org/disability_identified",
+      "@type": "xsd:boolean"
+    },
+    "fatigue_duration": "https://publicschema.org/fatigue_duration",
+    "fatigue_frequency": "https://publicschema.org/fatigue_frequency",
+    "fatigue_intensity": "https://publicschema.org/fatigue_intensity",
+    "hearing_aid_use_frequency": "https://publicschema.org/hearing_aid_use_frequency",
+    "instrument_used": {
+      "@id": "https://publicschema.org/instrument_used",
+      "@type": "@id"
+    },
+    "items_asked": {
+      "@id": "https://publicschema.org/items_asked",
+      "@container": "@set"
+    },
+    "mobility_aid_types": {
+      "@id": "https://publicschema.org/mobility_aid_types",
+      "@container": "@set"
+    },
+    "observation_date": {
+      "@id": "https://publicschema.org/observation_date",
+      "@type": "xsd:date"
+    },
+    "pain_frequency": "https://publicschema.org/pain_frequency",
+    "pain_intensity": "https://publicschema.org/pain_intensity",
+    "performed_by": {
+      "@id": "https://publicschema.org/performed_by",
+      "@type": "@id"
+    },
+    "remembering_extent": "https://publicschema.org/remembering_extent",
+    "remembering_frequency": "https://publicschema.org/remembering_frequency",
+    "respondent": {
+      "@id": "https://publicschema.org/respondent",
+      "@type": "@id"
+    },
+    "respondent_relationship": "https://publicschema.org/respondent_relationship",
+    "uses_glasses": {
+      "@id": "https://publicschema.org/uses_glasses",
+      "@type": "xsd:boolean"
+    },
+    "uses_hearing_aid": {
+      "@id": "https://publicschema.org/uses_hearing_aid",
+      "@type": "xsd:boolean"
+    },
+    "uses_mobility_aid": {
+      "@id": "https://publicschema.org/uses_mobility_aid",
+      "@type": "xsd:boolean"
+    },
+    "uses_sign_language": {
+      "@id": "https://publicschema.org/uses_sign_language",
+      "@type": "xsd:boolean"
+    },
+    "allowed_recipient_categories": {
+      "@id": "https://publicschema.org/allowed_recipient_categories",
+      "@container": "@set"
+    },
+    "collection_medium": "https://publicschema.org/collection_medium",
+    "collection_session_ref": "https://publicschema.org/collection_session_ref",
+    "consent_expression": "https://publicschema.org/consent_expression",
+    "consent_record_type": "https://publicschema.org/consent_record_type",
+    "data_subject": {
+      "@id": "https://publicschema.org/data_subject",
+      "@type": "@id"
+    },
+    "delegation_type": "https://publicschema.org/delegation_type",
+    "evidence_ref": {
+      "@id": "https://publicschema.org/evidence_ref",
+      "@container": "@set"
+    },
+    "external_id": {
+      "@id": "https://publicschema.org/external_id",
+      "@container": "@set"
+    },
+    "indicated_by": {
+      "@id": "https://publicschema.org/indicated_by",
+      "@type": "@id"
+    },
+    "joint_controller_arrangement_ref": "https://publicschema.org/joint_controller_arrangement_ref",
+    "legal_basis_reference": {
+      "@id": "https://publicschema.org/legal_basis_reference",
+      "@container": "@set"
+    },
+    "notice_presentation_language": "https://publicschema.org/notice_presentation_language",
+    "notice_ref": {
+      "@id": "https://publicschema.org/notice_ref",
+      "@type": "@id"
+    },
+    "notice_version": "https://publicschema.org/notice_version",
+    "recipient_role": {
+      "@id": "https://publicschema.org/recipient_role",
+      "@container": "@set"
+    },
+    "recipients": {
+      "@id": "https://publicschema.org/recipients",
+      "@type": "@id",
+      "@container": "@set"
+    },
+    "refusal_reason": "https://publicschema.org/refusal_reason",
+    "signed_date": {
+      "@id": "https://publicschema.org/signed_date",
+      "@type": "xsd:date"
+    },
+    "status": "https://publicschema.org/status",
+    "verified_by": {
+      "@id": "https://publicschema.org/verified_by",
+      "@type": "@id"
+    },
+    "verified_date": {
+      "@id": "https://publicschema.org/verified_date",
+      "@type": "xsd:date"
+    },
+    "withdrawal_channel": "https://publicschema.org/withdrawal_channel",
+    "withdrawal_reason": "https://publicschema.org/withdrawal_reason",
+    "withdrawal_uri": {
+      "@id": "https://publicschema.org/withdrawal_uri",
+      "@type": "@id"
+    },
+    "witnessed_by": {
+      "@id": "https://publicschema.org/witnessed_by",
+      "@type": "@id",
+      "@container": "@set"
+    },
+    "value_type": "https://publicschema.org/metrics/value_type",
+    "unit": "https://publicschema.org/metrics/unit",
+    "multiplier": {
+      "@id": "https://publicschema.org/metrics/multiplier",
+      "@type": "xsd:integer"
+    },
+    "decimals": {
+      "@id": "https://publicschema.org/metrics/decimals",
+      "@type": "xsd:integer"
+    },
+    "dimensions": {
+      "@id": "https://publicschema.org/metrics/dimensions",
+      "@type": "@id",
+      "@container": "@set"
+    },
+    "attributes": {
+      "@id": "https://publicschema.org/metrics/attributes",
+      "@type": "@id",
+      "@container": "@set"
+    },
+    "calculation": {
+      "@id": "https://publicschema.org/metrics/calculation",
+      "@type": "@id"
+    },
+    "topic": "https://publicschema.org/metrics/topic",
+    "concept_uri": {
+      "@id": "https://publicschema.org/metrics/concept_uri",
+      "@type": "@id"
+    },
+    "metric_family": {
+      "@id": "https://publicschema.org/metrics/metric_family",
+      "@type": "@id"
+    },
+    "aligns_with": {
+      "@id": "https://publicschema.org/metrics/aligns_with",
+      "@type": "@id",
+      "@container": "@set"
+    },
+    "core": {
+      "@id": "https://publicschema.org/metrics/core",
+      "@type": "xsd:boolean"
+    },
+    "replaces": {
+      "@id": "https://publicschema.org/metrics/replaces",
+      "@type": "@id"
+    },
+    "replaced_by": {
+      "@id": "https://publicschema.org/metrics/replaced_by",
+      "@type": "@id"
+    },
+    "value_range": "https://publicschema.org/metrics/value_range",
+    "code_list_uri": {
+      "@id": "https://publicschema.org/metrics/code_list_uri",
+      "@type": "@id"
+    },
+    "is_required": {
+      "@id": "https://publicschema.org/metrics/is_required",
+      "@type": "xsd:boolean"
+    },
+    "ordering": {
+      "@id": "https://publicschema.org/metrics/ordering",
+      "@type": "xsd:integer"
+    },
+    "attachment_level": "https://publicschema.org/metrics/attachment_level",
+    "scoring": "https://publicschema.org/metrics/scoring",
+    "subject_class": {
+      "@id": "https://publicschema.org/metrics/subject_class",
+      "@type": "@id"
+    },
+    "populations": {
+      "@id": "https://publicschema.org/metrics/populations",
+      "@type": "@id",
+      "@container": "@set"
+    },
+    "stratifiers": {
+      "@id": "https://publicschema.org/metrics/stratifiers",
+      "@type": "@id",
+      "@container": "@set"
+    },
+    "rate_aggregation": "https://publicschema.org/metrics/rate_aggregation",
+    "improvement_notation": "https://publicschema.org/metrics/improvement_notation",
+    "libraries": {
+      "@id": "https://publicschema.org/metrics/libraries",
+      "@type": "@id",
+      "@container": "@set"
+    },
+    "population_type": "https://publicschema.org/metrics/population_type",
+    "language": "https://publicschema.org/metrics/language",
+    "criteria": "https://publicschema.org/metrics/criteria",
+    "stratifier_code": "https://publicschema.org/metrics/stratifier_code",
+    "components": {
+      "@id": "https://publicschema.org/metrics/components",
+      "@type": "@id",
+      "@container": "@set"
+    },
+    "metric": {
+      "@id": "https://publicschema.org/metrics/metric",
+      "@type": "@id"
+    },
+    "period": {
+      "@id": "https://publicschema.org/metrics/period",
+      "@type": "@id"
+    },
+    "dimension_values": {
+      "@id": "https://publicschema.org/metrics/dimension_values",
+      "@type": "@id",
+      "@container": "@set"
+    },
+    "metric_value": {
+      "@id": "https://publicschema.org/metrics/metric_value",
+      "@type": "xsd:float"
+    },
+    "attribute_values": {
+      "@id": "https://publicschema.org/metrics/attribute_values",
+      "@type": "@id",
+      "@container": "@set"
+    },
+    "calculation_uri": {
+      "@id": "https://publicschema.org/metrics/calculation_uri",
+      "@type": "@id"
+    },
+    "execution_uri": {
+      "@id": "https://publicschema.org/metrics/execution_uri",
+      "@type": "@id"
+    },
+    "dimension_uri": {
+      "@id": "https://publicschema.org/metrics/dimension_uri",
+      "@type": "@id"
+    },
+    "code": "https://publicschema.org/metrics/code",
+    "attribute_uri": {
+      "@id": "https://publicschema.org/metrics/attribute_uri",
+      "@type": "@id"
+    },
+    "attribute_value": "https://publicschema.org/metrics/attribute_value",
+    "published_at": {
+      "@id": "https://publicschema.org/metrics/published_at",
+      "@type": "xsd:dateTime"
+    },
+    "reference_date": {
+      "@id": "https://publicschema.org/metrics/reference_date",
+      "@type": "xsd:date"
+    },
+    "methodology_uri": {
+      "@id": "https://publicschema.org/metrics/methodology_uri",
+      "@type": "@id"
+    },
+    "license": "https://publicschema.org/metrics/license",
+    "contact_uri": {
+      "@id": "https://publicschema.org/metrics/contact_uri",
+      "@type": "@id"
+    },
+    "observations": {
+      "@id": "https://publicschema.org/metrics/observations",
+      "@type": "@id",
+      "@container": "@set"
+    },
+    "dsd_uri": {
+      "@id": "https://publicschema.org/metrics/dsd_uri",
+      "@type": "@id"
+    },
+    "period_type": "https://publicschema.org/metrics/period_type",
+    "granularity": "https://publicschema.org/metrics/granularity",
+    "reference_period_type": "https://publicschema.org/metrics/reference_period_type",
+    "observation_frequency": "https://publicschema.org/metrics/observation_frequency",
+    "register_owner": {
+      "@id": "https://publicschema.org/register_owner",
+      "@type": "@id"
+    },
+    "register_jurisdiction": {
+      "@id": "https://publicschema.org/register_jurisdiction",
+      "@type": "@id"
+    },
+    "register_subject_types": {
+      "@id": "https://publicschema.org/register_subject_types",
+      "@type": "@id",
+      "@container": "@set"
+    },
+    "register_uri": {
+      "@id": "https://publicschema.org/register_uri",
+      "@type": "@id"
+    },
+    "record_id": "https://publicschema.org/record_id",
+    "subject_uri": {
+      "@id": "https://publicschema.org/subject_uri",
+      "@type": "@id"
+    },
+    "subject_type": {
+      "@id": "https://publicschema.org/subject_type",
+      "@type": "@id"
+    },
+    "recorded_at": {
+      "@id": "https://publicschema.org/recorded_at",
+      "@type": "xsd:dateTime"
+    },
+    "valid_from": {
+      "@id": "https://publicschema.org/valid_from",
+      "@type": "xsd:date"
+    },
+    "valid_to": {
+      "@id": "https://publicschema.org/valid_to",
+      "@type": "xsd:date"
+    },
+    "supersedes_record": {
+      "@id": "https://publicschema.org/supersedes_record",
+      "@type": "@id",
+      "@container": "@set"
+    },
+    "source_records": {
+      "@id": "https://publicschema.org/source_records",
+      "@type": "@id",
+      "@container": "@set"
+    },
+    "evidence_assertions": {
+      "@id": "https://publicschema.org/evidence_assertions",
+      "@type": "@id",
+      "@container": "@set"
+    },
+    "registered_subject": {
+      "@id": "https://publicschema.org/registered_subject",
+      "@type": "@id"
+    },
+    "registration_authority": {
+      "@id": "https://publicschema.org/registration_authority",
+      "@type": "@id"
+    },
+    "registration_jurisdiction": {
+      "@id": "https://publicschema.org/registration_jurisdiction",
+      "@type": "@id"
+    },
+    "registration_purpose": "https://publicschema.org/registration_purpose",
+    "authorized_object": {
+      "@id": "https://publicschema.org/authorized_object",
+      "@type": "@id"
+    },
+    "authorized_activity": "https://publicschema.org/authorized_activity",
+    "authorization_conditions": "https://publicschema.org/authorization_conditions",
+    "assigned_identifier": {
+      "@id": "https://publicschema.org/assigned_identifier",
+      "@type": "@id"
+    },
+    "identifier_issuer": {
+      "@id": "https://publicschema.org/identifier_issuer",
+      "@type": "@id"
+    },
+    "assertion_uri": {
+      "@id": "https://publicschema.org/assertion_uri",
+      "@type": "@id"
+    },
+    "evidence_source": {
+      "@id": "https://publicschema.org/evidence_source",
+      "@type": "@id"
+    },
+    "evidence_role": "https://publicschema.org/evidence_role",
+    "assertion_authority": {
+      "@id": "https://publicschema.org/assertion_authority",
+      "@type": "@id"
+    },
+    "lifecycle_kind": {
+      "@id": "https://publicschema.org/lifecycle_kind",
+      "@type": "@id"
+    },
+    "record_change_kind": "https://publicschema.org/record_change_kind",
+    "affected_record": {
+      "@id": "https://publicschema.org/affected_record",
+      "@type": "@id"
+    },
+    "authority": {
+      "@id": "https://publicschema.org/authority",
+      "@type": "@id"
+    },
+    "effective_at": {
+      "@id": "https://publicschema.org/effective_at",
+      "@type": "xsd:dateTime"
+    },
+    "matched_source": {
+      "@id": "https://publicschema.org/matched_source",
+      "@type": "@id"
+    },
+    "matched_subject": {
+      "@id": "https://publicschema.org/matched_subject",
+      "@type": "@id"
+    },
+    "match_method": {
+      "@id": "https://publicschema.org/match_method",
+      "@type": "@id"
+    },
+    "match_outcome": "https://publicschema.org/match_outcome",
+    "name_language": "https://publicschema.org/name_language",
+    "name_use": {
+      "@id": "https://publicschema.org/name_use",
+      "@type": "@id"
+    },
+    "contact_channel": "https://publicschema.org/contact_channel",
+    "contact_value": "https://publicschema.org/contact_value",
+    "contact_purpose": "https://publicschema.org/contact_purpose",
+    "legal_resources": {
+      "@id": "https://publicschema.org/legal_resources",
+      "@type": "@id",
+      "@container": "@set"
+    },
+    "building_use": {
+      "@id": "https://publicschema.org/building_use",
+      "@type": "@id",
+      "@container": "@set"
+    },
+    "within_building": {
+      "@id": "https://publicschema.org/within_building",
+      "@type": "@id"
+    },
+    "asset_actor": {
+      "@id": "https://publicschema.org/asset_actor",
+      "@type": "@id"
+    },
+    "asset_role_type": {
+      "@id": "https://publicschema.org/asset_role_type",
+      "@type": "@id"
+    },
+    "assigned_address": {
+      "@id": "https://publicschema.org/assigned_address",
+      "@type": "@id"
+    },
+    "address_purpose": {
+      "@id": "https://publicschema.org/address_purpose",
+      "@type": "@id"
+    },
+    "public_functions": {
+      "@id": "https://publicschema.org/public_functions",
+      "@type": "@id",
+      "@container": "@set"
+    },
+    "competence_areas": {
+      "@id": "https://publicschema.org/competence_areas",
+      "@type": "@id",
+      "@container": "@set"
+    },
+    "institution_from": {
+      "@id": "https://publicschema.org/institution_from",
+      "@type": "@id"
+    },
+    "institution_to": {
+      "@id": "https://publicschema.org/institution_to",
+      "@type": "@id"
+    },
+    "institutional_relationship_type": {
+      "@id": "https://publicschema.org/institutional_relationship_type",
+      "@type": "@id"
+    },
+    "role_actor": {
+      "@id": "https://publicschema.org/role_actor",
+      "@type": "@id"
+    },
+    "role_organization": {
+      "@id": "https://publicschema.org/role_organization",
+      "@type": "@id"
+    },
+    "institutional_role_type": {
+      "@id": "https://publicschema.org/institutional_role_type",
+      "@type": "@id"
+    },
+    "representative": {
+      "@id": "https://publicschema.org/representative",
+      "@type": "@id"
+    },
+    "represented": {
+      "@id": "https://publicschema.org/represented",
+      "@type": "@id"
+    },
+    "representation_powers": {
+      "@id": "https://publicschema.org/representation_powers",
+      "@type": "@id",
+      "@container": "@set"
+    },
+    "representation_scope": "https://publicschema.org/representation_scope",
+    "interest_holder": {
+      "@id": "https://publicschema.org/interest_holder",
+      "@type": "@id"
+    },
+    "interest_entity": {
+      "@id": "https://publicschema.org/interest_entity",
+      "@type": "@id"
+    },
+    "interest_type": {
+      "@id": "https://publicschema.org/interest_type",
+      "@type": "@id"
+    },
+    "interest_directness": "https://publicschema.org/interest_directness",
+    "interest_percentage": "https://publicschema.org/interest_percentage",
+    "beneficial_ownership_or_control": {
+      "@id": "https://publicschema.org/beneficial_ownership_or_control",
+      "@type": "xsd:boolean"
+    },
+    "beneficial_ownership_definition": {
+      "@id": "https://publicschema.org/beneficial_ownership_definition",
+      "@type": "@id"
+    },
+    "interest_description": "https://publicschema.org/interest_description",
+    "arrangement_type": {
+      "@id": "https://publicschema.org/arrangement_type",
+      "@type": "@id"
+    },
+    "component_interests": {
+      "@id": "https://publicschema.org/component_interests",
+      "@type": "@id",
+      "@container": "@set"
+    },
+    "interest_minimum_percentage": "https://publicschema.org/interest_minimum_percentage",
+    "interest_exclusive_minimum_percentage": "https://publicschema.org/interest_exclusive_minimum_percentage",
+    "interest_maximum_percentage": "https://publicschema.org/interest_maximum_percentage",
+    "interest_exclusive_maximum_percentage": "https://publicschema.org/interest_exclusive_maximum_percentage",
+    "assessed_requirements": {
+      "@id": "https://publicschema.org/assessed_requirements",
+      "@type": "@id",
+      "@container": "@set"
+    },
+    "assessment_date": {
+      "@id": "https://publicschema.org/assessment_date",
+      "@type": "xsd:date"
+    },
+    "assessment_result": {
+      "@id": "https://publicschema.org/assessment_result",
+      "@type": "@id"
+    },
+    "assessment_findings": "https://publicschema.org/assessment_findings",
+    "action_type": {
+      "@id": "https://publicschema.org/action_type",
+      "@type": "@id"
+    },
+    "action_date": {
+      "@id": "https://publicschema.org/action_date",
+      "@type": "xsd:date"
+    },
+    "action_description": "https://publicschema.org/action_description",
+    "certified_subject": {
+      "@id": "https://publicschema.org/certified_subject",
+      "@type": "@id"
+    },
+    "certifying_organization": {
+      "@id": "https://publicschema.org/certifying_organization",
+      "@type": "@id"
+    },
+    "certification_scheme": {
+      "@id": "https://publicschema.org/certification_scheme",
+      "@type": "@id"
+    },
+    "certification_scope": {
+      "@id": "https://publicschema.org/certification_scope",
+      "@type": "@id",
+      "@container": "@set"
+    },
+    "service_competent_authorities": {
+      "@id": "https://publicschema.org/service_competent_authorities",
+      "@type": "@id",
+      "@container": "@set"
+    },
+    "service_audience": {
+      "@id": "https://publicschema.org/service_audience",
+      "@type": "@id",
+      "@container": "@set"
+    },
+    "public_service": {
+      "@id": "https://publicschema.org/public_service",
+      "@type": "@id"
+    },
+    "service_applicant": {
+      "@id": "https://publicschema.org/service_applicant",
+      "@type": "@id"
+    },
+    "submitted_by": {
+      "@id": "https://publicschema.org/submitted_by",
+      "@type": "@id"
+    },
+    "submission_representation": {
+      "@id": "https://publicschema.org/submission_representation",
+      "@type": "@id"
+    },
+    "request_submission_date": {
+      "@id": "https://publicschema.org/request_submission_date",
+      "@type": "xsd:date"
+    },
+    "decides_application": {
+      "@id": "https://publicschema.org/decides_application",
+      "@type": "@id"
+    },
+    "decision_outcome": {
+      "@id": "https://publicschema.org/decision_outcome",
+      "@type": "@id"
+    },
+    "decision_registrations": {
+      "@id": "https://publicschema.org/decision_registrations",
+      "@type": "@id",
+      "@container": "@set"
+    },
+    "decision_regulatory_actions": {
+      "@id": "https://publicschema.org/decision_regulatory_actions",
+      "@type": "@id",
+      "@container": "@set"
+    },
+    "resolves_appeal": {
+      "@id": "https://publicschema.org/resolves_appeal",
+      "@type": "@id"
+    },
+    "challenged_decision": {
+      "@id": "https://publicschema.org/challenged_decision",
+      "@type": "@id"
+    },
+    "appellant": {
+      "@id": "https://publicschema.org/appellant",
+      "@type": "@id"
+    },
+    "original_organizations": {
+      "@id": "https://publicschema.org/original_organizations",
+      "@type": "@id",
+      "@container": "@set"
+    },
+    "resulting_organizations": {
+      "@id": "https://publicschema.org/resulting_organizations",
+      "@type": "@id",
+      "@container": "@set"
+    },
+    "capacity_measure": {
+      "@id": "https://publicschema.org/capacity_measure",
+      "@type": "@id"
+    },
+    "capacity_quantity": {
+      "@id": "https://publicschema.org/capacity_quantity",
+      "@type": "@id"
+    },
+    "capacity_observed_at": {
+      "@id": "https://publicschema.org/capacity_observed_at",
+      "@type": "xsd:dateTime"
+    },
+    "education_provider": {
+      "@id": "https://publicschema.org/edu/education_provider",
+      "@type": "@id"
+    },
+    "physical_service_point": {
+      "@id": "https://publicschema.org/edu/physical_service_point",
+      "@type": "@id"
+    },
+    "virtual_site_url": {
+      "@id": "https://publicschema.org/edu/virtual_site_url",
+      "@type": "@id"
+    },
+    "program_level": {
+      "@id": "https://publicschema.org/edu/program_level",
+      "@type": "@id",
+      "@container": "@set"
+    },
+    "program_field": {
+      "@id": "https://publicschema.org/edu/program_field",
+      "@type": "@id",
+      "@container": "@set"
+    },
+    "qualification_awarded": {
+      "@id": "https://publicschema.org/edu/qualification_awarded",
+      "@type": "@id",
+      "@container": "@set"
+    },
+    "qualification_definition": {
+      "@id": "https://publicschema.org/qualification_definition",
+      "@type": "@id"
+    },
+    "qualification_title": "https://publicschema.org/qualification_title",
+    "qualification_awarder": {
+      "@id": "https://publicschema.org/qualification_awarder",
+      "@type": "@id",
+      "@container": "@set"
+    },
+    "offering_program": {
+      "@id": "https://publicschema.org/edu/offering_program",
+      "@type": "@id"
+    },
+    "offering_provider": {
+      "@id": "https://publicschema.org/edu/offering_provider",
+      "@type": "@id"
+    },
+    "offering_sites": {
+      "@id": "https://publicschema.org/edu/offering_sites",
+      "@type": "@id",
+      "@container": "@set"
+    },
+    "offering_mode": {
+      "@id": "https://publicschema.org/edu/offering_mode",
+      "@type": "@id",
+      "@container": "@set"
+    },
+    "work_person": {
+      "@id": "https://publicschema.org/work_person",
+      "@type": "@id"
+    },
+    "work_economic_unit": {
+      "@id": "https://publicschema.org/work_economic_unit",
+      "@type": "@id"
+    },
+    "legal_employer": {
+      "@id": "https://publicschema.org/legal_employer",
+      "@type": "@id"
+    },
+    "work_form": "https://publicschema.org/work_form",
+    "work_status": {
+      "@id": "https://publicschema.org/work_status",
+      "@type": "@id"
+    },
+    "work_remuneration": {
+      "@id": "https://publicschema.org/work_remuneration",
+      "@type": "@id"
+    },
+    "work_seasonality": {
+      "@id": "https://publicschema.org/work_seasonality",
+      "@type": "@id"
+    },
+    "profession_code": {
+      "@id": "https://publicschema.org/profession_code",
+      "@type": "@id",
+      "@container": "@set"
+    },
+    "practice_sites": {
+      "@id": "https://publicschema.org/practice_sites",
+      "@type": "@id",
+      "@container": "@set"
+    },
+    "driving_category": {
+      "@id": "https://publicschema.org/transport/driving_category",
+      "@type": "@id"
+    },
+    "driving_condition_codes": {
+      "@id": "https://publicschema.org/transport/driving_condition_codes",
+      "@type": "@id",
+      "@container": "@set"
+    },
+    "vehicle_make": "https://publicschema.org/transport/vehicle_make",
+    "vehicle_model": "https://publicschema.org/transport/vehicle_model",
+    "vehicle_category": {
+      "@id": "https://publicschema.org/transport/vehicle_category",
+      "@type": "@id"
+    },
+    "manufacture_year": {
+      "@id": "https://publicschema.org/transport/manufacture_year",
+      "@type": "xsd:integer"
+    },
+    "facility_function": {
+      "@id": "https://publicschema.org/agri/facility_function",
+      "@container": "@set"
+    },
+    "laboratory_capability": {
+      "@id": "https://publicschema.org/laboratory_capability",
+      "@type": "@id",
+      "@container": "@set"
+    },
+    "machine_category": {
+      "@id": "https://publicschema.org/machine_category",
+      "@type": "@id"
+    },
+    "machine_model": "https://publicschema.org/machine_model",
+    "vessel_flag": "https://publicschema.org/transport/vessel_flag",
+    "vessel_length_overall": {
+      "@id": "https://publicschema.org/transport/vessel_length_overall",
+      "@type": "@id"
+    },
+    "service_provider": {
+      "@id": "https://publicschema.org/service_provider",
+      "@type": "@id"
+    },
+    "agricultural_service": {
+      "@id": "https://publicschema.org/agri/agricultural_service",
+      "@container": "@set"
+    },
+    "service_area": {
+      "@id": "https://publicschema.org/service_area",
+      "@type": "@id",
+      "@container": "@set"
+    },
+    "service_equipment": {
+      "@id": "https://publicschema.org/agri/service_equipment",
+      "@type": "@id",
+      "@container": "@set"
+    },
+    "supplied_product": {
+      "@id": "https://publicschema.org/agri/supplied_product",
+      "@type": "@id",
+      "@container": "@set"
+    },
+    "producer_sector": {
+      "@id": "https://publicschema.org/agri/producer_sector",
+      "@type": "@id",
+      "@container": "@set"
+    },
+    "input_product_category": {
+      "@id": "https://publicschema.org/agri/input_product_category",
+      "@container": "@set"
+    },
+    "product_designation": "https://publicschema.org/product_designation",
+    "product_component": {
+      "@id": "https://publicschema.org/product_component",
+      "@type": "@id",
+      "@container": "@set"
+    },
+    "component_substance": {
+      "@id": "https://publicschema.org/component_substance",
+      "@type": "@id"
+    },
+    "component_role": {
+      "@id": "https://publicschema.org/component_role",
+      "@type": "@id"
+    },
+    "component_amount": {
+      "@id": "https://publicschema.org/component_amount",
+      "@type": "@id"
+    },
+    "component_basis": {
+      "@id": "https://publicschema.org/component_basis",
+      "@type": "@id"
+    },
+    "irrigation_service_area": {
+      "@id": "https://publicschema.org/agri/irrigation_service_area",
+      "@type": "@id"
+    },
+    "irrigation_component": {
+      "@id": "https://publicschema.org/agri/irrigation_component",
+      "@type": "@id",
+      "@container": "@set"
+    },
+    "environmental_activities": {
+      "@id": "https://publicschema.org/environment/environmental_activities",
+      "@type": "@id",
+      "@container": "@set"
+    },
+    "authorized_water_source": {
+      "@id": "https://publicschema.org/environment/authorized_water_source",
+      "@type": "@id",
+      "@container": "@set"
+    },
+    "authorized_water_quantity": {
+      "@id": "https://publicschema.org/environment/authorized_water_quantity",
+      "@type": "@id",
+      "@container": "@set"
+    },
+    "irrigation_scheme": {
+      "@id": "https://publicschema.org/agri/irrigation_scheme",
+      "@type": "@id"
+    },
+    "tax_type": {
+      "@id": "https://publicschema.org/tax/tax_type",
+      "@type": "@id"
+    },
+    "electoral_districts": {
+      "@id": "https://publicschema.org/elections/electoral_districts",
+      "@type": "@id",
+      "@container": "@set"
+    },
+    "polling_service_point": {
+      "@id": "https://publicschema.org/elections/polling_service_point",
+      "@type": "@id"
+    },
+    "land_area": {
+      "@id": "https://publicschema.org/land/land_area",
+      "@type": "@id"
+    },
+    "administrative_spatial_units": {
+      "@id": "https://publicschema.org/land/administrative_spatial_units",
+      "@type": "@id",
+      "@container": "@set"
+    },
+    "tenure_holder": {
+      "@id": "https://publicschema.org/land/tenure_holder",
+      "@type": "@id"
+    },
+    "tenure_object": {
+      "@id": "https://publicschema.org/land/tenure_object",
+      "@type": "@id"
+    },
+    "tenure_category": "https://publicschema.org/land/tenure_category",
+    "tenure_type": {
+      "@id": "https://publicschema.org/land/tenure_type",
+      "@type": "@id"
+    },
+    "tenure_share_numerator": {
+      "@id": "https://publicschema.org/land/tenure_share_numerator",
+      "@type": "xsd:integer"
+    },
+    "tenure_share_denominator": {
+      "@id": "https://publicschema.org/land/tenure_share_denominator",
+      "@type": "xsd:integer"
+    },
+    "boundary_unit": {
+      "@id": "https://publicschema.org/land/boundary_unit",
+      "@type": "@id"
+    },
+    "boundary_recognition": {
+      "@id": "https://publicschema.org/land/boundary_recognition",
+      "@type": "@id"
+    },
+    "holder_farm": {
+      "@id": "https://publicschema.org/agri/holder_farm",
+      "@type": "@id"
+    },
+    "holder_person": {
+      "@id": "https://publicschema.org/agri/holder_person",
+      "@type": "@id"
+    },
+    "holder_organization": {
+      "@id": "https://publicschema.org/agri/holder_organization",
+      "@type": "@id"
+    },
+    "holder_group": {
+      "@id": "https://publicschema.org/agri/holder_group",
+      "@type": "@id"
+    },
+    "registered_farms": {
+      "@id": "https://publicschema.org/agri/registered_farms",
+      "@type": "@id",
+      "@container": "@set"
+    },
+    "assigned_holding": {
+      "@id": "https://publicschema.org/agri/assigned_holding",
+      "@type": "@id"
+    },
+    "assignment_work_relationship": {
+      "@id": "https://publicschema.org/agri/assignment_work_relationship",
+      "@type": "@id"
+    },
+    "work_functions": {
+      "@id": "https://publicschema.org/agri/work_functions",
+      "@type": "@id",
+      "@container": "@set"
+    },
+    "parcel_area": {
+      "@id": "https://publicschema.org/agri/parcel_area",
+      "@type": "@id"
+    },
+    "linked_holding": {
+      "@id": "https://publicschema.org/agri/linked_holding",
+      "@type": "@id"
+    },
+    "linked_parcel": {
+      "@id": "https://publicschema.org/agri/linked_parcel",
+      "@type": "@id"
+    },
+    "linked_facility": {
+      "@id": "https://publicschema.org/agri/linked_facility",
+      "@type": "@id"
+    },
+    "used_area": {
+      "@id": "https://publicschema.org/agri/used_area",
+      "@type": "@id"
+    },
+    "parcel_tenure": "https://publicschema.org/agri/parcel_tenure",
+    "parcel_land_use": {
+      "@id": "https://publicschema.org/agri/parcel_land_use",
+      "@type": "@id"
+    },
+    "land_spatial_units": {
+      "@id": "https://publicschema.org/agri/land_spatial_units",
+      "@type": "@id",
+      "@container": "@set"
+    },
+    "predecessor_parcels": {
+      "@id": "https://publicschema.org/agri/predecessor_parcels",
+      "@type": "@id",
+      "@container": "@set"
+    },
+    "farm_area": {
+      "@id": "https://publicschema.org/agri/farm_area",
+      "@type": "@id"
+    },
+    "land_tenure": {
+      "@id": "https://publicschema.org/agri/land_tenure",
+      "@container": "@set"
+    },
+    "livestock_type": {
+      "@id": "https://publicschema.org/agri/livestock_type",
+      "@container": "@set"
+    },
+    "biological_taxon": {
+      "@id": "https://publicschema.org/biological_taxon",
+      "@type": "@id"
+    },
+    "animal_breed": {
+      "@id": "https://publicschema.org/agri/animal_breed",
+      "@type": "@id"
+    },
+    "animal_birth_date": "https://publicschema.org/animal_birth_date",
+    "animal_death_date": {
+      "@id": "https://publicschema.org/animal_death_date",
+      "@type": "xsd:date"
+    },
+    "animal_sex": {
+      "@id": "https://publicschema.org/animal_sex",
+      "@type": "@id"
+    },
+    "genetic_dam": {
+      "@id": "https://publicschema.org/genetic_dam",
+      "@type": "@id"
+    },
+    "genetic_sire": {
+      "@id": "https://publicschema.org/genetic_sire",
+      "@type": "@id"
+    },
+    "known_animal_members": {
+      "@id": "https://publicschema.org/known_animal_members",
+      "@type": "@id",
+      "@container": "@set"
+    },
+    "predecessor_animal_groups": {
+      "@id": "https://publicschema.org/predecessor_animal_groups",
+      "@type": "@id",
+      "@container": "@set"
+    },
+    "counted_animal_group": {
+      "@id": "https://publicschema.org/counted_animal_group",
+      "@type": "@id"
+    },
+    "animal_count": {
+      "@id": "https://publicschema.org/animal_count",
+      "@type": "xsd:integer"
+    },
+    "animal_count_date": {
+      "@id": "https://publicschema.org/animal_count_date",
+      "@type": "xsd:date"
+    },
+    "breed_recognized_by": {
+      "@id": "https://publicschema.org/agri/breed_recognized_by",
+      "@type": "@id"
+    },
+    "animal_subject": {
+      "@id": "https://publicschema.org/animal_subject",
+      "@type": "@id"
+    },
+    "animal_residence_site": {
+      "@id": "https://publicschema.org/agri/animal_residence_site",
+      "@type": "@id"
+    },
+    "animal_responsible_actor": {
+      "@id": "https://publicschema.org/animal_responsible_actor",
+      "@type": "@id"
+    },
+    "animal_responsibility_role": {
+      "@id": "https://publicschema.org/animal_responsibility_role",
+      "@type": "@id"
+    },
+    "moved_animals": {
+      "@id": "https://publicschema.org/moved_animals",
+      "@type": "@id",
+      "@container": "@set"
+    },
+    "movement_source_group": {
+      "@id": "https://publicschema.org/movement_source_group",
+      "@type": "@id"
+    },
+    "moved_animal_count": {
+      "@id": "https://publicschema.org/moved_animal_count",
+      "@type": "xsd:integer"
+    },
+    "movement_origin_site": {
+      "@id": "https://publicschema.org/movement_origin_site",
+      "@type": "@id"
+    },
+    "movement_destination_site": {
+      "@id": "https://publicschema.org/movement_destination_site",
+      "@type": "@id"
+    },
+    "movement_transit_sites": {
+      "@id": "https://publicschema.org/movement_transit_sites",
+      "@type": "@id",
+      "@container": "@set"
+    },
+    "movement_departure_date": {
+      "@id": "https://publicschema.org/movement_departure_date",
+      "@type": "xsd:date"
+    },
+    "movement_arrival_date": {
+      "@id": "https://publicschema.org/movement_arrival_date",
+      "@type": "xsd:date"
+    },
+    "planting_holding": {
+      "@id": "https://publicschema.org/agri/planting_holding",
+      "@type": "@id"
+    },
+    "planting_parcel": {
+      "@id": "https://publicschema.org/agri/planting_parcel",
+      "@type": "@id"
+    },
+    "planting_components": {
+      "@id": "https://publicschema.org/agri/planting_components",
+      "@type": "@id",
+      "@container": "@set"
+    },
+    "planting_date": {
+      "@id": "https://publicschema.org/agri/planting_date",
+      "@type": "xsd:date"
+    },
+    "planting_season": {
+      "@id": "https://publicschema.org/agri/planting_season",
+      "@type": "@id"
+    },
+    "crop_kind": {
+      "@id": "https://publicschema.org/agri/crop_kind",
+      "@type": "@id"
+    },
+    "planted_variety": {
+      "@id": "https://publicschema.org/agri/planted_variety",
+      "@type": "@id"
+    },
+    "component_planted_area": {
+      "@id": "https://publicschema.org/agri/component_planted_area",
+      "@type": "@id"
+    },
+    "variety_denominations": {
+      "@id": "https://publicschema.org/variety_denominations",
+      "@container": "@set"
+    },
+    "breeder_reference": "https://publicschema.org/breeder_reference",
+    "origin_accessions": {
+      "@id": "https://publicschema.org/origin_accessions",
+      "@type": "@id",
+      "@container": "@set"
+    },
+    "accession_number": "https://publicschema.org/accession_number",
+    "maintaining_institute": {
+      "@id": "https://publicschema.org/maintaining_institute",
+      "@type": "@id"
+    },
+    "accession_variety": {
+      "@id": "https://publicschema.org/accession_variety",
+      "@type": "@id"
+    },
+    "accession_collection_date": "https://publicschema.org/accession_collection_date",
+    "seed_lot_varieties": {
+      "@id": "https://publicschema.org/seed_lot_varieties",
+      "@type": "@id",
+      "@container": "@set"
+    },
+    "seed_lot_accessions": {
+      "@id": "https://publicschema.org/seed_lot_accessions",
+      "@type": "@id",
+      "@container": "@set"
+    },
+    "source_seed_lots": {
+      "@id": "https://publicschema.org/source_seed_lots",
+      "@type": "@id",
+      "@container": "@set"
+    },
+    "seed_lot_quantity": {
+      "@id": "https://publicschema.org/seed_lot_quantity",
+      "@type": "@id"
+    },
+    "seed_lot_production_date": {
+      "@id": "https://publicschema.org/seed_lot_production_date",
+      "@type": "xsd:date"
+    },
+    "EnrollmentCredential": "https://publicschema.org/credentials/EnrollmentCredential",
+    "IdentityCredential": "https://publicschema.org/credentials/IdentityCredential",
+    "PaymentCredential": "https://publicschema.org/credentials/PaymentCredential"
+  }
+}

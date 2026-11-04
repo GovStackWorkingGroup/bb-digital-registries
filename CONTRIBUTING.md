@@ -1,0 +1,69 @@
+# Contributing to the Digital Registries specification
+
+This page is for contributors working in the repository. Readers of the
+specification start at the [README](README.md).
+
+## Repository layout
+
+| Path | Contents |
+|---|---|
+| `metadata.yml`, `authors.yml`, `toc.yml` | Publication identity, current-version credits, and ordered content |
+| `introduction/` | Overview, scope, terminology, and references |
+| `requirements/` | One file per functionality, with DRAFT requirements in front matter and explanations, workflows, and data structures in the body |
+| `resources/` | API entrypoints, examples, verification procedures, and example attribution |
+| `guides/` | Companion implementation guidance, outside the compiled specification |
+| `RELEASE_NOTES.md` | Release records and complete historical contributor attribution |
+| `assets/` | Diagrams, metadata context, vocabulary, and preserved historical images |
+| `ADR/` | Working Group decision-record location |
+| `api/` | Canonical OpenAPI contract, schemas, examples, and legacy API archives |
+| `tools/` | Publication and API artifact validation, separate from implementation assessment |
+| `test/`, `examples/` | Historical generated-CRUD tests and product examples, not current conformance evidence |
+
+The canonical Registry API source is [api/openapi.yaml](api/openapi.yaml).
+[resources/api.yml](resources/api.yml) is a Git symlink to that file for the
+Specification Framework's authoring entrypoint; it is not a second contract.
+The adjacent `resources/common` symlink points to `api/common` so ordinary
+OpenAPI tools resolve the shared components from either entrypoint.
+[api/write.openapi.yaml](api/write.openapi.yaml) and
+[resources/write-api.yml](resources/write-api.yml) are compatibility aliases to
+the same unified contract. They are not separate Write contracts.
+
+## Validation
+
+From the repository root:
+
+```sh
+uv sync --frozen
+uv run python -m unittest discover -s tools -p 'test_*.py'
+uv run python tools/validate_specification.py
+uv run python tools/validate_consultation.py
+uv run python tools/validate_write.py
+```
+
+These commands check the publication structure, links, requirement model and
+option applicability, plus the unified canonical contract, its compatibility
+aliases, and the examples. They do not exercise a deployed Registry.
+[Testing](resources/testing.md) describes the
+separate runtime evidence needed for implementation assessment.
+
+## Publication boundary
+
+`toc.yml` lists the specification pages; the root README is the home page.
+Keep contributor build instructions in this file or the
+[site wrapper README](specification-site/README.md). Repository files do not become
+site pages or downloads merely because they exist in the tree.
+
+Select public examples and downloads deliberately. A published page links only to
+other pages in `toc.yml`, external sources, or selected downloadable artifacts.
+Original OpenAPI contracts and their local dependencies remain downloadable with
+their relative paths intact. Required attribution and licence notices accompany
+the examples that use them.
+
+## Local working material
+
+Keep brainstorming, review notes, migration records, and temporary snapshots under
+`.local/working-documents/`. Git ignores `.local/`; source validation and site
+publication exclude it. Do not link published content to that folder or commit it.
+Git history preserves earlier requirement text without duplicate archive pages.
+
+The functionality bodies hold the explanatory model and workflows before the rendered requirement cards. Keep detailed roadmap proposals and review discussions in `.local/working-documents/`. The [adoption guide](guides/adopting-digital-registries.md) and [release history](RELEASE_NOTES.md) remain public repository documents outside `toc.yml`.

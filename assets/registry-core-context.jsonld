@@ -1,0 +1,71 @@
+{
+  "@context": {
+    "@version": 1.1,
+    "@protected": true,
+    "dcat": "http://www.w3.org/ns/dcat#",
+    "dct": "http://purl.org/dc/terms/",
+    "apif": "https://vocab.govstack.global/digital-registries/api-families#",
+    "govreg": "https://vocab.govstack.global/digital-registries#",
+    "prov": "http://www.w3.org/ns/prov#",
+    "title": {
+      "@id": "dct:title",
+      "@container": "@language"
+    },
+    "description": {
+      "@id": "dct:description",
+      "@container": "@language"
+    },
+    "publisher": {
+      "@id": "dct:publisher",
+      "@type": "@id"
+    },
+    "catalogResource": {
+      "@id": "dcat:resource",
+      "@type": "@id"
+    },
+    "catalogDataset": {
+      "@id": "dcat:dataset",
+      "@type": "@id"
+    },
+    "catalogService": {
+      "@id": "dcat:service",
+      "@type": "@id"
+    },
+    "specification": {
+      "@id": "dct:references",
+      "@type": "@id"
+    },
+    "conformsTo": {
+      "@id": "dct:conformsTo",
+      "@type": "@id"
+    },
+    "authority": {
+      "@id": "govreg:authority",
+      "@type": "@id"
+    },
+    "governedDataset": {
+      "@id": "govreg:dataset",
+      "@type": "@id"
+    },
+    "dataService": {
+      "@id": "govreg:dataService",
+      "@type": "@id"
+    },
+    "serviceType": {
+      "@id": "dct:type",
+      "@type": "@id"
+    },
+    "servesDataset": {
+      "@id": "dcat:servesDataset",
+      "@type": "@id"
+    },
+    "endpointURL": {
+      "@id": "dcat:endpointURL",
+      "@type": "@id"
+    },
+    "endpointDescription": {
+      "@id": "dcat:endpointDescription",
+      "@type": "@id"
+    }
+  }
+}

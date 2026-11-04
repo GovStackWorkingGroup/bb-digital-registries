@@ -1,0 +1,182 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "x-govstack-digital-registries-write",
+  "description": "Closed operation metadata for independently selectable Digital Registries Write capabilities. Direct capability declarations do not imply change-request support, and change-request declarations do not imply direct mutation support.",
+  "type": "object",
+  "required": ["registry", "capability"],
+  "additionalProperties": false,
+  "properties": {
+    "registry": {
+      "description": "Registry Identifier published by the Registry metadata.",
+      "type": "string",
+      "format": "iri",
+      "maxLength": 2048
+    },
+    "collection": {
+      "description": "Collection name bound by a direct mutation operation, or by a collection-specific change-request operation. A change-request operation spanning declared target collections omits this field and types collectionId in its target schema.",
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9-]{0,127}(?![\\s\\S])",
+      "maxLength": 128
+    },
+    "capability": {
+      "description": "Write capability implemented by this operation.",
+      "type": "string",
+      "enum": ["create", "update", "transition", "change-requests"]
+    },
+    "inputSchema": {
+      "description": "URI reference to the operation's semantic input schema.",
+      "type": "string",
+      "format": "uri-reference",
+      "minLength": 1,
+      "maxLength": 2048
+    },
+    "inputMediaType": {
+      "description": "Registered patch media type used by update input.",
+      "const": "application/merge-patch+json"
+    },
+    "action": {
+      "description": "Fixed published transition action name and final path segment. The value is metadata, not a client-selected runtime action.",
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9-]{0,127}(?![\\s\\S])",
+      "maxLength": 128
+    },
+    "transitionProfile": {
+      "description": "Stable name of the closed typed transition profile used by the operation.",
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9-]{0,127}(?![\\s\\S])",
+      "maxLength": 128
+    },
+    "companionRead": {
+      "description": "The single permitted Record read whose body and strong ETag come from one current authoritative guard evaluation for this Update or Transition. A deployment cannot designate it when effective disclosure policy forbids revealing the opaque tag or its change cadence.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["operationId", "view"],
+      "properties": {
+        "operationId": {
+          "description": "operationId of the GET Record operation in the same deployed contract.",
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[A-Za-z][A-Za-z0-9]{0,127}(?![\\s\\S])"
+        },
+        "view": {
+          "description": "Exact permitted Record view returned by the companion read. Its writable data and every field or source condition that can alter this mutation's validation, mapping, or committed effect are evaluated at the same current authoritative point as the strong ETag; unrelated hidden state need not invalidate the tag.",
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-z][a-z0-9-]{0,127}(?![\\s\\S])"
+        }
+      }
+    },
+    "purpose": {
+      "description": "Optional trusted purpose binding enforced by this operation. Purpose comes only from a verified access-token claim or governed trusted authorisation context; request URI, query, ordinary body fields, and ad hoc headers never grant purpose.",
+      "oneOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["required", "binding", "claim", "allowedPurposes"],
+          "properties": {
+            "required": {"const": true},
+            "binding": {"const": "access-token-claim"},
+            "claim": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128,
+              "pattern": "^[A-Za-z][A-Za-z0-9._:-]{0,127}(?![\\s\\S])"
+            },
+            "allowedPurposes": {
+              "type": "array",
+              "minItems": 1,
+              "maxItems": 32,
+              "uniqueItems": true,
+              "items": {
+                "description": "Controlled purpose code or absolute purpose URI.",
+                "anyOf": [
+                  {"type": "string", "minLength": 1, "maxLength": 128, "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}(?![\\s\\S])"},
+                  {"type": "string", "format": "uri", "minLength": 1, "maxLength": 2048, "pattern": "^\\S+(?![\\s\\S])"}
+                ]
+              }
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["required", "binding", "allowedPurposes"],
+          "properties": {
+            "required": {"const": true},
+            "binding": {"const": "trusted-authorization-context"},
+            "allowedPurposes": {
+              "type": "array",
+              "minItems": 1,
+              "maxItems": 32,
+              "uniqueItems": true,
+              "items": {
+                "description": "Controlled purpose code or absolute purpose URI.",
+                "anyOf": [
+                  {"type": "string", "minLength": 1, "maxLength": 128, "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}(?![\\s\\S])"},
+                  {"type": "string", "format": "uri", "minLength": 1, "maxLength": 2048, "pattern": "^\\S+(?![\\s\\S])"}
+                ]
+              }
+            }
+          }
+        }
+      ]
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {"capability": {"enum": ["create", "update", "transition"]}},
+        "required": ["capability"]
+      },
+      "then": {"required": ["collection", "inputSchema"]}
+    },
+    {
+      "if": {
+        "properties": {"capability": {"const": "change-requests"}},
+        "required": ["capability"]
+      },
+      "then": {
+        "not": {
+          "anyOf": [
+            {"required": ["inputMediaType"]},
+            {"required": ["action"]},
+            {"required": ["transitionProfile"]}
+          ]
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {"capability": {"const": "update"}},
+        "required": ["capability"]
+      },
+      "then": {"required": ["inputMediaType"]},
+      "else": {"not": {"required": ["inputMediaType"]}}
+    },
+    {
+      "if": {
+        "properties": {"capability": {"const": "transition"}},
+        "required": ["capability"]
+      },
+      "then": {"required": ["action", "transitionProfile"]},
+      "else": {
+        "not": {
+          "anyOf": [
+            {"required": ["action"]},
+            {"required": ["transitionProfile"]}
+          ]
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {"capability": {"enum": ["update", "transition"]}},
+        "required": ["capability"]
+      },
+      "then": {"required": ["companionRead"]},
+      "else": {"not": {"required": ["companionRead"]}}
+    }
+  ]
+}

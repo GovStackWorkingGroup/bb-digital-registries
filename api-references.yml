@@ -1,0 +1,30 @@
+references:
+  - id: registry
+    page: resources/api-reference.md
+    contract: api/openapi.yaml
+    role: normative
+    operationId: retrieveRecord
+    response: '200'
+  - id: birth-registration
+    page: resources/api-examples/birth-registration.md
+    contract: api/examples/birth-registration.openapi.yaml
+    role: example
+    operationId: retrieveBirthRegistration
+    response: '200'
+    example: current
+  - id: business
+    page: resources/api-examples/business.md
+    contract: api/examples/business-registry.openapi.yaml
+    role: example
+    operationId: retrieveBusiness
+    response: '200'
+  - id: household
+    page: resources/api-examples/household.md
+    contract: api/examples/household-registry.openapi.yaml
+    role: example
+    operationId: retrieveHousehold
+    response: '200'
+  - id: write-examples
+    page: resources/api-examples/write.md
+    contract: api/examples/write-examples.openapi.yaml
+    role: example

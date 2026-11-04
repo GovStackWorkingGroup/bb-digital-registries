@@ -1,0 +1,409 @@
+openapi: 3.1.2
+info:
+  title: 'Birth-registration registry Consultation: recorded-parent view'
+  version: 1.0.0-draft
+  description: >-
+    Illustrative birth-registrations collection for Registry
+    https://registry.example/registries/birth-registrations. Its membership is all birth
+    registration Records in that Registry. Retrieve selects the
+    birth-registration-with-recorded-parents view. BirthRegistrationRecord is defined in
+    relationship-examples.schema.json, published with dependencies at
+    https://registry.example/contracts/1.0.0-draft/examples/relationship-examples.schema.json.
+    Reads synchronously query the authoritative registration source and authorise all released
+    fields and components. The source retains revisions and can select a state by recording
+    instant and Record applicability. dateOfBirth is the civil-registration event date;
+    effectiveAt instead accepts a calendar date selecting the applicability of the registry
+    Record and is echoed in top-level temporal metadata. This profile rejects instant values
+    for effectiveAt and performs no timezone conversion. registrationEffectiveFrom is the
+    inclusive first applicable calendar date. recordedAsOf remains a UTC instant serialised
+    with Z. recordedAsOf alone applies the declared knowledge cut without
+    an effective-time filter; effectiveAt alone selects the applicable state using the latest
+    recorded knowledge; both coordinates intersect. Omission of both selects current state.
+    Retained source revisions are normalised into the declared birth-registration-history
+    view using published schema-version mappings. Normalisation preserves recorded values and
+    never overwrites them with current values. If a retained revision cannot be represented
+    without invention or loss, history returns history-not-available rather than a fabricated
+    revision.
+    This profile returns the complete permitted parent view in source order, bounded to four
+    components. Overflow uses generic 500, subject to protected-existence policy. The
+    individualRef, when supplied, targets the Individuals Registry; IndividualReference declares its target
+    collection, Retrieve binding and identifier mapping.
+    Access tokens use issuer https://identity.example, the stable logical service audience
+    https://registry.example/birth-registrations and the declared read scope. Example
+    endpoints are non-production. TLS is 1.3 or later; the gateway allows 60 requests per
+    authenticated client per minute. Responses use no-store. Unsupported query parameters use
+    400. Every Consultation operation is purpose-bound. Purpose is accepted only from the
+    verified access-token claim named purpose, with the value benefit-eligibility; it is not
+    accepted from a URI, query parameter, request body or ad hoc header and never grants access
+    by itself.
+  contact:
+    name: GovStack Digital Registries Working Group
+    url: https://github.com/GovStackWorkingGroup/bb-digital-registries
+  x-govstack-api-guide:
+    version: 0.3.0-draft
+    rulesetVersion: 0.3.0-draft
+servers:
+  - url: https://{gatewayHost}
+    description: Non-production deployment root. The birth-registrations collection declares
+      its Registry, membership and representation.
+    variables:
+      gatewayHost:
+        default: registry.example
+        description: Reserved non-production documentation-domain default.
+security:
+  - citizenOAuth: [bb:digital-registries:record:read]
+  - serviceOAuth: [bb:digital-registries:record:read]
+tags:
+  - name: Consultation
+    description: Retrieve a permitted birth-registration view with recorded parent components.
+paths:
+  /health:
+    $ref: '../openapi.yaml#/paths/~1health'
+  /.well-known/api-catalog:
+    $ref: '../openapi.yaml#/paths/~1.well-known~1api-catalog'
+  /v1/collections/birth-registrations/records/{recordId}:
+    get:
+      operationId: retrieveBirthRegistration
+      summary: Retrieve a birth registration with its recorded parent data
+      description: >-
+        Retrieve a Record in the birth-registrations collection with its permitted view.
+        Parent components preserve nameAtRegistration as recorded; individualRef supplies
+        related Record identity when present. When the source evaluates the requested temporal
+        coordinates and proves that no Record state exists at that point, absent Records,
+        Records outside this collection, and protected existence share 404
+        record-not-available. A 409 is reserved for source inability to evaluate the requested
+        temporal state. The service never falls back to current state.
+      tags: [Consultation]
+      x-govstack-pii: true
+      x-govstack-digital-registries:
+        registry: https://registry.example/registries/birth-registrations
+        collection: birth-registrations
+        capability: retrieve
+        view: birth-registration-with-recorded-parents
+        features: [recorded-time, effective-time, purpose-bound]
+        purpose:
+          required: true
+          binding: access-token-claim
+          claim: purpose
+          allowedPurposes: [benefit-eligibility]
+      parameters:
+        - $ref: '../openapi.yaml#/components/parameters/RecordId'
+        - $ref: '../openapi.yaml#/components/parameters/Traceparent'
+        - $ref: '../openapi.yaml#/components/parameters/RecordedAsOf'
+        - $ref: '#/components/parameters/EffectiveAt'
+      responses:
+        '200':
+          description: Complete permitted birth-registration view within its published profile bound.
+          headers:
+            Cache-Control:
+              $ref: '../openapi.yaml#/components/headers/CacheControl'
+          content:
+            application/json:
+              schema:
+                $ref: './relationship-examples.schema.json#/$defs/BirthRegistrationTemporalRecord'
+              examples:
+                current:
+                  summary: Current state, with no temporal selection or temporal metadata
+                  value:
+                    recordId: birth_19
+                    data:
+                      dateOfBirth: '2020-06-12'
+                      placeOfBirth: Example Town
+                      registrationEffectiveFrom: '2020-07-01'
+                      parents:
+                        - nameAtRegistration: Alex Example
+                        - nameAtRegistration: Robin Example
+                          individualRef:
+                            recordId: person_57
+                selectedState:
+                  summary: Source state selected by recording instant and Record applicability
+                  value:
+                    recordId: birth_19
+                    temporal:
+                      recordedAsOf: '2026-06-03T00:00:00Z'
+                      effectiveAt: '2020-07-15'
+                    data:
+                      dateOfBirth: '2020-06-12'
+                      placeOfBirth: Corrected Town
+                      registrationEffectiveFrom: '2020-07-01'
+                      parents:
+                        - nameAtRegistration: Alex Example
+        '400':
+          $ref: '../openapi.yaml#/components/responses/BadRequest'
+        '401':
+          $ref: '../openapi.yaml#/components/responses/Unauthorized'
+        '403':
+          $ref: '../openapi.yaml#/components/responses/Forbidden'
+        '404':
+          $ref: '../openapi.yaml#/components/responses/RecordNotAvailable'
+        '406':
+          $ref: '../openapi.yaml#/components/responses/NotAcceptable'
+        '409':
+          $ref: '../openapi.yaml#/components/responses/TemporalStateNotAvailable'
+        '429':
+          $ref: '../openapi.yaml#/components/responses/TooManyRequests'
+        '500':
+          $ref: '../openapi.yaml#/components/responses/InternalError'
+        '502':
+          $ref: '../openapi.yaml#/components/responses/BadGateway'
+        '503':
+          $ref: '../openapi.yaml#/components/responses/ServiceUnavailable'
+        '504':
+          $ref: '../openapi.yaml#/components/responses/GatewayTimeout'
+  /v1/collections/birth-registrations/search:
+    post:
+      operationId: searchBirthRegistrations
+      summary: Search by occurrence period and place
+      description: >-
+        Execute the declared byOccurrencePeriodAndPlace search. occurrencePeriod bounds
+        dateOfBirth, while placePrefix matches placeOfBirth using case-sensitive Unicode scalar
+        prefix comparison. temporal independently selects source recording time and Record
+        applicability. recordedAsOf-only, effectiveAt-only, combined, and omitted selections use
+        the defaults declared in this contract. Repeat search, criteria and temporal unchanged
+        with a cursor. A successfully evaluated search with no permitted matches returns 200 with
+        an empty Page, including when matching Records are protected and therefore filtered. A
+        409 is reserved for source inability to evaluate the requested temporal state. The
+        service never falls back to current state.
+      tags: [Consultation]
+      x-govstack-pii: true
+      x-govstack-digital-registries:
+        registry: https://registry.example/registries/birth-registrations
+        collection: birth-registrations
+        capability: search
+        view: birth-registration-with-recorded-parents
+        features: [recorded-time, effective-time, purpose-bound]
+        purpose:
+          required: true
+          binding: access-token-claim
+          claim: purpose
+          allowedPurposes: [benefit-eligibility]
+      parameters:
+        - $ref: '../openapi.yaml#/components/parameters/Traceparent'
+      requestBody:
+        required: true
+        description: Typed named search, temporal selection and pagination controls.
+        content:
+          application/json:
+            schema:
+              $ref: './relationship-examples.schema.json#/$defs/BirthRegistrationSearchRequest'
+            example:
+              search: byOccurrencePeriodAndPlace
+              criteria:
+                occurrencePeriod:
+                  from: '2020-06-01'
+                  to: '2020-06-30'
+                placePrefix: Example
+              temporal:
+                recordedAsOf: '2026-06-03T00:00:00Z'
+                effectiveAt: '2020-07-15'
+              pageSize: 20
+      responses:
+        '200':
+          description: >-
+            A bounded page of authorised current or temporally selected birth registrations.
+            When the request selects temporal coordinates, top-level page temporal metadata
+            echoes them even when items is empty; individual item metadata is not mandatory.
+          headers:
+            Cache-Control:
+              $ref: '../openapi.yaml#/components/headers/CacheControl'
+          content:
+            application/json:
+              schema:
+                $ref: './relationship-examples.schema.json#/$defs/BirthRegistrationPage'
+              example:
+                items: []
+                temporal:
+                  recordedAsOf: '2026-06-03T00:00:00Z'
+                  effectiveAt: '2020-07-15'
+                pageInfo:
+                  nextCursor: null
+        '400':
+          $ref: '../openapi.yaml#/components/responses/BadRequest'
+        '401':
+          $ref: '../openapi.yaml#/components/responses/Unauthorized'
+        '403':
+          $ref: '../openapi.yaml#/components/responses/Forbidden'
+        '406':
+          $ref: '../openapi.yaml#/components/responses/NotAcceptable'
+        '409':
+          $ref: '../openapi.yaml#/components/responses/TemporalStateNotAvailable'
+        '413':
+          $ref: '../openapi.yaml#/components/responses/ContentTooLarge'
+        '415':
+          $ref: '../openapi.yaml#/components/responses/UnsupportedMediaType'
+        '422':
+          $ref: '../openapi.yaml#/components/responses/InvalidField'
+        '429':
+          $ref: '../openapi.yaml#/components/responses/TooManyRequests'
+        '500':
+          $ref: '../openapi.yaml#/components/responses/InternalError'
+        '502':
+          $ref: '../openapi.yaml#/components/responses/BadGateway'
+        '503':
+          $ref: '../openapi.yaml#/components/responses/ServiceUnavailable'
+        '504':
+          $ref: '../openapi.yaml#/components/responses/GatewayTimeout'
+  /v1/collections/birth-registrations/records/{recordId}/revisions:
+    get:
+      operationId: listBirthRegistrationRevisions
+      summary: List retained birth-registration revisions
+      description: >-
+        Return retained source revisions in the declared stable source acceptance order, newest
+        first, with a documented unique tie-breaker. Clients follow that order without
+        interpreting opaque revisionId values as timestamps or sequence numbers or assuming
+        that recordedAt is always present. The cursor is bound to this path's parent recordId and
+        all other request selectors; replay against another parent Record or changed selector
+        returns 400 invalid-cursor.
+        Each retained source schema version is mapped into the declared birth-registration-history
+        view without overwriting recorded values. No missing history is reconstructed. A mapping
+        that cannot preserve the revision returns history-not-available only after authorisation
+        and protected-existence checks. An absent parent Record, a parent outside this collection,
+        and protected parent existence use the same generic 404 response.
+      tags: [Consultation]
+      x-govstack-pii: true
+      x-govstack-digital-registries:
+        registry: https://registry.example/registries/birth-registrations
+        collection: birth-registrations
+        capability: revision-list
+        view: birth-registration-history
+        features: [purpose-bound]
+        purpose:
+          required: true
+          binding: access-token-claim
+          claim: purpose
+          allowedPurposes: [benefit-eligibility]
+      parameters:
+        - $ref: '../openapi.yaml#/components/parameters/RecordId'
+        - $ref: '../openapi.yaml#/components/parameters/Traceparent'
+        - $ref: '../openapi.yaml#/components/parameters/PageSize'
+        - $ref: '../openapi.yaml#/components/parameters/Cursor'
+      responses:
+        '200':
+          description: A bounded page of retained, currently disclosable revisions.
+          headers:
+            Cache-Control:
+              $ref: '../openapi.yaml#/components/headers/CacheControl'
+          content:
+            application/json:
+              schema:
+                $ref: './relationship-examples.schema.json#/$defs/BirthRegistrationRevisionPage'
+              example:
+                items:
+                  - recordId: birth_19
+                    revision:
+                      revisionId: rev-2
+                      recordedAt: '2026-05-02T09:00:00Z'
+                    data:
+                      dateOfBirth: '2020-06-12'
+                      placeOfBirth: Example Town
+                      registrationEffectiveFrom: '2020-07-01'
+                      parents: []
+                pageInfo:
+                  nextCursor: null
+        '400':
+          $ref: '../openapi.yaml#/components/responses/BadRequest'
+        '401':
+          $ref: '../openapi.yaml#/components/responses/Unauthorized'
+        '403':
+          $ref: '../openapi.yaml#/components/responses/Forbidden'
+        '404':
+          $ref: '../openapi.yaml#/components/responses/RecordNotAvailable'
+        '406':
+          $ref: '../openapi.yaml#/components/responses/NotAcceptable'
+        '409':
+          $ref: '../openapi.yaml#/components/responses/HistoryNotAvailable'
+        '429':
+          $ref: '../openapi.yaml#/components/responses/TooManyRequests'
+        '500':
+          $ref: '../openapi.yaml#/components/responses/InternalError'
+        '502':
+          $ref: '../openapi.yaml#/components/responses/BadGateway'
+        '503':
+          $ref: '../openapi.yaml#/components/responses/ServiceUnavailable'
+        '504':
+          $ref: '../openapi.yaml#/components/responses/GatewayTimeout'
+  /v1/collections/birth-registrations/records/{recordId}/revisions/{revisionId}:
+    get:
+      operationId: retrieveBirthRegistrationRevision
+      summary: Retrieve one retained birth-registration revision
+      description: >-
+        Return one retained source revision normalised into the declared history view without
+        overwriting recorded values. A source version that cannot be mapped without invention or
+        loss returns history-not-available only after authorisation and protected-existence
+        checks. An unavailable or protected revision, absent or protected parent Record, or
+        parent Record outside this collection uses the same 404 response.
+      tags: [Consultation]
+      x-govstack-pii: true
+      x-govstack-digital-registries:
+        registry: https://registry.example/registries/birth-registrations
+        collection: birth-registrations
+        capability: revision-retrieve
+        view: birth-registration-history
+        features: [purpose-bound]
+        purpose:
+          required: true
+          binding: access-token-claim
+          claim: purpose
+          allowedPurposes: [benefit-eligibility]
+      parameters:
+        - $ref: '../openapi.yaml#/components/parameters/RecordId'
+        - $ref: '../openapi.yaml#/components/parameters/RevisionId'
+        - $ref: '../openapi.yaml#/components/parameters/Traceparent'
+      responses:
+        '200':
+          description: One retained, currently disclosable birth-registration revision.
+          headers:
+            Cache-Control:
+              $ref: '../openapi.yaml#/components/headers/CacheControl'
+          content:
+            application/json:
+              schema:
+                $ref: './relationship-examples.schema.json#/$defs/BirthRegistrationRevision'
+              example:
+                recordId: birth_19
+                revision:
+                  revisionId: rev-2
+                  recordedAt: '2026-05-02T09:00:00Z'
+                data:
+                  dateOfBirth: '2020-06-12'
+                  placeOfBirth: Example Town
+                  registrationEffectiveFrom: '2020-07-01'
+                  parents: []
+        '400':
+          $ref: '../openapi.yaml#/components/responses/BadRequest'
+        '401':
+          $ref: '../openapi.yaml#/components/responses/Unauthorized'
+        '403':
+          $ref: '../openapi.yaml#/components/responses/Forbidden'
+        '404':
+          $ref: '../openapi.yaml#/components/responses/RecordNotAvailable'
+        '406':
+          $ref: '../openapi.yaml#/components/responses/NotAcceptable'
+        '409':
+          $ref: '../openapi.yaml#/components/responses/HistoryNotAvailable'
+        '429':
+          $ref: '../openapi.yaml#/components/responses/TooManyRequests'
+        '500':
+          $ref: '../openapi.yaml#/components/responses/InternalError'
+        '502':
+          $ref: '../openapi.yaml#/components/responses/BadGateway'
+        '503':
+          $ref: '../openapi.yaml#/components/responses/ServiceUnavailable'
+        '504':
+          $ref: '../openapi.yaml#/components/responses/GatewayTimeout'
+components:
+  parameters:
+    EffectiveAt:
+      name: effectiveAt
+      in: query
+      required: false
+      description: >-
+        Calendar date selecting Record applicability, with registrationEffectiveFrom inclusive.
+        Instant values are rejected; this profile performs no timezone conversion.
+      schema:
+        $ref: './relationship-examples.schema.json#/$defs/BirthRegistrationEffectiveAt'
+  securitySchemes:
+    citizenOAuth:
+      $ref: '../openapi.yaml#/components/securitySchemes/citizenOAuth'
+    serviceOAuth:
+      $ref: '../openapi.yaml#/components/securitySchemes/serviceOAuth'

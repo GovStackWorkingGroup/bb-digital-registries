@@ -1,0 +1,20 @@
+---
+toc:
+  introduction:
+    - overview.md
+    - scope.md
+    - terminology.md
+    - references.md
+  requirements:
+    - registry-discovery.md
+    - registry-services.md
+  resources:
+    - api-reference.md
+    - api-examples/README.md
+    - api-examples/birth-registration.md
+    - api-examples/business.md
+    - api-examples/household.md
+    - api-examples/write.md
+    - api-examples/schema-attribution.md
+    - testing.md
+    - write-testing.md

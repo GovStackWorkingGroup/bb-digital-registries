@@ -1,0 +1,225 @@
+---
+description: Draft verification of mandatory Registry discovery and selected capabilities.
+---
+
+# Testing
+
+## Test maturity
+
+The scenarios below define verification intent for the [draft requirements](../introduction/scope.md#conformance-requirement-maturity). The [artifact checks](#artifact-validation) validate the unified Read and Write OpenAPI document, requirement-to-operation mappings, schema fixtures, and cross-operation journey fixtures. They inspect declared conditional-response headers and body shape, revision parent identity, caller-visible Read and Write capability metadata, and static identity and version handoffs. They do not execute cursor replay, protected-history outcomes, temporal source-unavailability behaviour, authoritative mutations, or workflow processing; those remain implementation scenarios. Passing artifact checks supports contract review only and does not establish deployed runtime behaviour or implementation conformance. Implementation conformance requires separate evaluation of a deployed Registry; an executable deployed-service suite is pending. Legacy Cucumber tests under `test/openAPI` remain migration evidence for the previous generated CRUD interface.
+
+## Artifact validation
+
+From the repository root, install the pinned tools and validate the shipped
+specification, Consultation artifacts, and Write artifacts:
+
+```sh
+uv sync --frozen
+uv run python tools/validate_specification.py
+uv run python tools/validate_consultation.py
+uv run python tools/validate_write.py
+```
+
+These checks inspect source structure, local references, requirement-to-operation
+links, schemas, examples, fixture exchanges, and the combined journeys in
+`api/examples/combined-journeys.json`. The combined fixture gate covers
+Create then Retrieve, conditional Retrieve then Update then Retrieve with a
+stale `If-Match` rejection, Transition then Retrieve, asynchronous completion
+then Retrieve, and governed submission and approval followed by authoritative
+application and Retrieve. It compares response validators only when a fixture
+declares the exact committed guard state, no intervening mutation-relevant
+change, settled companion currency, and the same effective authorisation and
+disclosure, purpose, and field selection. The fixture also declares a hidden
+mutation-relevant source change that leaves the permitted body unchanged,
+changes the opaque guard ETag, and makes the prior token receive generic `412`.
+These are internally coherent artifact declarations, not observations of a
+runtime concurrency engine. They do not require immediate visibility from an
+ordinary non-companion read or one retained revision per Write. The checks do
+not execute a Registry implementation or establish conformance. The scenarios
+below describe the separate implementation evidence needed.
+
+### Runtime companion-guard procedure
+
+For a deployed implementation, first record the selected Update or Transition,
+its companion Retrieve, the declared companion-currency condition, and one
+fixed effective authorisation and disclosure, purpose, and field selection.
+Then execute these cases against non-production source fixtures:
+
+1. Retrieve the companion guard, retain its permitted body and opaque strong
+   ETag, make a mutation-relevant authoritative change, and submit the old ETag
+   in `If-Match`. Even if an ordinary read remains lagged, the Write must
+   atomically reject the stale guard with the declared generic `412` and make
+   no authoritative change.
+2. Repeat with a source condition that affects the mutation's validation,
+   mapping, or committed effect but is not visible in the permitted body.
+   Retrieve the companion guard again under the identical effective context;
+   the body stays equal, the opaque ETag changes, and a Write using the prior
+   ETag receives generic `412` without disclosing the changed condition.
+3. Perform a successful mutation, make no intervening mutation-relevant
+   change, wait for the declared companion currency, and retrieve under the
+   identical effective context. Compare the success ETag only when the later
+   companion read observes the exact committed guard state. Repeat with one
+   context dimension changed to confirm that view-name equality alone is not
+   treated as validator equality.
+
+Retain the requests, responses, source observations, effective-context record,
+and authoritative before-and-after state. A schema-valid trace or the static
+fixture does not count as a runtime pass.
+
+## Applicability and required fixtures
+
+Verification starts with an inventory of the Registry services the implementation exposes to each intended metadata audience and the operation options it declares. Every evaluation covers Registry identity, authoritative scope, specification-version metadata, and service discovery. Operation-specific verification follows the selected option keys and the [draft conformance model](../introduction/scope.md#conformance-draft-conformance-model).
+
+Common Record representation requirements are evaluated through each implemented operation that returns Records, using that operation to obtain the fixtures. Identifier lifecycle evidence applies wherever the implementation assigns or maintains Record Identifiers.
+
+An implementation being evaluated provides non-production fixtures according to the following applicability rules:
+
+| Fixture or evidence | Required when |
+|---|---|
+| Machine-readable Registry metadata, the inventory of exposed Registry BB services, and their linked machine-readable operational contracts, including each operation's selectable feature declarations | Every evaluation. |
+| Two distinct current Records in the same Registry, with expected scoped identity, declared schema, and field meanings | An implemented operation returns Record representations. |
+| Record fixtures covering each exposed lifecycle state | An implemented operation returns Record representations in those states. |
+| Identifier policy and stability/non-reassignment evidence across source changes and retirement where supported | The implementation assigns or maintains Record Identifiers. |
+| Source revision, lifecycle, and provenance evidence for metadata actually exposed | The operation or selected profile exposes or requires this metadata. |
+| Consumer contexts and expected permitted representations | An implemented operation returns Record representations. |
+| The same Record accessible to consumers with different disclosure rights | The applicable policy provides different disclosure entitlements. |
+| An unknown Record Identifier and a known Record outside the selected collection where applicable | Retrieve is selected. |
+| Distinct Records in different collections | A Registry exposes multiple collections. |
+| One Record available through multiple collections or views | Collections overlap or expose distinct views of one Record. |
+| Known, unknown, invalid, and composite selector inputs where supported; a simulated source uniqueness failure | Lookup is selected. |
+| Protected and unknown Record Identifiers, selector values, parent Records, and Revision Identifiers for the same consumer context | Retrieve, Lookup, Revision List, or Revision Retrieve is selected and the applicable policy protects Record or revision existence. |
+| Zero-, one-, and multi-result collections; typed search criteria and invalid inputs; duplicate sort values where applicable | List or Search is selected, using fixtures relevant to each selected operation. |
+| Continuations covering completion, mismatch, expiry, and access changes; a short or empty advancing page where supported; parent Records A and B for cursor replay | List, Search, or Revision List is selected. |
+| Declared resource limits, an over-limit request, and a request that reaches the declared timeout outcome | List or Search is selected. |
+| A current representation and its ETag; expected `200` and `304` headers; expected `200` body and bodyless `304`; authorised matching, non-matching, stale, unknown, and protected conditional requests | A Retrieve operation declares `conditional-read`. |
+| Declared selectable data fields, any documented mandatory data fields, unsupported fields, and consumers with different disclosure rights | An operation declares `field-selection`. |
+| An unchanged multi-page result with duplicate primary sort values, plus a configured result window or limit too small for that result | A List or Search operation declares `complete-traversal`. |
+| Source changes between Pages, access changes, and a simulated loss of retained snapshot state | A List or Search operation declares `snapshot-traversal`. |
+| Retained source revisions spanning schema versions, retention boundaries, and known or unknown gaps; an authorised source-history failure | Revision List or Revision Retrieve is selected. |
+| Source acceptance timestamps before, at, and after revisions, including a correction; proven item absence; evaluable empty Search; source inability to evaluate history | An operation declares `recorded-time`. |
+| Source applicability dates or instants covering boundaries, overlaps, corrections, no applicable state, evaluable empty Search, and source inability to evaluate history | An operation declares `effective-time`. |
+| Named Search fixtures for each declared equality, range, set-membership, prefix, or domain-specific semantic | Search is selected. |
+| Caller contexts with different authorised operations; a rich discovery entry containing visible Read, Write, and supporting workflow operations; Read entries with their required view plus `readableFields`, selectors, searches, known and unknown features, and purpose requirements; Write entries with their declared input and companion-read metadata where applicable; an unknown capability entry; plus a description exceeding each declared bound | Caller capability discovery is offered. |
+| Trusted contexts with missing, malformed, allowed, disallowed, and changed controlled purpose values | An operation declares `purpose-bound`. |
+| Nested components, same-target and mixed-target references, and collection-boundary fixtures | A selected view exposes subobjects, references, or embedded collections. |
+| Recorded related details and a separately changed current target Record; a parent without an individual reference where supported | A selected view exposes recorded related details or references that may be absent. |
+
+Use synthetic fixtures and record the applicability rationale for each omitted conditional fixture.
+
+## Requirement traceability
+
+The row anchors below are stable test targets for the functionality files. The displayed `fr-core#req-*` and `fr-consultation#req-*` labels are historical aliases from the source draft, not current requirement identifiers. Current requirements are DRAFT and unnumbered. Previous requirement text is retained in Git history.
+
+| Requirement | Applicability | Verification item | Expected result |
+|---|---|---|---|
+| <a id="core-1"></a>`fr-core#req-1` | Every implementation | Access machine-readable Registry metadata as an intended consumer and inspect identifier evidence | Globally unique and stable Registry Identifier, Registry name, Registry Authority, authoritative scope statement, and Digital Registries specification-version reference are present; the publication URI and access conditions are available to intended consumers. |
+| <a id="core-2"></a>`fr-core#req-2` | Each implemented operation returning Records | Obtain two distinct Record representations through that operation; compare collections where supported | Each representation includes a different Record Identifier and has unambiguous Registry context; each identifier pair is unique across the Registry, including its collections, without requiring repeated Registry fields. |
+| <a id="core-3"></a>`fr-core#req-3` | Implementations assigning or maintaining Record Identifiers | Inspect the identifier policy and lifecycle evidence | A Record Identifier remains unchanged across revisions and lifecycle states, is not shared, and is not reassigned after retirement. |
+| <a id="core-4"></a>`fr-core#req-4` | Each implemented operation returning Records | Validate a returned representation | The binding identifies the format and versioned resolvable schema, field meanings are documented, and validation succeeds. A separate formal semantic model is checked only when declared. Nested component and reference meanings, target Registry scope, related-read bindings where offered, and collection completeness are unambiguous. |
+| <a id="core-5"></a>`fr-core#req-5` | Source revision or lifecycle metadata is exposed or required by the selected profile | Obtain relevant Record fixtures and source evidence | Provided metadata has documented meaning, matches the source, and is not fabricated from an ETag or adapter fetch. Absence is valid for a profile that does not require it. |
+| <a id="core-6"></a>`fr-core#req-6` | Each implemented operation returning Records, with conditional checks for extra provenance | Obtain a known accessible Record and resolve its Registry context | Registry Authority resolves through metadata. Any additional provenance has documented semantics and matches source evidence; a recording timestamp is not fabricated from fetch time. |
+| <a id="core-7"></a>`fr-core#req-7` | Every implementation | Request `/.well-known/api-catalog` at each HTTP service origin, follow its `service-meta` link to the metadata document, and compare services exposed to each intended metadata audience with their published discovery metadata and linked operational contracts | Every exposed Registry BB service is identified, associated with its Registry, and declares valid API-family concepts, an endpoint URL, and a resolvable machine-readable operational contract. The contract describes the advertised endpoint and operations from each declared family; declarations reflect currently available services. |
+| <a id="core-8"></a>`fr-core#req-8` | Implementations selecting Collection-scoped Consultation operations | Validate the `x-govstack-digital-registries` extension of every selected Collection-scoped Consultation operation against its schema and compare it with the published metadata and operation path | Every such operation declares a Registry Identifier present in the metadata, the logical Collection from `{collectionId}` or its fixed path value, a valid capability, and a view; operations sharing a Collection and view use one Record schema. Selectable feature names and capability combinations are valid; a purpose-bound operation has a valid trusted purpose declaration; an absent or empty `features` member declares none. Caller capability discovery is validated separately under `fr-consultation#req-17`. |
+| <a id="consultation-1"></a>`fr-consultation#req-1` | Retrieve selected | Retrieve a known accessible Record without temporal selection, with each supported explicit temporal selector, and outside the Collection where applicable | Omission returns the latest permitted state; an explicit supported selector returns a source-backed state and echoed temporal context; a Record outside the Collection returns `record-not-available`. |
+| <a id="consultation-2"></a>`fr-consultation#req-2` | Every selected Consultation read | Invoke fixtures under applicable consumer contexts; compare responses where entitlements differ | Each response contains only the projection permitted to that consumer, validates against its schema, and does not expose omitted values through related references, embedded fields, errors, or collection metadata. |
+| <a id="consultation-3"></a>`fr-consultation#req-3` | Retrieve, Lookup, Revision List, or Revision Retrieve selected and policy protects Record or revision existence | Resolve unknown and protected fixtures as the same consumer through each selected operation; for Lookup, also exercise a source uniqueness violation involving a protected key; for history, vary parent Record and Revision Identifier presence separately, then simulate source-history failure for an authorised visible parent | Status, security-relevant response metadata, stable error type, response structure, and non-resource-specific values match for unknown and protected resources; revision outcomes do not reveal whether the parent or revision was absent. Trace values are independent of existence. No unresolved outcome contains Record-specific or revision-specific data, including the Lookup protected-key uniqueness-violation outcome. `409 history-not-available` occurs only after protection checks for an authorised source inability. |
+| <a id="consultation-4"></a>`fr-consultation#req-4` | Lookup selected | Exercise each declared exact selector with known, unknown, invalid, and ambiguous source fixtures | One collection member resolves uniquely within the selector's declared scope; missing components and unknown inputs fail; no permitted collection match gives the declared unresolved outcome; multiple matches never return an arbitrary Record. |
+| <a id="consultation-5"></a>`fr-consultation#req-5` | List selected | List declared collections, including zero and one result and unsupported inputs | Results retain the Page shape, satisfy membership and disclosure, respect the page bound and declared order, and reject unsupported filters or sort. |
+| <a id="consultation-6"></a>`fr-consultation#req-6` | Search selected | Execute each declared Search with valid, true zero-result, protected-only, and invalid criteria, including synthetic personal criteria; inspect their request location and the available request-log evidence; for temporal Search, simulate source evaluation inability | Matching permitted Records use the same declared view. Evaluable zero and protected-only results return `200` with an empty `items` array; source inability to evaluate the requested history returns `409 temporal-state-not-available`. Unsupported searches and fields fail. Personal criteria remain in the request body rather than URLs, and request-log evidence is checked against the inherited disclosure policy. |
+| <a id="consultation-7"></a>`fr-consultation#req-7` | List, Search, or Revision List selected | Exercise first and continuing Pages, short or empty advancing Pages where supported, declared resource limits, the timeout outcome, changed Collection or criteria, expiry, page-size mismatch, authorisation changes, and Revision List cursor replay from parent Record A under parent Record B | Each bounded response follows deterministic ordering and its unique tie-breaker. Continuation preserves Collection, operation, query, view, effective size, and Revision List parent `recordId`; its opaque integrity-protected cursor expires, advances to completion, reauthorises, and never silently restarts. Cross-parent replay returns `400 invalid-cursor`. Processing stays within declared limits or returns the declared timeout outcome. Totals, when supplied, match the full permitted query at the declared evaluation point. No exhaustive or snapshot claim is inferred. |
+| <a id="consultation-8"></a>`fr-consultation#req-8` | Retrieve declares `conditional-read` | Retrieve a current representation and repeat authorised requests with matching, non-matching, and stale `If-None-Match` values; assert the declared `200` and `304` headers and bodies; compare unknown and protected outcomes | `200` and matching `304` responses carry the selected representation's ETag and other declared headers. `200` carries the representation body. A matching validator produces a bodyless `304` only after authorisation. Non-matching or stale validators return the current permitted representation, and conditional requests do not reveal protected existence. |
+| <a id="consultation-9"></a>`fr-consultation#req-9` | A read operation declares `field-selection` | Request supported selectable top-level `data` fields, an unsupported field, and the same selection under narrower disclosure rights; continue a paged result where applicable | Success retains `recordId`, `data`, and any documented mandatory data fields, returns only the requested permitted selectable fields, satisfies the one declared view schema, and preserves the effective field set in continuation. Unsupported fields fail and selection never widens authorisation. |
+| <a id="consultation-10"></a>`fr-consultation#req-10` | List or Search declares `complete-traversal` | Traverse unchanged multi-page fixtures with duplicate primary sort values under unchanged access conditions; separately impose an internal window or limit smaller than the matching result | Every permitted matching Record appears exactly once in the declared order, every Page respects the size bound, and the traversal terminates with a null cursor. A limit that prevents completeness produces the declared failure rather than a completion signal. |
+| <a id="consultation-11"></a>`fr-consultation#req-11` | List or Search declares `snapshot-traversal` | Start a traversal, change source membership, order, and Record data, then continue; separately revoke access and make the retained snapshot unavailable | Pages retain source membership, order, and data from the first request's documented evaluation point while applying current authorisation. The snapshot reference and availability follow the contract, revoked data is withheld, and loss of the snapshot produces `400 invalid-cursor` rather than live fallback. Any total uses the fixed source point filtered for current rights. |
+| <a id="consultation-12"></a>`fr-consultation#req-12` | Revision List selected | Page retained revisions across schema versions, including one faithfully normalised and one unavailable mapping, retention boundaries, documented gaps, and source-history failure while changing caller authorisation between Pages; assert every item `recordId` equals the parent path identifier | Each `RecordRevision` retains the parent Record identity and has a source-backed Revision Identifier; recording time, where supplied, is source-backed; order, retention, gaps, schema interpretation, bounds, and current authorisation follow the contract without a false completeness claim. Older schemas normalise without changing source values or meanings; unavailable mapping fails explicitly rather than returning arbitrary raw data. Authorised source inability returns `409 history-not-available` only after protection checks. |
+| <a id="consultation-13"></a>`fr-consultation#req-13` | Revision Retrieve selected | Retrieve known revisions across schema versions and exercise an unavailable mapping, unknown, removed, outside-retention, protected, Record-mismatched Revision Identifiers, and authorised source-history failure | A known permitted revision is returned under the declared history view with `recordId` matching the parent path and values and meanings preserved. Unknown and protected parent or revision uses the same `404 record-not-available`. Mapping failure and authorised source inability use the declared explicit outcome, including `409 history-not-available`, only after protection checks, with no raw-schema, latest-state, nearby-revision, or fabricated fallback. |
+| <a id="consultation-14"></a>`fr-consultation#req-14` | Retrieve, Lookup, List, or Search declares `recorded-time` | Select source-acceptance cutoffs before, at, and after revisions and a correction; exercise proven item absence, evaluable empty and protected-only Search, source evaluation inability, and omitted temporal selection | Results use only source knowledge accepted by the cutoff and return `TemporalRecord` or `TemporalRecordPage` with echoed date-time, including an empty Page. Proven item absence returns `404 record-not-available`; evaluable zero permitted matches returns `200` empty; source inability returns `409 temporal-state-not-available`. Omitted selection returns latest permitted state without temporal metadata. Revision operations reject this selector. Request, ingestion, occurrence, or registration time is not substituted unless the source contract defines one as its acceptance time. |
+| <a id="consultation-15"></a>`fr-consultation#req-15` | Retrieve, Lookup, List, or Search declares `effective-time` | Select supported dates or instants at applicability boundaries, overlaps, corrections, and no applicable state; exercise proven item absence, evaluable empty and protected-only Search, source evaluation inability, and omitted temporal selection | Results use `TemporalRecord` or `TemporalRecordPage` and echo applicable context, including an empty Page. Proven item absence returns `404 record-not-available`; evaluable zero permitted matches returns `200` empty; source inability returns `409 temporal-state-not-available`. Omitted selection returns latest permitted state without temporal metadata. Revision operations reject this selector. Event occurrence or registration date is not treated as effective time without an explicit source definition. |
+| <a id="consultation-16"></a>`fr-consultation#req-16` | Search selected | Exercise every declared equality, range, set-membership, prefix, and domain-specific semantic, plus undeclared semantics and invalid typed boundaries | Named Search behaviour matches its versioned criteria schema, declared field and combination rules, normalisation, null and empty handling. Undeclared semantics fail; no universal or fuzzy query support is inferred. |
+| <a id="consultation-17"></a>`fr-consultation#req-17` | Caller capability discovery offered | Request `GET /v1/capabilities` under callers and trusted contexts with different permissions; validate required contract, operation ID, capability, and view plus a rich entry containing `readableFields`, selectors, searches, known features, and purpose requirements; test unknown capability and feature annotations, no visible operation, duplicate Collection identifiers, duplicate `(contract, operationId)` pairs, contradictory linked metadata, more than 64 Collections, and more than 16 operations in one Collection; then invoke a discovered operation against permitted and unavailable Records | The bounded `no-store` document references version-specific HTTPS contracts and operation IDs, identifies each operation's view, and filters advisory metadata for the caller. `readableFields` does not imply `field-selection`. Known metadata agrees with the linked operation; unknown capabilities cause clients to skip that entry and unknown advisory features are ignored. Unknown metadata never grants authority, while the normative linked operation extension remains closed. Collection identifiers and operation keys are unique. `collections: []` represents no visible operation. Contradictions and over-bound descriptions fail explicitly without silent merge, truncation, omission, or an empty-array substitute. Invocation reauthorises; the document makes no record-level permission promise. |
+| <a id="consultation-18"></a>`fr-consultation#req-18` | A Record or history operation declares `purpose-bound` | Exercise missing, malformed, untrusted, allowed, disallowed, and changed trusted purpose contexts; replay cursors and validators under another purpose | Missing or unallowed purpose fails before disclosure. Purpose is obtained only from the declared trusted binding, participates in continuation, conditional, temporal, historical, and audit context, and is not treated as consent, authority, or proof of downstream use. Discovery has no purpose feature or request input; it filters under any verified purpose already present in trusted context. |
+
+The abbreviated references in this table preserve the former `govstack-bb-digital-registries` namespaces for traceability only. They are traceability labels for the current verification rows and do not assign identifiers to DRAFT requirements.
+
+### API catalog HEAD verification
+
+<a id="core-7-head"></a>
+
+For every HTTP service origin, use the published access conditions and a synthetic
+consumer context permitted to obtain its discovery metadata:
+
+1. Send `GET /.well-known/api-catalog` and retain the successful response headers
+   and linkset as the comparison resource.
+2. Send `HEAD /.well-known/api-catalog` at the same origin, outside any deployment
+   routing prefix. Check the declared successful status and verify that no
+   response body is transferred.
+3. Check that HEAD includes the binding's required `Link` header with the
+   `api-catalog` relation, and that its target locates that origin's API catalog.
+   Check the remaining declared response headers against the same catalog
+   resource; HEAD does not return the `service-meta` and `service-desc` linkset
+   body. Retain the request, status, headers, and body-absence evidence.
+
+This is a manual procedure for a deployed Registry. The artifact suite separately
+checks the OpenAPI description and cannot establish that a deployment follows it.
+
+## Behaviour scenarios
+
+Discovery is verified through `fr-core#req-7` in the traceability table: every exposed service is reachable through the linkset and the metadata document, a family label does not by itself establish that any particular operation exists, and a service without a machine-readable contract fails the requirement. Read scenarios apply to their selected capabilities and declared operation features. Disclosure differences, protected existence, exposed metadata, and resource-limit behaviour additionally require the corresponding conditions in [Applicability and required fixtures](#applicability-and-required-fixtures).
+
+The following cases apply to the selected read capabilities. Run them against each operation and view to which their fixtures apply.
+
+| Case | Exercise | Expected evidence |
+|---|---|---|
+| Latest Retrieve | Read a known accessible Record without temporal selection, including an exposed inactive state. | Stable identifier, latest valid permitted representation under the declared source currency, and an unchanged source Record. |
+| Collection scope | Retrieve a known Record through a collection that excludes it. | The same `record-not-available` outcome as an unknown identifier. |
+| Identity across collections | Read one Record through multiple collections or views, and compare distinct Records across collections in the same Registry. | The same Record retains its identifier; distinct Records have different identifiers within the Registry. |
+| Collection actions | Retrieve Records whose identifiers are `lookup`, `search`, or resemble action names, and invoke the Collection's `/lookup` or `/search` operation. | Item retrieval under `/records/{recordId}` and Collection actions route independently; no Record Identifier value is reserved by these action names. |
+| Disclosure | Read the same Record under different disclosure entitlements. | Each response matches the permitted fields and metadata for its consumer. |
+| Protected existence | Retrieve and Look up unknown and protected fixtures as the same consumer; list and retrieve history while independently varying unknown or protected parent Records and revisions. | Each applicable operation produces the same contract-defined `404 record-not-available` and security-relevant content for unknown and protected resources; history does not reveal whether the parent or revision was unavailable; independently generated trace values may differ. |
+| Exact Lookup | Submit known, unknown, incomplete, incorrectly typed, and unsupported selector inputs, including composite keys where declared. | One permitted Record for a valid unique match; declared unresolved or validation errors otherwise. |
+| Selector uniqueness failure | Supply source data with multiple matches for a unique selector. | The declared failure, with protected-existence policy applied and no arbitrary Record selected. |
+| Empty and single-result collections | List and Search fixtures containing zero and one permitted match. | The Page shape is retained; completed results have `nextCursor: null`. |
+| Baseline pagination progress | Continue a result that produces a short or empty advancing Page where the implementation supports that pattern. | The Page respects the effective size, its non-null cursor advances, and the traversal reaches an explicit null cursor without silently restarting. This does not establish exhaustive traversal. |
+| Declared resource limits | Exercise each published limit and cause one request to exceed a limit or its processing deadline. | Work stays within the declared limits or ends with the declared timeout outcome; evidence does not infer that backend work scales with page size. |
+| Cursor binding | Change Collection, criteria, Search, ordering, view, or effective page size while reusing a cursor; replay a Revision List cursor from parent Record A under parent Record B. | `400 invalid-cursor`, with no silent restart and no history from either parent in the cross-parent case. |
+| Continuation size | Omit `pageSize`, then repeat the original effective size on another continuation. | Both retain the bound size. |
+| Cursor validity | Submit malformed, tampered, and expired cursors. | The invalid-cursor outcome. |
+| Authorisation change | Revoke access between Pages. | Subsequent requests enforce current authorisation before releasing results. |
+| Total | Compare any reported `total` on a later Page with the full permitted query. | An exact count at the declared evaluation point, including matches before the cursor. Live traversal uses the current Page evaluation; snapshot traversal uses its fixed source point filtered for current rights. |
+| Live source changes | Insert, update, and remove source Records between Pages. | Observed results match the published currency and pagination policy. |
+| Query disclosure | Compare unknown and protected-only query fixtures where match existence is protected. | Items, counts, and continuation patterns preserve the disclosure policy. |
+| Unsupported input | Submit undeclared Search names, criteria, List parameters, and sort choices. | The declared validation error. |
+| Conditional Retrieve | On a Retrieve declaring `conditional-read`, send authorised matching, non-matching, and stale validators and repeat against unknown and protected Records; assert declared headers on `200` and `304` and body presence. | Matching current representations return a bodyless `304` with ETag only after authorisation; other permitted reads return `200` with the declared headers, current ETag, and representation body, without weakening protected-existence handling. |
+| Field selection | On each operation declaring `field-selection`, request supported selectable top-level `data` fields, an unsupported field, and a permitted field withheld from the caller. | `recordId`, `data`, and documented mandatory data fields remain present; selectable fields satisfy the declared view schema and disclosure policy; unsupported input fails; continuation repeats the effective selection. |
+| Complete traversal | On List or Search declaring `complete-traversal`, traverse an unchanged collection with duplicate primary sort values and unchanged access, then repeat with a result window or limit that prevents completion. | Every matching permitted Record appears once in the declared order; every Page respects the size bound and the last cursor is null. The limiting case returns the declared failure instead of a completion signal. |
+| Snapshot traversal | On List or Search declaring `snapshot-traversal`, change membership, order, and data between Pages, then test revoked access and unavailable snapshot state. | Source results remain fixed at the first evaluation point, current authorisation can withhold them, and an unavailable snapshot returns `400 invalid-cursor` without falling back to live traversal. |
+| Revision List | Page retained history with duplicate primary ordering values, schema changes, retention boundaries, documented gaps, and an authorised source-history failure. | Every item `recordId` matches the parent path; Revision Identifiers and recording times, where supplied, are source-backed; order, schema interpretation, current authorisation, and completeness follow the contract. Source inability returns `409 history-not-available` only after protected-existence checks. |
+| Revision Retrieve | Request known, unknown, removed, outside-retention, protected, and Record-mismatched revisions, then simulate authorised source-history failure. | Known permitted history has `recordId` matching the parent path. Unknown and protected parent or revision uses the same `404`; authorised source inability can return `409` only after protection checks; no outcome substitutes another revision or current state. |
+| Recorded-time selection | Select acceptance cutoffs before, at, and after source revisions and a correction; exercise proven item absence, an evaluable Search with zero permitted matches, source evaluation inability, and an omitted selector. | Selected success uses `TemporalRecord` or `TemporalRecordPage` with echoed context, including a `200` empty Page. Proven item absence is `404`; source inability is `409 temporal-state-not-available`; omitted selection returns latest permitted state without temporal metadata. Revision operations reject the selector; request, occurrence, and registration dates are not substituted. |
+| Effective-time selection | Select supported dates or instants at applicability boundaries and where no state applies; exercise proven item absence, an evaluable Search with zero permitted matches, source evaluation inability, and an omitted selector. | Selected success uses `TemporalRecord` or `TemporalRecordPage` with echoed context, including a `200` empty Page. Proven item absence is `404`; source inability is `409 temporal-state-not-available`; omitted selection returns latest permitted state without temporal metadata. Revision operations reject the selector; occurrence and registration dates are used only when the source explicitly defines that meaning. |
+| Temporal and traversal separation | Apply a temporal selector to live pagination, and run snapshot traversal without a temporal selector. | Temporal selection alone does not promise a snapshot; snapshot traversal alone does not expose historical states. |
+| Reusable Search semantics | Exercise all and only the equality, range, set-membership, prefix, and domain-specific semantics named by each Search. | Typed matching follows the contract; undeclared operators and fields fail; no fuzzy or universal query behaviour is inferred. |
+| Caller capabilities | Request a rich capability document under callers with different rights, including visible Read, Write, and supporting workflow operations. For Read entries, include the required view, `readableFields`, selectors, searches, known and unknown features, and purpose requirements. For Write entries, include the declared input and companion read where applicable. Include an unknown capability entry, exceed declared bounds, and attempt allowed and unavailable Record access. | One bounded `no-store` document exposes only caller-available advisory metadata. Read metadata identifies its view, while Write and workflow discovery does not imply Record-read authority. `readableFields` does not imply `field-selection`; clients skip unknown capabilities and ignore unknown advisory features; normative operation extensions remain closed. Over-bound descriptions fail explicitly without truncation or silent omission; every invocation still authorises and no Record access follows from discovery alone. |
+| Purpose binding | Invoke a purpose-bound operation with missing, untrusted, allowed, and unallowed trusted purpose context, then replay a cursor or validator under another purpose. | Invalid purpose fails before disclosure; allowed purpose is bound to continuation and validation and retained for audit without being treated as consent, authority, or downstream-use proof. |
+
+Relationship cases apply to views exposing the corresponding shapes. The [household](../api/examples/household-registry.openapi.yaml) and [birth-registration](../api/examples/birth-registration.openapi.yaml) contracts provide concrete examples; their [fixtures](../api/examples/relationship-exchanges.json) cover schema validation.
+
+| Case | Exercise | Expected evidence |
+|---|---|---|
+| Nested components | Read a household with an address and memberships. | Components validate with their declared field meanings and local identifier scope. |
+| Fixed-target reference | Validate an individual reference with omitted, matching, and conflicting `registryId`. | Omitted or matching values resolve to the schema-declared Registry; a conflicting value fails validation. |
+| Mixed-target reference | Validate a reference whose field allows multiple Registries. | The reference identifies its target Registry; omission fails validation. |
+| Related read binding | Follow a reference for which the contract offers a related read. | The declared target collection, operation contract, and input mapping determine the request without parsing the opaque Record Identifier. |
+| Recorded parent details | Change the individual's current name while leaving the birth registration unchanged. | The birth registration retains `nameAtRegistration`; a permitted parent component may omit its individual reference. |
+| Complete array boundary | Exceed the response bound of a view declaring a complete memberships array. | The declared failure, with no truncated array presented as complete. |
+| Related disclosure | Read a household with restricted individual or relationship fields. | References, embedded values, omissions, arrays, and completeness metadata satisfy the consumer's disclosure policy. |
+
+## Evidence retained for audit
+
+Retain the specification version, selected capabilities and operation features, exposed services, published metadata and contracts, and a requirement traceability report with pass, fail, or not-applicable results and applicability rationales. Applicable evidence includes fixtures, requests and responses, schema-validation results, source mapping and currency, revision and temporal evidence, resource-limit and timeout results, pagination and disclosure outcomes, purpose evaluation and audit context, caller-discovery results, and identifier lifecycle evidence.
+
+Record artifact validation separately from deployed implementation results.
+
+## Write verification
+
+The [Write verification matrix](write-testing.md) covers direct creation, update, named transitions, and approval-based requests under their independently selected options. Run `uv run python tools/validate_write.py` for the unified contract, schema, provenance, positive and negative fixtures, exchanges, and combined journey checks. These are artifact checks. Source commitment, idempotency replay, manual-review separation, concurrent updates, crash recovery, and multi-Record atomicity still require running-implementation evidence.

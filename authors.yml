@@ -1,0 +1,12 @@
+---
+# Credits for the current alpha; historical contributors remain in the version history.
+authors:
+  - name: Sebastian Leidig
+    roles: [Author]
+    urn: govstack:person:sebastian-leidig
+  - name: Jeremi Joslin
+    roles: [Author]
+    urn: govstack:person:jeremi-joslin
+  - name: David Higgins
+    roles: [Author]
+    urn: govstack:person:david-higgins

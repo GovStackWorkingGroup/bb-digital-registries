@@ -1,0 +1,23 @@
+---
+name: Digital Registries
+abstract: >-
+  A domain-neutral interoperability specification for Registry identity,
+  authoritative scope, service discovery, and controlled access to Registry
+  information through independently selected operations.
+url: https://specs.govstack.global/registries/
+repository: https://github.com/GovStackWorkingGroup/bb-digital-registries
+urn: govstack:spec:bb:registries
+owner_group: govstack:wg:registries-registration
+capabilities:
+  - id: registry-discovery
+    title: Registry Service Discovery
+    description: An adopter identifies a Registry's responsible authority, authoritative scope, and available service contracts.
+  - id: registry-services
+    title: Authoritative Registry Services
+    description: An authorised consumer uses the Registry's declared services within its responsible authority's scope and access policy.
+extensions: []
+versions:
+  - version: "3.0.0-alpha.2"
+    release_date:
+    short_description: Defines the draft Registry Core, service discovery, and independently selected Consultation and Write operations.
+    latest: true

@@ -1,0 +1,6 @@
+version: 1
+# Review-only draft mappings do not establish certification or promote maturity.
+# DRAFT requirements are unnumbered in the Specification Framework. Their operation
+# links live in requirements/*.md. Previous versions remain in Git history.
+requirements: []
+draftRequirements: []
