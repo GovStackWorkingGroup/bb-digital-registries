@@ -1,0 +1,851 @@
+openapi: 3.1.2
+info:
+  title: Registry Write examples
+  version: 1.0.0-draft
+  description: >-
+    NON-NORMATIVE deployment profile for birth-registrations, households, and individuals.
+    It specialises the GovStack Digital Registries Write contract without adding domain
+    obligations to the shared contract. These examples use selected PublicSchema domain
+    vocabulary and schemas as references. The Write envelopes, review states, source
+    commands, and request-local identifiers are example-specific conventions.
+
+    Birth declaration and correction bodies are source commands. After authoritative commit,
+    the deployment maps accepted command content into its PublicSchema crvs/Birth projection.
+    The command is not itself the read Birth resource or an action log. Pending, rejected, and
+    blocked change requests have no authoritative Record effect.
+
+    The example source owns one transaction boundary and exposes households and individuals as
+    alternative collection views over that source. It therefore guarantees the explicitly
+    declared compound Household create and add-member profiles atomically. This example does not
+    imply multi-registry transactions, distributed atomicity, or a generic batch-write feature.
+  contact:
+    name: GovStack Digital Registries Working Group
+    url: https://github.com/GovStackWorkingGroup/bb-digital-registries
+  x-govstack-api-guide:
+    version: 0.3.0-draft
+    rulesetVersion: 0.3.0-draft
+servers:
+  - url: https://registry.example
+    description: Reserved non-production deployment used only by these examples.
+tags:
+  - name: Direct Write examples
+    description: Source-backed direct commits using concrete example inputs.
+  - name: Change request examples
+    description: Immutable proposals with review and application state observed separately.
+paths:
+  /v1/collections/birth-registrations/records:
+    post:
+      operationId: createBirthRegistration
+      summary: Create a birth declaration directly
+      description: >-
+        Commit a declaration command and map its accepted Birth content into the authoritative
+        PublicSchema Birth projection. Evidence and reason metadata remain command annotations,
+        not fields on the Birth event.
+      tags: [Direct Write examples]
+      security:
+        - serviceOAuth: [bb:digital-registries:record:create]
+      x-govstack-digital-registries-write:
+        registry: https://registry.example/registries/example
+        collection: birth-registrations
+        capability: create
+        inputSchema: ./write-examples.schema.json#/$defs/BirthDeclarationCreateInput
+      parameters:
+        - $ref: '../write.openapi.yaml#/components/parameters/Traceparent'
+        - $ref: '../write.openapi.yaml#/components/parameters/IdempotencyKey'
+      requestBody:
+        required: true
+        description: Source declaration command mapped to a PublicSchema Birth projection.
+        content:
+          application/json:
+            schema:
+              $ref: './write-examples.schema.json#/$defs/BirthDeclarationCreateInput'
+            example:
+              data:
+                transactionId: tx-birth-declaration-001
+                birth:
+                  '@context': https://publicschema.org/ctx/draft.jsonld
+                  '@id': urn:request-local:birth-event
+                  '@type': https://publicschema.org/crvs/Birth
+                  event_date: '2026-10-30'
+                  child:
+                    '@type': https://publicschema.org/crvs/Person
+                    person:
+                      '@id': urn:request-local:child
+                      '@type': https://publicschema.org/Person
+                      given_name: Nok
+                      family_name: Example
+                  parents:
+                    - '@type': https://publicschema.org/crvs/Parent
+                      person: https://registry.example/v1/collections/individuals/records/person_42
+                      parental_role: gestational
+                  sex_at_birth: female
+                annotation:
+                  reasonCode: initial_declaration
+                  statement: Birth declared by the recorded informant.
+      responses:
+        '201':
+          $ref: '#/components/responses/BirthRecordCreated'
+        '400':
+          $ref: '../write.openapi.yaml#/components/responses/BadRequest'
+        '401':
+          $ref: '../write.openapi.yaml#/components/responses/Unauthorized'
+        '403':
+          $ref: '../write.openapi.yaml#/components/responses/Forbidden'
+        '404':
+          $ref: '../write.openapi.yaml#/components/responses/CollectionNotAvailable'
+        '409':
+          $ref: '../write.openapi.yaml#/components/responses/Conflict'
+        '415':
+          $ref: '../write.openapi.yaml#/components/responses/UnsupportedMediaType'
+        '422':
+          $ref: '../write.openapi.yaml#/components/responses/UnprocessableContent'
+        '429':
+          $ref: '../write.openapi.yaml#/components/responses/TooManyRequests'
+        '500':
+          $ref: '../write.openapi.yaml#/components/responses/InternalError'
+        '503':
+          $ref: '../write.openapi.yaml#/components/responses/ServiceUnavailable'
+  /v1/collections/households/records:
+    post:
+      operationId: createHousehold
+      summary: Create a Household directly
+      description: >-
+        Commit a Household containing existing Person URI references or, only for the declared
+        same-source compound profile, embedded new Person objects with request-local @id values.
+      tags: [Direct Write examples]
+      security:
+        - serviceOAuth: [bb:digital-registries:record:create]
+      x-govstack-digital-registries-write:
+        registry: https://registry.example/registries/example
+        collection: households
+        capability: create
+        inputSchema: ./write-examples.schema.json#/$defs/HouseholdCreateInput
+      parameters:
+        - $ref: '../write.openapi.yaml#/components/parameters/Traceparent'
+        - $ref: '../write.openapi.yaml#/components/parameters/IdempotencyKey'
+      requestBody:
+        required: true
+        description: Existing-reference or explicitly atomic compound Household create input.
+        content:
+          application/json:
+            schema:
+              $ref: './write-examples.schema.json#/$defs/HouseholdCreateInput'
+            example:
+              data:
+                '@context': https://publicschema.org/ctx/draft.jsonld
+                '@id': urn:request-local:household-existing
+                '@type': https://publicschema.org/Household
+                name: Example household
+                group_type: household
+                memberships:
+                  - person: https://registry.example/v1/collections/individuals/records/person_42
+                    group: urn:request-local:household-existing
+                    role: head
+                    start_date: '2026-10-01'
+                    is_active: true
+      responses:
+        '201': {$ref: '#/components/responses/HouseholdRecordCreated'}
+        '400': {$ref: '../write.openapi.yaml#/components/responses/BadRequest'}
+        '401': {$ref: '../write.openapi.yaml#/components/responses/Unauthorized'}
+        '403': {$ref: '../write.openapi.yaml#/components/responses/Forbidden'}
+        '404': {$ref: '../write.openapi.yaml#/components/responses/CollectionNotAvailable'}
+        '409': {$ref: '../write.openapi.yaml#/components/responses/Conflict'}
+        '415': {$ref: '../write.openapi.yaml#/components/responses/UnsupportedMediaType'}
+        '422': {$ref: '../write.openapi.yaml#/components/responses/UnprocessableContent'}
+        '429': {$ref: '../write.openapi.yaml#/components/responses/TooManyRequests'}
+        '500': {$ref: '../write.openapi.yaml#/components/responses/InternalError'}
+        '503': {$ref: '../write.openapi.yaml#/components/responses/ServiceUnavailable'}
+  /v1/collections/individuals/records:
+    post:
+      operationId: createIndividual
+      summary: Create a Person directly
+      description: Commit an individual using the native PublicSchema Person field vocabulary.
+      tags: [Direct Write examples]
+      security:
+        - serviceOAuth: [bb:digital-registries:record:create]
+      x-govstack-digital-registries-write:
+        registry: https://registry.example/registries/example
+        collection: individuals
+        capability: create
+        inputSchema: ./write-examples.schema.json#/$defs/IndividualCreateInput
+      parameters:
+        - $ref: '../write.openapi.yaml#/components/parameters/Traceparent'
+        - $ref: '../write.openapi.yaml#/components/parameters/IdempotencyKey'
+      requestBody:
+        required: true
+        description: Concrete PublicSchema Person create input.
+        content:
+          application/json:
+            schema:
+              $ref: './write-examples.schema.json#/$defs/IndividualCreateInput'
+            example:
+              data:
+                '@context': https://publicschema.org/ctx/draft.jsonld
+                '@type': https://publicschema.org/Person
+                given_name: Somchai
+                family_name: Example
+                date_of_birth: '1990-02-12'
+      responses:
+        '201': {$ref: '#/components/responses/IndividualRecordCreated'}
+        '400': {$ref: '../write.openapi.yaml#/components/responses/BadRequest'}
+        '401': {$ref: '../write.openapi.yaml#/components/responses/Unauthorized'}
+        '403': {$ref: '../write.openapi.yaml#/components/responses/Forbidden'}
+        '404': {$ref: '../write.openapi.yaml#/components/responses/CollectionNotAvailable'}
+        '409': {$ref: '../write.openapi.yaml#/components/responses/Conflict'}
+        '415': {$ref: '../write.openapi.yaml#/components/responses/UnsupportedMediaType'}
+        '422': {$ref: '../write.openapi.yaml#/components/responses/UnprocessableContent'}
+        '429': {$ref: '../write.openapi.yaml#/components/responses/TooManyRequests'}
+        '500': {$ref: '../write.openapi.yaml#/components/responses/InternalError'}
+        '503': {$ref: '../write.openapi.yaml#/components/responses/ServiceUnavailable'}
+  /v1/collections/individuals/records/{recordId}:
+    patch:
+      operationId: updateRecord
+      summary: Apply a merge patch to a Person directly
+      description: >-
+        Apply an RFC 7396 merge patch to the writable Person projection. If-Match is the strong
+        target Record validator; a successful synchronous update is bodyless and returns the new
+        strong ETag.
+      tags: [Direct Write examples]
+      security:
+        - serviceOAuth: [bb:digital-registries:record:update]
+      x-govstack-digital-registries-write:
+        registry: https://registry.example/registries/example
+        collection: individuals
+        capability: update
+        inputSchema: ./write-examples.schema.json#/$defs/IndividualUpdateInput
+        inputMediaType: application/merge-patch+json
+      parameters:
+        - $ref: '../write.openapi.yaml#/components/parameters/RecordId'
+        - $ref: '../write.openapi.yaml#/components/parameters/Traceparent'
+        - $ref: '../write.openapi.yaml#/components/parameters/IfMatch'
+        - $ref: '../write.openapi.yaml#/components/parameters/IdempotencyKey'
+      requestBody:
+        required: true
+        description: Closed merge-patch subset of the Person projection.
+        content:
+          application/merge-patch+json:
+            schema:
+              $ref: './write-examples.schema.json#/$defs/IndividualUpdateInput'
+            example:
+              data:
+                preferred_name: Som
+      responses:
+        '204':
+          description: Person updated and committed; response is bodyless.
+          headers:
+            ETag: {$ref: '../write.openapi.yaml#/components/headers/StrongETag'}
+            Cache-Control: {$ref: '../write.openapi.yaml#/components/headers/CacheControl'}
+        '400': {$ref: '../write.openapi.yaml#/components/responses/BadRequest'}
+        '401': {$ref: '../write.openapi.yaml#/components/responses/Unauthorized'}
+        '403': {$ref: '../write.openapi.yaml#/components/responses/Forbidden'}
+        '404': {$ref: '../write.openapi.yaml#/components/responses/RecordNotAvailable'}
+        '409': {$ref: '../write.openapi.yaml#/components/responses/Conflict'}
+        '412': {$ref: '../write.openapi.yaml#/components/responses/PreconditionFailed'}
+        '415': {$ref: '../write.openapi.yaml#/components/responses/UnsupportedMediaType'}
+        '422': {$ref: '../write.openapi.yaml#/components/responses/UnprocessableContent'}
+        '428': {$ref: '../write.openapi.yaml#/components/responses/PreconditionRequired'}
+        '429': {$ref: '../write.openapi.yaml#/components/responses/TooManyRequests'}
+        '500': {$ref: '../write.openapi.yaml#/components/responses/InternalError'}
+        '503': {$ref: '../write.openapi.yaml#/components/responses/ServiceUnavailable'}
+  /v1/collections/birth-registrations/records/{recordId}/correct-birth:
+    post:
+      operationId: correctBirth
+      summary: Apply a birth correction directly
+      description: >-
+        Apply the fixed correct-birth transition. If-Match is the strong validator of the
+        authoritative birth-registration Record. parameters.birthPatch names PublicSchema
+        Birth projection fields, while annotation carries source-command reason and evidence.
+        The patch changes the projection only after commit.
+      tags: [Direct Write examples]
+      security:
+        - serviceOAuth: [bb:digital-registries:record:transition]
+      x-govstack-digital-registries-write:
+        registry: https://registry.example/registries/example
+        collection: birth-registrations
+        capability: transition
+        inputSchema: ./write-examples.schema.json#/$defs/BirthCorrectionInput
+        action: correct-birth
+        transitionProfile: publicschema-birth-correction
+      parameters:
+        - $ref: '../write.openapi.yaml#/components/parameters/RecordId'
+        - $ref: '../write.openapi.yaml#/components/parameters/Traceparent'
+        - $ref: '../write.openapi.yaml#/components/parameters/IfMatch'
+        - $ref: '../write.openapi.yaml#/components/parameters/IdempotencyKey'
+      requestBody:
+        required: true
+        description: Fixed correction command mapped to the eventual PublicSchema Birth view.
+        content:
+          application/json:
+            schema:
+              $ref: './write-examples.schema.json#/$defs/BirthCorrectionInput'
+            example:
+              name: correct-birth
+              parameters:
+                transactionId: tx-birth-correction-direct-001
+                birthPatch:
+                  event_location:
+                    location_name: Corrected District Hospital
+                annotation:
+                  reasonCode: clerical_error
+                  statement: Correct the place of occurrence from the supporting facility record.
+                  supportingEvidence:
+                    - evidenceType: facility_record
+                      reference: https://registry.example/evidence/facility_record_991
+                      issuedAt: '2026-10-30T09:30:00Z'
+      responses:
+        '200':
+          $ref: '#/components/responses/BirthTransitionApplied'
+        '400':
+          $ref: '../write.openapi.yaml#/components/responses/BadRequest'
+        '401':
+          $ref: '../write.openapi.yaml#/components/responses/Unauthorized'
+        '403':
+          $ref: '../write.openapi.yaml#/components/responses/Forbidden'
+        '404':
+          $ref: '../write.openapi.yaml#/components/responses/RecordNotAvailable'
+        '409':
+          $ref: '../write.openapi.yaml#/components/responses/Conflict'
+        '412':
+          $ref: '../write.openapi.yaml#/components/responses/PreconditionFailed'
+        '415':
+          $ref: '../write.openapi.yaml#/components/responses/UnsupportedMediaType'
+        '422':
+          $ref: '../write.openapi.yaml#/components/responses/UnprocessableContent'
+        '428':
+          $ref: '../write.openapi.yaml#/components/responses/PreconditionRequired'
+        '429':
+          $ref: '../write.openapi.yaml#/components/responses/TooManyRequests'
+        '500':
+          $ref: '../write.openapi.yaml#/components/responses/InternalError'
+        '503':
+          $ref: '../write.openapi.yaml#/components/responses/ServiceUnavailable'
+  /v1/collections/households/records/{recordId}/add-member:
+    post:
+      operationId: addHouseholdMember
+      summary: Add an existing or newly declared Person to a Household
+      description: >-
+        Apply the fixed add-member transition. An existing Person is an absolute record URI. An
+        embedded Person is accepted only because this profile declares atomic creation in the
+        same source transaction and gives the new Person a request-local @id. This is not a
+        portable multi-registry transaction guarantee.
+      tags: [Direct Write examples]
+      security:
+        - serviceOAuth: [bb:digital-registries:record:transition]
+      x-govstack-digital-registries-write:
+        registry: https://registry.example/registries/example
+        collection: households
+        capability: transition
+        inputSchema: ./write-examples.schema.json#/$defs/HouseholdAddMemberInput
+        action: add-member
+        transitionProfile: publicschema-household-add-member
+      parameters:
+        - $ref: '../write.openapi.yaml#/components/parameters/RecordId'
+        - $ref: '../write.openapi.yaml#/components/parameters/Traceparent'
+        - $ref: '../write.openapi.yaml#/components/parameters/IfMatch'
+        - $ref: '../write.openapi.yaml#/components/parameters/IdempotencyKey'
+      requestBody:
+        required: true
+        description: One PublicSchema GroupMembership with an existing URI or embedded new Person.
+        content:
+          application/json:
+            schema:
+              $ref: './write-examples.schema.json#/$defs/HouseholdAddMemberInput'
+            example:
+              name: add-member
+              parameters:
+                membership:
+                  person: https://registry.example/v1/collections/individuals/records/person_88
+                  group: https://registry.example/v1/collections/households/records/household_8
+                  role: child
+                  start_date: '2026-11-04'
+                  is_active: true
+      responses:
+        '200':
+          $ref: '#/components/responses/HouseholdTransitionApplied'
+        '400':
+          $ref: '../write.openapi.yaml#/components/responses/BadRequest'
+        '401':
+          $ref: '../write.openapi.yaml#/components/responses/Unauthorized'
+        '403':
+          $ref: '../write.openapi.yaml#/components/responses/Forbidden'
+        '404':
+          $ref: '../write.openapi.yaml#/components/responses/RecordNotAvailable'
+        '409':
+          $ref: '../write.openapi.yaml#/components/responses/Conflict'
+        '412':
+          $ref: '../write.openapi.yaml#/components/responses/PreconditionFailed'
+        '415':
+          $ref: '../write.openapi.yaml#/components/responses/UnsupportedMediaType'
+        '422':
+          $ref: '../write.openapi.yaml#/components/responses/UnprocessableContent'
+        '428':
+          $ref: '../write.openapi.yaml#/components/responses/PreconditionRequired'
+        '429':
+          $ref: '../write.openapi.yaml#/components/responses/TooManyRequests'
+        '500':
+          $ref: '../write.openapi.yaml#/components/responses/InternalError'
+        '503':
+          $ref: '../write.openapi.yaml#/components/responses/ServiceUnavailable'
+  /v1/change-requests:
+    post:
+      operationId: submitChangeRequest
+      summary: Submit a PublicSchema-profile change proposal
+      description: >-
+        Create an immutable pending proposal with the exact concrete input used by its direct
+        operation. Submission has no authoritative Record effect. Transition proposals carry a
+        strong baseETag for the target Record; the later review If-Match validates the change
+        request representation and is a different precondition.
+      tags: [Change request examples]
+      security:
+        - serviceOAuth: [bb:digital-registries:change-request:submit]
+      x-govstack-digital-registries-write:
+        registry: https://registry.example/registries/example
+        capability: change-requests
+        inputSchema: ./write-examples.schema.json#/$defs/PublicSchemaChangeRequestInput
+      parameters:
+        - $ref: '../write.openapi.yaml#/components/parameters/Traceparent'
+        - $ref: '../write.openapi.yaml#/components/parameters/IdempotencyKey'
+      requestBody:
+        required: true
+        description: Concrete create or transition proposal for this deployment.
+        content:
+          application/json:
+            schema:
+              $ref: './write-examples.schema.json#/$defs/PublicSchemaChangeRequestInput'
+            example:
+              kind: transition
+              target:
+                collectionId: birth-registrations
+                recordId: birth_19
+              baseETag: '"birth-v8"'
+              input:
+                name: correct-birth
+                parameters:
+                  transactionId: tx-birth-correction-review-001
+                  birthPatch:
+                    event_location:
+                      location_name: North District Hospital
+                  annotation:
+                    reasonCode: clerical_error
+                    statement: Correct from the facility record.
+      responses:
+        '201':
+          $ref: '#/components/responses/ChangeRequestCreated'
+        '400':
+          $ref: '../write.openapi.yaml#/components/responses/BadRequest'
+        '401':
+          $ref: '../write.openapi.yaml#/components/responses/Unauthorized'
+        '403':
+          $ref: '../write.openapi.yaml#/components/responses/Forbidden'
+        '404':
+          $ref: '../write.openapi.yaml#/components/responses/TargetNotAvailable'
+        '409':
+          $ref: '../write.openapi.yaml#/components/responses/Conflict'
+        '415':
+          $ref: '../write.openapi.yaml#/components/responses/UnsupportedMediaType'
+        '422':
+          $ref: '../write.openapi.yaml#/components/responses/UnprocessableContent'
+        '429':
+          $ref: '../write.openapi.yaml#/components/responses/TooManyRequests'
+        '500':
+          $ref: '../write.openapi.yaml#/components/responses/InternalError'
+        '503':
+          $ref: '../write.openapi.yaml#/components/responses/ServiceUnavailable'
+  /v1/change-requests/{changeRequestId}:
+    get:
+      operationId: getChangeRequest
+      summary: Get a PublicSchema-profile change request
+      description: Return the immutable proposal with its independent review and application states.
+      tags: [Change request examples]
+      security:
+        - serviceOAuth: [bb:digital-registries:change-request:read]
+      parameters:
+        - $ref: '../write.openapi.yaml#/components/parameters/ChangeRequestId'
+        - $ref: '../write.openapi.yaml#/components/parameters/Traceparent'
+        - $ref: '../write.openapi.yaml#/components/parameters/IfNoneMatch'
+      responses:
+        '200':
+          $ref: '#/components/responses/ChangeRequest'
+        '304':
+          $ref: '../write.openapi.yaml#/components/responses/NotModified'
+        '400':
+          $ref: '../write.openapi.yaml#/components/responses/BadRequest'
+        '401':
+          $ref: '../write.openapi.yaml#/components/responses/Unauthorized'
+        '403':
+          $ref: '../write.openapi.yaml#/components/responses/Forbidden'
+        '404':
+          $ref: '../write.openapi.yaml#/components/responses/ChangeRequestNotAvailable'
+        '406':
+          $ref: '../write.openapi.yaml#/components/responses/NotAcceptable'
+        '429':
+          $ref: '../write.openapi.yaml#/components/responses/TooManyRequests'
+        '500':
+          $ref: '../write.openapi.yaml#/components/responses/InternalError'
+        '503':
+          $ref: '../write.openapi.yaml#/components/responses/ServiceUnavailable'
+  /v1/change-requests/{changeRequestId}/approve:
+    post:
+      operationId: approveChangeRequest
+      summary: Approve the exact PublicSchema-profile proposal version
+      description: >-
+        If-Match guards the change-request representation. Approval records the review
+        decision only and returns applicationState not-started. A separately authorised
+        worker may later attempt the authoritative commit, where the stored baseETag
+        independently guards the target Record.
+      tags: [Change request examples]
+      security:
+        - serviceOAuth: [bb:digital-registries:change-request:review]
+      x-govstack-digital-registries-write:
+        registry: https://registry.example/registries/example
+        capability: change-requests
+      parameters:
+        - $ref: '../write.openapi.yaml#/components/parameters/ChangeRequestId'
+        - $ref: '../write.openapi.yaml#/components/parameters/Traceparent'
+        - $ref: '../write.openapi.yaml#/components/parameters/IfMatch'
+        - $ref: '../write.openapi.yaml#/components/parameters/IdempotencyKey'
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              $ref: '../write.openapi.yaml#/components/schemas/ReviewDecisionInput'
+      responses:
+        '200':
+          $ref: '#/components/responses/ChangeRequestApproved'
+        '400':
+          $ref: '../write.openapi.yaml#/components/responses/BadRequest'
+        '401':
+          $ref: '../write.openapi.yaml#/components/responses/Unauthorized'
+        '403':
+          $ref: '../write.openapi.yaml#/components/responses/Forbidden'
+        '404':
+          $ref: '../write.openapi.yaml#/components/responses/ChangeRequestNotAvailable'
+        '409':
+          $ref: '../write.openapi.yaml#/components/responses/Conflict'
+        '412':
+          $ref: '../write.openapi.yaml#/components/responses/PreconditionFailed'
+        '422':
+          $ref: '../write.openapi.yaml#/components/responses/UnprocessableContent'
+        '428':
+          $ref: '../write.openapi.yaml#/components/responses/PreconditionRequired'
+        '429':
+          $ref: '../write.openapi.yaml#/components/responses/TooManyRequests'
+        '500':
+          $ref: '../write.openapi.yaml#/components/responses/InternalError'
+        '503':
+          $ref: '../write.openapi.yaml#/components/responses/ServiceUnavailable'
+  /v1/change-requests/{changeRequestId}/reject:
+    post:
+      operationId: rejectChangeRequest
+      summary: Reject the exact PublicSchema-profile proposal version
+      description: Reject the proposal selected by strong If-Match without changing any Record.
+      tags: [Change request examples]
+      security:
+        - serviceOAuth: [bb:digital-registries:change-request:review]
+      x-govstack-digital-registries-write:
+        registry: https://registry.example/registries/example
+        capability: change-requests
+      parameters:
+        - $ref: '../write.openapi.yaml#/components/parameters/ChangeRequestId'
+        - $ref: '../write.openapi.yaml#/components/parameters/Traceparent'
+        - $ref: '../write.openapi.yaml#/components/parameters/IfMatch'
+        - $ref: '../write.openapi.yaml#/components/parameters/IdempotencyKey'
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              $ref: '../write.openapi.yaml#/components/schemas/ReviewDecisionInput'
+      responses:
+        '200':
+          $ref: '#/components/responses/ChangeRequestRejected'
+        '400':
+          $ref: '../write.openapi.yaml#/components/responses/BadRequest'
+        '401':
+          $ref: '../write.openapi.yaml#/components/responses/Unauthorized'
+        '403':
+          $ref: '../write.openapi.yaml#/components/responses/Forbidden'
+        '404':
+          $ref: '../write.openapi.yaml#/components/responses/ChangeRequestNotAvailable'
+        '409':
+          $ref: '../write.openapi.yaml#/components/responses/Conflict'
+        '412':
+          $ref: '../write.openapi.yaml#/components/responses/PreconditionFailed'
+        '422':
+          $ref: '../write.openapi.yaml#/components/responses/UnprocessableContent'
+        '428':
+          $ref: '../write.openapi.yaml#/components/responses/PreconditionRequired'
+        '429':
+          $ref: '../write.openapi.yaml#/components/responses/TooManyRequests'
+        '500':
+          $ref: '../write.openapi.yaml#/components/responses/InternalError'
+        '503':
+          $ref: '../write.openapi.yaml#/components/responses/ServiceUnavailable'
+components:
+  securitySchemes:
+    serviceOAuth:
+      $ref: '../write.openapi.yaml#/components/securitySchemes/serviceOAuth'
+  parameters:
+    CollectionId:
+      name: collectionId
+      in: path
+      required: true
+      description: Concrete collection selected by this profile.
+      schema:
+        type: string
+        enum: [birth-registrations, households, individuals]
+  schemas:
+    BirthDeclarationCreateInput:
+      $ref: './write-examples.schema.json#/$defs/BirthDeclarationCreateInput'
+    BirthCorrectionInput:
+      $ref: './write-examples.schema.json#/$defs/BirthCorrectionInput'
+    HouseholdExistingCreateInput:
+      $ref: './write-examples.schema.json#/$defs/HouseholdExistingCreateInput'
+    HouseholdCompoundCreateInput:
+      $ref: './write-examples.schema.json#/$defs/HouseholdCompoundCreateInput'
+    HouseholdCreateInput:
+      $ref: './write-examples.schema.json#/$defs/HouseholdCreateInput'
+    HouseholdAddMemberInput:
+      $ref: './write-examples.schema.json#/$defs/HouseholdAddMemberInput'
+    IndividualCreateInput:
+      $ref: './write-examples.schema.json#/$defs/IndividualCreateInput'
+    IndividualUpdateInput:
+      $ref: './write-examples.schema.json#/$defs/IndividualUpdateInput'
+    PublicSchemaChangeRequestInput:
+      $ref: './write-examples.schema.json#/$defs/PublicSchemaChangeRequestInput'
+    PublicSchemaChangeRequest:
+      $ref: './write-examples.schema.json#/$defs/PublicSchemaChangeRequest'
+    ApprovedPublicSchemaDecisionReceipt:
+      $ref: './write-examples.schema.json#/$defs/ApprovedPublicSchemaDecisionReceipt'
+    RejectedPublicSchemaDecisionReceipt:
+      $ref: './write-examples.schema.json#/$defs/RejectedPublicSchemaDecisionReceipt'
+    PublicSchemaWriteResult:
+      $ref: './write-examples.schema.json#/$defs/PublicSchemaWriteResult'
+  responses:
+    BirthRecordCreated:
+      description: Birth declaration and request-local child Person committed under the example source transaction.
+      headers:
+        Location:
+          $ref: '../write.openapi.yaml#/components/headers/Location'
+        ETag:
+          $ref: '../write.openapi.yaml#/components/headers/StrongETag'
+        Cache-Control:
+          $ref: '../write.openapi.yaml#/components/headers/CacheControl'
+      content:
+        application/json:
+          schema:
+            $ref: './write-examples.schema.json#/$defs/PublicSchemaWriteResult'
+          example:
+            collectionId: birth-registrations
+            recordId: birth_20
+            etag: '"birth-v1"'
+            requestLocalReferences:
+              - requestLocalId: urn:request-local:birth-event
+                collectionId: birth-registrations
+                recordId: birth_20
+              - requestLocalId: urn:request-local:child
+                collectionId: individuals
+                recordId: person_101
+    HouseholdRecordCreated:
+      description: Household and any explicitly declared same-source embedded Persons committed atomically.
+      headers:
+        Location:
+          $ref: '../write.openapi.yaml#/components/headers/Location'
+        ETag:
+          $ref: '../write.openapi.yaml#/components/headers/StrongETag'
+        Cache-Control:
+          $ref: '../write.openapi.yaml#/components/headers/CacheControl'
+      content:
+        application/json:
+          schema:
+            $ref: './write-examples.schema.json#/$defs/PublicSchemaWriteResult'
+          example:
+            collectionId: households
+            recordId: household_8
+            etag: '"household-v1"'
+            requestLocalReferences:
+              - requestLocalId: urn:request-local:household-existing
+                collectionId: households
+                recordId: household_8
+    IndividualRecordCreated:
+      description: Individual Person Record committed with an authority-assigned Record identifier.
+      headers:
+        Location:
+          $ref: '../write.openapi.yaml#/components/headers/Location'
+        ETag:
+          $ref: '../write.openapi.yaml#/components/headers/StrongETag'
+        Cache-Control:
+          $ref: '../write.openapi.yaml#/components/headers/CacheControl'
+      content:
+        application/json:
+          schema:
+            $ref: './write-examples.schema.json#/$defs/PublicSchemaWriteResult'
+          example:
+            collectionId: individuals
+            recordId: person_105
+            etag: '"person-v1"'
+    BirthTransitionApplied:
+      description: Birth correction committed authoritatively with a new strong target ETag.
+      headers:
+        ETag:
+          $ref: '../write.openapi.yaml#/components/headers/StrongETag'
+        Cache-Control:
+          $ref: '../write.openapi.yaml#/components/headers/CacheControl'
+      content:
+        application/json:
+          schema:
+            $ref: './write-examples.schema.json#/$defs/PublicSchemaWriteResult'
+          example:
+            collectionId: birth-registrations
+            recordId: birth_19
+            etag: '"birth-v8"'
+    HouseholdTransitionApplied:
+      description: Household membership transition committed atomically with a new strong target ETag.
+      headers:
+        ETag:
+          $ref: '../write.openapi.yaml#/components/headers/StrongETag'
+        Cache-Control:
+          $ref: '../write.openapi.yaml#/components/headers/CacheControl'
+      content:
+        application/json:
+          schema:
+            $ref: './write-examples.schema.json#/$defs/PublicSchemaWriteResult'
+          example:
+            collectionId: households
+            recordId: household_8
+            etag: '"household-v2"'
+    ChangeRequestCreated:
+      description: Immutable pending proposal created; no authoritative Record effect has occurred.
+      headers:
+        Location:
+          $ref: '../write.openapi.yaml#/components/headers/Location'
+        ETag:
+          $ref: '../write.openapi.yaml#/components/headers/StrongETag'
+        Cache-Control:
+          $ref: '../write.openapi.yaml#/components/headers/CacheControl'
+      content:
+        application/json:
+          schema:
+            $ref: './write-examples.schema.json#/$defs/PublicSchemaChangeRequest'
+          example:
+            changeRequestId: cr_birth_correction_2
+            proposalVersion: 1
+            kind: transition
+            target:
+              collectionId: birth-registrations
+              recordId: birth_19
+            baseETag: '"birth-v8"'
+            input:
+              name: correct-birth
+              parameters:
+                transactionId: tx-birth-correction-review-001
+                birthPatch:
+                  event_location:
+                    location_name: North District Hospital
+                annotation:
+                  reasonCode: clerical_error
+                  statement: Correct from the facility record.
+            reviewState: pending
+            applicationState: not-started
+            submittedAt: '2026-11-04T03:00:00Z'
+            updatedAt: '2026-11-04T03:00:00Z'
+    ChangeRequest:
+      description: One visible proposal with review and application state represented independently.
+      headers:
+        ETag:
+          $ref: '../write.openapi.yaml#/components/headers/StrongETag'
+        Cache-Control:
+          $ref: '../write.openapi.yaml#/components/headers/CacheControl'
+      content:
+        application/json:
+          schema:
+            $ref: './write-examples.schema.json#/$defs/PublicSchemaChangeRequest'
+          example:
+            changeRequestId: cr_birth_correction_2
+            proposalVersion: 1
+            kind: transition
+            target:
+              collectionId: birth-registrations
+              recordId: birth_19
+            baseETag: '"birth-v8"'
+            input:
+              name: correct-birth
+              parameters:
+                transactionId: tx-birth-correction-review-001
+                birthPatch:
+                  event_location:
+                    location_name: North District Hospital
+                annotation:
+                  reasonCode: clerical_error
+                  statement: Correct from the facility record.
+            reviewState: pending
+            applicationState: not-started
+            submittedAt: '2026-11-04T03:00:00Z'
+            updatedAt: '2026-11-04T03:00:00Z'
+    ChangeRequestApproved:
+      description: Approval recorded without attempting authoritative application.
+      headers:
+        ETag:
+          $ref: '../write.openapi.yaml#/components/headers/StrongETag'
+        Cache-Control:
+          $ref: '../write.openapi.yaml#/components/headers/CacheControl'
+      content:
+        application/json:
+          schema:
+            $ref: './write-examples.schema.json#/$defs/ApprovedPublicSchemaDecisionReceipt'
+          example:
+            changeRequestId: cr_birth_correction_2
+            proposalVersion: 1
+            kind: transition
+            target:
+              collectionId: birth-registrations
+              recordId: birth_19
+            baseETag: '"birth-v8"'
+            input:
+              name: correct-birth
+              parameters:
+                transactionId: tx-birth-correction-review-001
+                birthPatch:
+                  event_location:
+                    location_name: North District Hospital
+                annotation:
+                  reasonCode: clerical_error
+                  statement: Correct from the facility record.
+            reviewState: approved
+            applicationState: not-started
+            submittedAt: '2026-11-04T03:00:00Z'
+            updatedAt: '2026-11-04T03:05:00Z'
+    ChangeRequestRejected:
+      description: Rejection recorded without changing any authoritative Record.
+      headers:
+        ETag:
+          $ref: '../write.openapi.yaml#/components/headers/StrongETag'
+        Cache-Control:
+          $ref: '../write.openapi.yaml#/components/headers/CacheControl'
+      content:
+        application/json:
+          schema:
+            $ref: './write-examples.schema.json#/$defs/RejectedPublicSchemaDecisionReceipt'
+          example:
+            changeRequestId: cr_birth_correction_2
+            proposalVersion: 1
+            kind: transition
+            target:
+              collectionId: birth-registrations
+              recordId: birth_19
+            baseETag: '"birth-v8"'
+            input:
+              name: correct-birth
+              parameters:
+                transactionId: tx-birth-correction-review-001
+                birthPatch:
+                  event_location:
+                    location_name: North District Hospital
+                annotation:
+                  reasonCode: clerical_error
+                  statement: Correct from the facility record.
+            reviewState: rejected
+            applicationState: not-started
+            submittedAt: '2026-11-04T03:00:00Z'
+            updatedAt: '2026-11-04T03:05:00Z'

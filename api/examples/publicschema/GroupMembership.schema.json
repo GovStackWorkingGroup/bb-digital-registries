@@ -1,0 +1,67 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://publicschema.org/GroupMembership.schema.json",
+  "title": "GroupMembership",
+  "description": "The link between a Person and a Group, carrying the role the person plays within that group membership (such as head, spouse, child, owner, operator, or worker). Applicable role values depend on the kind of group. This link allows a person to belong to multiple groups at the same time.\n",
+  "type": "object",
+  "properties": {
+    "person": {
+      "oneOf": [
+        {
+          "$ref": "https://publicschema.org/Person.schema.json"
+        },
+        {
+          "type": "string",
+          "description": "URI or identifier reference"
+        }
+      ],
+      "description": "A reference to the individual Person this record relates to."
+    },
+    "group": {
+      "oneOf": [
+        {
+          "$ref": "https://publicschema.org/Group.schema.json"
+        },
+        {
+          "type": "string",
+          "description": "URI or identifier reference"
+        }
+      ],
+      "description": "The group to which the person belongs."
+    },
+    "role": {
+      "type": "string",
+      "enum": [
+        "head",
+        "spouse",
+        "child",
+        "dependent",
+        "parent",
+        "sibling",
+        "grandparent",
+        "grandchild",
+        "other_relative",
+        "non_relative",
+        "owner",
+        "operator",
+        "worker"
+      ],
+      "$comment": "https://publicschema.org/vocab/group-role",
+      "description": "The role recorded for the person within the group membership. Applicable values depend on the kind of group (for example head, spouse, child, owner, operator, or worker)."
+    },
+    "start_date": {
+      "type": "string",
+      "format": "date",
+      "description": "The date on which this became effective."
+    },
+    "end_date": {
+      "type": "string",
+      "format": "date",
+      "description": "The last day on which this is effective. A period includes both its start date and its end date, so a period that applies only on 30 June 2026 has start date 2026-06-30 and end date 2026-06-30."
+    },
+    "is_active": {
+      "type": "boolean",
+      "description": "Whether the membership or relationship is currently in effect, as opposed to expired, suspended, or terminated."
+    }
+  }
+}

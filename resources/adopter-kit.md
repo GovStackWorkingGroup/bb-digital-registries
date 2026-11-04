@@ -4,11 +4,11 @@ description: The four artifacts an implementation publishes, with the files to s
 
 # Adopter kit
 
-An implementation of Registry Core with Consultation publishes four artifacts. The rest of this specification explains what they mean; this page lists them so that an implementer knows what to produce.
+An implementation of Registry Core with selected Consultation or Write services publishes four artifacts. The rest of this specification explains what they mean; this page lists them so that an implementer knows what to produce.
 
 | Artifact | Where it is served | Start from | Defined by |
 |---|---|---|---|
-| OpenAPI contract, one per API | A stable URL chosen by the deployment | The [example matching the selected capabilities](../api/examples/README.md), reusing shared components of the [canonical Consultation OpenAPI](api.yml) | [Consultation HTTP binding](consultation-binding.md#http-binding) and [API composition](registry-core-model.md#api-composition) |
+| OpenAPI contract, one per API | A stable URL chosen by the deployment | The [example matching the selected capabilities](../api/examples/README.md), using the [Consultation](api.yml) or [Write](write-api.yml) contract as applicable | [Consultation HTTP binding](consultation-binding.md#http-binding) and [API composition](registry-core-model.md#api-composition) |
 | Registry metadata document | A stable document URI, served as `application/ld+json` | [Registry metadata example](../api/examples/registry-metadata.jsonld), validated by the [metadata document schema](../api/extensions/registry-metadata.schema.json) | [Registry metadata](registry-core-model.md#registry-metadata) |
 | API catalog linkset | `/.well-known/api-catalog` at the API origin, served as `application/linkset+json` | [API catalog example](../api/examples/api-catalog.linkset.json) and the `/.well-known/api-catalog` path of the [canonical Consultation OpenAPI](api.yml) | [Discovery publication](registry-core-model.md#discovery-publication) |
 | Health endpoint | `/health` relative to the OpenAPI server URL, including any routing prefix | The `/health` path of the [canonical Consultation OpenAPI](api.yml) | GovStack API Design Guide, unversioned health endpoint |
@@ -27,7 +27,13 @@ The repository's [artifact validator](../tools/validate_consultation.py) checks 
 ## What is not needed
 
 - A catalogue API or Provisioning API: static documents satisfy discovery.
-- All six Consultation operations: the draft variation point selects at least one, as described in [Conformance](conformance.md#draft-conformance-model).
+- All Consultation or Write operations: the draft variation point selects at least one, as described in [Conformance](conformance.md#draft-conformance-model). Direct writes and approval-based writes remain independently selectable.
 - Conditional requests, caller-selected fields, exhaustive traversal, or source snapshots unless the operation declares the corresponding feature.
 - Revision history, recorded-time or effective-time selection, caller capability discovery, or purpose binding unless the corresponding capability or feature is selected.
 - Revision, lifecycle, or provenance metadata, unless a selected profile requires it.
+
+## Adopting Write
+
+Select the direct operations or approval-based route the source and policy support, using the [Write contract](write-api.yml) and [binding](write-binding.md). Publish the concrete input schemas, named transitions, grants, trusted purpose rules where selected, strong validator source, idempotency replay contract, and commit boundaries. Approval-only deployments publish request and review operations without granting direct write access. Returned acknowledgements do not imply permission to retrieve every resulting Record.
+
+The [non-normative Write examples](../api/examples/README.md) show one possible set of domain bindings, not a required data model. Document the institution's chosen model version, mappings, extensions, and licence attribution. Validate Write artifacts with `uv run python tools/validate_write.py`; use [Write verification](write-testing.md) for implementation scenarios.

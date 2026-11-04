@@ -12,9 +12,12 @@ product, administrative user interface, storage model, deployment topology, or
 domain data model.
 
 The target conformance model combines Registry Core with at least one declared
-Registry operation. In this draft, Retrieve, Lookup, List, Search, Revision List,
-and Revision Retrieve are six independent options of a required core variation point. No particular operation is
-universal. The core functionality is generic Registry service provision; the current option set does not make Consultation permanently universal. The other seven API families remain informative roadmap material until a future version defines their service options with approved requirements, contracts, and tests.
+Registry operation. This draft defines six independently selectable Consultation options and four
+Write options: direct creation, direct update, direct named transition, and
+approval-based change requests. No particular operation is universal. A deployment
+can offer direct writes, approval-based writes, both, or only declared reads.
+The other six API families remain informative roadmap material until their
+requirements, contracts, and tests are defined.
 Business-outcome capabilities in `metadata.yml` are informative and are realised
 by the functionalities; operation choices are declared by option key.
 
@@ -38,9 +41,10 @@ remain conditional on the source and the selected capability or feature.
 - **Implementers:** start with the [adopter kit](resources/adopter-kit.md), then
   [Discover Registry Services](requirements/registry-discovery.md),
   [Provide Registry Services](requirements/registry-services.md), and the
-  [Consultation HTTP binding](resources/consultation-binding.md). The
-  [business Registry contract](api/examples/business-registry.openapi.yaml)
-  illustrates a concrete mapping.
+  [Consultation HTTP binding](resources/consultation-binding.md) or
+  [Write HTTP binding](resources/write-binding.md). The
+  [non-normative Write examples](api/examples/README.md) illustrate birth
+  registration and household creation without imposing a domain model.
 - **Assessors:** use the [verification procedures](resources/testing.md),
   [legacy requirement mapping](resources/requirement-migration.yml), and the
   applicability declarations in each functionality file.
@@ -51,6 +55,14 @@ remain conditional on the source and the selected capability or feature.
 
 The repository layout and validation commands are in
 [CONTRIBUTING.md](https://github.com/GovStackWorkingGroup/bb-digital-registries/blob/main/CONTRIBUTING.md).
+
+## Specification site
+
+The [site wrapper](specification-site/README.md) builds this specification with the
+shared GovStack renderer. [Consultation](resources/api-reference.md) and
+[Write](resources/write-api-reference.md) have native API references, with
+illustrative bindings kept separate. Root `api-references.yml` selects the
+contracts; the wrapper documents local use and hosted activation.
 
 ## Publication and attribution
 

@@ -1,0 +1,121 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://publicschema.org/crvs/Person.schema.json",
+  "title": "Person",
+  "description": "A temporal snapshot of a Person as observed at the time of a vital event. Carries the same demographic properties as Person, but frozen at event time rather than reflecting current values. Used wherever a vital event needs to record who a person was (occupation, residence, education, etc.) at the moment the event occurred.\n",
+  "type": "object",
+  "properties": {
+    "person": {
+      "oneOf": [
+        {
+          "$ref": "https://publicschema.org/Person.schema.json"
+        },
+        {
+          "type": "string",
+          "description": "URI or identifier reference"
+        }
+      ],
+      "description": "A reference to the individual Person this record relates to."
+    },
+    "nationality": {
+      "type": "string",
+      "$comment": "https://publicschema.org/vocab/country",
+      "description": "The country of citizenship or nationality, expressed as an ISO 3166-1 alpha-2 code where possible."
+    },
+    "occupation": {
+      "type": "string",
+      "$comment": "https://publicschema.org/vocab/occupation",
+      "description": "The person's primary occupation, classified according to the ISCO-08 sub-major groups."
+    },
+    "education_level": {
+      "type": "string",
+      "enum": [
+        "none",
+        "early_childhood",
+        "primary",
+        "lower_secondary",
+        "upper_secondary",
+        "post_secondary_non_tertiary",
+        "short_cycle_tertiary",
+        "bachelor",
+        "master",
+        "doctoral"
+      ],
+      "$comment": "https://publicschema.org/vocab/education-level",
+      "description": "The highest level of formal education completed by a person."
+    },
+    "marital_status": {
+      "type": "string",
+      "enum": [
+        "never_married",
+        "married",
+        "widowed",
+        "divorced",
+        "legally_separated",
+        "consensual_union"
+      ],
+      "$comment": "https://publicschema.org/vocab/marital-status",
+      "description": "The marital or civil status of a person as recorded in an administrative system."
+    },
+    "literacy": {
+      "type": "string",
+      "enum": [
+        "literate",
+        "illiterate"
+      ],
+      "$comment": "https://publicschema.org/vocab/literacy",
+      "description": "Whether the person can, with understanding, both read and write a short simple statement on everyday life."
+    },
+    "religion": {
+      "type": "string",
+      "description": "The religion, religious denomination, or sect of the person, as self-identified. No international classification exists; countries define their own value sets."
+    },
+    "ethnic_group": {
+      "type": "string",
+      "description": "The ethnic or cultural group of the person, as self-identified. The UNSD recommends nationally defined categories based on self-identification; no international classification exists."
+    },
+    "employment_status": {
+      "type": "string",
+      "enum": [
+        "employed",
+        "unemployed",
+        "outside_labour_force"
+      ],
+      "$comment": "https://publicschema.org/vocab/employment-status",
+      "description": "The labour force participation status of the person: whether they are employed, unemployed, or outside the labour force."
+    },
+    "status_in_employment": {
+      "type": "string",
+      "enum": [
+        "employee",
+        "employer",
+        "own_account_worker",
+        "dependent_contractor",
+        "contributing_family_worker",
+        "cooperative_member"
+      ],
+      "$comment": "https://publicschema.org/vocab/status-in-employment",
+      "description": "The type of employment relationship: whether the person is an employee, employer, own-account worker, contributing family worker, or cooperative member."
+    },
+    "industry": {
+      "type": "string",
+      "description": "The branch of economic activity in which the person works, classified according to the International Standard Industrial Classification (ISIC Rev.4). Too large to enumerate; countries use national adaptations."
+    },
+    "place_of_usual_residence": {
+      "oneOf": [
+        {
+          "$ref": "https://publicschema.org/Location.schema.json"
+        },
+        {
+          "type": "string",
+          "description": "URI or identifier reference"
+        }
+      ],
+      "description": "The usual place of residence of the person at the time of the vital event. Used by national statistics offices to allocate vital events to the place where people live, not only where events occur."
+    },
+    "age_at_event": {
+      "type": "integer",
+      "description": "The stated age of the person at the time of the vital event. Used in low-completeness settings where date of birth is unknown and stated age is the only age data available."
+    }
+  }
+}

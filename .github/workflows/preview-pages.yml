@@ -27,44 +27,52 @@ concurrency:
 
 env:
   RENDERER_REPOSITORY: jeremi/govstack-specification-site
-  RENDERER_REF: 10dd20b42ff8ffd399e5b9f86ce092aff13f9b54
+  RENDERER_REF: ${{ vars.GOVSTACK_SITE_RENDERER_REF || '10dd20b42ff8ffd399e5b9f86ce092aff13f9b54' }}
 
 jobs:
   build:
     if: github.repository_owner != 'GovStackWorkingGroup'
     runs-on: ubuntu-latest
     steps:
-      - name: Check out the specification
-        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+      - name: Validate the immutable renderer revision
+        shell: bash
+        run: |
+          #!/usr/bin/env bash
+          set -euo pipefail
+          if [[ ! "$RENDERER_REF" =~ ^[0-9a-f]{40}$ ]]; then
+            printf '%s\n' 'GOVSTACK_SITE_RENDERER_REF must be a published full renderer commit.' >&2
+            exit 1
+          fi
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
         with:
           path: specification
           persist-credentials: false
-
-      - name: Check out the renderer
-        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
         with:
           repository: ${{ env.RENDERER_REPOSITORY }}
           ref: ${{ env.RENDERER_REF }}
           path: renderer
           persist-credentials: false
-
-      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7
+      - name: Require the selected native OpenAPI renderer
+        shell: bash
+        run: |
+          #!/usr/bin/env bash
+          set -euo pipefail
+          if [[ "$(git -C renderer rev-parse HEAD)" != "$RENDERER_REF" ]]; then
+            printf '%s\n' 'The checked-out renderer does not match the selected commit.' >&2
+            exit 1
+          fi
+          if [[ ! -f renderer/action.yml || ! -f renderer/scripts/api-references.mjs || ! -f renderer/src/components/ReferenceContent.astro ]]; then
+            printf '%s\n' 'The renderer pin lacks native OpenAPI support. Set GOVSTACK_SITE_RENDERER_REF to a published revision containing the Scalar integration and build action.' >&2
+            exit 1
+          fi
+      - name: Build and verify the specification site
+        uses: ./renderer
         with:
-          node-version: "24"
-
-      - name: Install the renderer
-        run: npm ci
-        working-directory: renderer
-
-      - name: Render and check the site
-        working-directory: renderer
-        run: >-
-          npm run check --
-          --profile framework
-          --source "$GITHUB_WORKSPACE/specification"
-          --output "$RUNNER_TEMP/site"
-          --base "/${{ github.event.repository.name }}/"
-          --unofficial
+          source: specification
+          output: ${{ runner.temp }}/site
+          base: /${{ github.event.repository.name }}/
+          unofficial: 'true'
 
       - uses: actions/upload-pages-artifact@fc324d3547104276b827a68afc52ff2a11cc49c9 # v5
         with:

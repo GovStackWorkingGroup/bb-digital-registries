@@ -11,10 +11,10 @@ requirements:
     level: REQUIRED
     observability: OBSERVABLE
     mutability: EXTENSIBLE
-    statement: The Digital Registry provides at least one Registry service through a defined option (consultation-retrieve, consultation-lookup, consultation-list, consultation-search, consultation-revision-list, or consultation-revision-retrieve).
+    statement: The Digital Registry provides at least one Registry service through a defined option (consultation-retrieve, consultation-lookup, consultation-list, consultation-search, consultation-revision-list, consultation-revision-retrieve, write-create, write-update, write-transition, or write-change-requests).
     documentation: |
       Purpose: Every conformant Digital Registry provides a useful Registry service while allowing an implementation to expose only the operations its source and policy support.
-      Scope: This is the Registry-wide service choice, not a permanent requirement for the Consultation family. This draft defines only the six Consultation options; the other seven families remain informative and cannot count toward this choice. A future version can define options from those families when their requirements, contracts, and tests are approved.
+      Scope: This is the Registry-wide service choice, not a permanent requirement for the Consultation family. This draft defines six Consultation options and four Write options. The remaining six families remain informative and cannot count toward this choice. A future version can define options from those families when their requirements, contracts, and tests are approved.
       Constraint: Only PUBLISHED options count toward the minimum. Publishing another option follows the framework's major-version rule. Selectable read features declared in an operation's `features` array and caller capability discovery are not options; they add requirements to a claim but do not by themselves satisfy this choice.
       Verification: Count the selected options that pass their requirements; at least one passes.
     select:
@@ -115,6 +115,302 @@ requirements:
       Constraint: Record and Revision Identifiers are opaque and are not reconstructed from timestamps. An unknown, expired, removed, outside-retention, protected, or otherwise unavailable revision produces the declared unavailable outcome. The service does not substitute the latest Record, a nearby revision, or a fabricated representation.
       Verification: Retrieve known retained revisions represented under applicable schema versions. Exercise unknown, removed, outside-retention, protected, and Record-mismatched revision identifiers and verify the declared unavailable outcome without fallback or existence disclosure.
     test: resources/testing.md#consultation-13
+  - id:
+    key: write-create
+    option_of: registry-service
+    status: DRAFT
+    observability: OBSERVABLE
+    mutability: EXTENSIBLE
+    interaction: SERVICE_API
+    contract: resources/write-api.yml
+    api_operation_id: createRecord
+    statement: The Digital Registry accepts an authorised typed Create input for a declared target Registry and Collection and either atomically creates one authoritative Record with a durable acknowledgement or accepts separately identifiable asynchronous work whose terminal success represents that commit.
+    documentation: |
+      Purpose: An authorised API consumer creates one authoritative Record without depending on the Registry's internal storage or administration interface.
+      Prerequisite: The operation publishes its input schema, target Registry and Collection, applicable operation grant, and successful acknowledgement schema.
+      Constraint: Selecting Create does not select Update, Transition, or Change Requests. The service validates the complete submitted input and does not present accepted asynchronous work or a partially committed Record as successful.
+      Verification: Submit valid, invalid, unauthorised, duplicate, and concurrently conflicting inputs through every declared synchronous and asynchronous path. Confirm that exactly one valid authorised attempt reaches a terminal committed Record, each acknowledgement identifies its honest stage, and failed attempts leave no authoritative Record or partial component.
+    test: resources/write-testing.md#write-1
+  - id:
+    key: write-update
+    option_of: registry-service
+    status: DRAFT
+    observability: OBSERVABLE
+    mutability: EXTENSIBLE
+    interaction: SERVICE_API
+    contract: resources/write-api.yml
+    api_operation_id: updateRecord
+    statement: The Digital Registry accepts an authorised typed Update input for one existing Record in a declared target Registry and Collection and either atomically commits the permitted change against the required current target state or accepts separately identifiable asynchronous work that rechecks that state at commit.
+    documentation: |
+      Purpose: An authorised API consumer changes the declared content of one authoritative Record without losing concurrent changes.
+      Prerequisite: The operation publishes its input schema, target Registry and Collection, operation grant, update semantics, and strong precondition mechanism.
+      Constraint: Selecting Update does not select Create, Transition, or Change Requests. The operation changes only the fields and components allowed by its contract and does not require the Registry to expose retained revision history.
+      Verification: Exercise every declared synchronous and asynchronous path with valid and invalid inputs, omitted and stale preconditions, concurrent writers, unauthorised changes, and fields outside the permitted update shape. Confirm one atomic committed result or an explicit unsuccessful outcome without partial mutation.
+    test: resources/write-testing.md#write-2
+  - id:
+    key: write-transition
+    option_of: registry-service
+    status: DRAFT
+    observability: OBSERVABLE
+    mutability: EXTENSIBLE
+    interaction: SERVICE_API
+    contract: resources/write-api.yml
+    api_operation_id: applyRecordTransition
+    statement: The Digital Registry accepts an authorised typed Transition input naming a declared transition for one existing Record and either atomically commits it when valid for the required current target state or accepts separately identifiable asynchronous work that rechecks that state at commit.
+    documentation: |
+      Purpose: An authorised API consumer applies a Registry-defined lifecycle or domain transition without obtaining a generic mutation capability.
+      Prerequisite: The operation publishes each supported transition's input schema, target Registry and Collection, operation grant, permitted source states, resulting semantics, and strong precondition mechanism.
+      Constraint: Selecting Transition does not select Create, Update, or Change Requests. The transition name grants no authority by itself, and the specification does not prescribe a domain state machine.
+      Verification: Exercise every declared synchronous and asynchronous path for each declared transition from valid and invalid source states, with valid, invalid, omitted, and stale preconditions and concurrent attempts. Confirm the declared atomic result and rejection of undeclared transitions.
+    test: resources/write-testing.md#write-3
+  - id:
+    key: write-change-requests
+    option_of: registry-service
+    status: DRAFT
+    observability: OBSERVABLE
+    mutability: EXTENSIBLE
+    interaction: SERVICE_API
+    contract: resources/write-api.yml
+    api_operation_id: submitChangeRequest
+    statement: The Digital Registry accepts an authorised typed change request for a declared target Registry and Collection as a non-authoritative immutable proposal whose later review and application are governed independently from submission.
+    documentation: |
+      Purpose: A Registry-managed or external workflow can submit proposed creation, update, or transition content without making that content authoritative at submission time.
+      Prerequisite: The operation publishes the allowed proposal kinds and input schemas, target Registry and Collection, submission grant, request representation, and lifecycle semantics.
+      Constraint: Selecting Change Requests does not select any direct Write option and does not require public Create, Update, or Transition endpoints. It does not require withdrawal, multiple approvers, or a particular workflow implementation.
+      Verification: Submit valid, invalid, unauthorised, duplicate, and conflicting proposals. Confirm that a successful submission creates one immutable request and no authoritative Record change, and that review and application follow their separately authorised lifecycle.
+    test: resources/write-testing.md#write-4
+  - id:
+    status: DRAFT
+    level: REQUIRED
+    observability: OBSERVABLE
+    mutability: EXTENSIBLE
+    interaction: FILE
+    contract: resources/write-binding.md#published-write-contract
+    applies_when: [write-create, write-update, write-transition, write-change-requests]
+    statement: Every selected Write operation publishes typed input and result schemas, its required operation grant, an unambiguous target Registry and Collection, and a deterministic mapping from every accepted input field into authoritative domain state, retained provenance, or workflow-only context in its machine-readable contract.
+    documentation: |
+      Purpose: Consumers can determine what they can submit, which authority is required, and where an accepted change applies without relying on storage names or undocumented conventions.
+      Prerequisite: The Registry publishes metadata for the target Registry and a versioned Write contract.
+      Constraint: A Collection is a logical API grouping. Publication of an operation or grant name does not grant authority. Shared schemas can be reused, but each operation declares its own target and access requirement. An operation-specific declaration or correction input can differ from the Consultation view and can carry evidence or reason data that is not Record output. Its contract still types that input and declares how accepted values, evidence, and reasons map to authoritative state or retained provenance.
+      Verification: Resolve each selected operation from Registry metadata and inspect its input, result, Registry, Collection, operation-grant, and mapping declarations. Exercise every declared input variant, including evidence and reason fields where supported, and reject missing, contradictory, ambiguous, or unresolvable declarations and unmapped accepted input.
+    test: resources/write-testing.md#write-5
+  - id:
+    status: DRAFT
+    level: REQUIRED
+    observability: OBSERVABLE
+    mutability: EXTENSIBLE
+    interaction: PROTOCOL
+    contract: resources/write-binding.md#atomicity-and-compound-changes
+    applies_when: [write-create, write-update, write-transition, write-change-requests]
+    statement: A Write operation commits or records its own declared component atomically, and it claims atomicity across additional Records, Collections, Registries, or external systems only when that compound boundary and its failure guarantees are separately declared.
+    documentation: |
+      Purpose: A successful outcome never hides a partial mutation inside the operation's own component, while deployments remain free to offer stronger compound guarantees explicitly.
+      Prerequisite: The operation contract defines its component boundary and success outcome.
+      Constraint: The baseline does not require multi-Record, cross-Collection, cross-Registry, or distributed transaction atomicity. A workflow can coordinate several independently committed components when it does not claim compound atomicity.
+      Verification: Inject validation, persistence, acknowledgement, and declared integration failures around the commit boundary. Confirm all-or-nothing behaviour inside the component and verify every separately declared compound guarantee at each failure point.
+    test: resources/write-testing.md#write-6
+  - id:
+    status: DRAFT
+    level: REQUIRED
+    observability: OBSERVABLE
+    mutability: EXTENSIBLE
+    interaction: PROTOCOL
+    contract: resources/write-binding.md#retries-and-idempotency
+    applies_when: [write-create, write-update, write-transition, write-change-requests]
+    statement: Every selected Write operation defines retry and idempotency behaviour, binds an idempotency key to the authenticated consumer, operation, target, and canonical request content, and applies current authentication and authorisation on every attempt without treating the key as authority.
+    documentation: |
+      Purpose: A consumer can recover from a lost response without accidentally repeating a change or replaying another consumer's request.
+      Prerequisite: The contract declares the idempotency-key syntax, retention, replay result, and conflict outcome.
+      Constraint: Reuse with different bound content fails explicitly. Reuse after permission loss does not execute or disclose a result that current policy withholds. Expiry does not imply that a repeated mutation is safe.
+      Verification: Retry before, during, and after commit with the same key and content; change the content, operation, target, consumer, purpose, and permissions; then retry after retention expiry. Confirm one committed effect and the declared current-authorisation outcomes.
+    test: resources/write-testing.md#write-7
+  - id:
+    status: DRAFT
+    level: REQUIRED
+    observability: OBSERVABLE
+    mutability: EXTENSIBLE
+    interaction: PROTOCOL
+    contract: resources/write-binding.md#concurrency-and-commit-guards
+    applies_when: [write-update, write-transition, write-change-requests]
+    statement: An operation that proposes or commits a change to an existing Record uses a strong precondition bound to the current target representation and re-evaluates that guard at commit, rejecting an omitted, invalid, or stale precondition without overwriting intervening change.
+    documentation: |
+      Purpose: Concurrent writers do not silently lose one another's committed changes.
+      Prerequisite: The service exposes a strong opaque validator or another contract-defined compare-and-commit token for the target representation.
+      Constraint: The guard is checked atomically with commit. It protects the current target and does not require the Registry to publish or retain revision history. A submitted change request retains its source precondition for later re-evaluation.
+      Verification: Submit omitted, malformed, matching, and stale guards; race two matching attempts; and change the target between request approval and application. Confirm that only a guard matching the commit-time target can commit.
+    test: resources/write-testing.md#write-8
+  - id:
+    status: DRAFT
+    level: REQUIRED
+    observability: AUDITABLE
+    mutability: EXTENSIBLE
+    interaction: INTERNAL
+    contract: resources/write-binding.md#authority-and-purpose
+    applies_when: [write-create, write-update, write-transition, write-change-requests]
+    statement: The Digital Registry authorises Write independently from read disclosure, evaluates the selected operation's grant for the current actor and target, and, when purpose is enforced, obtains it only through a separately declared trusted purpose binding.
+    documentation: |
+      Purpose: Permission to observe a Record neither grants permission to change it nor follows automatically from permission to submit, review, or apply a proposal.
+      Prerequisite: The deployment documents the authentication boundary, operation grants, target scope, and any trusted purpose binding and controlled values.
+      Constraint: Write permission does not imply read permission, and read permission does not imply Write permission. Purpose is not accepted from an ordinary body or query field and is not treated as consent, legal authority, approval, or proof of downstream use.
+      Evidence: Access-policy configuration and audit evidence for permitted and denied actors, separate read and Write entitlements, target scope, and any trusted purpose evaluation.
+      Verification: Exercise actors with read-only, Write-only, both, and neither permission across targets and operations. Where purpose is enforced, exercise missing, untrusted, malformed, allowed, and disallowed trusted contexts.
+    test: resources/write-testing.md#write-9
+  - id:
+    status: DRAFT
+    level: REQUIRED
+    observability: OBSERVABLE
+    mutability: EXTENSIBLE
+    interaction: PROTOCOL
+    contract: resources/write-binding.md#trusted-context-and-client-input
+    applies_when: [write-create, write-update, write-transition, write-change-requests]
+    statement: The service never treats client-supplied actor, reviewer, purpose, or approval fields or flags as verified authority and rejects or ignores them according to the published schema without silently bypassing authentication, authorisation, review, or application controls.
+    documentation: |
+      Purpose: A caller cannot impersonate another actor or turn a proposal into an approved or applied change by setting request fields.
+      Prerequisite: The contract distinguishes client input from values derived through trusted authentication, authorisation, and workflow context.
+      Constraint: Domain data can contain similarly named fields when the schema defines them as Record content, but those values do not control access or workflow decisions.
+      Verification: Inject actor, reviewer, purpose, approved, applied, status, and equivalent fields at every accepted nesting level. Confirm schema handling and verify that all security and workflow decisions use trusted context.
+    test: resources/write-testing.md#write-10
+  - id:
+    status: DRAFT
+    level: REQUIRED
+    observability: AUDITABLE
+    mutability: EXTENSIBLE
+    interaction: INTERNAL
+    contract: resources/write-binding.md#acknowledgement-provenance-and-audit
+    applies_when: [write-create, write-update, write-transition, write-change-requests]
+    statement: Every accepted Write uses its HTTP status, response schema, target URI, `Location`, or validator as declared to identify the target, created resource, or asynchronous Operation and distinguish a committed change from accepted work or a non-authoritative request, while the service retains provenance and audit evidence for the actor, operation, target, trusted context, validation, decision, and committed effect within its declared audit scope.
+    documentation: |
+      Purpose: A consumer can distinguish a committed Record change, a submitted request, and accepted asynchronous work, and an assessor can reconstruct the decision without inferring facts outside the declared audit scope.
+      Prerequisite: The service publishes each response contract and documents correlation under the inherited API guidance plus audit retention, access, integrity, clock, and redaction boundaries.
+      Constraint: A successful bodyless response can identify its existing target through the request URI and validator and need not invent a response body. Source or recording time is included only when the source supplies it with documented source-backed semantics. Audit evidence does not by itself prove legal authority, consent, downstream use, or source facts that the operation did not validate. Sensitive request content is protected in retained evidence.
+      Evidence: Protocol responses and integrity-protected audit records correlated according to the declared policy across success, rejection, replay, review, asynchronous processing, and commit failure.
+      Verification: Correlate protocol responses with authoritative state, request state, and audit evidence. Exercise body-bearing and bodyless success where declared, rejection, idempotent replay, and failure before and after commit, checking target or resource identification and honest status without requiring an invented timestamp or body.
+    test: resources/write-testing.md#write-11
+  - id:
+    status: DRAFT
+    level: REQUIRED
+    observability: OBSERVABLE
+    mutability: EXTENSIBLE
+    interaction: PROTOCOL
+    contract: resources/write-binding.md#protected-resources
+    applies_when: [write-create, write-update, write-transition, write-change-requests]
+    statement: When target Record, Collection, Change Request, or operation existence is protected, the Write service gives an unknown and a protected resource the same generic `404` outcome without resource-specific content or a distinguishable workflow, timing, or continuation signal.
+    documentation: |
+      Purpose: A caller cannot use a Write endpoint to discover protected Registry resources or request activity.
+      Prerequisite: The access policy declares protected existence and supplies unknown and protected fixtures under the same caller context.
+      Constraint: Authentication can fail before resource resolution. Once an authenticated caller reaches protected resolution, validation, conflict, precondition, or workflow details do not reveal the protected resource.
+      Verification: Compare unknown and protected Records, Collections, requests, and operations under the same context across body, headers, security-relevant metadata, workflow state, pagination, and independently generated trace values.
+    test: resources/write-testing.md#write-12
+  - id:
+    status: DRAFT
+    level: REQUIRED
+    observability: OBSERVABLE
+    mutability: EXTENSIBLE
+    interaction: PROTOCOL
+    contract: resources/write-binding.md#preview-and-authoritative-state
+    applies_when: [write-create, write-update, write-transition, write-change-requests]
+    statement: A validation or preview operation is read-only and labels its result as non-authoritative, never allocates an authoritative Record identity, advances a Change Request, reserves a transition, or presents predicted content as committed state.
+    documentation: |
+      Purpose: A caller can inspect a possible outcome without confusing prediction with Registry authority.
+      Condition: The selected Write binding offers validation or preview.
+      Prerequisite: The preview contract declares the data and policy evaluation point and its non-authoritative response schema.
+      Constraint: Preview can become stale immediately and grants no right to a later commit. A later Write performs current validation, authorisation, precondition, and policy checks.
+      Verification: Preview valid and invalid inputs, change source state and permissions, then attempt commit. Confirm no side effect from preview and distinguish every preview representation and identifier from authoritative acknowledgement.
+    test: resources/write-testing.md#write-13
+  - id:
+    status: DRAFT
+    level: REQUIRED
+    observability: OBSERVABLE
+    mutability: EXTENSIBLE
+    interaction: SERVICE_API
+    contract: resources/write-api.yml
+    api_operation_id: submitChangeRequest
+    applies_when: [write-change-requests]
+    statement: "A submitted Change Request is immutable: review, approval, rejection, withdrawal when offered, and application remain bound to its exact request version, canonical proposal content, target, source precondition, submitter context, and recorded provenance."
+    documentation: |
+      Purpose: A decision cannot be reused for changed proposal content or a different target.
+      Prerequisite: The Change Request representation carries a stable request identifier and immutable version or content digest.
+      Constraint: Correcting proposal content creates another request or version that requires its own review under the published lifecycle. A note or decision can be appended without changing the bound proposal.
+      Verification: Alter every bound element before and after a decision, replay a decision against another request or version, and verify explicit rejection without authoritative side effect.
+    test: resources/write-testing.md#write-14
+  - id:
+    status: DRAFT
+    level: REQUIRED
+    observability: OBSERVABLE
+    mutability: EXTENSIBLE
+    interaction: PROTOCOL
+    contract: resources/write-binding.md#change-request-lifecycle
+    applies_when: [write-change-requests]
+    statement: Pending and rejected Change Requests, and withdrawn Change Requests when withdrawal is offered, have no authoritative Registry side effect; approval records a decision but does not by itself represent or guarantee application.
+    documentation: |
+      Purpose: Workflow state cannot be mistaken for committed Registry state.
+      Prerequisite: The service documents its request states, allowed decisions, terminal states, and application outcome.
+      Constraint: Withdrawal is optional. Multiple reviewers and approval rules are deployment choices. An approved request can remain unapplied or fail application. A review operation can trigger separately authorised and revalidated application without another public endpoint, but its response distinguishes approval, processing, applied, blocked, and failed outcomes as applicable. Only an explicitly acknowledged successful commit changes authoritative state.
+      Verification: Exercise pending, rejection, approval without application, approval that triggers application where offered, application success and failure, plus withdrawal where offered. Read authoritative state after every step and confirm that only successful application changes it and that one response never conflates the decision with the commit outcome.
+    test: resources/write-testing.md#write-15
+  - id:
+    status: DRAFT
+    level: REQUIRED
+    observability: AUDITABLE
+    mutability: EXTENSIBLE
+    interaction: INTERNAL
+    contract: resources/write-binding.md#change-request-lifecycle
+    applies_when: [write-change-requests]
+    statement: Submission, review, and application use distinct permissions and trusted actor contexts, and no permission or successful decision in one stage grants another stage or makes an approved request equivalent to an applied change.
+    documentation: |
+      Purpose: A deployment preserves separation of duties without imposing one approval topology.
+      Prerequisite: The workflow declares which component performs each stage and the grants it evaluates, whether Registry-managed or external.
+      Constraint: The same actor can hold several permissions when institutional policy allows it, but each stage is still separately authorised and audited. Distinct permissions do not require distinct HTTP calls: one published review operation can approve and trigger application only after evaluating both stages. The specification does not require multiple approvers, a separate application endpoint, or a Registry-managed workflow engine.
+      Evidence: Access-policy configuration and correlated audit records for submission, review decisions, application attempts, and denials at each stage.
+      Verification: Exercise submit-only, review-only, apply-only, combined, and unauthorised actors. Confirm that each stage evaluates only its own grant and that approval alone leaves authoritative state unchanged.
+    test: resources/write-testing.md#write-16
+  - id:
+    status: DRAFT
+    level: REQUIRED
+    observability: AUDITABLE
+    mutability: EXTENSIBLE
+    interaction: INTERNAL
+    contract: resources/write-binding.md#application-time-revalidation
+    applies_when: [write-change-requests]
+    statement: Application of an approved Change Request re-evaluates current authentication, application permission, trusted purpose where required, target availability, source precondition, input validity, and transition policy atomically with commit, and records an explicit unapplied outcome when any check fails.
+    documentation: |
+      Purpose: Approval does not freeze permissions or silently overwrite changes made after submission.
+      Prerequisite: The approved request retains the exact proposal and source guard needed for commit-time evaluation.
+      Constraint: The service does not weaken a stale guard, substitute current content, or silently resubmit a changed proposal. A failed application leaves the approval decision distinguishable from the unapplied authoritative outcome.
+      Evidence: Correlated request, decision, application-attempt, policy-evaluation, precondition, and commit records.
+      Verification: After approval, revoke each permission, change purpose, protect or remove the target, change the Record, invalidate the input, and change transition policy. Confirm explicit failure and no authoritative side effect for every case.
+    test: resources/write-testing.md#write-17
+  - id:
+    status: DRAFT
+    level: REQUIRED
+    observability: OBSERVABLE
+    mutability: EXTENSIBLE
+    interaction: PROTOCOL
+    contract: resources/write-binding.md#http-outcomes
+    applies_when: [write-create, write-update, write-transition, write-change-requests]
+    statement: A selected Write operation returns `201 Created` only when it creates the identified resource, including a newly submitted Change Request, and returns `202 Accepted` only when it accepts separately identifiable asynchronous work whose Operation status can be retrieved without implying a committed Record change or approved request.
+    documentation: |
+      Purpose: A consumer can distinguish a created resource from queued work and from an authoritative commit.
+      Prerequisite: Every asynchronous path publishes an Operation representation, status retrieval, terminal outcomes, and retention policy.
+      Constraint: A `202` acknowledgement is not success of the requested mutation. A Change Request created synchronously uses `201` even though its later review or application can be asynchronous. A direct Write can use a synchronous successful outcome defined by its contract when the authoritative commit is complete.
+      Verification: Exercise synchronous creation, Change Request submission, asynchronous acceptance, processing success, processing failure, and status expiry. Correlate each response with the resource or Operation and authoritative state.
+    test: resources/write-testing.md#write-18
+  - id:
+    status: DRAFT
+    level: REQUIRED
+    observability: OBSERVABLE
+    mutability: EXTENSIBLE
+    interaction: PROTOCOL
+    contract: resources/write-binding.md#change-request-listing
+    applies_when: [write-change-requests]
+    statement: A Change Request listing operation, when offered, returns only permitted requests in deterministic bounded Pages, uses an opaque integrity-protected cursor bound to the caller context, Registry, Collection, filters, ordering, and effective page size, and reauthorises every Page without claiming exhaustive or snapshot traversal unless separately declared.
+    documentation: |
+      Purpose: Reviewers can traverse authorised work queues without unbounded responses, cursor substitution, or protected-request disclosure.
+      Condition: The service offers Change Request listing.
+      Prerequisite: The contract declares filters, deterministic order and unique tie-breaker, default and maximum page sizes, cursor expiry, source-consistency behaviour, timeout outcome, and any result-window bound.
+      Constraint: Malformed, expired, tampered, or context-mismatched cursors fail explicitly and never restart silently. Empty and short Pages retain the Page shape and a non-null cursor advances; `null` marks completion under the declared baseline semantics.
+      Verification: Traverse zero, one, and multi-page permitted fixtures; change each bound context value and permissions between Pages; exercise malformed, expired, and tampered cursors, declared limits, timeout, protected-only matches, and source changes.
+    test: resources/write-testing.md#write-19
   - id:
     status: DRAFT
     level: REQUIRED

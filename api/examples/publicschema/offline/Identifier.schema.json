@@ -1,0 +1,47 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Identifier",
+  "description": "A coded value assigned to an entity within an identification scheme. Identifiers disambiguate entities such as persons, groups, locations, administrative areas, or records within a specific registry or catalog. The identifier is the value and its scheme; documents that carry identifiers (passports, national ID cards, beneficiary cards) are modeled separately as IdentityDocument.\n",
+  "type": "object",
+  "properties": {
+    "identifier_value": {
+      "type": "string",
+      "description": "The alphanumeric value of the identifier as issued or recorded."
+    },
+    "identifier_scheme_id": {
+      "type": "string",
+      "description": "A URI or code that identifies the scheme or system under which the identifier was assigned."
+    },
+    "identifier_scheme_name": {
+      "type": "string",
+      "description": "The human-readable name of the identifier scheme, such as 'National Identity Number' or 'Social Security Number'."
+    },
+    "identifier_type": {
+      "type": "string",
+      "enum": [
+        "national_id_number",
+        "social_security_number",
+        "tax_id_number",
+        "program_id_number",
+        "household_id_number",
+        "passport_number",
+        "drivers_license_number",
+        "voter_id_number",
+        "birth_registration_number",
+        "marriage_registration_number",
+        "death_registration_number",
+        "country_code",
+        "subdivision_code",
+        "postal_code",
+        "p_code",
+        "fips_code",
+        "hasc_code",
+        "un_locode",
+        "transaction_reference",
+        "other"
+      ],
+      "$comment": "https://publicschema.org/vocab/identifier-type",
+      "description": "The category of identifier value (for example, national ID number, passport number, P-code)."
+    }
+  }
+}

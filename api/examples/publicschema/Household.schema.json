@@ -1,0 +1,121 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://publicschema.org/Household.schema.json",
+  "title": "Household",
+  "description": "A social and economic unit of one or more persons who share food and other essentials for living. The operational definition varies across countries and programs, combining criteria of co-residence, shared budget, shared cooking, kinship, and administrative registration.\n",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "The full display name of the record. Depending on the concept, this is a person's or group's name, or the title of a program, instrument, scoring rule, or software product."
+    },
+    "identifiers": {
+      "type": "array",
+      "items": {
+        "oneOf": [
+          {
+            "$ref": "https://publicschema.org/Identifier.schema.json"
+          },
+          {
+            "type": "string",
+            "description": "URI or identifier reference"
+          }
+        ],
+        "description": "Identifiers carried by this entity, such as national ID numbers, program IDs, or identifiers asserted by an identity document."
+      }
+    },
+    "identity_documents": {
+      "type": "array",
+      "items": {
+        "oneOf": [
+          {
+            "$ref": "https://publicschema.org/IdentityDocument.schema.json"
+          },
+          {
+            "type": "string",
+            "description": "URI or identifier reference"
+          }
+        ],
+        "description": "Identity documents held by this party, such as passports, national identity cards, civil registration certificates, and program-issued beneficiary cards, or, for an organization, a certificate of registration."
+      }
+    },
+    "group_type": {
+      "type": "string",
+      "enum": [
+        "household",
+        "family",
+        "farm",
+        "other"
+      ],
+      "$comment": "https://publicschema.org/vocab/group-type",
+      "description": "An interoperability classifier for the category of group record being exchanged or exported. In native PublicSchema modeling, the concrete Group subtype is the authoritative signal when known."
+    },
+    "formation_date": {
+      "type": "string",
+      "format": "date",
+      "description": "The date on which this group or organization was formed or registered."
+    },
+    "member_count": {
+      "type": "integer",
+      "description": "The total number of members in this household or group."
+    },
+    "memberships": {
+      "type": "array",
+      "items": {
+        "oneOf": [
+          {
+            "$ref": "https://publicschema.org/GroupMembership.schema.json"
+          },
+          {
+            "type": "string",
+            "description": "URI or identifier reference"
+          }
+        ],
+        "description": "The membership links connecting persons to this group, each carrying role and lifecycle dates."
+      }
+    },
+    "address": {
+      "oneOf": [
+        {
+          "$ref": "https://publicschema.org/Address.schema.json"
+        },
+        {
+          "type": "string",
+          "description": "URI or identifier reference"
+        }
+      ],
+      "description": "The physical or postal address associated with this household."
+    },
+    "location": {
+      "oneOf": [
+        {
+          "$ref": "https://publicschema.org/Location.schema.json"
+        },
+        {
+          "type": "string",
+          "description": "URI or identifier reference"
+        }
+      ],
+      "description": "The geographic location of the subject of this record, captured as coordinates or administrative area."
+    },
+    "food_security_level": {
+      "type": "string",
+      "enum": [
+        "food_secure",
+        "mildly_insecure",
+        "moderately_insecure",
+        "severely_insecure"
+      ],
+      "$comment": "https://publicschema.org/vocab/food-security-level",
+      "description": "A coarse current-state summary of the household's food insecurity, used by operational systems for targeting and referral queries. This is NOT the raw output of a specific food-security assessment instrument: item-level responses (FCS, rCSI, LCS, HDDS, FIES, HHS, MDD-W, MAHFP) belong on a dedicated food-security profile published in a sibling schema (see ADR-011). Populate food_security_level from a Profile only by citing the instrument and cutoff rule that produced the band via a ScoringEvent; otherwise treat it as a self-declared or enumerator-judged summary."
+    },
+    "pregnant_or_lactating_count": {
+      "type": "integer",
+      "description": "The number of pregnant or lactating women currently living in the household. Used by humanitarian programs to size nutrition, health, and protection interventions (PLW-targeted food rations, antenatal care outreach, MIYCN counselling). Recorded at household level because the eligibility unit for most PLW programming is the household, not the individual; an individual-level pregnancy_status property is also available on Person for case-management workflows."
+    },
+    "chronic_illness_in_household": {
+      "type": "boolean",
+      "description": "Whether any household member is reported to have a chronic illness or long-term medical condition (e.g. hypertension, diabetes, HIV, TB, asthma). Recorded at household level for vulnerability triage and case-management referral; the specific condition and the affected member are recorded on Person-scoped or program-specific records, not here."
+    }
+  }
+}

@@ -95,11 +95,11 @@ Registry Core page:
 uv run --with-requirements tools/requirements-api.txt python tools/validate_consultation.py
 ```
 
-With the sibling `bb-template` checkout at guide/ruleset `0.3.0-draft` and its
+With the sibling `govstack-api-design-guide` checkout at guide/ruleset `0.3.0-draft` and its
 documented linter dependencies installed, run the canonical artifact gate:
 
 ```sh
-uv run --with-requirements tools/requirements-api.txt node ../bb-template/api-design-guide/linter/cli.mjs --repo-root .
+uv run --with-requirements tools/requirements-api.txt node ../govstack-api-design-guide/linter/cli.mjs --repo-root .
 ```
 
 The checks validate current artifacts and local dependencies. Registry Identifiers
@@ -123,3 +123,27 @@ approved guide exception is claimed.
 analysis. Release context and contributor credits are in the
 [legacy API README](legacy/generated-crud/README.md). Current Consultation
 validation uses the artifacts listed above.
+
+## Write contract
+
+[write.openapi.yaml](write.openapi.yaml) defines the DRAFT Write transport separately from the unchanged Consultation contract. Direct creation, update, named transitions, and approval-based change requests are independently selectable. [Write binding](../resources/write-binding.md) documents shared guarantees; [write-coverage.yaml](write-coverage.yaml) maps DRAFT keys to verification and operations. The separate [Write operation extension](extensions/x-govstack-digital-registries-write.schema.json) does not widen the closed Consultation extension.
+
+The [non-normative Write examples](examples/README.md#non-normative-write-examples) illustrate birth registration, household creation using existing and newly created individuals, and later membership additions. Their domain models are illustrative choices and add no requirements to the shared contract.
+
+Run the Write artifact gate with:
+
+```sh
+uv run python tools/validate_write.py
+```
+
+The gate validates schemas, examples, required headers, request/result identity, and declared relationships. It does not execute authorisation, approvals, source transactions, or idempotency enforcement. Runtime scenarios are in [Write verification](../resources/write-testing.md).
+
+### Guide validation of Write
+
+The normative Write reference can be checked independently:
+
+```sh
+uv run node ../govstack-api-design-guide/linter/cli.mjs --repo-root . --openapi api/write.openapi.yaml
+```
+
+The canonical Write reference retains a documented shallow-path SHOULD warning for the Collection, Record, and transition hierarchy; no approved guide exception is claimed. The current guide driver's reference-origin pass over the non-normative [Write example contract](examples/write-examples.openapi.yaml) exits with `Maximum call stack size exceeded` on a valid recursive domain-schema graph. This is a tool limitation, not a passing example-guide result. Offline OpenAPI, domain-schema, mirror-equivalence, and exchange checks validate the examples separately. Example fields borrowed from an external model retain their source spellings under the guide's external-model naming rules.

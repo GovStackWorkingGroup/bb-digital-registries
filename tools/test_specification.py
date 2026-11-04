@@ -211,6 +211,7 @@ class RepositoryFixture:
                     "observability": "OBSERVABLE",
                     "mutability": "EXTENSIBLE",
                     "interaction": "SERVICE_API",
+                    "contract": "resources/api.yml",
                     "api_operation_id": "retrieveRecord",
                     "statement": "The solution shall retrieve an authorized Record by identifier.",
                     "test": "resources/testing.md#consultation-1",
@@ -548,11 +549,84 @@ class SpecificationValidatorTests(unittest.TestCase):
                 fixture.save_requirements()
                 self.assert_error(self.errors(fixture), field, "unknown-condition")
 
-    def test_service_api_operation_must_exist_in_canonical_openapi(self):
+    def test_service_api_operation_must_exist_in_declared_contract(self):
         with self.fixture() as fixture:
             fixture.requirements["requirements"][1]["api_operation_id"] = "missingOperation"
             fixture.save_requirements()
             self.assert_error(self.errors(fixture), "missingOperation", "resources/api.yml")
+
+    def test_service_api_accepts_operation_from_separate_declared_contract(self):
+        with self.fixture() as fixture:
+            fixture.write(
+                "api/write.openapi.yaml",
+                yaml.safe_dump(
+                    {
+                        "openapi": "3.1.0",
+                        "info": {"title": "Write fixture", "version": "1.0.0"},
+                        "paths": {
+                            "/v1/records": {
+                                "post": {
+                                    "operationId": "createRecord",
+                                    "responses": {"201": {"description": "Created"}},
+                                }
+                            }
+                        },
+                    },
+                    sort_keys=False,
+                ),
+            )
+            fixture.path("resources/write-api.yml").symlink_to(
+                "../api/write.openapi.yaml"
+            )
+            requirement = fixture.requirements["requirements"][1]
+            requirement["contract"] = "resources/write-api.yml"
+            requirement["api_operation_id"] = "createRecord"
+            fixture.save_requirements()
+            self.assertEqual(self.errors(fixture), [])
+
+    def test_service_api_does_not_accept_operation_from_the_wrong_contract(self):
+        with self.fixture() as fixture:
+            fixture.write(
+                "resources/write-api.yml",
+                yaml.safe_dump(
+                    {
+                        "openapi": "3.1.0",
+                        "info": {"title": "Write fixture", "version": "1.0.0"},
+                        "paths": {
+                            "/v1/records": {
+                                "post": {
+                                    "operationId": "createRecord",
+                                    "responses": {"201": {"description": "Created"}},
+                                }
+                            }
+                        },
+                    },
+                    sort_keys=False,
+                ),
+            )
+            requirement = fixture.requirements["requirements"][1]
+            requirement["contract"] = "resources/write-api.yml"
+            requirement["api_operation_id"] = "retrieveRecord"
+            fixture.save_requirements()
+            self.assert_error(
+                self.errors(fixture), "retrieveRecord", "resources/write-api.yml"
+            )
+
+    def test_service_api_contract_is_explicit_and_repository_local(self):
+        mutations = (
+            None,
+            "https://example.test/write.openapi.yaml",
+            "../write.openapi.yaml",
+        )
+        for contract in mutations:
+            with self.subTest(contract=contract), self.fixture() as fixture:
+                requirement = fixture.requirements["requirements"][1]
+                if contract is None:
+                    requirement.pop("contract")
+                else:
+                    requirement["contract"] = contract
+                fixture.save_requirements()
+                self.assert_error(self.errors(fixture), "contract", "repository-local")
 
     def test_resources_api_symlink_to_canonical_api_is_supported(self):
         with self.fixture() as fixture:
@@ -578,6 +652,48 @@ class SpecificationValidatorTests(unittest.TestCase):
             fixture.path("resources/api.yml").symlink_to("../api/other.yaml")
             errors = self.errors(fixture)
             self.assert_error(errors, "resources/api.yml", "../api/openapi.yaml")
+
+    def test_api_inventory_paths_are_repository_relative_and_include_canonical(self):
+        with self.fixture() as fixture:
+            canonical = fixture.path("api/openapi.yaml")
+            canonical.parent.mkdir(parents=True, exist_ok=True)
+            fixture.path("resources/api.yml").replace(canonical)
+            fixture.path("resources/api.yml").symlink_to("../api/openapi.yaml")
+            fixture.save_yaml(
+                "api/index.yaml",
+                {
+                    "version": 1,
+                    "apis": [{"type": "openapi", "path": "api/openapi.yaml"}],
+                },
+            )
+            self.assertEqual(self.errors(fixture), [])
+
+        with self.fixture() as fixture:
+            canonical = fixture.path("api/openapi.yaml")
+            canonical.parent.mkdir(parents=True, exist_ok=True)
+            fixture.path("resources/api.yml").replace(canonical)
+            fixture.path("resources/api.yml").symlink_to("../api/openapi.yaml")
+            fixture.save_yaml(
+                "api/index.yaml",
+                {"version": 1, "apis": [{"type": "openapi", "path": "openapi.yaml"}]},
+            )
+            self.assert_error(
+                self.errors(fixture), "api/index.yaml", "api/openapi.yaml"
+            )
+
+        with self.fixture() as fixture:
+            canonical = fixture.path("api/openapi.yaml")
+            canonical.parent.mkdir(parents=True, exist_ok=True)
+            fixture.path("resources/api.yml").replace(canonical)
+            fixture.path("resources/api.yml").symlink_to("../api/openapi.yaml")
+            fixture.write("api/other.yaml", canonical.read_text())
+            fixture.save_yaml(
+                "api/index.yaml",
+                {"version": 1, "apis": [{"type": "openapi", "path": "api/other.yaml"}]},
+            )
+            self.assert_error(
+                self.errors(fixture), "api/index.yaml", "api/openapi.yaml"
+            )
 
     def test_archive_preserves_all_immutable_baseline_requirement_blocks(self):
         self.assertEqual(archive_source_errors(ARCHIVE.read_text()), [])

@@ -161,3 +161,7 @@ Relationship cases apply to views exposing the corresponding shapes. The [househ
 Retain the specification version, selected capabilities and operation features, exposed services, published metadata and contracts, and a requirement traceability report with pass, fail, or not-applicable results and applicability rationales. Applicable evidence includes fixtures, requests and responses, schema-validation results, source mapping and currency, revision and temporal evidence, resource-limit and timeout results, pagination and disclosure outcomes, purpose evaluation and audit context, caller-discovery results, and identifier lifecycle evidence.
 
 Record artifact validation separately from deployed implementation results.
+
+## Write verification
+
+The [Write verification matrix](write-testing.md) covers direct creation, update, named transitions, and approval-based requests under their independently selected options. Run `uv run python tools/validate_write.py` for current contract, schema, provenance, positive/negative fixture, and exchange checks. These are artifact checks. Source commitment, idempotency replay, manual-review separation, concurrent updates, crash recovery, and multi-Record atomicity still require running-implementation evidence.

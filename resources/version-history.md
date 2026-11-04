@@ -57,3 +57,7 @@ Authors: Janet Ngugi, Vivek Rana, Chinenye Ifebirinachi, Ananya Jha, Umang Gupta
 Editors: Ali González-García and David Higgins.
 
 The detailed change record is preserved in the [Release Notes](history/release-notes.md).
+
+## 4 November 2026 Write draft revision
+
+The same unreleased alpha now defines separately selectable direct creation, direct update, direct named transitions, and approval-based change requests. The DRAFT [Write binding](write-binding.md) and [contract](write-api.yml) distinguish proposal review from authoritative application, protect source and proposal versions separately, and declare retry, disclosure, and compound-operation guarantees. The [birth and household examples](../api/examples/README.md) remain non-normative and do not select a required domain model. No release, implementation conformance claim, or deployed workflow is established by these artifacts.

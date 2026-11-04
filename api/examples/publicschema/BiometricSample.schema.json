@@ -1,0 +1,116 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://publicschema.org/BiometricSample.schema.json",
+  "title": "BiometricSample",
+  "description": "A biometric measurement captured from a person, such as a fingerprint image, iris scan, or facial photograph. Each record represents a single capture of a single biometric position (e.g., right index finger). A BiometricSample record may also document a capture exception: when exception_reason is non-null, the record explains why the biometric could not be captured rather than holding actual sample data.\n",
+  "type": "object",
+  "properties": {
+    "person": {
+      "oneOf": [
+        {
+          "$ref": "https://publicschema.org/Person.schema.json"
+        },
+        {
+          "type": "string",
+          "description": "URI or identifier reference"
+        }
+      ],
+      "description": "A reference to the individual Person this record relates to."
+    },
+    "biometric_modality": {
+      "type": "string",
+      "enum": [
+        "face",
+        "fingerprint",
+        "iris",
+        "signature",
+        "voice"
+      ],
+      "$comment": "https://publicschema.org/vocab/biometric-modality",
+      "description": "The type of biometric measurement (face, fingerprint, iris, signature, voice)."
+    },
+    "biometric_subtype": {
+      "type": "string",
+      "enum": [
+        "right_thumb",
+        "right_index",
+        "right_middle",
+        "right_ring",
+        "right_little",
+        "left_thumb",
+        "left_index",
+        "left_middle",
+        "left_ring",
+        "left_little",
+        "right_eye",
+        "left_eye",
+        "both_eyes",
+        "portrait"
+      ],
+      "$comment": "https://publicschema.org/vocab/biometric-subtype",
+      "description": "The specific body part or position within a biometric modality (e.g., right index finger, left eye, portrait)."
+    },
+    "impression_type": {
+      "type": "string",
+      "enum": [
+        "live_scan_plain",
+        "live_scan_rolled",
+        "live_scan_swipe",
+        "live_scan_vertical_roll",
+        "live_scan_palm",
+        "live_scan_optical_contactless_plain",
+        "non_live_scan_plain",
+        "non_live_scan_rolled",
+        "non_live_scan_palm",
+        "latent_impression",
+        "latent_tracing",
+        "latent_photo",
+        "latent_lift",
+        "latent_palm_impression",
+        "latent_palm_tracing",
+        "latent_palm_photo",
+        "latent_palm_lift",
+        "other",
+        "unknown"
+      ],
+      "$comment": "https://publicschema.org/vocab/impression-type",
+      "description": "The method by which a fingerprint biometric was captured (e.g., live scan plain, rolled, latent)."
+    },
+    "capture_date": {
+      "type": "string",
+      "format": "date",
+      "description": "The date on which the biometric sample was captured."
+    },
+    "quality_score": {
+      "type": "integer",
+      "description": "A quality score for the biometric sample, on a 0-100 scale per ISO 29794-1. Higher values indicate better quality."
+    },
+    "quality_algorithm": {
+      "type": "string",
+      "description": "The algorithm or standard used to compute the quality score (e.g., NFIQ2, ISO_29794_4)."
+    },
+    "sample_uri": {
+      "type": "string",
+      "description": "A URI reference to the biometric sample data. The referenced resource contains the actual biometric data (image, audio, or other signal)."
+    },
+    "sample_format": {
+      "type": "string",
+      "description": "The MIME type of the biometric sample data (e.g., image/jp2, image/jpeg, application/octet-stream)."
+    },
+    "exception_reason": {
+      "type": "string",
+      "enum": [
+        "amputated",
+        "bandaged",
+        "damaged",
+        "unable_to_capture"
+      ],
+      "$comment": "https://publicschema.org/vocab/biometric-exception-reason",
+      "description": "The reason a biometric sample could not be captured. When non-null, this record documents a capture exception rather than holding biometric data."
+    },
+    "capture_device": {
+      "type": "string",
+      "description": "An identifier or description of the device used to capture the biometric sample."
+    }
+  }
+}

@@ -17,9 +17,11 @@ and the corresponding [BB template](https://github.com/GovStackWorkingGroup/bb-t
 The migration applies their substance as the authoring contract.
 
 Draft requirements remain unnumbered. Their intended obligation is explicit in
-`level`; options inherit obligation from their variation point. The required
-`registry-service` choice has six independently selectable options. All remain
-DRAFT, so none counts toward a published conformance claim.
+`level`; options inherit obligation from their variation point. The migrated
+`registry-service` choice initially had six independently selectable Consultation
+options. The subsequent [Write draft](write-binding.md) adds four Write options
+as a content change after migration. All remain DRAFT, so none counts toward a
+published conformance claim.
 
 The `capability` property in the existing OpenAPI extension is retained as binding
 vocabulary. Its values map to the `consultation-retrieve`,

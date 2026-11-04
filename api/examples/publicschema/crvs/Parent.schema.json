@@ -1,0 +1,148 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://publicschema.org/crvs/Parent.schema.json",
+  "title": "Parent",
+  "description": "A crvs/Person subtype that captures a parental role alongside the inherited person-of-record properties. Used on Birth, Adoption, PaternityRecognition, and Legitimation so that biological and legal parentage can be captured explicitly rather than collapsed into a single parent slot.\nA Parent instance is scoped to a single event context: the parental_role, establishment_basis, and certificate_label recorded here are the values asserted at the time of that event. Reusing the same Parent instance across multiple events would break snapshot semantics because the role or establishment basis may differ. The canonical way to assert parenthood across contexts is via Relationship records between Person instances, while Parent captures a point-in-time declaration tied to an event.\nThe parental_role property carries the role-nature (biological, gestational, legal, or adoptive), decoupled from gender. The establishment_basis property captures the legal route by which parentage was established (for example, marital presumption, voluntary recognition, or adoption order). The certificate_label property is a free-text field for the jurisdiction-specific label that must appear on the printed certificate.\n",
+  "type": "object",
+  "properties": {
+    "person": {
+      "oneOf": [
+        {
+          "$ref": "https://publicschema.org/Person.schema.json"
+        },
+        {
+          "type": "string",
+          "description": "URI or identifier reference"
+        }
+      ],
+      "description": "A reference to the individual Person this record relates to."
+    },
+    "nationality": {
+      "type": "string",
+      "$comment": "https://publicschema.org/vocab/country",
+      "description": "The country of citizenship or nationality, expressed as an ISO 3166-1 alpha-2 code where possible."
+    },
+    "occupation": {
+      "type": "string",
+      "$comment": "https://publicschema.org/vocab/occupation",
+      "description": "The person's primary occupation, classified according to the ISCO-08 sub-major groups."
+    },
+    "education_level": {
+      "type": "string",
+      "enum": [
+        "none",
+        "early_childhood",
+        "primary",
+        "lower_secondary",
+        "upper_secondary",
+        "post_secondary_non_tertiary",
+        "short_cycle_tertiary",
+        "bachelor",
+        "master",
+        "doctoral"
+      ],
+      "$comment": "https://publicschema.org/vocab/education-level",
+      "description": "The highest level of formal education completed by a person."
+    },
+    "marital_status": {
+      "type": "string",
+      "enum": [
+        "never_married",
+        "married",
+        "widowed",
+        "divorced",
+        "legally_separated",
+        "consensual_union"
+      ],
+      "$comment": "https://publicschema.org/vocab/marital-status",
+      "description": "The marital or civil status of a person as recorded in an administrative system."
+    },
+    "literacy": {
+      "type": "string",
+      "enum": [
+        "literate",
+        "illiterate"
+      ],
+      "$comment": "https://publicschema.org/vocab/literacy",
+      "description": "Whether the person can, with understanding, both read and write a short simple statement on everyday life."
+    },
+    "religion": {
+      "type": "string",
+      "description": "The religion, religious denomination, or sect of the person, as self-identified. No international classification exists; countries define their own value sets."
+    },
+    "ethnic_group": {
+      "type": "string",
+      "description": "The ethnic or cultural group of the person, as self-identified. The UNSD recommends nationally defined categories based on self-identification; no international classification exists."
+    },
+    "employment_status": {
+      "type": "string",
+      "enum": [
+        "employed",
+        "unemployed",
+        "outside_labour_force"
+      ],
+      "$comment": "https://publicschema.org/vocab/employment-status",
+      "description": "The labour force participation status of the person: whether they are employed, unemployed, or outside the labour force."
+    },
+    "status_in_employment": {
+      "type": "string",
+      "enum": [
+        "employee",
+        "employer",
+        "own_account_worker",
+        "dependent_contractor",
+        "contributing_family_worker",
+        "cooperative_member"
+      ],
+      "$comment": "https://publicschema.org/vocab/status-in-employment",
+      "description": "The type of employment relationship: whether the person is an employee, employer, own-account worker, contributing family worker, or cooperative member."
+    },
+    "industry": {
+      "type": "string",
+      "description": "The branch of economic activity in which the person works, classified according to the International Standard Industrial Classification (ISIC Rev.4). Too large to enumerate; countries use national adaptations."
+    },
+    "place_of_usual_residence": {
+      "oneOf": [
+        {
+          "$ref": "https://publicschema.org/Location.schema.json"
+        },
+        {
+          "type": "string",
+          "description": "URI or identifier reference"
+        }
+      ],
+      "description": "The usual place of residence of the person at the time of the vital event. Used by national statistics offices to allocate vital events to the place where people live, not only where events occur."
+    },
+    "age_at_event": {
+      "type": "integer",
+      "description": "The stated age of the person at the time of the vital event. Used in low-completeness settings where date of birth is unknown and stated age is the only age data available."
+    },
+    "parental_role": {
+      "type": "string",
+      "enum": [
+        "biological",
+        "gestational",
+        "legal",
+        "adoptive"
+      ],
+      "$comment": "https://publicschema.org/vocab/crvs/parental-role",
+      "description": "The role-nature of the parent relationship (biological, gestational, legal, or adoptive), decoupled from gender. Makes the nature of parentage explicit and separable from the parent's identity. For jurisdictions requiring gendered or positional labels on the printed certificate, use certificate_label alongside this property."
+    },
+    "establishment_basis": {
+      "type": "string",
+      "enum": [
+        "marital_presumption",
+        "voluntary_recognition",
+        "judicial_declaration",
+        "adoption_order",
+        "surrogacy_order"
+      ],
+      "$comment": "https://publicschema.org/vocab/crvs/parent-establishment-basis",
+      "description": "The legal route by which the parent's parentage was established: marital presumption, voluntary recognition, judicial declaration, adoption order, or surrogacy order. Complements parental_role, which captures the role-nature (biological, gestational, legal, adoptive); establishment_basis captures the mechanism."
+    },
+    "certificate_label": {
+      "type": "string",
+      "description": "A free-text field carrying the role label as it must appear on the printed legal certificate. Jurisdictions that require gendered designations (for example, 'mother', 'father') or positional labels ('parent 1', 'parent 2') on the certificate use this field. The underlying role-nature is already carried on parental_role; certificate_label is purely a display hint for document generation."
+    }
+  }
+}

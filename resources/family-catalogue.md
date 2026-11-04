@@ -6,13 +6,13 @@ description: Capability families provided by the Digital Registries Building Blo
 
 The Digital Registries Building Block groups its externally visible capabilities into eight families. A family describes an adopter outcome and a coherent trust boundary. It does not prescribe an internal module, product architecture, or transport.
 
-The [draft conformance model](conformance.md#draft-conformance-model) defines two core functionalities. Its `registry-service` variation point requires at least one of the six Consultation operation options. The API-family catalogue remains useful binding vocabulary, but family labels are not framework capabilities or functionality claims.
+The [draft conformance model](conformance.md#draft-conformance-model) defines two core functionalities. Its `registry-service` variation point requires at least one of the six Consultation or four Write operation options. The API-family catalogue remains useful binding vocabulary, but family labels are not framework capabilities or functionality claims.
 
-<figure><img src="../assets/api-families.svg" alt="Digital Registries Building Block API families"><figcaption>Registry Core provides the shared foundation. Consultation supplies the six operation options in this draft; the other families remain roadmap material.</figcaption></figure>
+<figure><img src="../assets/api-families.svg" alt="Digital Registries Building Block API families"><figcaption>Registry Core provides the shared foundation. Consultation and Write supply operation options in this draft; the other six families remain roadmap material.</figcaption></figure>
 
 ## Reading the catalogue
 
-Normative statements are placed in the functionality files [Discover Registry Services](../requirements/registry-discovery.md) and [Provide Registry Services](../requirements/registry-services.md). The [Registry Core model](registry-core-model.md) and [Consultation binding](consultation-binding.md) retain the supporting concepts, workflows, data structures, and protocol binding.
+Normative statements are placed in the functionality files [Discover Registry Services](../requirements/registry-discovery.md) and [Provide Registry Services](../requirements/registry-services.md). The [Registry Core model](registry-core-model.md), [Consultation binding](consultation-binding.md), and [Write binding](write-binding.md) retain the supporting concepts, workflows, data structures, and protocol binding.
 
 [Requirement maturity](conformance.md#requirement-maturity) defines requirement classification and current status. Informative family descriptions do not create requirements.
 
@@ -24,11 +24,12 @@ Registry Core requires publication of machine-readable Registry and service meta
 
 ## Family catalogue
 
-Consultation is the only family with requirements and a contract in this release.
+Consultation and Write have DRAFT requirements and contracts in this alpha.
 
 | Family | Adopter outcome | Capabilities | Status in this release |
 |---|---|---|---|
 | [Consultation](consultation-binding.md) | Obtain a permitted representation of Registry information. | Retrieve, Lookup, List, Search, Revision List, Revision Retrieve | DRAFT requirements and a draft HTTP contract, including selectable temporal, caller-discovery, and purpose-bound behaviour. Existence Check, Record Match, and GIS Query are outside this baseline. |
+| [Write](write-binding.md) | Create or change authoritative Records directly or through an approved proposal. | Direct creation, direct update, direct named transition, approval-based change requests | Independently selectable DRAFT options, a shared HTTP contract, and non-normative domain examples. |
 
 The remaining families are informative roadmap descriptions. They have no requirements, contracts, or tests in this release.
 
@@ -36,7 +37,6 @@ The remaining families are informative roadmap descriptions. They have no requir
 |---|---|---|
 | [Provisioning](roadmap/provisioning.md) | Configure a Registry service and publish its externally visible contracts. | Metadata administration, schemas, capability publication, bulk transfer |
 | [Evidence](roadmap/evidence.md) | Obtain a signed assertion derived from authoritative Registry information. | Direct attestation, wallet-mediated credential, status |
-| [Write](roadmap/write.md) | Create a Record or accept a new authoritative revision. | Direct write, governed write, correction |
 | [Notification](roadmap/notification.md) | Inform authorised subscribers that Registry state changed. | Subscribe, filter, deliver, retry, replay |
 | [Aggregate Data](roadmap/aggregate-data.md) | Obtain approved statistics derived from Registry Records. | Aggregate query, dataset metadata, published release |
 | [Access Transparency](roadmap/access-transparency.md) | Obtain a permitted view of access to a related Record. | Access-history consultation |

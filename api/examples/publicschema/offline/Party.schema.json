@@ -1,0 +1,42 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Party",
+  "description": "A person, an organized group of persons or an organization that can be identified, enrolled in programs, and receive benefits or services. Party is the shared supertype for Person, Group and Organization, enabling references that accept any of them.\n",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "The full display name of the record. Depending on the concept, this is a person's or group's name, or the title of a program, instrument, scoring rule, or software product."
+    },
+    "identifiers": {
+      "type": "array",
+      "items": {
+        "oneOf": [
+          {
+            "$ref": "./Identifier.schema.json"
+          },
+          {
+            "type": "string",
+            "description": "URI or identifier reference"
+          }
+        ],
+        "description": "Identifiers carried by this entity, such as national ID numbers, program IDs, or identifiers asserted by an identity document."
+      }
+    },
+    "identity_documents": {
+      "type": "array",
+      "items": {
+        "oneOf": [
+          {
+            "$ref": "./IdentityDocument.schema.json"
+          },
+          {
+            "type": "string",
+            "description": "URI or identifier reference"
+          }
+        ],
+        "description": "Identity documents held by this party, such as passports, national identity cards, civil registration certificates, and program-issued beneficiary cards, or, for an organization, a certificate of registration."
+      }
+    }
+  }
+}

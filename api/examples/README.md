@@ -1,6 +1,6 @@
 # OpenAPI examples
 
-These illustrative deployments specialise the [Consultation contract](../openapi.yaml).
+The Consultation examples below specialise the [Consultation contract](../openapi.yaml). The independently selectable Write examples are listed separately below.
 
 | OpenAPI | Collection | Capabilities | Selectable features | Record view |
 | --- | --- | --- | --- | --- |
@@ -66,3 +66,20 @@ Example cursors are illustrative values.
 The [artifact validator](../../tools/validate_consultation.py) checks operation
 schemas, examples, and valid and invalid inputs. Run it using the
 [validation commands](../README.md#validation).
+
+## Non-normative Write examples
+
+[Write example OpenAPI](write-examples.openapi.yaml), [input and result schemas](write-examples.schema.json), and [request/response exchanges](write-exchanges.json) illustrate the shared [Write contract](../write.openapi.yaml) using birth registration, households, and individuals. Both direct commits and approval-based proposals are shown. These are example deployment choices, not additional conformance requirements.
+
+Birth declaration and correction commands carry proposed facts, reasons, and evidence references. A successful authoritative commit maps accepted facts into a Birth read projection. Command annotations remain outside that projection. Pending and rejected proposals do not change authoritative facts. The HTTP idempotency key and source transaction identifier have separate roles.
+
+| Household case | Example relationship input |
+| --- | --- |
+| Create with existing individuals | Existing individual Record URIs |
+| Create individuals together with the household | Embedded individuals identified by request-local URIs |
+| Add an existing individual later | Named `add-member` transition with an existing Record URI |
+| Create and add an individual later | Named `add-member` transition with an embedded individual |
+
+The compound cases explicitly assume one source transaction across the household and newly created individuals. A deployment without that guarantee can use existing individual references. The example makes no distributed transaction guarantee. Successful results map request-local URIs to authoritative Record identifiers; unapplied proposals cannot provide those resolutions.
+
+Selected domain fields use [PublicSchema](https://publicschema.org/) as a reference. The source schemas and their CC BY 4.0 attribution, plus the transitive GeoJSON MIT notice, are retained with the [example validation dependencies](publicschema/README.md). This vocabulary choice is local to these examples; Write inputs and Consultation views are chosen by the deployment.

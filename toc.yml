@@ -12,6 +12,14 @@ toc:
     - conformance.md
     - registry-core-model.md
     - consultation-binding.md
+    - write-binding.md
+    - write-api-reference.md
+    - write-testing.md
+    - api-reference.md
+    - api-examples/birth-registration.md
+    - api-examples/business.md
+    - api-examples/household.md
+    - api-examples/write.md
     - service-interfaces.md
     - workflows.md
     - testing.md

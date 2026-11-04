@@ -1,0 +1,1862 @@
+openapi: 3.1.2
+info:
+  title: GovStack Digital Registries Write API
+  version: 1.0.0-draft
+  description: >-
+    Domain-neutral mutation contracts for Digital Registries. Deployments independently select
+    direct create, direct update, named transition, and governed change-request capabilities.
+    Direct and governed write paths are alternatives that may coexist; selecting either does not
+    imply support for the other. A submitted change request is immutable, creates no Record side
+    effect while pending, and authorises no action by itself. Approval is bound to the exact
+    proposal representation selected with If-Match. Authorisation, trusted purpose, source
+    preconditions, and current grants are re-evaluated when an authoritative commit is attempted.
+    Approval records a governance decision but does not imply that application completed.
+    All protected representations and errors use Cache-Control: no-store. Implementations publish
+    concrete domain schemas by narrowing the data and transition parameter schemas in this
+    reference contract; this contract does not define domain fields or require event sourcing.
+  contact:
+    name: GovStack Digital Registries Working Group
+    url: https://github.com/GovStackWorkingGroup/bb-digital-registries
+  x-govstack-api-guide:
+    version: 0.3.0-draft
+    rulesetVersion: 0.3.0-draft
+servers:
+  - url: https://{gatewayHost}
+    description: Non-production reference deployment root. Deployments replace the reserved host.
+    variables:
+      gatewayHost:
+        default: registry.example
+        description: Deployment gateway hostname; registry.example is non-production.
+security:
+  - citizenOAuth: [bb:digital-registries:record:read]
+  - serviceOAuth: [bb:digital-registries:record:read]
+tags:
+  - name: Direct Write
+    description: Authoritative Record mutations performed without a governed proposal.
+  - name: Change Requests
+    description: Immutable proposals, review decisions, and separately observable application state.
+  - name: Operations
+    description: Polling resources used only when authoritative work continues asynchronously.
+paths:
+  /v1/collections/{collectionId}/records:
+    post:
+      operationId: createRecord
+      summary: Create a Record directly
+      description: >-
+        Create one Record in the selected collection and commit it authoritatively during this
+        request, or return 202 only when actual commit work continues asynchronously. The
+        deployment replaces CreateInput.data with its domain schema. A successful synchronous
+        creation returns the new Record URI in Location. Replays follow the Idempotency-Key
+        contract: the lookup scope contains method, canonical target URI, authenticated client,
+        tenant or equivalent authorisation partition, and effective trusted purpose; the
+        fingerprint contains method, canonical target URI, content type, canonical body, and
+        every declared semantic header.
+      tags: [Direct Write]
+      security:
+        - citizenOAuth: [bb:digital-registries:record:create]
+        - serviceOAuth: [bb:digital-registries:record:create]
+      x-govstack-digital-registries-write:
+        registry: https://registry.example/registries/records
+        collection: records
+        capability: create
+        inputSchema: '#/components/schemas/CreateInput'
+      parameters:
+        - $ref: '#/components/parameters/CollectionId'
+        - $ref: '#/components/parameters/Traceparent'
+        - $ref: '#/components/parameters/IdempotencyKey'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateInput'
+            example:
+              data:
+                label: Reference record
+      responses:
+        '201':
+          $ref: '#/components/responses/RecordCreated'
+        '202':
+          $ref: '#/components/responses/WriteAccepted'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/CollectionNotAvailable'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '415':
+          $ref: '#/components/responses/UnsupportedMediaType'
+        '422':
+          $ref: '#/components/responses/UnprocessableContent'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalError'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
+  /v1/collections/{collectionId}/records/{recordId}:
+    get:
+      operationId: getWritableRecord
+      summary: Read a Record for a conditional write
+      description: >-
+        Return the caller-authorised writable representation and a strong ETag suitable for
+        If-Match. This supporting read is not a separate Write or Consultation capability. Where
+        the Consultation Retrieve operation uses the same URI, the deployment publishes one GET
+        operation and view, adds the strong validator needed by the selected write, and references
+        that operation as the companion read; it does not install a second competing GET.
+        If-None-Match is a cache validator and may contain a weak tag; it is distinct from the
+        strong If-Match required by mutations. Unknown, out-of-collection, and protected Record
+        existence share 404.
+      tags: [Direct Write]
+      security:
+        - citizenOAuth: [bb:digital-registries:record:read]
+        - serviceOAuth: [bb:digital-registries:record:read]
+      parameters:
+        - $ref: '#/components/parameters/CollectionId'
+        - $ref: '#/components/parameters/RecordId'
+        - $ref: '#/components/parameters/Traceparent'
+        - $ref: '#/components/parameters/IfNoneMatch'
+      responses:
+        '200':
+          $ref: '#/components/responses/WritableRecord'
+        '304':
+          $ref: '#/components/responses/NotModified'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/RecordNotAvailable'
+        '406':
+          $ref: '#/components/responses/NotAcceptable'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalError'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
+    patch:
+      operationId: updateRecord
+      summary: Update a Record directly
+      description: >-
+        Apply UpdateInput as an RFC 7396 JSON Merge Patch to the writable Record representation.
+        Only the data member is writable; the closed schema rejects recordId, source evidence,
+        authority-owned state, and other control members. Domain members below data are
+        intentionally unconstrained here and are narrowed by deployed contracts. A null domain
+        member removes that member under RFC 7396. If-Match is required and accepts only the
+        strong ETag obtained from the declared write-capable companion read. A successful
+        synchronous update is bodyless and returns the new strong ETag.
+      tags: [Direct Write]
+      security:
+        - citizenOAuth: [bb:digital-registries:record:update]
+        - serviceOAuth: [bb:digital-registries:record:update]
+      x-govstack-digital-registries-write:
+        registry: https://registry.example/registries/records
+        collection: records
+        capability: update
+        inputSchema: '#/components/schemas/UpdateInput'
+        inputMediaType: application/merge-patch+json
+      parameters:
+        - $ref: '#/components/parameters/CollectionId'
+        - $ref: '#/components/parameters/RecordId'
+        - $ref: '#/components/parameters/Traceparent'
+        - $ref: '#/components/parameters/IfMatch'
+        - $ref: '#/components/parameters/IdempotencyKey'
+      requestBody:
+        required: true
+        content:
+          application/merge-patch+json:
+            schema:
+              $ref: '#/components/schemas/UpdateInput'
+            example:
+              data:
+                label: Corrected label
+      responses:
+        '204':
+          $ref: '#/components/responses/RecordUpdated'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/RecordNotAvailable'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '415':
+          $ref: '#/components/responses/UnsupportedMediaType'
+        '422':
+          $ref: '#/components/responses/UnprocessableContent'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalError'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
+  /v1/collections/{collectionId}/records/{recordId}/transition:
+    post:
+      operationId: applyRecordTransition
+      summary: Apply the published Record transition
+      description: >-
+        Apply the named transition profile published by this operation. This reference fixes the
+        action path to transition; a concrete deployment narrows TransitionInput.name to a const
+        or closed enum and publishes a closed typed parameter profile rather than accepting an
+        arbitrary runtime action or generic workflow expression. If-Match guards the source
+        Record. The server rechecks current authorisation,
+        trusted purpose, grants, and the source validator at commit. Unknown and protected Records
+        share 404. Return 202 only if actual transition work continues asynchronously.
+      tags: [Direct Write]
+      security:
+        - citizenOAuth: [bb:digital-registries:record:transition]
+        - serviceOAuth: [bb:digital-registries:record:transition]
+      x-govstack-digital-registries-write:
+        registry: https://registry.example/registries/records
+        collection: records
+        capability: transition
+        inputSchema: '#/components/schemas/TransitionInput'
+        action: transition
+        transitionProfile: record-transition
+      parameters:
+        - $ref: '#/components/parameters/CollectionId'
+        - $ref: '#/components/parameters/RecordId'
+        - $ref: '#/components/parameters/Traceparent'
+        - $ref: '#/components/parameters/IfMatch'
+        - $ref: '#/components/parameters/IdempotencyKey'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TransitionInput'
+            example:
+              name: transition
+              parameters:
+                reason: verified-source
+      responses:
+        '200':
+          $ref: '#/components/responses/TransitionApplied'
+        '202':
+          $ref: '#/components/responses/WriteAccepted'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/RecordNotAvailable'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '415':
+          $ref: '#/components/responses/UnsupportedMediaType'
+        '422':
+          $ref: '#/components/responses/UnprocessableContent'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalError'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
+  /v1/change-requests:
+    post:
+      operationId: submitChangeRequest
+      summary: Submit an immutable change proposal
+      description: >-
+        Create an immutable proposal in pending review state. The proposal has no Record side
+        effect. Its typed input is the same CreateInput, UpdateInput, or TransitionInput used by
+        the corresponding direct operation. Update and transition proposals bind the source
+        Record's strong validator in baseETag; update also declares inputMediaType. The trusted
+        actor and purpose come from verified authorisation context, never from client-supplied
+        actor, approval, decision, or review-status fields. A manual pending request is a
+        completed resource creation and therefore returns 201 with its Location.
+      tags: [Change Requests]
+      security:
+        - citizenOAuth: [bb:digital-registries:change-request:submit]
+        - serviceOAuth: [bb:digital-registries:change-request:submit]
+      x-govstack-digital-registries-write:
+        registry: https://registry.example/registries/records
+        capability: change-requests
+        inputSchema: '#/components/schemas/CreateChangeRequest'
+      parameters:
+        - $ref: '#/components/parameters/Traceparent'
+        - $ref: '#/components/parameters/IdempotencyKey'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateChangeRequest'
+            example:
+              kind: update
+              target:
+                collectionId: records
+                recordId: r_42
+              baseETag: '"record-7fa9"'
+              inputMediaType: application/merge-patch+json
+              input:
+                data:
+                  label: Corrected label
+      responses:
+        '201':
+          $ref: '#/components/responses/ChangeRequestCreated'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/TargetNotAvailable'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '415':
+          $ref: '#/components/responses/UnsupportedMediaType'
+        '422':
+          $ref: '#/components/responses/UnprocessableContent'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalError'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
+    get:
+      operationId: listChangeRequests
+      summary: List visible change requests
+      description: >-
+        Return a bounded page of change requests visible to the caller. An empty result returns
+        200 with an empty items array. Order is submittedAt ascending with changeRequestId as the
+        unique tie-breaker. The integrity-protected cursor binds the authenticated actor and
+        tenant partition, trusted purpose, Registry and Collection scope, filters, order, and
+        effective page size. It expires under the published changeRequestCursorLifetime profile
+        parameter; malformed, expired, tampered, or context-mismatched cursors return 400 and
+        never restart traversal. Every page is reauthorised. Traversal reads current state, not a
+        snapshot; newly submitted requests can appear later in order, while state changes do not
+        reorder an existing request. The deployment publishes changeRequestResultWindow and the
+        processing-time bound; exceeding the latter returns 503 with Retry-After. A null
+        nextCursor marks completion. The response is no-store and does not disclose protected
+        requests through counts, ordering, or errors.
+      tags: [Change Requests]
+      security:
+        - citizenOAuth: [bb:digital-registries:change-request:read]
+        - serviceOAuth: [bb:digital-registries:change-request:read]
+      parameters:
+        - $ref: '#/components/parameters/Traceparent'
+        - $ref: '#/components/parameters/PageSize'
+        - $ref: '#/components/parameters/Cursor'
+      responses:
+        '200':
+          $ref: '#/components/responses/ChangeRequestPage'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '406':
+          $ref: '#/components/responses/NotAcceptable'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalError'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
+  /v1/change-requests/{changeRequestId}:
+    get:
+      operationId: getChangeRequest
+      summary: Get one change request
+      description: >-
+        Return one caller-visible change request. Unknown and protected request existence share
+        404. The strong ETag identifies the immutable proposal version together with its current
+        review and application state. If-None-Match provides conditional read semantics and does
+        not replace the strong If-Match required by review actions.
+      tags: [Change Requests]
+      security:
+        - citizenOAuth: [bb:digital-registries:change-request:read]
+        - serviceOAuth: [bb:digital-registries:change-request:read]
+      parameters:
+        - $ref: '#/components/parameters/ChangeRequestId'
+        - $ref: '#/components/parameters/Traceparent'
+        - $ref: '#/components/parameters/IfNoneMatch'
+      responses:
+        '200':
+          $ref: '#/components/responses/ChangeRequest'
+        '304':
+          $ref: '#/components/responses/NotModified'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/ChangeRequestNotAvailable'
+        '406':
+          $ref: '#/components/responses/NotAcceptable'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalError'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
+  /v1/change-requests/{changeRequestId}/approve:
+    post:
+      operationId: approveChangeRequest
+      summary: Approve the exact proposal version
+      description: >-
+        Approve the proposal version identified by the request resource's strong If-Match.
+        If-Match guards the change request itself; stored baseETag separately guards the source
+        Record at authoritative commit. Approval cannot manufacture trusted purpose, extend
+        grants, or bypass current authorisation. A 200 response can remain approved and
+        not-started. This endpoint records only the review decision and returns 200; an internal
+        worker with the independent bb:digital-registries:change-request:apply grant can apply it
+        later. Review authority alone cannot start authoritative application.
+        An optional ReviewDecisionInput body can retain a human review comment as governance
+        context. The comment is not Record data, authority, purpose, or a decision selector.
+      tags: [Change Requests]
+      security:
+        - citizenOAuth: [bb:digital-registries:change-request:review]
+        - serviceOAuth: [bb:digital-registries:change-request:review]
+      x-govstack-digital-registries-write:
+        registry: https://registry.example/registries/records
+        capability: change-requests
+      parameters:
+        - $ref: '#/components/parameters/ChangeRequestId'
+        - $ref: '#/components/parameters/Traceparent'
+        - $ref: '#/components/parameters/IfMatch'
+        - $ref: '#/components/parameters/IdempotencyKey'
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/ReviewDecisionInput'}
+            example: {comment: Reviewed against the submitted evidence.}
+      responses:
+        '200':
+          $ref: '#/components/responses/ChangeRequestApproved'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/ChangeRequestNotAvailable'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '422':
+          $ref: '#/components/responses/UnprocessableContent'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalError'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
+  /v1/change-requests/{changeRequestId}/reject:
+    post:
+      operationId: rejectChangeRequest
+      summary: Reject the exact proposal version
+      description: >-
+        Reject the pending proposal version identified by the request resource's strong If-Match.
+        An optional ReviewDecisionInput body retains a review comment without altering the
+        immutable proposal or supplying authority. Unknown and protected requests share 404.
+      tags: [Change Requests]
+      security:
+        - citizenOAuth: [bb:digital-registries:change-request:review]
+        - serviceOAuth: [bb:digital-registries:change-request:review]
+      x-govstack-digital-registries-write:
+        registry: https://registry.example/registries/records
+        capability: change-requests
+      parameters:
+        - $ref: '#/components/parameters/ChangeRequestId'
+        - $ref: '#/components/parameters/Traceparent'
+        - $ref: '#/components/parameters/IfMatch'
+        - $ref: '#/components/parameters/IdempotencyKey'
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/ReviewDecisionInput'}
+            example: {comment: Submitted evidence does not support the proposed change.}
+      responses:
+        '200':
+          $ref: '#/components/responses/ChangeRequestRejected'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/ChangeRequestNotAvailable'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '422':
+          $ref: '#/components/responses/UnprocessableContent'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalError'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
+  /v1/change-requests/{changeRequestId}/withdraw:
+    post:
+      operationId: withdrawChangeRequest
+      summary: Withdraw the exact proposal version
+      description: >-
+        Withdraw the pending proposal version identified by the request resource's strong
+        If-Match. The caller must be authorised by current policy; possession of the request
+        identifier or an earlier proposal grant does not confer authority. An optional
+        ReviewDecisionInput body retains a governance comment but does not alter the proposal.
+      tags: [Change Requests]
+      security:
+        - citizenOAuth: [bb:digital-registries:change-request:withdraw]
+        - serviceOAuth: [bb:digital-registries:change-request:withdraw]
+      x-govstack-digital-registries-write:
+        registry: https://registry.example/registries/records
+        capability: change-requests
+      parameters:
+        - $ref: '#/components/parameters/ChangeRequestId'
+        - $ref: '#/components/parameters/Traceparent'
+        - $ref: '#/components/parameters/IfMatch'
+        - $ref: '#/components/parameters/IdempotencyKey'
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/ReviewDecisionInput'}
+            example: {comment: Proposal withdrawn before review.}
+      responses:
+        '200':
+          $ref: '#/components/responses/ChangeRequestWithdrawn'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/ChangeRequestNotAvailable'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '422':
+          $ref: '#/components/responses/UnprocessableContent'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalError'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
+  /v1/operations/{operationId}:
+    get:
+      operationId: getOperation
+      summary: Get asynchronous write status
+      description: >-
+        Poll work that a write response accepted with 202. A successful lookup can return a
+        failed domain operation state; failure of this GET itself uses HTTP Problem Details.
+        Non-terminal responses can include Retry-After. Unknown and protected Operations share
+        404. Result retention is controlled by the deployment's published operationRetention
+        profile parameter.
+      tags: [Operations]
+      security:
+        - citizenOAuth: [bb:digital-registries:operation:read]
+        - serviceOAuth: [bb:digital-registries:operation:read]
+      parameters:
+        - $ref: '#/components/parameters/OperationId'
+        - $ref: '#/components/parameters/Traceparent'
+      responses:
+        '200':
+          $ref: '#/components/responses/Operation'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/OperationNotAvailable'
+        '406':
+          $ref: '#/components/responses/NotAcceptable'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalError'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
+components:
+  securitySchemes:
+    citizenOAuth:
+      type: oauth2
+      description: >-
+        Citizen access-token authorisation backed by OpenID Connect. Authorization-code clients
+        use PKCE S256. Deployments publish issuer and audience. ID Tokens are rejected.
+      flows:
+        authorizationCode:
+          authorizationUrl: https://identity.example/authorize
+          tokenUrl: https://identity.example/token
+          scopes:
+            bb:digital-registries:record:read: Read an authorised write-capable Record view.
+            bb:digital-registries:record:create: Attempt authorised direct Record creation.
+            bb:digital-registries:record:update: Attempt authorised direct Record update.
+            bb:digital-registries:record:transition: Attempt an authorised named Record transition.
+            bb:digital-registries:change-request:submit: Submit an authorised immutable proposal.
+            bb:digital-registries:change-request:read: Read caller-visible proposals and states.
+            bb:digital-registries:change-request:review: Approve or reject an exact proposal version.
+            bb:digital-registries:change-request:withdraw: Withdraw a proposal when policy permits.
+            bb:digital-registries:change-request:apply: Execute an approved proposal under current policy.
+            bb:digital-registries:operation:read: Read caller-visible asynchronous operation state.
+    serviceOAuth:
+      type: oauth2
+      description: >-
+        Confidential inter-BB client credentials. Tokens are audience- and scope-restricted;
+        sender-constrained access tokens are recommended.
+      flows:
+        clientCredentials:
+          tokenUrl: https://identity.example/token
+          scopes:
+            bb:digital-registries:record:read: Read an authorised write-capable Record view.
+            bb:digital-registries:record:create: Attempt authorised direct Record creation.
+            bb:digital-registries:record:update: Attempt authorised direct Record update.
+            bb:digital-registries:record:transition: Attempt an authorised named Record transition.
+            bb:digital-registries:change-request:submit: Submit an authorised immutable proposal.
+            bb:digital-registries:change-request:read: Read caller-visible proposals and states.
+            bb:digital-registries:change-request:review: Approve or reject an exact proposal version.
+            bb:digital-registries:change-request:withdraw: Withdraw a proposal when policy permits.
+            bb:digital-registries:change-request:apply: Execute an approved proposal under current policy.
+            bb:digital-registries:operation:read: Read caller-visible asynchronous operation state.
+  parameters:
+    CollectionId:
+      name: collectionId
+      in: path
+      required: true
+      description: Declared collection identifier, narrowed to a deployment's published values.
+      schema:
+        $ref: '#/components/schemas/CollectionId'
+    RecordId:
+      name: recordId
+      in: path
+      required: true
+      description: Stable, opaque, non-personal Record identifier encoded as one path segment.
+      schema:
+        $ref: '#/components/schemas/OpaqueId'
+    ChangeRequestId:
+      name: changeRequestId
+      in: path
+      required: true
+      description: Opaque change-request identifier encoded as one path segment.
+      schema:
+        $ref: '#/components/schemas/OpaqueId'
+    OperationId:
+      name: operationId
+      in: path
+      required: true
+      description: Opaque asynchronous Operation identifier encoded as one path segment.
+      schema:
+        $ref: '#/components/schemas/OpaqueId'
+    Traceparent:
+      name: traceparent
+      in: header
+      required: false
+      description: >-
+        W3C Trace Context. Propagate valid context and create context when absent or invalid.
+        Problem traceId equals the effective trace-id, except for replayed stored Problems.
+      schema:
+        type: string
+    IfMatch:
+      name: If-Match
+      in: header
+      required: true
+      description: >-
+        One strong ETag for the target representation. Weak validators and wildcard matching are
+        not accepted. On review actions this guards the change request; it never substitutes for
+        the proposal's baseETag, which guards the source Record at commit.
+      schema:
+        $ref: '#/components/schemas/StrongETag'
+    IfNoneMatch:
+      name: If-None-Match
+      in: header
+      required: false
+      description: Conditional cache validator for GET; weak validators are permitted.
+      schema:
+        type: string
+        minLength: 1
+    IdempotencyKey:
+      name: Idempotency-Key
+      in: header
+      required: true
+      description: >-
+        Opaque client-generated high-entropy key using Structured Field String syntax, including
+        quotation marks, with at most 200 characters inside the quotes. UUID values are
+        recommended. Missing, malformed, or oversized keys return 400 before processing. The
+        deployment publishes idempotencyReplayWindow; after expiry it may process the key as new
+        only when its profile says so. Within the window, completed matching retries return the
+        original status, body, Content-Type, and Location while per-attempt headers are regenerated;
+        fingerprint mismatch returns 422 and a matching in-flight retry returns 409. Before a
+        stored result is disclosed, the server rechecks current authorisation, effective trusted
+        purpose, and disclosure policy; effective trusted purpose is part of the lookup scope so
+        a purpose change cannot select a stored result. A replay key never preserves or
+        manufactures a grant.
+      schema:
+        type: string
+        minLength: 3
+        maxLength: 202
+        pattern: '^"(?:[\x20-\x21\x23-\x5B\x5D-\x7E]|\\["\\]){1,200}"$'
+      example: '"018f47d2-4c42-7ca4-bf47-2bd31f88b922"'
+    PageSize:
+      name: pageSize
+      in: query
+      required: false
+      description: Maximum items in this bounded page; default 20 and maximum 100.
+      schema:
+        type: integer
+        minimum: 1
+        maximum: 100
+        default: 20
+    Cursor:
+      name: cursor
+      in: query
+      required: false
+      description: >-
+        Opaque integrity-protected continuation returned by the previous change-request page;
+        omit on the first request. It binds caller context, trusted purpose, Registry and
+        Collection scope, filters, deterministic order, and effective page size, and expires
+        under changeRequestCursorLifetime. Invalid continuation returns 400 and never restarts.
+      schema:
+        type: string
+        minLength: 1
+        maxLength: 2048
+  headers:
+    CacheControl:
+      description: Protected representations and HTTP Problems are never stored by shared caches.
+      required: true
+      schema:
+        type: string
+        const: no-store
+    StrongETag:
+      description: Strong validator suitable for If-Match; weak validators are forbidden.
+      required: true
+      schema:
+        $ref: '#/components/schemas/StrongETag'
+      example: '"record-7fa9"'
+    Location:
+      description: URI of the created Record, change request, or asynchronous Operation.
+      required: true
+      schema:
+        type: string
+        format: uri-reference
+    RetryAfter:
+      description: Delay in seconds or HTTP-date before retrying.
+      schema:
+        type: string
+    WwwAuthenticate:
+      description: Bearer authentication challenge with no resource-specific facts.
+      schema:
+        type: string
+      example: Bearer
+  schemas:
+    CollectionId:
+      type: string
+      enum: [records]
+      description: Reference collection identifier; deployments publish their own closed values.
+      examples: [records]
+    OpaqueId:
+      type: string
+      minLength: 1
+      maxLength: 256
+      pattern: '^[A-Za-z0-9][A-Za-z0-9._~-]{0,255}(?![\s\S])'
+      description: Opaque, non-personal identifier with no client-inferred internal format.
+      examples: [r_42]
+    StrongETag:
+      type: string
+      minLength: 3
+      maxLength: 258
+      pattern: '^"[\x21\x23-\x7E]{1,256}"(?![\s\S])'
+      description: >-
+        GovStack Write profile of one quoted strong entity tag using bounded visible ASCII
+        opaque-tag characters. Weak W/ validators, wildcard, lists, spaces, controls, non-ASCII,
+        and trailing input are not admitted.
+      examples: ['"record-7fa9"']
+    SourceReference:
+      type: object
+      additionalProperties: false
+      required: [system, revision]
+      description: >-
+        Optional source-backed audit reference supplied with a mutation. Its presence does not
+        require event sourcing or a history API, and the server validates it under source policy.
+      properties:
+        system:
+          type: string
+          format: uri
+          maxLength: 2048
+          description: Stable identifier of the source system or authority.
+        revision:
+          type: string
+          minLength: 1
+          maxLength: 256
+          description: Source-backed revision identifier.
+        recordedAt:
+          type: string
+          format: date-time
+          pattern: 'Z(?![\s\S])'
+          description: UTC instant at which the source recorded this revision, when supplied.
+      examples:
+        - system: https://source.example/systems/register
+          revision: source-revision-17
+          recordedAt: '2026-11-04T08:00:00Z'
+    CreateInput:
+      type: object
+      additionalProperties: false
+      required: [data]
+      description: >-
+        Semantic input for direct and governed creation. Deployments replace or narrow data with
+        their domain schema; the generic contract intentionally declares no domain fields.
+      properties:
+        data:
+          type: object
+          additionalProperties: true
+          description: Typed domain data in a concrete deployment contract.
+        source:
+          $ref: '#/components/schemas/SourceReference'
+      examples:
+        - data:
+            label: Reference record
+    UpdateInput:
+      type: object
+      additionalProperties: false
+      required: [data]
+      description: >-
+        RFC 7396 merge patch shared by direct and governed update and applied to the writable
+        Record representation. Only data is mutable. The closed schema rejects recordId, source
+        evidence, and authority-owned control fields; null domain members remove those members.
+      properties:
+        data:
+          type: object
+          additionalProperties: true
+          minProperties: 1
+          description: Domain merge patch, narrowed by the concrete deployment's domain schema.
+      examples:
+        - data:
+            label: Corrected label
+    TransitionInput:
+      type: object
+      additionalProperties: false
+      required: [name]
+      description: >-
+        Input for the transition action. Concrete profiles narrow name to a const or closed enum,
+        narrow parameters to a closed typed schema, and publish those allowed names. The generic
+        pattern is not an arbitrary runtime action selector.
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 128
+          pattern: '^[a-z][a-z0-9-]{0,127}(?![\s\S])'
+          description: >-
+            Catalog transition identifier. A concrete operation narrows this property to a const
+            or closed enum of names it publishes; arbitrary runtime action names are forbidden.
+        parameters:
+          type: object
+          additionalProperties: true
+          description: Transition-profile parameters, closed and typed by a concrete contract.
+        source:
+          $ref: '#/components/schemas/SourceReference'
+      examples:
+        - name: transition
+          parameters:
+            reason: verified-source
+    CreateTarget:
+      type: object
+      additionalProperties: false
+      required: [collectionId]
+      properties:
+        collectionId:
+          $ref: '#/components/schemas/CollectionId'
+      description: Target Collection for creation. recordId is forbidden by the closed shape.
+      examples:
+        - collectionId: records
+    RecordTarget:
+      type: object
+      additionalProperties: false
+      required: [collectionId, recordId]
+      properties:
+        collectionId:
+          $ref: '#/components/schemas/CollectionId'
+        recordId:
+          $ref: '#/components/schemas/OpaqueId'
+      description: Existing source Record targeted by update or transition.
+      examples:
+        - collectionId: records
+          recordId: r_42
+    CreateChangeRequest:
+      description: >-
+        Immutable submitted proposal. Client-supplied actor, purpose, review status, approval, and
+        decision fields are not admitted. Update and transition bind a strong source baseETag.
+      oneOf:
+        - type: object
+          description: Create proposal with no client-selected Record identifier.
+          additionalProperties: false
+          required: [kind, target, input]
+          properties:
+            kind:
+              const: create
+              description: Proposal to create a server-identified Record.
+            target:
+              $ref: '#/components/schemas/CreateTarget'
+            input:
+              $ref: '#/components/schemas/CreateInput'
+        - type: object
+          description: Update proposal bound to a source Record validator and merge-patch media type.
+          additionalProperties: false
+          required: [kind, target, baseETag, inputMediaType, input]
+          properties:
+            kind:
+              const: update
+              description: Proposal to apply a merge patch to an existing Record.
+            target:
+              $ref: '#/components/schemas/RecordTarget'
+            baseETag:
+              $ref: '#/components/schemas/StrongETag'
+            inputMediaType:
+              type: string
+              const: application/merge-patch+json
+              description: Registered patch format governing UpdateInput.data.
+            input:
+              $ref: '#/components/schemas/UpdateInput'
+        - type: object
+          description: Named transition proposal bound to a source Record validator.
+          additionalProperties: false
+          required: [kind, target, baseETag, input]
+          properties:
+            kind:
+              const: transition
+              description: Proposal to apply one published named transition.
+            target:
+              $ref: '#/components/schemas/RecordTarget'
+            baseETag:
+              $ref: '#/components/schemas/StrongETag'
+            input:
+              $ref: '#/components/schemas/TransitionInput'
+      examples:
+        - kind: update
+          target:
+            collectionId: records
+            recordId: r_42
+          baseETag: '"record-7fa9"'
+          inputMediaType: application/merge-patch+json
+          input:
+            data:
+              label: Corrected label
+    ReviewDecisionInput:
+      type: object
+      additionalProperties: false
+      required: [comment]
+      description: >-
+        Optional request body for a review action. comment is retained governance context only;
+        it is not authoritative Record data, actor identity, trusted purpose, approval state, or
+        a substitute for the operation selected by the request URI and current authorisation.
+      properties:
+        comment:
+          type: string
+          minLength: 1
+          maxLength: 2000
+          description: Human review note safe for the Change Request's authorised audience.
+      examples:
+        - comment: Reviewed against the submitted evidence.
+    WriteResult:
+      type: object
+      required: [collectionId, recordId, etag]
+      description: >-
+        Receipt for an authoritative Record mutation, not a domain Record representation.
+        Readers accept additive response-envelope fields.
+      properties:
+        collectionId:
+          $ref: '#/components/schemas/CollectionId'
+        recordId:
+          $ref: '#/components/schemas/OpaqueId'
+        etag:
+          $ref: '#/components/schemas/StrongETag'
+        source:
+          $ref: '#/components/schemas/SourceReference'
+      examples:
+        - collectionId: records
+          recordId: r_42
+          etag: '"record-7fa9"'
+    WritableRecord:
+      type: object
+      required: [recordId, data]
+      description: >-
+        Companion representation used to obtain a strong write validator. Readers accept additive
+        response-envelope fields.
+      properties:
+        recordId:
+          $ref: '#/components/schemas/OpaqueId'
+        data:
+          type: object
+          additionalProperties: true
+          description: Caller-authorised domain data, narrowed by the concrete deployment.
+        source:
+          $ref: '#/components/schemas/SourceReference'
+      examples:
+        - recordId: r_42
+          data:
+            label: Reference record
+    ProcessingError:
+      type: object
+      additionalProperties: false
+      required: [type, title, traceId]
+      description: Transport-neutral failure summary stored in a domain-state representation.
+      properties:
+        type:
+          type: string
+          format: uri
+          description: Stable absolute error type.
+        title:
+          type: string
+          minLength: 1
+          description: Short human-readable failure summary.
+        detail:
+          type: string
+          description: Failure detail safe to disclose to this caller.
+        traceId:
+          type: string
+          pattern: '^(?!0{32}$)[\da-f]{32}$'
+          description: W3C trace identifier associated with the failed application attempt.
+      examples:
+        - type: https://govstack.global/problems/digital-registries/source-precondition-failed
+          title: Source Record changed
+          traceId: 6f1c3f0e2a9b4c8d7e6f5a4b3c2d1e0f
+    ChangeRequest:
+      type: object
+      required:
+        - changeRequestId
+        - proposalVersion
+        - kind
+        - target
+        - input
+        - reviewState
+        - applicationState
+        - submittedAt
+        - updatedAt
+      description: >-
+        Immutable proposal plus independently observable review and application states. pending
+        never has a Record side effect. approved does not imply applied. result is present only
+        for applied; error is required for blocked or failed. Readers accept additive
+        response-envelope fields.
+      properties:
+        changeRequestId:
+          $ref: '#/components/schemas/OpaqueId'
+        proposalVersion:
+          type: integer
+          minimum: 1
+          description: Immutable proposal version to which review If-Match is bound.
+        kind:
+          type: string
+          enum: [create, update, transition]
+          description: >-
+            Proposed semantic change: create adds a Record, update applies a merge patch, and
+            transition applies one published named action.
+          examples: [update]
+        target:
+          description: Target Collection and, for update or transition, stable Record identifier.
+        input:
+          description: Typed input matching the corresponding direct operation contract.
+        baseETag:
+          $ref: '#/components/schemas/StrongETag'
+        inputMediaType:
+          type: string
+          const: application/merge-patch+json
+          description: Registered patch media type required for update proposals.
+        reviewState:
+          type: string
+          enum: [pending, approved, rejected, withdrawn]
+          description: >-
+            Governance state: pending awaits review, approved records approval, rejected records
+            rejection, and withdrawn records authorised withdrawal.
+          examples: [pending]
+        applicationState:
+          type: string
+          enum: [not-started, applying, applied, blocked, failed]
+          description: >-
+            Authoritative application state: not-started has no commit work, applying is
+            non-terminal, applied succeeded, blocked needs a changed precondition or authority,
+            and failed is terminal processing failure.
+          examples: [not-started]
+        result:
+          $ref: '#/components/schemas/WriteResult'
+        error:
+          $ref: '#/components/schemas/ProcessingError'
+        submittedAt:
+          type: string
+          format: date-time
+          pattern: 'Z(?![\s\S])'
+          description: UTC instant at which the immutable proposal resource was created.
+        updatedAt:
+          type: string
+          format: date-time
+          pattern: 'Z(?![\s\S])'
+          description: UTC instant at which review or application state last changed.
+      allOf:
+        - if:
+            description: Select the create proposal branch.
+            properties:
+              kind: {const: create, description: Create proposal discriminator.}
+            required: [kind]
+          then:
+            description: Create uses a Collection target and CreateInput without source preconditions.
+            properties:
+              target: {$ref: '#/components/schemas/CreateTarget'}
+              input: {$ref: '#/components/schemas/CreateInput'}
+            not:
+              description: Creation has neither a source validator nor patch media type.
+              anyOf:
+                - description: baseETag is forbidden for creation.
+                  required: [baseETag]
+                - description: inputMediaType is forbidden for creation.
+                  required: [inputMediaType]
+        - if:
+            description: Select the update proposal branch.
+            properties:
+              kind: {const: update, description: Update proposal discriminator.}
+            required: [kind]
+          then:
+            description: Update requires an existing target, source validator, media type, and UpdateInput.
+            required: [baseETag, inputMediaType]
+            properties:
+              target: {$ref: '#/components/schemas/RecordTarget'}
+              input: {$ref: '#/components/schemas/UpdateInput'}
+        - if:
+            description: Select the named transition proposal branch.
+            properties:
+              kind: {const: transition, description: Transition proposal discriminator.}
+            required: [kind]
+          then:
+            description: Transition requires an existing target, source validator, and TransitionInput.
+            required: [baseETag]
+            properties:
+              target: {$ref: '#/components/schemas/RecordTarget'}
+              input: {$ref: '#/components/schemas/TransitionInput'}
+            not:
+              description: Named transitions do not carry update patch media type.
+              required: [inputMediaType]
+        - if:
+            description: Match review states that cannot begin authoritative application.
+            properties:
+              reviewState:
+                enum: [pending, rejected, withdrawn]
+                description: Review states with no Record side effect.
+            required: [reviewState]
+          then:
+            description: Non-approved proposals remain not-started.
+            properties:
+              applicationState: {const: not-started, description: No application work has started.}
+        - if:
+            description: Match successfully applied proposals.
+            properties:
+              applicationState: {const: applied, description: Authoritative application succeeded.}
+            required: [applicationState]
+          then:
+            description: Applied proposals are approved and carry a result but no error.
+            required: [result]
+            properties:
+              reviewState: {const: approved, description: Application requires prior approval.}
+            not:
+              description: Applied proposals do not carry an application error.
+              required: [error]
+        - if:
+            description: Match blocked or failed application attempts.
+            properties:
+              applicationState:
+                enum: [blocked, failed]
+                description: Application stopped without an authoritative result.
+            required: [applicationState]
+          then:
+            description: Blocked and failed application states require an error and no result.
+            required: [error]
+            properties:
+              reviewState: {const: approved, description: Application requires prior approval.}
+            not:
+              description: Unsuccessful application has no WriteResult.
+              required: [result]
+        - if:
+            description: Match application states without a terminal outcome.
+            properties:
+              applicationState:
+                enum: [not-started, applying]
+                description: No terminal application outcome is available.
+            required: [applicationState]
+          then:
+            description: Non-terminal application has neither result nor stored error.
+            not:
+              description: Terminal outcome members are forbidden until application terminates.
+              anyOf:
+                - description: Result is forbidden before applied.
+                  required: [result]
+                - description: Error is forbidden before blocked or failed.
+                  required: [error]
+    ChangeRequestPage:
+      type: object
+      required: [items, page]
+      description: >-
+        Bounded page of visible change requests. Readers accept additive response-envelope fields.
+      properties:
+        items:
+          type: array
+          maxItems: 100
+          description: Caller-visible change requests in deterministic page order.
+          items:
+            $ref: '#/components/schemas/ChangeRequest'
+        page:
+          $ref: './common/govstack-openapi-common.yaml#/components/schemas/PageInfo'
+    ApprovedChangeRequest:
+      description: Approved review decision with no authoritative application started.
+      allOf:
+        - $ref: '#/components/schemas/ChangeRequest'
+        - type: object
+          description: Constrain the approval response to its exact review-only outcome.
+          required: [reviewState, applicationState]
+          properties:
+            reviewState: {const: approved, description: The exact proposal version was approved.}
+            applicationState: {const: not-started, description: Approval did not start application.}
+    RejectedChangeRequest:
+      description: Rejected review decision with no authoritative application started.
+      allOf:
+        - $ref: '#/components/schemas/ChangeRequest'
+        - type: object
+          description: Constrain the rejection response to its exact review-only outcome.
+          required: [reviewState, applicationState]
+          properties:
+            reviewState: {const: rejected, description: The exact proposal version was rejected.}
+            applicationState: {const: not-started, description: Rejection has no application effect.}
+    WithdrawnChangeRequest:
+      description: Authorised withdrawal with no authoritative application started.
+      allOf:
+        - $ref: '#/components/schemas/ChangeRequest'
+        - type: object
+          description: Constrain the withdrawal response to its exact review-only outcome.
+          required: [reviewState, applicationState]
+          properties:
+            reviewState: {const: withdrawn, description: The exact proposal version was withdrawn.}
+            applicationState: {const: not-started, description: Withdrawal has no application effect.}
+    Operation:
+      type: object
+      required: [operationId, status, createdAt, updatedAt]
+      description: >-
+        Pollable asynchronous write state. pending and running are non-terminal; succeeded and
+        failed are terminal. result appears only on succeeded and error is required on failed.
+        Readers accept additive response-envelope fields.
+      properties:
+        operationId:
+          $ref: '#/components/schemas/OpaqueId'
+        status:
+          type: string
+          enum: [pending, running, succeeded, failed]
+          description: >-
+            Operation lifecycle: pending and running are non-terminal; succeeded and failed are
+            terminal.
+          examples: [running]
+        createdAt:
+          type: string
+          format: date-time
+          pattern: 'Z(?![\s\S])'
+          description: UTC instant at which the Operation resource was created.
+        updatedAt:
+          type: string
+          format: date-time
+          pattern: 'Z(?![\s\S])'
+          description: UTC instant at which Operation state last changed.
+        progress:
+          type: integer
+          minimum: 0
+          maximum: 100
+          description: Optional approximate completion percentage for non-terminal work.
+        result:
+          $ref: '#/components/schemas/WriteResult'
+        error:
+          $ref: '#/components/schemas/ProcessingError'
+      examples:
+        - operationId: op_7
+          status: running
+          createdAt: '2026-11-04T08:00:00Z'
+          updatedAt: '2026-11-04T08:00:05Z'
+          progress: 40
+      allOf:
+        - if:
+            description: Match successful terminal Operations.
+            properties:
+              status: {const: succeeded, description: Work completed successfully.}
+            required: [status]
+          then:
+            description: Successful Operations carry a result and no error.
+            required: [result]
+            not:
+              description: Successful Operations do not carry an error.
+              required: [error]
+        - if:
+            description: Match failed terminal Operations.
+            properties:
+              status: {const: failed, description: Work completed unsuccessfully.}
+            required: [status]
+          then:
+            description: Failed Operations carry an error and no result.
+            required: [error]
+            not:
+              description: Failed Operations do not carry a result.
+              required: [result]
+        - if:
+            description: Match non-terminal Operations.
+            properties:
+              status:
+                enum: [pending, running]
+                description: Work has not reached a terminal state.
+            required: [status]
+          then:
+            description: Non-terminal Operations carry neither result nor error.
+            not:
+              description: Terminal outcome members are forbidden before completion.
+              anyOf:
+                - description: Result is forbidden before success.
+                  required: [result]
+                - description: Error is forbidden before failure.
+                  required: [error]
+    Problem:
+      $ref: './common/govstack-openapi-common.yaml#/components/schemas/Problem'
+    ValidationProblem:
+      $ref: './common/govstack-openapi-common.yaml#/components/schemas/ValidationProblem'
+    BadRequestProblem:
+      description: Malformed non-field input or request-body field validation failure.
+      required: [type, title, status, traceId]
+      oneOf:
+        - allOf:
+            - $ref: '#/components/schemas/ValidationProblem'
+            - type: object
+              description: Bind field validation failure to the 400 invalid-request problem type.
+              required: [type, title, status, traceId]
+              properties:
+                type: {const: https://govstack.global/problems/digital-registries/invalid-request, description: Stable invalid-request problem type.}
+                status: {const: 400, description: HTTP Bad Request status.}
+        - allOf:
+            - $ref: '#/components/schemas/Problem'
+            - type: object
+              description: Bind non-field request failure to the 400 bad-request problem type.
+              required: [type, title, status, traceId]
+              properties:
+                type: {const: https://govstack.global/problems/digital-registries/bad-request, description: Stable bad-request problem type.}
+                status: {const: 400, description: HTTP Bad Request status.}
+              not: {required: [errors], description: Non-field failure omits body-relative errors.}
+    UnauthorizedProblem:
+      description: Authentication failed for the current HTTP request.
+      required: [type, title, status, traceId]
+      allOf:
+        - $ref: '#/components/schemas/Problem'
+        - type: object
+          description: Bind authentication failure to the 401 problem identity.
+          required: [type, title, status, traceId]
+          properties:
+            type: {const: https://govstack.global/problems/digital-registries/unauthorized, description: Stable unauthorized problem type.}
+            status: {const: 401, description: HTTP Unauthorized status.}
+    ForbiddenProblem:
+      description: Current authenticated context lacks the required grant.
+      required: [type, title, status, traceId]
+      allOf:
+        - $ref: '#/components/schemas/Problem'
+        - type: object
+          description: Bind authorisation failure to the 403 problem identity.
+          required: [type, title, status, traceId]
+          properties:
+            type: {const: https://govstack.global/problems/digital-registries/forbidden, description: Stable forbidden problem type.}
+            status: {const: 403, description: HTTP Forbidden status.}
+    NotAvailableProblem:
+      description: Resource is absent, out of scope, or protected from existence disclosure.
+      required: [type, title, status, traceId]
+      allOf:
+        - $ref: '#/components/schemas/Problem'
+        - type: object
+          description: Bind concealed or absent resource outcomes to one 404 identity.
+          required: [type, title, status, traceId]
+          properties:
+            type: {const: https://govstack.global/problems/digital-registries/not-available, description: Stable not-available problem type.}
+            status: {const: 404, description: HTTP Not Found status.}
+    NotAcceptableProblem:
+      description: No response representation satisfies the request Accept header.
+      required: [type, title, status, traceId]
+      allOf:
+        - $ref: '#/components/schemas/Problem'
+        - type: object
+          description: Bind representation negotiation failure to the 406 problem identity.
+          required: [type, title, status, traceId]
+          properties:
+            type: {const: https://govstack.global/problems/digital-registries/not-acceptable, description: Stable not-acceptable problem type.}
+            status: {const: 406, description: HTTP Not Acceptable status.}
+    ConflictProblem:
+      description: State conflict or matching idempotent request still in flight.
+      required: [type, title, status, traceId]
+      oneOf:
+        - allOf:
+            - $ref: '#/components/schemas/Problem'
+            - type: object
+              description: Bind a resource or workflow state conflict to its 409 identity.
+              required: [type, title, status, traceId]
+              properties:
+                type: {const: https://govstack.global/problems/digital-registries/state-conflict, description: Stable state-conflict problem type.}
+                status: {const: 409, description: HTTP Conflict status.}
+        - allOf:
+            - $ref: '#/components/schemas/Problem'
+            - type: object
+              description: Bind a matching in-flight retry to its distinct 409 identity.
+              required: [type, title, status, traceId]
+              properties:
+                type: {const: https://govstack.global/problems/digital-registries/idempotency-in-flight, description: Stable in-flight idempotency problem type.}
+                status: {const: 409, description: HTTP Conflict status.}
+    PreconditionFailedProblem:
+      description: A supplied strong If-Match validator did not match current state.
+      required: [type, title, status, traceId]
+      allOf:
+        - $ref: '#/components/schemas/Problem'
+        - type: object
+          description: Bind a failed If-Match comparison to the 412 problem identity.
+          required: [type, title, status, traceId]
+          properties:
+            type: {const: https://govstack.global/problems/digital-registries/precondition-failed, description: Stable precondition-failed problem type.}
+            status: {const: 412, description: HTTP Precondition Failed status.}
+    UnsupportedMediaTypeProblem:
+      description: Request Content-Type is not supported by the operation.
+      required: [type, title, status, traceId]
+      allOf:
+        - $ref: '#/components/schemas/Problem'
+        - type: object
+          description: Bind request media-type rejection to the 415 problem identity.
+          required: [type, title, status, traceId]
+          properties:
+            type: {const: https://govstack.global/problems/digital-registries/unsupported-media-type, description: Stable unsupported-media-type problem type.}
+            status: {const: 415, description: HTTP Unsupported Media Type status.}
+    UnprocessableContentProblem:
+      description: Semantic body validation failure or idempotency fingerprint mismatch.
+      required: [type, title, status, traceId]
+      oneOf:
+        - allOf:
+            - $ref: '#/components/schemas/ValidationProblem'
+            - type: object
+              description: Bind semantic field validation failure to its 422 identity.
+              required: [type, title, status, traceId]
+              properties:
+                type: {const: https://govstack.global/problems/digital-registries/invalid-content, description: Stable invalid-content problem type.}
+                status: {const: 422, description: HTTP Unprocessable Content status.}
+        - allOf:
+            - $ref: '#/components/schemas/Problem'
+            - type: object
+              description: Bind idempotency fingerprint mismatch to its distinct 422 identity.
+              required: [type, title, status, traceId]
+              properties:
+                type: {const: https://govstack.global/problems/digital-registries/idempotency-fingerprint-mismatch, description: Stable fingerprint-mismatch problem type.}
+                status: {const: 422, description: HTTP Unprocessable Content status.}
+              not: {required: [errors], description: Fingerprint mismatch has no body-relative field errors.}
+    PreconditionRequiredProblem:
+      description: Required If-Match header was absent.
+      required: [type, title, status, traceId]
+      allOf:
+        - $ref: '#/components/schemas/Problem'
+        - type: object
+          description: Bind missing required If-Match to the 428 problem identity.
+          required: [type, title, status, traceId]
+          properties:
+            type: {const: https://govstack.global/problems/digital-registries/precondition-required, description: Stable precondition-required problem type.}
+            status: {const: 428, description: HTTP Precondition Required status.}
+    TooManyRequestsProblem:
+      description: Caller-visible rate limit was exceeded.
+      required: [type, title, status, traceId]
+      allOf:
+        - $ref: '#/components/schemas/Problem'
+        - type: object
+          description: Bind rate-limit rejection to the 429 problem identity.
+          required: [type, title, status, traceId]
+          properties:
+            type: {const: https://govstack.global/problems/digital-registries/too-many-requests, description: Stable too-many-requests problem type.}
+            status: {const: 429, description: HTTP Too Many Requests status.}
+    InternalErrorProblem:
+      description: Unexpected server failure with no internal details.
+      required: [type, title, status, traceId]
+      allOf:
+        - $ref: '#/components/schemas/Problem'
+        - type: object
+          description: Bind unexpected server failure to the 500 problem identity.
+          required: [type, title, status, traceId]
+          properties:
+            type: {const: https://govstack.global/problems/digital-registries/internal-error, description: Stable internal-error problem type.}
+            status: {const: 500, description: HTTP Internal Server Error status.}
+    ServiceUnavailableProblem:
+      description: Service temporarily cannot accept work.
+      required: [type, title, status, traceId]
+      allOf:
+        - $ref: '#/components/schemas/Problem'
+        - type: object
+          description: Bind temporary service unavailability to the 503 problem identity.
+          required: [type, title, status, traceId]
+          properties:
+            type: {const: https://govstack.global/problems/digital-registries/service-unavailable, description: Stable service-unavailable problem type.}
+            status: {const: 503, description: HTTP Service Unavailable status.}
+  responses:
+    RecordCreated:
+      description: Record created and authoritatively committed.
+      headers:
+        Location: {$ref: '#/components/headers/Location'}
+        ETag: {$ref: '#/components/headers/StrongETag'}
+        Cache-Control: {$ref: '#/components/headers/CacheControl'}
+      content:
+        application/json:
+          schema: {$ref: '#/components/schemas/WriteResult'}
+          example: {collectionId: records, recordId: r_42, etag: '"record-7fa9"'}
+    RecordUpdated:
+      description: Record updated and authoritatively committed; response is bodyless.
+      headers:
+        ETag: {$ref: '#/components/headers/StrongETag'}
+        Cache-Control: {$ref: '#/components/headers/CacheControl'}
+    TransitionApplied:
+      description: Transition applied and authoritatively committed.
+      headers:
+        ETag: {$ref: '#/components/headers/StrongETag'}
+        Cache-Control: {$ref: '#/components/headers/CacheControl'}
+      content:
+        application/json:
+          schema: {$ref: '#/components/schemas/WriteResult'}
+          example: {collectionId: records, recordId: r_42, etag: '"record-7faa"'}
+    WriteAccepted:
+      description: Actual authoritative work continues asynchronously; success is not implied.
+      headers:
+        Location: {$ref: '#/components/headers/Location'}
+        Cache-Control: {$ref: '#/components/headers/CacheControl'}
+      content:
+        application/json:
+          schema: {$ref: '#/components/schemas/Operation'}
+          example:
+            operationId: op_7
+            status: running
+            createdAt: '2026-11-04T08:00:00Z'
+            updatedAt: '2026-11-04T08:00:05Z'
+            progress: 40
+    WritableRecord:
+      description: Caller-authorised writable Record representation with a strong validator.
+      headers:
+        ETag: {$ref: '#/components/headers/StrongETag'}
+        Cache-Control: {$ref: '#/components/headers/CacheControl'}
+      content:
+        application/json:
+          schema: {$ref: '#/components/schemas/WritableRecord'}
+          example: {recordId: r_42, data: {label: Reference record}}
+    ChangeRequestCreated:
+      description: Immutable pending change request created; no Record side effect has occurred.
+      headers:
+        Location: {$ref: '#/components/headers/Location'}
+        ETag: {$ref: '#/components/headers/StrongETag'}
+        Cache-Control: {$ref: '#/components/headers/CacheControl'}
+      content:
+        application/json:
+          schema: {$ref: '#/components/schemas/ChangeRequest'}
+          example: &pendingChangeRequest
+            changeRequestId: cr_7
+            proposalVersion: 1
+            kind: update
+            target: {collectionId: records, recordId: r_42}
+            baseETag: '"record-7fa9"'
+            inputMediaType: application/merge-patch+json
+            input: {data: {label: Corrected label}}
+            reviewState: pending
+            applicationState: not-started
+            submittedAt: '2026-11-04T08:00:00Z'
+            updatedAt: '2026-11-04T08:00:00Z'
+    ChangeRequest:
+      description: One caller-visible change request.
+      headers:
+        ETag: {$ref: '#/components/headers/StrongETag'}
+        Cache-Control: {$ref: '#/components/headers/CacheControl'}
+      content:
+        application/json:
+          schema: {$ref: '#/components/schemas/ChangeRequest'}
+          example: *pendingChangeRequest
+    ChangeRequestPage:
+      description: Bounded page of caller-visible change requests.
+      headers:
+        Cache-Control: {$ref: '#/components/headers/CacheControl'}
+      content:
+        application/json:
+          schema: {$ref: '#/components/schemas/ChangeRequestPage'}
+          example:
+            items: [*pendingChangeRequest]
+            page: {nextCursor: null}
+    ChangeRequestApproved:
+      description: Exact proposal version approved; application has not started.
+      headers:
+        ETag: {$ref: '#/components/headers/StrongETag'}
+        Cache-Control: {$ref: '#/components/headers/CacheControl'}
+      content:
+        application/json:
+          schema: {$ref: '#/components/schemas/ApprovedChangeRequest'}
+          example:
+            <<: *pendingChangeRequest
+            reviewState: approved
+            updatedAt: '2026-11-04T08:03:00Z'
+    ChangeRequestRejected:
+      description: Exact proposal version rejected; application has not started.
+      headers:
+        ETag: {$ref: '#/components/headers/StrongETag'}
+        Cache-Control: {$ref: '#/components/headers/CacheControl'}
+      content:
+        application/json:
+          schema: {$ref: '#/components/schemas/RejectedChangeRequest'}
+          example:
+            <<: *pendingChangeRequest
+            reviewState: rejected
+            updatedAt: '2026-11-04T08:03:00Z'
+    ChangeRequestWithdrawn:
+      description: Exact proposal version withdrawn; application has not started.
+      headers:
+        ETag: {$ref: '#/components/headers/StrongETag'}
+        Cache-Control: {$ref: '#/components/headers/CacheControl'}
+      content:
+        application/json:
+          schema: {$ref: '#/components/schemas/WithdrawnChangeRequest'}
+          example:
+            <<: *pendingChangeRequest
+            reviewState: withdrawn
+            updatedAt: '2026-11-04T08:03:00Z'
+    Operation:
+      description: Current asynchronous write state.
+      headers:
+        Cache-Control: {$ref: '#/components/headers/CacheControl'}
+        Retry-After: {$ref: '#/components/headers/RetryAfter'}
+      content:
+        application/json:
+          schema: {$ref: '#/components/schemas/Operation'}
+          example:
+            operationId: op_7
+            status: running
+            createdAt: '2026-11-04T08:00:00Z'
+            updatedAt: '2026-11-04T08:00:05Z'
+            progress: 40
+    NotModified:
+      description: Conditional GET validator matched; response is bodyless.
+      headers:
+        ETag: {$ref: '#/components/headers/StrongETag'}
+        Cache-Control: {$ref: '#/components/headers/CacheControl'}
+    BadRequest:
+      description: Malformed input, including missing or malformed required Idempotency-Key.
+      headers:
+        Cache-Control: {$ref: '#/components/headers/CacheControl'}
+      content:
+        application/problem+json:
+          schema: {$ref: '#/components/schemas/BadRequestProblem'}
+          example:
+            type: https://govstack.global/problems/digital-registries/bad-request
+            title: Bad request
+            status: 400
+            traceId: 6f1c3f0e2a9b4c8d7e6f5a4b3c2d1e0f
+    Unauthorized:
+      description: Missing or invalid access token.
+      headers:
+        WWW-Authenticate: {$ref: '#/components/headers/WwwAuthenticate'}
+        Cache-Control: {$ref: '#/components/headers/CacheControl'}
+      content:
+        application/problem+json:
+          schema: {$ref: '#/components/schemas/UnauthorizedProblem'}
+          example:
+            type: https://govstack.global/problems/digital-registries/unauthorized
+            title: Authentication required
+            status: 401
+            traceId: 6f1c3f0e2a9b4c8d7e6f5a4b3c2d1e0f
+    Forbidden:
+      description: Authenticated caller is not authorised for this operation.
+      headers:
+        Cache-Control: {$ref: '#/components/headers/CacheControl'}
+      content:
+        application/problem+json:
+          schema: {$ref: '#/components/schemas/ForbiddenProblem'}
+          example:
+            type: https://govstack.global/problems/digital-registries/forbidden
+            title: Not authorised
+            status: 403
+            traceId: 6f1c3f0e2a9b4c8d7e6f5a4b3c2d1e0f
+    RecordNotAvailable:
+      description: Record is absent, outside the collection, or its existence is protected.
+      headers:
+        Cache-Control: {$ref: '#/components/headers/CacheControl'}
+      content:
+        application/problem+json:
+          schema: {$ref: '#/components/schemas/NotAvailableProblem'}
+          example: &notAvailableProblem
+            type: https://govstack.global/problems/digital-registries/not-available
+            title: Resource not available
+            status: 404
+            traceId: 6f1c3f0e2a9b4c8d7e6f5a4b3c2d1e0f
+    CollectionNotAvailable:
+      description: Collection is absent or its existence is protected.
+      headers:
+        Cache-Control: {$ref: '#/components/headers/CacheControl'}
+      content:
+        application/problem+json:
+          schema: {$ref: '#/components/schemas/NotAvailableProblem'}
+          example: *notAvailableProblem
+    ChangeRequestNotAvailable:
+      description: Change request is absent or its existence is protected.
+      headers:
+        Cache-Control: {$ref: '#/components/headers/CacheControl'}
+      content:
+        application/problem+json:
+          schema: {$ref: '#/components/schemas/NotAvailableProblem'}
+          example: *notAvailableProblem
+    TargetNotAvailable:
+      description: >-
+        Proposal target is absent, outside the allowed Registry context, or protected from
+        existence disclosure.
+      headers:
+        Cache-Control: {$ref: '#/components/headers/CacheControl'}
+      content:
+        application/problem+json:
+          schema: {$ref: '#/components/schemas/NotAvailableProblem'}
+          example: *notAvailableProblem
+    OperationNotAvailable:
+      description: Operation is absent or its existence is protected.
+      headers:
+        Cache-Control: {$ref: '#/components/headers/CacheControl'}
+      content:
+        application/problem+json:
+          schema: {$ref: '#/components/schemas/NotAvailableProblem'}
+          example: *notAvailableProblem
+    NotAcceptable:
+      description: No response representation matches Accept.
+      headers:
+        Cache-Control: {$ref: '#/components/headers/CacheControl'}
+      content:
+        application/problem+json:
+          schema: {$ref: '#/components/schemas/NotAcceptableProblem'}
+          example:
+            type: https://govstack.global/problems/digital-registries/not-acceptable
+            title: Representation not available
+            status: 406
+            traceId: 6f1c3f0e2a9b4c8d7e6f5a4b3c2d1e0f
+    Conflict:
+      description: >-
+        Current state conflicts with the operation, or a matching idempotent retry remains in
+        flight. Failed If-Match uses 412 instead.
+      headers:
+        Cache-Control: {$ref: '#/components/headers/CacheControl'}
+      content:
+        application/problem+json:
+          schema: {$ref: '#/components/schemas/ConflictProblem'}
+          example:
+            type: https://govstack.global/problems/digital-registries/state-conflict
+            title: Current state conflicts with the request
+            status: 409
+            traceId: 6f1c3f0e2a9b4c8d7e6f5a4b3c2d1e0f
+    PreconditionFailed:
+      description: If-Match did not match the current strong validator.
+      headers:
+        Cache-Control: {$ref: '#/components/headers/CacheControl'}
+      content:
+        application/problem+json:
+          schema: {$ref: '#/components/schemas/PreconditionFailedProblem'}
+          example:
+            type: https://govstack.global/problems/digital-registries/precondition-failed
+            title: Source state changed
+            status: 412
+            traceId: 6f1c3f0e2a9b4c8d7e6f5a4b3c2d1e0f
+    UnsupportedMediaType:
+      description: Request Content-Type is not supported by this operation.
+      headers:
+        Cache-Control: {$ref: '#/components/headers/CacheControl'}
+      content:
+        application/problem+json:
+          schema: {$ref: '#/components/schemas/UnsupportedMediaTypeProblem'}
+          example:
+            type: https://govstack.global/problems/digital-registries/unsupported-media-type
+            title: Unsupported media type
+            status: 415
+            traceId: 6f1c3f0e2a9b4c8d7e6f5a4b3c2d1e0f
+    UnprocessableContent:
+      description: >-
+        Well-formed input violates semantics, or Idempotency-Key is reused in the same scope with
+        a different request fingerprint.
+      headers:
+        Cache-Control: {$ref: '#/components/headers/CacheControl'}
+      content:
+        application/problem+json:
+          schema: {$ref: '#/components/schemas/UnprocessableContentProblem'}
+          example:
+            type: https://govstack.global/problems/digital-registries/idempotency-fingerprint-mismatch
+            title: Idempotency key fingerprint mismatch
+            status: 422
+            traceId: 6f1c3f0e2a9b4c8d7e6f5a4b3c2d1e0f
+    PreconditionRequired:
+      description: Required If-Match was absent.
+      headers:
+        Cache-Control: {$ref: '#/components/headers/CacheControl'}
+      content:
+        application/problem+json:
+          schema: {$ref: '#/components/schemas/PreconditionRequiredProblem'}
+          example:
+            type: https://govstack.global/problems/digital-registries/precondition-required
+            title: If-Match is required
+            status: 428
+            traceId: 6f1c3f0e2a9b4c8d7e6f5a4b3c2d1e0f
+    TooManyRequests:
+      description: Caller-visible rate limit exceeded.
+      headers:
+        Retry-After: {$ref: '#/components/headers/RetryAfter'}
+        Cache-Control: {$ref: '#/components/headers/CacheControl'}
+      content:
+        application/problem+json:
+          schema: {$ref: '#/components/schemas/TooManyRequestsProblem'}
+          example:
+            type: https://govstack.global/problems/digital-registries/too-many-requests
+            title: Rate limit exceeded
+            status: 429
+            traceId: 6f1c3f0e2a9b4c8d7e6f5a4b3c2d1e0f
+    InternalError:
+      description: Unexpected server failure with no internal detail.
+      headers:
+        Cache-Control: {$ref: '#/components/headers/CacheControl'}
+      content:
+        application/problem+json:
+          schema: {$ref: '#/components/schemas/InternalErrorProblem'}
+          example:
+            type: https://govstack.global/problems/digital-registries/internal-error
+            title: Internal server error
+            status: 500
+            traceId: 6f1c3f0e2a9b4c8d7e6f5a4b3c2d1e0f
+    ServiceUnavailable:
+      description: Service temporarily unavailable.
+      headers:
+        Retry-After: {$ref: '#/components/headers/RetryAfter'}
+        Cache-Control: {$ref: '#/components/headers/CacheControl'}
+      content:
+        application/problem+json:
+          schema: {$ref: '#/components/schemas/ServiceUnavailableProblem'}
+          example:
+            type: https://govstack.global/problems/digital-registries/service-unavailable
+            title: Service unavailable
+            status: 503
+            traceId: 6f1c3f0e2a9b4c8d7e6f5a4b3c2d1e0f

@@ -51,7 +51,7 @@ The interoperability contract is independent of database technology, internal mo
 | Discover Registry Services | Registry Service Discovery | Core | An API consumer identifies a Registry, its responsible authority and authoritative scope, and locates the Registry services and machine-readable contracts available to that consumer. | [`requirements/registry-discovery.md`](../requirements/registry-discovery.md) |
 | Provide Registry Services | Authoritative Registry Services | Core | An API consumer uses the Registry service operations declared in the Registry's published contract. | [`requirements/registry-services.md`](../requirements/registry-services.md) |
 
-Both functionalities are core, and this specification defines no extensions. Discover Registry Services prevents a metadata-free or contract-free service claim. Provide Registry Services contains the required `registry-service` variation point: a solution selects at least one operation. The six currently defined options are independently selectable and discovery metadata alone cannot satisfy the intended model. This is the Registry-wide service choice; future versions can add options from other API families when their requirements, contracts, and tests are approved. Consultation is not a permanent universal requirement. Publishing another option follows the framework's major-version rule.
+Both functionalities are core, and this specification defines no extensions. Discover Registry Services prevents a metadata-free or contract-free service claim. Provide Registry Services contains the required `registry-service` variation point: a solution selects at least one operation. The six Consultation and four Write options currently defined are independently selectable; discovery metadata alone cannot satisfy the intended model. This is the Registry-wide service choice; future versions can add options from other API families when their requirements, contracts, and tests are approved. Consultation is not a permanent universal requirement. Publishing another option follows the framework's major-version rule.
 
 The wire contract retains `capability` as its established field name. In that binding vocabulary, the values map to framework option keys as follows:
 
@@ -63,8 +63,12 @@ The wire contract retains `capability` as its established field name. In that bi
 | `search` | `consultation-search` | `searchRecords` |
 | `revision-list` | `consultation-revision-list` | `listRecordRevisions` |
 | `revision-retrieve` | `consultation-revision-retrieve` | `retrieveRecordRevision` |
+| Write `create` | `write-create` | `createRecord` |
+| Write `update` | `write-update` | `updateRecord` |
+| Write `transition` | `write-transition` | `applyRecordTransition` |
+| Write `change-requests` | `write-change-requests` | `submitChangeRequest` |
 
-The binding field does not declare a framework capability. The framework capabilities are the informative outcomes Registry Service Discovery and Authoritative Registry Services.
+The Write values belong to the separate Write operation extension; the existing Consultation extension remains closed to its six read capabilities. The binding field does not declare a framework capability. The framework capabilities are the informative outcomes Registry Service Discovery and Authoritative Registry Services.
 
 ### Actors
 
@@ -83,6 +87,7 @@ The Registry Authority and Registry Operator can be the same organisation or dif
 | Registry service discovery | API Consumer | Inbound request, outbound response | Discover Registry Services | Service API | [`resources/api.yml`](../resources/api.yml), realised by [`requirements/registry-discovery.md`](../requirements/registry-discovery.md) |
 | Registry metadata and operational contracts | API Consumer | Outbound published documents | Discover Registry Services | File | [Registry Core model](../resources/registry-core-model.md#registry-metadata) and the schemas and contracts linked from `resources/api.yml` |
 | Registry consultation | API Consumer | Inbound request, outbound response | Provide Registry Services | Service API | [`resources/api.yml`](../resources/api.yml), realised by [`requirements/registry-services.md`](../requirements/registry-services.md) |
+| Registry writes and approval requests | API Consumer | Inbound request, outbound response | Provide Registry Services | Service API | [`resources/write-api.yml`](../resources/write-api.yml), realised by the selected Write options in [`requirements/registry-services.md`](../requirements/registry-services.md) |
 | Record schemas and field meanings | API Consumer | Outbound published documents | Provide Registry Services | File | The deployment's linked operational contract and schemas, constrained by the [Registry Core model](../resources/registry-core-model.md#domain-semantics-and-extensions) |
 
 Logging, monitoring, deployment, and other interfaces inherited from the cross-functional requirements are not repeated here.

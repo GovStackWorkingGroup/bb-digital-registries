@@ -330,17 +330,17 @@ def operation_ids(root: Path, errors: list[str]) -> set[str]:
                 scalars.append(value)
 
         collect(index)
-        canonical = (root / "resources/api.yml").resolve()
+        canonical = canonical_path.resolve()
         references_canonical = False
         for value in scalars:
             if urlsplit(value).scheme:
                 continue
-            candidate = (index_path.parent / value.split("#", 1)[0]).resolve()
+            candidate = (root / value.split("#", 1)[0]).resolve()
             if candidate == canonical:
                 references_canonical = True
                 break
         if not references_canonical:
-            errors.append("api/index.yaml: inventory must reference ../resources/api.yml")
+            errors.append("api/index.yaml: inventory must reference api/openapi.yaml")
     return set(operations)
 
 
@@ -429,7 +429,6 @@ def validate_functionalities(
     metadata: dict[str, Any],
     capabilities: dict[str, dict[str, Any]],
     extensions: dict[str, dict[str, Any]],
-    operations: set[str],
     errors: list[str],
 ) -> tuple[dict[str, list[dict[str, Any]]], set[str]]:
     requirement_dir = root / "requirements"
@@ -448,6 +447,64 @@ def validate_functionalities(
     option_parents: Counter[str] = Counter()
     numbered_ids: list[tuple[str, str]] = []
     functionality_conditions: list[tuple[str, str, list[Any]]] = []
+    contract_operations: dict[Path, set[str] | None] = {}
+
+    def operations_for_contract(
+        reference: Any, location: str
+    ) -> tuple[set[str] | None, str]:
+        if not isinstance(reference, str) or not reference.strip():
+            errors.append(
+                f"{location}: SERVICE_API requirement needs an explicit repository-local contract"
+            )
+            return None, "declared contract"
+        parsed = urlsplit(reference)
+        relative, anchor = split_local_reference(reference)
+        if parsed.scheme or parsed.netloc or not relative or anchor:
+            errors.append(
+                f"{location}: SERVICE_API contract must be an explicit repository-local OpenAPI path"
+            )
+            return None, reference
+        target = (root / relative).resolve()
+        try:
+            target.relative_to(root.resolve())
+        except ValueError:
+            errors.append(
+                f"{location}: SERVICE_API contract must be an explicit repository-local OpenAPI path"
+            )
+            return None, reference
+        if target in contract_operations:
+            return contract_operations[target], reference
+        document = load_yaml(target, root, errors)
+        if not isinstance(document, dict):
+            if document is not None:
+                errors.append(
+                    f"{location}: declared contract must be an OpenAPI mapping: {reference}"
+                )
+            contract_operations[target] = None
+            return None, reference
+        paths = document.get("paths")
+        if not isinstance(paths, dict):
+            errors.append(
+                f"{location}: declared contract must contain an OpenAPI paths mapping: {reference}"
+            )
+            contract_operations[target] = None
+            return None, reference
+        found = [
+            operation["operationId"]
+            for path_item in paths.values()
+            if isinstance(path_item, dict)
+            for method, operation in path_item.items()
+            if method.lower()
+            in {"get", "put", "post", "delete", "options", "head", "patch", "trace"}
+            and isinstance(operation, dict)
+            and isinstance(operation.get("operationId"), str)
+        ]
+        for duplicate, count in sorted(Counter(found).items()):
+            if count > 1:
+                errors.append(f"{reference}: duplicate operationId {duplicate}")
+        contract_operations[target] = set(found)
+        return contract_operations[target], reference
+
 
     for path in files:
         data, _body = load_functionality(path, root, errors)
@@ -583,11 +640,25 @@ def validate_functionalities(
             if interaction == "SERVICE_API":
                 operation = item.get("api_operation_id")
                 if not isinstance(operation, str) or not operation:
-                    errors.append(f"{location}: SERVICE_API requirement needs api_operation_id")
-                elif operation not in operations:
-                    errors.append(f"{location}: api_operation_id {operation} is missing from resources/api.yml")
+                    errors.append(
+                        f"{location}: SERVICE_API requirement needs api_operation_id"
+                    )
+                declared_operations, contract = operations_for_contract(
+                    item.get("contract"), location
+                )
+                if (
+                    isinstance(operation, str)
+                    and operation
+                    and declared_operations is not None
+                    and operation not in declared_operations
+                ):
+                    errors.append(
+                        f"{location}: api_operation_id {operation} is missing from {contract}"
+                    )
             elif "api_operation_id" in item:
-                errors.append(f"{location}: api_operation_id is only valid for SERVICE_API requirements")
+                errors.append(
+                    f"{location}: api_operation_id is only valid for SERVICE_API requirements"
+                )
             for field in ("contract", "test"):
                 if field in item and not is_variation:
                     validate_local_reference(root, item[field], f"{location}:{field}", errors)
@@ -781,8 +852,8 @@ def validate_repository(root: Path) -> list[str]:
         return [f"{root}: repository root is not a directory"]
     metadata, capabilities, extensions = validate_root_documents(root, errors)
     validate_extension_dependencies(extensions, errors)
-    operations = operation_ids(root, errors)
-    requirements, _keys = validate_functionalities(root, metadata, capabilities, extensions, operations, errors)
+    operation_ids(root, errors)
+    requirements, _keys = validate_functionalities(root, metadata, capabilities, extensions, errors)
     validate_migration(root, requirements, errors)
     validate_markdown_links(root, errors)
     validate_svgs(root, errors)

@@ -153,3 +153,9 @@ This workflow uses the [household OpenAPI](../api/examples/household-registry.op
 A predefined household view may instead include permitted individual summaries, with declared fields, bounds, and source currency.
 
 The [birth-registration OpenAPI](../api/examples/birth-registration.openapi.yaml) illustrates recorded parent details. `nameAtRegistration` belongs to the birth-registration Record, with a reference to the individual, which may be absent. Changes to the individual's current Record leave this recorded value unchanged; accepted corrections to the birth-registration source may update it.
+
+## Direct and approval-based Write
+
+The [Write binding](write-binding.md) describes direct mutations and separately selected change requests. An authorised direct operation commits its declared change and returns a committed result, or acknowledges actual asynchronous processing through an Operation resource. A submitted change request instead remains non-authoritative until the required review and application succeed. Reviewers act on the exact proposal version; commitment rechecks applicable source preconditions and permissions.
+
+The binding's [non-normative domain examples](write-binding.md#non-normative-domain-examples) and the [example contracts](../api/examples/README.md) show birth registration, household creation referencing existing individuals, compound household and individual creation, and members added later. Existing references, temporary request-local references, review outcomes, and result mappings have explicit meanings. The [Write test matrix](write-testing.md) separates artifact checks from required implementation evidence.

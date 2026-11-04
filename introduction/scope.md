@@ -33,8 +33,14 @@ Provide Registry Services includes a required Registry-wide variation point. Its
 - `consultation-lookup`: resolve one Record through a declared exact selector.
 - `consultation-list`: list a bounded declared Record collection.
 - `consultation-search`: search through declared typed criteria and return bounded results.
+- `consultation-revision-list`: list retained source revisions of one Record.
+- `consultation-revision-retrieve`: retrieve one retained source revision.
+- `write-create`: create a Record directly under the declared authority and input schema.
+- `write-update`: update a Record directly using the declared patch and concurrency contract.
+- `write-transition`: apply a published named transition directly.
+- `write-change-requests`: submit and manage a proposed change through the declared review and application process.
 
-The other seven API families remain informative in this draft. A future version can define service options from those families when their requirements, contracts, and tests are approved; Consultation is not a permanent prerequisite for the Building Block. Only published options count toward the minimum, and adding a published option follows the framework's major-version rule. All options here remain DRAFT, so no current conformance claim is available.
+The other six API families remain informative in this draft. A future version can define service options from those families when their requirements, contracts, and tests are approved; Consultation is not a permanent prerequisite for the Building Block. Only published options count toward the minimum, and adding a published option follows the framework's major-version rule. All options here remain DRAFT, so no current conformance claim is available.
 
 The specification also covers:
 
@@ -63,10 +69,14 @@ The specification separates operations, common Registry and Record context, doma
 | Geospatial processing and visualisation | A GIS component or domain implementation guide |
 | Jurisdiction-specific legal compliance and security control frameworks | The adopting government |
 | Behaviour of API Consumers, Registry Authorities, and Registry Operators outside the defined interfaces | Their owning systems, institutional frameworks, and operating models |
-| Provisioning, Evidence, Write, Notification, Aggregate Data, Access Transparency, and Identity Federation conformance | Future requirements and contracts; current pages under [`resources/roadmap/`](../resources/roadmap/) are informative only |
+| Provisioning, Evidence, Notification, Aggregate Data, Access Transparency, and Identity Federation conformance | Future requirements and contracts; current pages under [`resources/roadmap/`](../resources/roadmap/) are informative only |
 
 Reference architectures and implementation guides can explain how these concerns are addressed in a domain or jurisdiction without making them part of base Digital Registries conformance.
 
 ## Ownership
 
 The GovStack Registries and Registration Working Group owns this draft. Change requests follow the contribution process of the Digital Registries specification repository.
+
+## Write scope
+
+The [Write binding](../resources/write-binding.md) specifies independently selected direct creation, direct update, direct named transitions, and approval-based change requests. Registry-managed review concerns the proposed authoritative change; it does not require a general-purpose intake or workflow engine. Institutions define permissions, review policy, accepted transitions, and domain models. Domain data, legal decisions, and household or civil-registration rules are not standardised here. The [Write examples](../api/examples/README.md) remain non-normative and do not select a required domain schema for shared Write.

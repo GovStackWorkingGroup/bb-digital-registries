@@ -18,6 +18,8 @@ The [adopter kit](adopter-kit.md) lists the artifacts an implementation publishe
 
 [Consultation](consultation-binding.md) defines independently selectable Retrieve, Lookup, List, Search, Revision List, and Revision Retrieve operation options, their [shared Record representation](consultation-binding.md#retrieve-representation), their [pagination contract](consultation-binding.md#pagination), and the [HTTP binding](consultation-binding.md#http-binding) realised by the [canonical OpenAPI](api.yml). Operations can additionally declare conditional reads, field selection, complete traversal, snapshot traversal, recorded-time, effective-time, or purpose binding. The selectable caller capability document describes caller-available operations without granting record-level authority. The [read API design decisions](read-api-design-decisions.md) record the binding choices and the shared guide refinements.
 
+The [generated Consultation API reference](api-reference.md) presents the canonical DRAFT read operations and links to separate illustrative birth-registration, business, and household bindings.
+
 ## Protocol options for roadmap families
 
 The following standards provide implementation options. The table does not establish a required specification, version, or profile.
@@ -29,8 +31,13 @@ The following standards provide implementation options. The table does not estab
 | GIS Query | OGC API Features |
 | Wallet-mediated Evidence | OpenID for Verifiable Credential Issuance and Presentation; W3C Verifiable Credentials |
 | Direct Evidence | OpenAPI with a signed credential or attestation format |
-| Write | OpenAPI |
 | Notification | OpenAPI webhooks for HTTP push; AsyncAPI for event-driven bindings |
 | Aggregate Data | OpenAPI; SDMX for statistical exchange |
 | Access Transparency | OpenAPI |
 | Identity Federation | No protocol option selected; profile ownership and binding remain subject to cross-BB agreement with the Identity team |
+
+## Write
+
+The [Write binding](write-binding.md) and [canonical Write OpenAPI](write-api.yml) define separately selected direct creation, update, named transition, and approval-based change-request operations. Each operation publishes its input schema and grants. Change-request submission creates a request resource; it does not commit the proposed Record change. Approval and application outcomes remain distinct. Current source preconditions and authorisation are checked when a change commits.
+
+The [Write API reference](write-api-reference.md) links the transport contract. The [non-normative Write examples](../api/examples/README.md) illustrate direct and governed birth registration, household creation with existing or newly created individuals, and later membership additions. The adopting institution selects the domain model and policy. The Write operation extension is distinct from the closed Consultation extension.

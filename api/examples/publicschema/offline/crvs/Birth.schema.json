@@ -1,0 +1,199 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Birth",
+  "description": "A live birth, meaning the complete expulsion or extraction of a product of conception from its mother, irrespective of duration of pregnancy, which after such separation breathes or shows any other evidence of life. Captures the child, the parents, and attributes used by civil registration and vital statistics (sex at birth, birth order, attendant, weight, place type).\n",
+  "type": "object",
+  "properties": {
+    "identifiers": {
+      "type": "array",
+      "items": {
+        "oneOf": [
+          {
+            "$ref": "../Identifier.schema.json"
+          },
+          {
+            "type": "string",
+            "description": "URI or identifier reference"
+          }
+        ],
+        "description": "Identifiers carried by this entity, such as national ID numbers, program IDs, or identifiers asserted by an identity document."
+      }
+    },
+    "event_date": {
+      "type": "string",
+      "format": "date",
+      "description": "The date on which the vital event (birth, death, marriage, etc.) occurred. Distinct from the registration date, which is when the event was recorded by a registration authority."
+    },
+    "event_date_estimated": {
+      "type": "boolean",
+      "description": "Whether the event date is an estimate rather than a known exact date. Common for late-registered births or deaths where the precise date is not documented."
+    },
+    "event_location": {
+      "oneOf": [
+        {
+          "$ref": "../Location.schema.json"
+        },
+        {
+          "type": "string",
+          "description": "URI or identifier reference"
+        }
+      ],
+      "description": "The specific place where the vital event occurred (for example, the hospital of birth or the place of death). Distinct from the registration location, which is where the event was recorded."
+    },
+    "registration_date": {
+      "type": "string",
+      "format": "date",
+      "description": "The date on which the vital event was officially registered with the civil registration authority. May be later than the event date, especially for late registrations."
+    },
+    "registration_location": {
+      "oneOf": [
+        {
+          "$ref": "../Location.schema.json"
+        },
+        {
+          "type": "string",
+          "description": "URI or identifier reference"
+        }
+      ],
+      "description": "The civil registration office where the vital event was registered. Often a municipal or district-level registry distinct from the place of occurrence."
+    },
+    "registration_type": {
+      "type": "string",
+      "enum": [
+        "current",
+        "late",
+        "court_ordered",
+        "reconstruction"
+      ],
+      "$comment": "https://publicschema.org/vocab/crvs/registration-type",
+      "description": "The regime under which the registration was processed: current (within the legal window), late, court-ordered, or reconstruction of a lost record. Affects legal weight and downstream uses."
+    },
+    "registrar": {
+      "oneOf": [
+        {
+          "$ref": "./Person.schema.json"
+        },
+        {
+          "type": "string",
+          "description": "URI or identifier reference"
+        }
+      ],
+      "description": "The civil registration officer who recorded the event. In many jurisdictions this is the officer whose signature appears on the acte."
+    },
+    "informant": {
+      "oneOf": [
+        {
+          "$ref": "./Person.schema.json"
+        },
+        {
+          "type": "string",
+          "description": "URI or identifier reference"
+        }
+      ],
+      "description": "The person who declares the vital event to the civil registration authority. Typically a parent for births, a relative or medical professional for deaths, or the parties themselves for marriages."
+    },
+    "registration_status": {
+      "type": "string",
+      "enum": [
+        "declared",
+        "pending_validation",
+        "registered",
+        "rejected",
+        "cancelled",
+        "corrected",
+        "archived"
+      ],
+      "$comment": "https://publicschema.org/vocab/crvs/registration-status",
+      "description": "The lifecycle state of the registration process for this vital event: whether it is declared, pending validation, registered, rejected, cancelled, or has been corrected or archived."
+    },
+    "child": {
+      "oneOf": [
+        {
+          "$ref": "./Person.schema.json"
+        },
+        {
+          "type": "string",
+          "description": "URI or identifier reference"
+        }
+      ],
+      "description": "The child whose birth, adoption, or legitimation is recorded in this event."
+    },
+    "parents": {
+      "type": "array",
+      "items": {
+        "oneOf": [
+          {
+            "$ref": "./Parent.schema.json"
+          },
+          {
+            "type": "string",
+            "description": "URI or identifier reference"
+          }
+        ],
+        "description": "The parents of the child, each captured as a Parent link entity that combines a Person with a parental role-nature (biological, gestational, legal, or adoptive)."
+      }
+    },
+    "sex_at_birth": {
+      "type": "string",
+      "enum": [
+        "not_known",
+        "male",
+        "female",
+        "not_applicable"
+      ],
+      "$comment": "https://publicschema.org/vocab/sex",
+      "description": "The sex of the child as observed and recorded at the time of birth. Distinct from any later legal or administrative sex marker."
+    },
+    "nationality_at_birth": {
+      "type": "string",
+      "$comment": "https://publicschema.org/vocab/country",
+      "description": "The nationality acquired by the child at the time of birth, typically derived from parentage (jus sanguinis) or place of birth (jus soli) according to the applicable national law."
+    },
+    "place_type": {
+      "type": "string",
+      "enum": [
+        "health_facility",
+        "home",
+        "en_route",
+        "other",
+        "unknown"
+      ],
+      "$comment": "https://publicschema.org/vocab/crvs/place-type",
+      "description": "The category of place where the vital event occurred (health facility, home, en route, etc.). Complements the specific Location by describing what kind of setting it was."
+    },
+    "birth_type": {
+      "type": "string",
+      "enum": [
+        "single",
+        "twin",
+        "triplet",
+        "quadruplet",
+        "quintuplet",
+        "higher_order"
+      ],
+      "$comment": "https://publicschema.org/vocab/crvs/birth-type",
+      "description": "Whether the birth was single, twin, triplet, or higher-order multiple. Captured at the level of the delivery, not per infant."
+    },
+    "birth_order": {
+      "type": "integer",
+      "description": "For multiple births, the sequence number of this infant among the siblings born in the same delivery (1 for first-born, 2 for second-born, etc.)."
+    },
+    "weight_at_birth": {
+      "type": "number",
+      "description": "The weight of the child at birth, recorded in grams. A core UN Principles and Recommendations vital statistics variable used to identify low birth weight."
+    },
+    "attendant_at_birth": {
+      "type": "string",
+      "enum": [
+        "physician",
+        "midwife",
+        "nurse",
+        "traditional_birth_attendant",
+        "other",
+        "none"
+      ],
+      "$comment": "https://publicschema.org/vocab/crvs/birth-attendant",
+      "description": "The type of person who attended the delivery (physician, midwife, nurse, traditional birth attendant, other, or none). Used as a proxy for safe delivery in health statistics."
+    }
+  }
+}
